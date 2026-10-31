@@ -39,3 +39,13 @@ A query cache keyed by normalized check SQL and table versions reaches the same 
 MAVRA on these definitions (measured in `exp/2026-10-29-mechanism-pilot`, factor 1–8),
 because MAVRA compiles one canonical query per condition; the comparison here is against
 the approaches the paper argues about: validation repeated per agent and per definition.
+
+## Results (2026-11-01, `results/shared-validation-1793471974128556`, archived in `cells.tgz`)
+
+108 cells, every use served a valid definition. After the load, MAVRA runs 8 checks for
+1–32 agents (3.9–5.0 s of database time). Per-agent validation runs 8 checks per agent
+(256 at 32 agents; 126 s staggered, 132 s simultaneous: 25x and 32x MAVRA). Full recheck
+runs 32 checks regardless of agents (16.6 s at 32 agents, 3.3x) and falls to 14 checks
+(6.9 s, 1.7x) with simultaneous arrivals, where its in-flight merging combines identical
+checks. Block ranges are within a few percent. The noctis LLM study was running during
+the first half of the cells; medians over three randomized blocks are reported.
