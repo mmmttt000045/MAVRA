@@ -25,6 +25,11 @@ pub enum Check {
     /// 左表的事实行中，关联不上最后一段右表的行所占比例。只看中间维表的行会低估遗漏：一个热门商品失去类别，只占商品表一行，
     /// 却可能是大半事实。返回到达的事实行数与其中关联得上的行数，由调用方与准入基线比较。
     PathCoverage { fact: String, path: Vec<(String, String, On)> },
+    /// 日期键两种编码下的覆盖：事实表日期键按维度键或其另一种编码 `alias`（维度列上的表达式，如 yyyymmdd）关联得上的行占比。
+    /// 日期键修复后的定义以它代替维度键的覆盖条件。
+    KeyAliasCoverage { fact: String, fact_col: String, dim: String, dim_col: String, alias: String },
+    /// 日期键两种编码合起来仍唯一：维度键与另一种编码的取值互不重叠，各自唯一，任一事实键至多对应一个日期。
+    KeyAliasUnique { dim: String, dim_col: String, alias: String },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -43,6 +48,8 @@ impl Check {
             Check::DateKeysContiguous { .. } => "DateKeysContiguous",
             Check::DateCoverage { .. } => "DateCoverage",
             Check::PathCoverage { .. } => "PathCoverage",
+            Check::KeyAliasCoverage { .. } => "KeyAliasCoverage",
+            Check::KeyAliasUnique { .. } => "KeyAliasUnique",
         }
     }
 
@@ -65,6 +72,8 @@ impl Check {
             Check::SampleFanout { left, right, .. } | Check::RowConservation { left, right, .. } => {
                 vec![left.clone(), right.clone()]
             }
+            Check::KeyAliasCoverage { fact, dim, .. } => vec![fact.clone(), dim.clone()],
+            Check::KeyAliasUnique { dim, .. } => vec![dim.clone()],
         }
     }
 
@@ -80,6 +89,8 @@ impl Check {
             Check::SampleFanout { left, right, on, .. } | Check::RowConservation { left, right, on, .. } => {
                 format!("{left}>{right}:{}", fmt_on(on))
             }
+            Check::KeyAliasCoverage { fact, fact_col, dim, dim_col, alias } => format!("{fact}.{fact_col}>{dim}({dim_col}|{alias})"),
+            Check::KeyAliasUnique { dim, dim_col, alias } => format!("{dim}({dim_col}|{alias})"),
         }
     }
 
@@ -92,6 +103,8 @@ impl Check {
             Check::PathCoverage { fact, path } => rows(fact) * (1.0 + path.len() as f64),
             Check::SampleFanout { right, .. } => rows(right),
             Check::RowConservation { left, right, .. } => rows(left) * 2.0 + rows(right),
+            Check::KeyAliasCoverage { fact, dim, .. } => rows(fact) + 2.0 * rows(dim),
+            Check::KeyAliasUnique { dim, .. } => 2.0 * rows(dim),
         }
     }
 
@@ -109,6 +122,10 @@ impl Check {
             Check::RowConservation { left, right, on, .. } => {
                 format!("行数守恒：{left}⋈{right} 按 {} 后行数是否超过 {left}", fmt_on(on))
             }
+            Check::KeyAliasCoverage { fact, fact_col, dim, dim_col, alias } => {
+                format!("{fact}.{fact_col} 按 {dim}.{dim_col} 或 {alias} 关联得上的占比")
+            }
+            Check::KeyAliasUnique { dim, dim_col, alias } => format!("{dim} 的 {dim_col} 与 {alias} 合起来是否唯一"),
         }
     }
 
@@ -176,12 +193,20 @@ impl Check {
                     conds.join(" and ")
                 )
             }
+            Check::KeyAliasCoverage { fact, fact_col, dim, dim_col, alias } => format!(
+                "select count(*) as n_left, count(k.k) as n_join from {fact} \
+                 left join (select {dim}.{dim_col} as k from {dim} union select {alias} as k from {dim}) k on {fact}.{fact_col} = k.k"
+            ),
+            Check::KeyAliasUnique { dim, dim_col, alias } => format!(
+                "select count(*) as n_rows, count(distinct k) as n_keys from \
+                 (select {dim}.{dim_col} as k from {dim} union all select {alias} as k from {dim}) u where k is not null"
+            ),
         }
     }
 
     pub fn eval(&self, rows: &Rows, ms: f64) -> Outcome {
         match self {
-            Check::KeyUnique { .. } => {
+            Check::KeyUnique { .. } | Check::KeyAliasUnique { .. } => {
                 let (n_rows, n_keys) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
                 let avg = if n_keys > 0 { n_rows as f64 / n_keys as f64 } else { 0.0 };
                 Outcome { pass: n_rows == n_keys, metrics: json!({"n_rows": n_rows, "n_keys": n_keys, "avg_mult": avg}), ms }
@@ -190,7 +215,7 @@ impl Check {
                 let (n_bad, n_months) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
                 Outcome { pass: n_bad == 0, metrics: json!({"n_bad": n_bad, "n_months": n_months}), ms }
             }
-            Check::PathCoverage { .. } => {
+            Check::PathCoverage { .. } | Check::KeyAliasCoverage { .. } => {
                 let (n_left, n_join) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
                 let ratio = if n_left > 0 { n_join as f64 / n_left as f64 } else { 1.0 };
                 Outcome { pass: true, metrics: json!({"n_left": n_left, "n_join": n_join, "join_ratio": ratio}), ms }

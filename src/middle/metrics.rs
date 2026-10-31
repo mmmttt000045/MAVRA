@@ -57,8 +57,10 @@ enum Breach {
         reason: String,
     },
     Time(String),
-    /// 事实行无法归入期间（时间关联丢行比例超过基线），或被内连接排除（关联不上维度的比例超过基线）；不在受限修复范围
+    /// 事实行被内连接排除（关联不上维度的比例超过基线）；不在受限修复范围
     Coverage(String),
+    /// 事实行无法归入期间（时间关联丢行比例超过基线）。日期维度方式下，受限修复尝试日期键的另一种编码
+    TimeCoverage(String),
     Grain(String),
     /// 优化修订新增的前提不成立（日期键不再按月连续）：前一修订的条件仍成立时恢复前一修订，否则失效
     Premise(String),
@@ -71,6 +73,7 @@ impl Breach {
             | Breach::Schema(r)
             | Breach::Time(r)
             | Breach::Coverage(r)
+            | Breach::TimeCoverage(r)
             | Breach::Grain(r)
             | Breach::Premise(r)
             | Breach::Join { reason: r, .. } => r.clone(),
@@ -207,6 +210,15 @@ fn coverage_check(m: &Metric) -> Option<Check> {
         let (table, col) = t.column_of(&m.fact);
         return Some(Check::DateCoverage { table, col });
     }
+    if let Some(alias) = &t.key_alias {
+        return Some(Check::KeyAliasCoverage {
+            fact: m.fact.clone(),
+            fact_col: t.fact_col.clone(),
+            dim: t.dim.clone(),
+            dim_col: t.dim_col.clone(),
+            alias: alias.clone(),
+        });
+    }
     Some(Check::RowConservation {
         left: m.fact.clone(),
         right: t.dim.clone(),
@@ -263,6 +275,26 @@ pub(super) fn grain_check(m: &Metric) -> Check {
     Check::KeyUnique { table: m.fact.clone(), cols, filter: fact_filter(m) }
 }
 
+/// 日期键修复后的唯一性条件：维度键与另一种编码合起来仍唯一。
+fn alias_unique_check(t: &TimeSpec) -> Option<Check> {
+    let alias = t.key_alias.as_ref()?;
+    Some(Check::KeyAliasUnique { dim: t.dim.clone(), dim_col: t.dim_col.clone(), alias: alias.clone() })
+}
+
+/// 日期键的候选编码：日期维度上每个 DATE 列的 yyyymmdd 整数与自 1970-01-01 起的天数（数据仓库常见的两种日期键）。
+/// 事实表日期键须为整数列。
+fn date_key_encodings(dim: &catalog::Table, fact_type: &str) -> Vec<String> {
+    if !(matches!(fact_type, "integer" | "bigint" | "smallint") || fact_type.starts_with("numeric")) {
+        return vec![];
+    }
+    let mut out = vec![];
+    for c in dim.cols.iter().filter(|c| c.dtype == "date") {
+        out.push(format!("to_char({}.{}, 'YYYYMMDD')::int", dim.name, c.name));
+        out.push(format!("({}.{} - date '1970-01-01')", dim.name, c.name));
+    }
+    out
+}
+
 /// 日期键连续条件：期间谓词按日期键范围过滤的修订所依赖（`TimeStrategy::KeyRange`）。
 pub(super) fn time_contiguity_check(t: &TimeSpec) -> Check {
     Check::DateKeysContiguous { dim: t.dim.clone(), key: t.dim_col.clone(), year_col: t.year_col.clone(), month_col: t.month_col.clone() }
@@ -284,6 +316,9 @@ fn bound_conditions(m: &Metric) -> Vec<(Check, Option<f64>)> {
     if let Some(t) = &m.time {
         if !t.is_column() {
             out.push((Check::KeyUnique { table: t.dim.clone(), cols: vec![t.dim_col.clone()], filter: None }, None));
+            if let Some(c) = alias_unique_check(t) {
+                out.push((c, None));
+            }
         }
         if let Some(c) = coverage_check(m) {
             out.push((c, Some(t.loss_ratio + COVERAGE_TOLERANCE)));
@@ -654,8 +689,20 @@ impl Middle {
             let on = vec![(t.fact_col.clone(), t.dim_col.clone())];
             match self.definition_verdict(ctx, &m.fact, &t.dim, &on, false).await?.0 {
                 Ok(p) => {
+                    // 日期键修复后的定义按两种编码关联，覆盖基线取两种编码下的丢行比例
+                    let loss = match alias_unique_check(t) {
+                        Some(u) => {
+                            let (uo, _) = self.cond_outcome(ctx, &u, false).await?;
+                            if !uo.pass {
+                                bad!("日期键两种编码出现重叠：{}", outcome_text(&u, &uo));
+                            }
+                            let c = coverage_check(m).expect("日期维度方式有覆盖条件");
+                            loss_of(&self.cond_outcome(ctx, &c, false).await?.0)
+                        }
+                        None => p.loss_ratio,
+                    };
                     if let Some(tm) = m.time.as_mut() {
-                        tm.loss_ratio = p.loss_ratio;
+                        tm.loss_ratio = loss;
                     }
                 }
                 Err(x) => bad!("时间关联 {}={} 未通过验证：{}", t.fact_col, t.dim_col, x.reason),
@@ -1149,11 +1196,25 @@ impl Middle {
                             Check::DateCoverage { table, col } => format!("{table} 中 {col} 为空的行"),
                             _ => format!("{} 中关联不上 {} 的行", m.fact, t.dim),
                         };
-                        return Ok(Some(Breach::Coverage(format!(
+                        return Ok(Some(Breach::TimeCoverage(format!(
                             "{what}占比从 {:.2}% 升至 {:.2}%，部分事实无法归入期间",
                             t.loss_ratio * 100.0,
                             loss * 100.0
                         ))));
+                    }
+                }
+            }
+            // 日期键修复后的定义：两种编码合起来仍须唯一，否则一个事实键可能对应两个日期
+            if let Some(c) = alias_unique_check(t) {
+                let label = format!("日期键编码唯一 {}", t.dim);
+                if !force && !changed.contains(&t.dim) {
+                    conds.push(json!({"cond": label, "tables": [t.dim.clone()], "action": "skipped"}));
+                } else {
+                    let (o, how) = self.cond_outcome(ctx, &c, force).await?;
+                    let ms = if how == "executed" { o.ms } else { 0.0 };
+                    conds.push(json!({"cond": label, "tables": [t.dim.clone()], "action": how, "pass": o.pass, "ms": ms}));
+                    if !o.pass {
+                        return Ok(Some(Breach::Time(format!("日期键两种编码出现重叠：{}", outcome_text(&c, &o)))));
                     }
                 }
             }
@@ -1491,6 +1552,21 @@ impl Middle {
                 j.revision = rev;
                 format!("关联 {}⋈{} 采用重验证路径的过滤 {:?}", j.left, j.right, p.filters)
             }
+            Breach::TimeCoverage(r) if m.time.as_ref().is_some_and(|t| !t.is_column() && t.key_alias.is_none()) => {
+                match self.repair_date_key(ctx, m).await? {
+                    Ok(alias) => {
+                        let t = m2.time.as_mut().expect("上面已确认有时间定义");
+                        t.key_alias = Some(alias.clone());
+                        // 日期键范围改写以维度键连续为前提，另一种编码不满足，回到维度连接
+                        t.strategy = TimeStrategy::DimJoin;
+                        format!("{} 的日期键另按 {alias} 关联 {}（{r}）", m.fact, t.dim)
+                    }
+                    Err(reason) => {
+                        self.metric_event(json!({"event": "repair_failed", "key": old.key, "revision": old.revision, "reason": reason}));
+                        return Ok(());
+                    }
+                }
+            }
             other => {
                 self.metric_event(json!({"event": "repair_skipped", "key": old.key, "revision": old.revision,
                                          "reason": format!("不属于受限修复范围：{}", other.reason())}));
@@ -1518,6 +1594,47 @@ impl Middle {
         }
         self.metric_event(json!({"event": "repair_candidate", "key": old.key, "revision": rev, "change": change}));
         self.regress(ctx, fk).await
+    }
+
+    /// 日期键修复：时间关联丢行超过基线时，在日期维度的 DATE 列上尝试另一种日期键编码（`date_key_encodings`）。
+    /// 一个编码通过须同时满足：与维度键合起来仍唯一（取值不重叠），且按两种编码关联后丢行比例回到准入基线以内。
+    /// 恰好一个编码通过才采用；多个都通过时结构上分不出哪个对，与粒度修复相同地放弃。返回采用的编码或放弃的原因。
+    async fn repair_date_key(&self, ctx: &Ctx, m: &Metric) -> Result<std::result::Result<String, String>> {
+        let Some(t) = m.time.as_ref() else { return Ok(Err("没有时间定义".into())) };
+        let (Some(dim), Some(fact)) = (self.cat.table(&t.dim), self.cat.table(&m.fact)) else {
+            return Ok(Err(format!("目录中没有 {} 或 {}", t.dim, m.fact)));
+        };
+        let fact_type = fact.col(&t.fact_col).map(|c| c.dtype.clone()).unwrap_or_default();
+        let mut found = vec![];
+        for alias in date_key_encodings(dim, &fact_type) {
+            let uniq = Check::KeyAliasUnique { dim: t.dim.clone(), dim_col: t.dim_col.clone(), alias: alias.clone() };
+            if !self.exec_check(ctx, &uniq, QKind::Repair).await?.0.pass {
+                continue;
+            }
+            let cov = Check::KeyAliasCoverage {
+                fact: m.fact.clone(),
+                fact_col: t.fact_col.clone(),
+                dim: t.dim.clone(),
+                dim_col: t.dim_col.clone(),
+                alias: alias.clone(),
+            };
+            let loss = loss_of(&self.exec_check(ctx, &cov, QKind::Repair).await?.0);
+            if loss <= t.loss_ratio + COVERAGE_TOLERANCE {
+                found.push(alias);
+            }
+        }
+        Ok(match found.len() {
+            0 => {
+                self.log(ctx, format!("日期键修复：{} 没有找到能恢复覆盖的编码", m.fact));
+                Err("没有找到能恢复日期覆盖的日期键编码".into())
+            }
+            1 => {
+                inc(&self.stats.repairs);
+                self.log(ctx, format!("日期键修复：{} 的日期键另按 {} 关联", m.fact, found[0]));
+                Ok(found.remove(0))
+            }
+            _ => Err(format!("多个日期键编码都能恢复覆盖，结构上分不出哪个对：{}", found.join("；"))),
+        })
     }
 
     /// 修复候选的回归：G3、G4、G5 与 G8 全部通过才恢复有效，否则保持候选（不可用）。

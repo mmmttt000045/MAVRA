@@ -419,7 +419,7 @@ fn fanout_of(c: &Check, o: &Outcome) -> f64 {
 
 fn outcome_text(c: &Check, o: &Outcome) -> String {
     match c {
-        Check::KeyUnique { .. } => {
+        Check::KeyUnique { .. } | Check::KeyAliasUnique { .. } => {
             format!("{} 行只有 {} 个不同键（平均每键 {:.2} 行）", o.metrics["n_rows"], o.metrics["n_keys"], metric(o, "avg_mult"))
         }
         Check::DateKeysContiguous { .. } => {
@@ -438,7 +438,7 @@ fn outcome_text(c: &Check, o: &Outcome) -> String {
         Check::DateCoverage { .. } => {
             format!("{} 行中 {} 行有日期（{:.2}%）", o.metrics["n_rows"], o.metrics["n_dated"], metric(o, "join_ratio") * 100.0)
         }
-        Check::PathCoverage { .. } => {
+        Check::PathCoverage { .. } | Check::KeyAliasCoverage { .. } => {
             format!(
                 "到达的 {} 个事实行中 {} 行关联得上（{:.2}%）",
                 o.metrics["n_left"],

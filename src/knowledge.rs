@@ -173,6 +173,10 @@ pub struct TimeSpec {
     pub year_col: String,
     #[serde(default = "default_month_col")]
     pub month_col: String,
+    /// 日期键的另一种编码：日期维度上的表达式（如 `to_char(date_dim.d_date, 'YYYYMMDD')::int`）。日期键修复后，
+    /// 事实表的日期键按维度键或这一编码关联到同一日期；缺省为空（只按维度键关联）
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub key_alias: Option<String>,
 }
 
 fn default_year_col() -> String {

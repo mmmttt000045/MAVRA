@@ -341,6 +341,9 @@ pub fn check_join_orientation(m: &Metric) -> Result<()> {
 
 /// 由口径字段编译规范 SQL（G7、G8 与修复后的示例使用）。规范 SQL 不给表起别名：关联条件与期间谓词用表名限定列，
 /// 度量按口径原文；各表过滤中的裸列按 filters 的所属表限定。左关联过滤留在 ON 中。
+/// 日期键修复后，扩展日期维度上统一的键列名。
+pub const DATE_KEY: &str = "mavra_date_key";
+
 pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     check_join_orientation(m)?;
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义，无法按期间编译"))?;
@@ -371,7 +374,18 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     let joined = if time.is_column() {
         from.clone()
     } else {
-        format!("{from} join {d} on {}.{} = {d}.{}", m.fact, time.fact_col, time.dim_col, d = time.dim)
+        match &time.key_alias {
+            // 日期键修复后：日期维度按两种键编码各出一行（两者互不重叠，由条件 KeyAliasUnique 维护），事实键与其中之一相等
+            Some(alias) => format!(
+                "{from} join (select {d}.*, {d}.{dc} as {DATE_KEY} from {d} union all select {d}.*, {alias} as {DATE_KEY} from {d}) {d} \
+                 on {}.{} = {d}.{DATE_KEY}",
+                m.fact,
+                time.fact_col,
+                d = time.dim,
+                dc = time.dim_col
+            ),
+            None => format!("{from} join {d} on {}.{} = {d}.{}", m.fact, time.fact_col, time.dim_col, d = time.dim),
+        }
     };
     let cond = |extra: String| {
         let mut w = wheres.clone();
@@ -383,7 +397,7 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     let expr = if m.empty == EmptyRule::Zero { format!("coalesce({}, 0)", m.measure) } else { m.measure.clone() };
     // 日期键范围：期间的日期键集合是一个整数区间（条件“日期键按月连续”），事实表按键范围过滤，不连接维度表；
     // 按月排名仍需维度列，照旧连接
-    let range = time.strategy == TimeStrategy::KeyRange;
+    let range = time.strategy == TimeStrategy::KeyRange && time.key_alias.is_none();
     let value = |p: &Period| {
         if range {
             let pp = pred(p);
@@ -1317,6 +1331,7 @@ mod tests {
                 strategy: TimeStrategy::DimJoin,
                 year_col: "d_year".into(),
                 month_col: "d_moy".into(),
+                key_alias: None,
             }),
             joins: vec![JoinRef {
                 key: String::new(),
@@ -1559,6 +1574,7 @@ mod tests {
             strategy: TimeStrategy::Column,
             year_col: "d_year".into(),
             month_col: "d_moy".into(),
+            key_alias: None,
         });
         let single = compile(&m, &Ask::Single { period: Period::month(2002, 12) }).unwrap();
         assert!(

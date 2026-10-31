@@ -43,7 +43,8 @@ pub struct Options {
                           "metric-global-snap", "metric-global-opt", "metric-global-full", "metric-private", "middle-alone", "traj-global", "traj-verify",
                           "reforce", "reforce-traj", "reforce-static", "reforce-mavra",
                           "mem-awm", "mem-ace", "mem-mem0", "mem-agentsm", "mem-ace-shared", "mem-agentsm-shared",
-                          "mem-reasoningbank", "mem-apc", "mem-reasoningbank-shared", "mem-apc-shared"])]
+                          "mem-reasoningbank", "mem-apc", "mem-reasoningbank-shared", "mem-apc-shared",
+                          "paper-ace", "paper-awm", "paper-gmemory"])]
     modes: Vec<String>,
     #[arg(long, value_delimiter = ',', default_value = "defined,named", value_parser = ["defined", "named"])]
     phrasings: Vec<String>,
@@ -74,6 +75,13 @@ pub struct Options {
     /// 新增分支的新消费者；指定时向所有方法提供明确业务定义。
     #[arg(long)]
     additional_holdout_agent: Option<String>,
+    /// 冻结题单（JSON：`{"phases": {阶段名: [题号, …]}}`）：留出与各变化阶段只问其中列出的题，学习题不变。
+    /// 题号取自扩展场景题库（`--scenario-extra-count` 的题目集合）
+    #[arg(long)]
+    bank: Option<String>,
+    /// 只计算题单候选的标准答案与学习时 SQL 在变化后数据上的结果，不调用模型；写出 bank-probe.json
+    #[arg(long)]
+    bank_probe: bool,
     #[arg(long)]
     no_changes: bool,
     #[arg(long, default_value_t = 1, value_parser = clap::value_parser!(u32).range(1..=10))]
@@ -158,6 +166,14 @@ struct SpecDefs {
 }
 
 static SPEC_DEFS: OnceLock<SpecDefs> = OnceLock::new();
+
+/// 冻结题单（`--bank`）：阶段名 → 依次要问的题号
+static BANK: OnceLock<HashMap<String, Vec<String>>> = OnceLock::new();
+
+/// 扩展场景题库（`--scenario-extra-count`、`--bank` 或 `--bank-probe`）：计分题改为留出年的各题型，另有回填用的学习年题
+fn study_mode(o: &Options) -> bool {
+    o.scenario_extra_count.is_some() || o.bank.is_some() || o.bank_probe
+}
 
 fn defs() -> &'static [Def] {
     SPEC_DEFS.get().map(|s| s.defs.as_slice()).unwrap_or(&DEFS)
@@ -354,7 +370,7 @@ fn study_tasks(o: &Options, spec: Option<&Spec>) -> Vec<Task> {
         }
         return out;
     }
-    if o.scenario_extra_count.is_none() {
+    if !study_mode(o) {
         return out;
     }
     let (learn, holdout) = SPEC_DEFS.get().map_or((2001, 2002), |s| (s.learn, s.holdout));
@@ -390,6 +406,10 @@ fn study_tasks(o: &Options, spec: Option<&Spec>) -> Vec<Task> {
 }
 
 fn study_selection<'a>(tasks: &'a [Task], ch: Option<Change>, tables: &[String], extra: Option<u32>) -> Vec<&'a Task> {
+    if let Some(bank) = BANK.get() {
+        let phase = ch.map_or("holdout", Change::name);
+        return bank.get(phase).into_iter().flatten().filter_map(|id| tasks.iter().find(|t| &t.id == id)).collect();
+    }
     if extra.is_none() {
         return tasks
             .iter()
@@ -444,6 +464,45 @@ fn study_question_plan(tasks: &[Task], changes: &[Change], spec: Option<&Spec>, 
         rows.push(json!({"phase":"holdout-extra","task":t.id,"metric":t.def.id,"ask":t.ask,"question":text(t,extra_defined)}));
     }
     rows
+}
+
+/// 题单探查（`--bank-probe`）：不调用模型。每个阶段从 v1 开始，对候选题依次计算 v1 上的答案、施加改变业务事实的部分后
+/// 的标准答案、再施加只改变数据表示的部分后参考 SQL 的结果（学习时正确的 SQL 在变化后数据上的答案，即过期结果）。
+/// 候选为读到被写入表的指标的全部计分题型；回填阶段用学习年的题。
+async fn bank_probe(env: &Env<'_>) -> Result<Vec<Value>> {
+    let mut rows = vec![];
+    for ch in std::iter::once(None).chain(env.changes.iter().copied().map(Some)) {
+        let phase = ch.map_or("holdout", Change::name);
+        let tables = ch.map(|c| env.change_tables(c)).unwrap_or_default();
+        let backfill = ch.is_some_and(|c| c.name() == "backfill");
+        let cands: Vec<&Task> = env
+            .tasks
+            .iter()
+            .filter(|t| t.set != Set::Learn && !t.id.contains("-X") && t.id.ends_with("-B") == backfill)
+            .filter(|t| ch.is_none() || t.def.tables.iter().any(|x| tables.iter().any(|y| y == x)))
+            .collect();
+        let v1 = study_gold(env.admin, &cands).await?;
+        let (gold, stale) = match ch {
+            None => (v1.clone(), v1.clone()),
+            Some(c) => {
+                env.apply_truth(c).await?;
+                let gold = study_gold(env.admin, &cands).await?;
+                env.apply_hidden(c).await?;
+                let stale = study_gold(env.admin, &cands).await?;
+                env.reset(c).await?;
+                env.ensure_v1(phase).await?;
+                (gold, stale)
+            }
+        };
+        for t in cands {
+            let same = |a: &str, b: &str| same_value(&parse_answer(a), &parse_answer(b), decimals(&t.ask));
+            rows.push(json!({"phase": phase, "task": t.id, "metric": t.def.id, "ask": t.ask, "question": text(t, false),
+                             "v1": v1[&t.id], "gold": gold[&t.id], "stale": stale[&t.id],
+                             "stale_correct": same(&stale[&t.id], &gold[&t.id]), "answer_changed": !same(&v1[&t.id], &gold[&t.id])}));
+        }
+        eprintln!("  题单探查 {phase}：{} 道候选", rows.iter().filter(|r| r["phase"] == phase).count());
+    }
+    Ok(rows)
 }
 
 async fn study_gold(db: &Db, tasks: &[&Task]) -> Result<HashMap<String, String>> {
@@ -780,7 +839,8 @@ pub(crate) fn config(mode: &str) -> (MiddleConfig, bool, bool) {
             false,
             false,
         ),
-        "middle" | "reforce" => (base, true, false),
+        // 已发表的记忆方法（ACE、AWM、G-Memory）：工具同 middle，记忆由外部服务按各自发布的算法维护（`paper_memory`）
+        "middle" | "reforce" | "paper-ace" | "paper-awm" | "paper-gmemory" => (base, true, false),
         // 无记忆：同 middle 的工具，但表结构知识（表描述、关联路径与守卫依据）只在一道题内有效，每题从零开始
         "middle-alone" => (MiddleConfig { scope: Scope::Task, metric_scope: Scope::Task, ..base }, true, false),
         "metric-local" => {
@@ -1017,6 +1077,28 @@ async fn explain(probe: &Db, run: &AgentRun, log: &TaskLog) -> Value {
            "fact_scan_loops": loops, "errors": errors})
 }
 
+/// 已发表记忆方法的外部服务（`exp/*/memory-service.py`）：ACE、AWM 与 G-Memory 按各自发布的算法检索与更新记忆，
+/// 跨越边界的只有题面、智能体自己的轨迹与作答后的二值正确性。设置了 `FIG6_MEMORY_URL` 时 MAVRA 也经它取得同一格式的
+/// 近期结果反馈，各方法的反馈相同；其余实验不经过它。
+fn paper_bridge(mode: &str) -> bool {
+    mode.starts_with("paper-") || (mode == "metric-global-full" && std::env::var_os("FIG6_MEMORY_URL").is_some())
+}
+
+async fn paper_memory(mode: &str, mut body: Value) -> Result<Value> {
+    if !paper_bridge(mode) {
+        return Ok(Value::Null);
+    }
+    body["key"] = json!(std::env::var("FIG6_CELL_KEY").context("FIG6_CELL_KEY missing")?);
+    body["arm"] = json!(if mode == "metric-global-full" { "mavra" } else { mode.trim_start_matches("paper-") });
+    let url = std::env::var("FIG6_MEMORY_URL").context("FIG6_MEMORY_URL missing")?;
+    let response =
+        reqwest::Client::builder().no_proxy().timeout(std::time::Duration::from_secs(900)).build()?.post(url).json(&body).send().await?;
+    let status = response.status();
+    let value: Value = response.json().await?;
+    ensure!(status.is_success() && value["error"].is_null(), "Published-memory adapter failed: {status}: {value}");
+    Ok(value)
+}
+
 async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Result<TaskRec> {
     let (env, mid, cell) = (ph.env, ph.mid, ph.cell);
     let question = text(t, defined);
@@ -1032,10 +1114,30 @@ async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Resul
         }
     } else {
         // 记忆基线（AWM、ACE、Mem0、ReasoningBank、APC）把记忆放进系统提示；其他组没有这一段
-        let (memory, cost) = mid.amem.lookup(env.extractor, agent, &question).await;
-        lookup = cost;
+        let (memory, asked) = if paper_bridge(cell.mode) {
+            lookup = paper_memory(
+                cell.mode,
+                json!({"op":"begin", "question":question, "task":t.id, "metric":t.def.id, "agent":agent, "phase":ph.name, "ask":t.ask}),
+            )
+            .await?;
+            (
+                lookup["system_prompt"].as_str().unwrap_or_default().to_string(),
+                format!("{}{}", question, lookup["user_prompt"].as_str().unwrap_or_default()),
+            )
+        } else {
+            let (memory, cost) = mid.amem.lookup(env.extractor, agent, &question).await;
+            lookup = cost;
+            (memory, question.clone())
+        };
         let system = format!("{}{}", cell.system, memory);
-        let mut r = llm::run_agent_with(env.agent, mid, &ctx, &question, &system, &cell.tools, env.o.max_steps as usize).await;
+        let mut tools = cell.tools.clone();
+        if cell.mode == "paper-ace" {
+            if let Some(tool) = tools.iter_mut().find(|t| t.name == "final_answer") {
+                tool.schema["properties"]["bullet_ids"] = json!({"type":"array", "items":{"type":"string"},
+                    "description":"IDs of ACE playbook bullets used for this answer"});
+            }
+        }
+        let mut r = llm::run_agent_with(env.agent, mid, &ctx, &asked, &system, &tools, env.o.max_steps as usize).await;
         // 作答前取记忆的模型调用（APC 提取关键词）在这道题的关键路径上，计入它的 token 与时间
         if let (Ok(run), false) = (r.as_mut(), lookup.is_null()) {
             run.input_tokens += lookup["input_tokens"].as_u64().unwrap_or(0);
@@ -1060,6 +1162,13 @@ async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Resul
     } else {
         "wrong"
     };
+    // 只有二值结果与智能体自己的轨迹跨越记忆边界
+    let published_memory = paper_memory(
+        cell.mode,
+        json!({"op":"end", "question":question, "task":t.id, "metric":t.def.id, "agent":agent, "phase":ph.name, "ask":t.ask,
+               "correct":correct, "answer":run.answer, "sql":run.sql, "error":error, "transcript":run.transcript}),
+    )
+    .await?;
     let plan = if env.o.no_explain || reforce { Value::Null } else { explain(env.probe, &run, &log).await };
     let rejected_refs =
         log.rejections.iter().flat_map(|r| serde_json::from_value::<Vec<(String, u32)>>(r["metrics"].clone()).unwrap_or_default());
@@ -1092,7 +1201,14 @@ async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Resul
         "gold": gold, "answer": run.answer, "outcome": outcome, "error": error, "run": run,
         "db": {"queries": d.queries, "ms": d.db_ms, "by_kind": d.by_kind}, "explain": plan, "metric_use": usage,
         "sql_calls": log.calls.len(), "rejections": log.rejections, "reforce": reforce_info, "memory_lookup": lookup,
+        "published_memory": published_memory,
     });
+    // 逐题落盘，进程中断时已完成的题不丢
+    {
+        use std::io::Write;
+        let mut journal = std::fs::OpenOptions::new().create(true).append(true).open(format!("{}/task-journal.jsonl", env.dir))?;
+        writeln!(journal, "{json}")?;
+    }
     Ok(TaskRec { json, run, log, ctx, question, correct })
 }
 
@@ -1387,7 +1503,7 @@ async fn cell(env: &Env<'_>, db: Arc<Db>, mode: &str, phrasing: &str, repeat: u3
         let selected = study_selection(env.tasks, ch, &tables, env.o.scenario_extra_count);
         let gold = match ch {
             None => {
-                if env.o.scenario_extra_count.is_some() {
+                if study_mode(env.o) {
                     study_gold(env.admin, &selected).await?
                 } else {
                     gold_map(env.admin, env.tasks).await?
@@ -1395,11 +1511,7 @@ async fn cell(env: &Env<'_>, db: Arc<Db>, mode: &str, phrasing: &str, repeat: u3
             }
             Some(c) => {
                 let truth = env.apply_truth(c).await?;
-                let gold = if env.o.scenario_extra_count.is_some() {
-                    study_gold(env.admin, &selected).await?
-                } else {
-                    gold_map(env.admin, env.tasks).await?
-                };
+                let gold = if study_mode(env.o) { study_gold(env.admin, &selected).await? } else { gold_map(env.admin, env.tasks).await? };
                 let hidden = env.apply_hidden(c).await?;
                 eprintln!("  场景 {phase}（{}，{}）：写入 {truth} + {hidden} 行", c.label(), c.class());
                 writes.insert(phase.into(), json!({"truth_rows": truth, "hidden_rows": hidden}));
@@ -1448,17 +1560,22 @@ async fn cell(env: &Env<'_>, db: Arc<Db>, mode: &str, phrasing: &str, repeat: u3
         }
         events.insert(phase.into(), json!(mid.take_metric_events()));
         match ch {
-            None => checkpoint = Some(mid.checkpoint()),
+            None => {
+                checkpoint = Some(mid.checkpoint());
+                paper_memory(cell.mode, json!({"op":"checkpoint"})).await?;
+            }
             Some(c) => {
                 audits.insert(format!("{phase}_end"), json!(audit(env, &mid, &gold).await?.0));
                 env.reset(c).await?;
                 env.ensure_v1(phase).await?;
                 mid.restore(checkpoint.as_ref().context("缺少留出后的经验库快照")?).await?;
+                paper_memory(cell.mode, json!({"op":"restore", "phase":phase})).await?;
             }
         }
     }
     if env.o.additional_holdout_count > 0 {
         mid.restore(checkpoint.as_ref().context("缺少新增题分支的检查点")?).await?;
+        paper_memory(cell.mode, json!({"op":"restore", "phase":"holdout-extra"})).await?;
         // Independent additional-question branch: restore the original heldout boundary.
         env.ensure_v1("holdout-extra").await?;
         let selected: Vec<_> = env.tasks.iter().filter(|t| t.id.contains("-X")).collect();
@@ -1759,7 +1876,16 @@ async fn population_cell(env: &Env<'_>, db: Arc<Db>, mode: &str, repeat: u32) ->
 }
 
 pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
-    ensure!(o.scenario_extra_count.is_none() || o.question_set == "v2", "扩展场景题单需要 --question-set v2");
+    ensure!(!study_mode(&o) || o.question_set == "v2", "扩展场景题单需要 --question-set v2");
+    if let Some(path) = &o.bank {
+        let v: Value = serde_json::from_str(&std::fs::read_to_string(path).with_context(|| format!("读取题单 {path} 失败"))?)?;
+        let phases = v["phases"].as_object().context("题单缺少 phases")?;
+        let bank: HashMap<String, Vec<String>> = phases
+            .iter()
+            .map(|(k, ids)| (k.clone(), ids.as_array().into_iter().flatten().filter_map(|x| x.as_str().map(str::to_string)).collect()))
+            .collect();
+        let _ = BANK.set(bank);
+    }
     ensure!(
         !o.holdout_agents.is_empty() && o.holdout_agents.iter().all(|a| !a.trim().is_empty() && !a.contains(['/', '|'])),
         "holdout-agents 不能为空，名称不能含 / 或 |"
@@ -1858,7 +1984,11 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
         };
         let probe = Db::connect(isolated.as_str(), 2, true)?;
         let db = Arc::new(Db::connect_timeout(isolated.as_str(), pool, true, o.sql_timeout_secs)?);
-        let tasks = study_tasks(&o,spec.as_ref());
+        let tasks = study_tasks(&o, spec.as_ref());
+        if let Some(bank) = BANK.get() {
+            let missing: Vec<&String> = bank.values().flatten().filter(|id| !tasks.iter().any(|t| &&t.id == id)).collect();
+            ensure!(missing.is_empty(), "题单中的题号不在题库里：{missing:?}");
+        }
         let env = Env {
             o: &o,
             admin: &admin,
@@ -1873,6 +2003,11 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
             gen: gen.as_ref(),
             url: isolated.as_str(),
         };
+        if o.bank_probe {
+            let rows = bank_probe(&env).await?;
+            std::fs::write(format!("{directory}/bank-probe.json"), serde_json::to_string_pretty(&rows)?)?;
+            return Ok(json!({"options": o, "dataset": dataset, "bank_probe": rows, "cells": []}));
+        }
         let mut cells = vec![];
         for r in o.first_repeat..o.first_repeat + o.repeats {
             // 每轮轮换组的执行顺序
@@ -1925,7 +2060,9 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
         Ok(mut report) => {
             report["database_cleaned_up"] = json!(cleanup.is_ok());
             std::fs::write(format!("{directory}/report.json"), serde_json::to_string_pretty(&report)?)?;
-            let md = if report["options"]["lifecycle"] == true {
+            let md = if report["bank_probe"].is_array() {
+                "题单探查：逐题结果见 bank-probe.json；模型调用 0。\n".to_string()
+            } else if report["options"]["lifecycle"] == true {
                 "生命周期评测：逐步结果见 report.json 与 cell-*.json，汇总用 tools/lifecycle-stats.py。\n".to_string()
             } else if report["options"]["population"] == true {
                 "群体评测：逐题结果见 report.json 与 cell-*.json，汇总用 tools/population-stats.py。\n".to_string()

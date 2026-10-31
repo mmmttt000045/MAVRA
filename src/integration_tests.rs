@@ -143,6 +143,87 @@ async fn scoped_admission(url: &str) -> Result<Value> {
         "stale_and_invalid_execution_denied":true,"base_verdict_unchanged":true}))
 }
 
+/// 日期键换编码：一批事实的日期键改用 yyyymmdd 后，覆盖条件失败，受限修复采用唯一能恢复覆盖的编码并通过回归；
+/// 修复后的修订按两种编码计入全部事实，旧修订不能再执行。
+async fn date_key_repair(url: &str) -> Result<Value> {
+    let admin = Db::connect(url, 2, false)?;
+    admin
+        .query(
+            QKind::Meta,
+            "create table ds (d_date_sk int primary key, d_date date, d_year int, d_moy int); \
+             insert into ds select row_number() over (order by d)::int, d::date, extract(year from d)::int, extract(month from d)::int \
+               from generate_series(date '2002-08-01', date '2002-09-30', interval '1 day') d; \
+             create table fs (f_ticket int, f_item int, f_date_sk int, f_paid numeric(12,2)); \
+             insert into fs select d_date_sk, 1, d_date_sk, 10 from ds; \
+             analyze ds; analyze fs",
+        )
+        .await?;
+    catalog::install_tx_versions(&admin, &["ds", "fs"]).await?;
+    let mid = Middle::new(
+        Arc::new(Db::connect(url, 4, true)?),
+        MiddleConfig {
+            record: true,
+            snapshot_exec: true,
+            cond_reuse: true,
+            result_cache: false,
+            version_ttl_ms: 0,
+            metric_maint: Maint::Condition,
+            ..Default::default()
+        },
+    )
+    .await?;
+    let ctx = Ctx::new("A", "date-key-repair", "execute");
+    let m: Metric = serde_json::from_value(json!({"name":"rev", "definition":"net paid by sale date", "fact":"fs",
+        "measure":"sum(fs.f_paid)", "grain":["f_ticket","f_item"],
+        "time":{"role":"sale","fact_col":"f_date_sk","dim":"ds","dim_col":"d_date_sk","grain":"day"}}))?;
+    let learn = Ask::Single { period: Period::month(2002, 8) };
+    let judge = metric::compile(&m, &learn)?;
+    let seeded = mid.seed_metric(&ctx, m, learn, 2, &judge).await?;
+    ensure!(seeded["promoted"] == true, "metric must pass publication: {seeded}");
+    let sep = Ask::Single { period: Period::month(2002, 9) };
+    let request = json!({"key":seeded["key"],"revision":seeded["revision"],"ask":sep});
+    let before = mid.call_tool(&ctx, "run_metric", &request).await?;
+    ensure!(before["result"]["rows"][0][0] == "300.00", "September before the late batch: {before}");
+    admin
+        .query(
+            QKind::Meta,
+            "insert into fs select f_ticket + 1000, f_item, to_char(d_date, 'YYYYMMDD')::int, f_paid \
+             from fs join ds on f_date_sk = d_date_sk where d_moy = 9; analyze fs",
+        )
+        .await?;
+    mid.invalidate_versions();
+    let old = mid.call_tool(&ctx, "run_metric", &request).await?;
+    ensure!(old["rejected"] == true && old.get("result").is_none(), "the pre-repair revision must not execute: {old}");
+    let view = mid.use_metric(&ctx, seeded["key"].as_str().unwrap_or_default()).await?;
+    ensure!(view["status"] == "valid", "the date-key repair must be published: {view}");
+    let alias = view["metric"]["time"]["key_alias"].as_str().unwrap_or_default().to_string();
+    ensure!(alias.contains("YYYYMMDD"), "the repair must adopt the yyyymmdd encoding: {view}");
+    let repaired = json!({"key":seeded["key"],"revision":view["revision"],"ask":sep});
+    let after = mid.call_tool(&ctx, "run_metric", &repaired).await?;
+    ensure!(after["result"]["rows"][0][0] == "600.00", "September must count both encodings: {after}");
+    let aug = mid.call_tool(&ctx, "run_metric", &json!({"key":seeded["key"],"revision":view["revision"],"ask":learn})).await?;
+    ensure!(aug["result"]["rows"][0][0] == "310.00", "unaffected August must keep its value: {aug}");
+    Ok(json!({"alias": alias, "revision": view["revision"], "before": before["result"]["rows"][0][0],
+              "after": after["result"]["rows"][0][0], "august": aug["result"]["rows"][0][0]}))
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission"]
+async fn postgres_date_key_repair() -> Result<()> {
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_datekey_{}_{unique}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let result = tokio::time::timeout(Duration::from_secs(90), Box::pin(date_key_repair(test_url.as_str()))).await;
+    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
+    cleanup.context("date-key test database cleanup failed")?;
+    println!("Date-key repair: {}", result.context("date-key repair test timeout")??);
+    Ok(())
+}
+
 #[tokio::test]
 #[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission"]
 async fn postgres_scoped_sql_admission() -> Result<()> {
@@ -695,6 +776,7 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
             strategy: TimeStrategy::DimJoin,
             year_col: "d_year".into(),
             month_col: "d_moy".into(),
+            key_alias: None,
         })
     };
     let join = |right: &str, on: &[(&str, &str)], kind: JoinKind| JoinRef {
