@@ -30,13 +30,16 @@ CLASS = {'correct': 'C', 'served_wrong': 'W', 'unavailable_needed': 'R', 'unavai
 
 
 def key(r):
-    return (r['lib'], r['change'], r['entry'], r['task'])
+    # the library name embeds the directory it was loaded from; the last component identifies it
+    return (r['lib'].split('/')[-1], r['change'], r['entry'], r['task'])
 
 
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('rerun')
     a.add_argument('--tex', default=str(ROOT / 'overleaf/gen/replay-policies.tex'))
+    a.add_argument('--allow-archived', action='store_true',
+                   help='provisional layout only: use the archived MAVRA rows of schemas whose rerun is not finished')
     a = a.parse_args()
     table = {p: {s: Counter() for s in SCOPES} for p, _ in POLICIES}
     per_change = {}
@@ -44,8 +47,12 @@ def main():
     for ds, path in ARCHIVE.items():
         old = json.loads(gzip.decompress(path.read_bytes()))['outcomes']
         reports = glob.glob(f'{a.rerun}/{ds}/replay-*/report.json')
-        assert len(reports) == 1, (ds, reports)
-        new = [r for r in json.loads(Path(reports[0]).read_text())['outcomes'] if (r['policy'], r['oracle']) == ('condition', 'snapshot')]
+        if not reports and a.allow_archived:
+            reports = ['archived']
+            new = [r for r in old if (r['policy'], r['oracle']) == ('condition', 'snapshot')]
+        else:
+            assert len(reports) == 1, (ds, reports)
+            new = [r for r in json.loads(Path(reports[0]).read_text())['outcomes'] if (r['policy'], r['oracle']) == ('condition', 'snapshot')]
         rows = {p: {key(r): r for r in old if r['policy'] == p and r['oracle'] == 'snapshot'} for p, _ in POLICIES if p != 'condition'}
         rows['condition'] = {key(r): r for r in new}
         common = set.intersection(*[set(v) for v in rows.values()])

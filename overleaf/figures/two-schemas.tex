@@ -1,11 +1,11 @@
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
 \ifbilingual
-\includegraphics[width=\linewidth]{figures/two-schemas-zh}
+\includegraphics[width=\textwidth]{figures/change-study-zh}
 \else
-\includegraphics[width=\linewidth]{figures/two-schemas}
+\includegraphics[width=\textwidth]{figures/change-study}
 \fi
-\caption{\bt{Accuracy over held-out questions, eleven changes and cross-agent forms (\PubScenarioScored{} answers). Equal-schema means across all \PubScenarioSettings{} settings: MAVRA \PubJointMAVRAAcc\%, AWM \PubJointAWMAcc\%. One run/method; frozen baseline controls reused.}{留出题、十一种变化及跨智能体题型的正确率（\PubScenarioScored{} 次作答）。两模式及全部 \PubScenarioSettings{} 种情形等权汇总：MAVRA \PubJointMAVRAAcc\%，AWM \PubJointAWMAcc\%。每方法一轮，复用冻结基线对照。}}
+\caption{\bt{Eleven data changes against published agent memories (\CsScored\ answers, \CsRuns\ runs). (a, b) Correct answers per change group; outlined segments ask for clarification, the rest to 100\% are wrong; bars span the runs. (c, d) Tokens per question, including memory updates.}{十一种数据变化下与已发表智能体记忆的比较（\CsScored\ 次计分作答，每方法 \CsRuns\ 轮）。(a, b) 各变化组的正确率；虚线框为请求澄清，其余至 100\% 为错误答案；误差线覆盖各轮。(c, d) 每道计分题的 token，含在线记忆更新。}}
 \label{fig:twoschemas}
-\Description{Compact grouped bars compare ACE, AWM, G-Memory, and full MAVRA on synthetic retail and TPC-H SF1. Questions cover single periods, period differences, highest months and largest monthly increases. Groups show non-breaking updates, covered structural changes, new-agent form transfer, and all settings, on a common zero-to-100-percent scale. All settings also include the original held-out, unit and backup-source cases. Unchanged published baseline controls are reused; the repaired native method and all extra queries are freshly evaluated. Each extra question provides the same explicit business definition to a new agent. No confidence intervals or statistical-significance claim is made.}
-\end{figure}
+\Description{Four grouped bar charts. The first two give, for synthetic retail and TPC-H SF1, the percentage of correct answers of ACE, AWM, G-Memory, and MAVRA on held-out questions, non-breaking updates, breaks covered by conditions, and changes the conditions do not cover; dashed outlined segments stacked on the bars show requests for clarification. The last two give tokens per scored question for the same groups.}
+\end{figure*}

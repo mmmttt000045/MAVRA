@@ -9,7 +9,7 @@ import mplstyle
 import style
 
 NAME = "shared-validation"
-W, H = style.COLUMN, 43.0
+W, H = style.COLUMN, 40.0
 POLICIES = [("per-agent", "mPrivate", "v", "--"), ("full-recheck", "mDef", "s", ":"), ("mavra", "mCond", "o", "-")]
 TEXT = {
     "en": {"names": {"per-agent": "Per-agent validation", "full-recheck": "Shared, full recheck", "mavra": "MAVRA"},

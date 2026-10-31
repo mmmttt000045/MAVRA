@@ -15,7 +15,7 @@ from style import INK, MUTED  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 NAME = 'relbench-cumulative'
-W, H = 88.9, 82.0
+W, H = 88.9, 74.0
 DATA = style.ROOT / 'exp/2026-10-20-relbench/paper-sessions.json'
 ARMS = [('none', 'No memory', '无记忆', 'mNoShare', '^'), ('ace', 'ACE', 'ACE', 'mACE', 'v'),
         ('gmemory', 'G-Memory', 'G-Memory', 'mGMem', 'P'), ('awm', 'AWM', 'AWM', 'mAWM', 'X'),
@@ -71,7 +71,7 @@ def draw(lang, data_path=DATA, out_dir=None):
     for label in legend.get_texts():
         if label.get_text().startswith('MAVRA'):
             label.set_weight('bold')
-    fig.subplots_adjust(left=.15, right=.99, bottom=.13, top=.80, hspace=.65)
+    fig.subplots_adjust(left=.15, right=.99, bottom=.115, top=.80, hspace=.65)
     out = Path(out_dir or style.OUT) / (f'{NAME}.pdf' if lang == 'en' else f'{NAME}-zh.pdf')
     mplstyle.save(fig, out)
     print(out)

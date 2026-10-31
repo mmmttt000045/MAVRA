@@ -139,13 +139,23 @@ def main():
                     mac[f'Cs{gtag}{stag}{tag[arm]}Max'] = f"{x['max']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}Wrong'] = f"{x['wrong_pct']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}TokK'] = f"{x['tokens']/1000:.1f}"
+                    mac[f'Cs{gtag}{stag}{tag[arm]}S'] = f"{x['seconds']:.0f}"
             base = {arm: g[gname][scope][arm] for arm in P['arms'] if arm != 'mavra' and arm in g[gname][scope]}
             if base and 'mavra' in g[gname][scope]:
                 m = g[gname][scope]['mavra']
                 best = max(base.values(), key=lambda x: x['accuracy'])
                 cheap = min(base.values(), key=lambda x: x['tokens'])
                 mac[f'Cs{gtag}{stag}Gain'] = f"{m['accuracy'] - best['accuracy']:.1f}"
+                mac[f'Cs{gtag}{stag}BaseWrongMin'] = f"{min(x['wrong_pct'] for x in base.values()):.0f}"
+                mac[f'Cs{gtag}{stag}BaseWrongMax'] = f"{max(x['wrong_pct'] for x in base.values()):.0f}"
+                mac[f'Cs{gtag}{stag}BaseTokMinK'] = f"{cheap['tokens']/1000:.1f}"
+                mac[f'Cs{gtag}{stag}BaseTokMaxK'] = f"{max(x['tokens'] for x in base.values())/1000:.1f}"
+                mac[f'Cs{gtag}{stag}BaseSMax'] = f"{max(x['seconds'] for x in base.values()):.0f}"
                 mac[f'Cs{gtag}{stag}TokSave'] = f"{100 * (1 - m['tokens'] / cheap['tokens']):.0f}"
+    lk = stats['per_change'].get('tpch/latekey', {}).get('mavra')
+    if lk:
+        mac['CsTpchLatekeyClarify'] = str(lk['clarify'])
+        mac['CsTpchLatekeyN'] = str(lk['n'])
     mac['CsRuns'] = str(len(full))
     mac['CsScoredPerRun'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']))
     mac['CsScored'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']) * len(full))

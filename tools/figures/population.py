@@ -16,7 +16,7 @@ import mplstyle  # noqa: E402
 import style  # noqa: E402
 
 NAME = 'population'
-W, H = style.TEXTWIDTH, 52.0
+W, H = style.TEXTWIDTH, 44.0
 DATA = style.ROOT / 'exp/2026-10-12-population/population-stats.json'
 METHODS = [('middle-alone', 'None', '^'), ('metric-private', 'Private', 'D'), ('metric-global-snap', 'Mavra', 'o')]
 CHANGE = [('middle-alone', 'None', '^'), ('metric-private', 'Private', 'D'), ('traj-global', 'Traj', 's'),
@@ -72,7 +72,7 @@ def figure(lang):
     data, _ = load()
     T = TEXT[lang]
     fig = mplstyle.figure(W, H)
-    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.99, top=.86, bottom=.22, wspace=.42))
+    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.99, top=.85, bottom=.255, wspace=.42))
     methods = [m for m in METHODS if m[0] in data]
     linestyles = {'middle-alone': '--', 'metric-private': '-.', 'traj-global': ':', 'metric-global-snap': '-'}
     handles = [

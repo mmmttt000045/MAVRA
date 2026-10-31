@@ -10,23 +10,23 @@ import mplstyle
 import style
 
 NAME = "change-study"
-W, H = style.TEXTWIDTH, 50.0
+W, H = style.TEXTWIDTH, 39.0
 ARMS = ["ace", "awm", "gmemory", "mavra"]
-GROUPS = ["non_breaking", "covered_breaks", "outside_conditions", "all"]
+GROUPS = ["holdout", "non_breaking", "covered_breaks", "outside_conditions"]
 SCHEMAS = ["synthetic", "tpch"]
 HATCHES = dict(zip(ARMS, ["////", r"\\", "xx", "...."]))
 LABEL = {"ace": "ACE", "awm": "AWM", "gmemory": "G-Memory", "mavra": "MAVRA"}
 for key, color in zip(ARMS, ["mACE", "mAWM", "mGMem", "mCond"]):
     style.METHODS[key] = (LABEL[key], LABEL[key], color)
 TAG = {"ace": "Ace", "awm": "Awm", "gmemory": "Gmem", "mavra": "Mavra"}
-GTAG = {"non_breaking": "Benign", "covered_breaks": "Break", "outside_conditions": "Outside", "all": "All"}
+GTAG = {"holdout": "Hold", "non_breaking": "Benign", "covered_breaks": "Break", "outside_conditions": "Outside"}
 STAG = {"synthetic": "Syn", "tpch": "Tpch"}
 TEXT = {
-    "en": {"groups": ["Non-\nbreaking", "Covered\nbreaks", "Outside\nconditions", "All\nsettings"],
+    "en": {"groups": ["Held-\nout", "Non-\nbreaking", "Covered\nbreaks", "Not\ncovered"],
            "panels": ["(a) Accuracy, synthetic retail", "(b) Accuracy, TPC-H SF1", "(c) Tokens, synthetic retail",
                       "(d) Tokens, TPC-H SF1"],
            "y": ["Correct (%)", "Tokens per question (k)"], "flag": "Asked for clarification"},
-    "zh": {"groups": ["正常\n更新", "覆盖\n变化", "条件\n之外", "全部\n情形"],
+    "zh": {"groups": ["留出", "正常\n更新", "覆盖\n变化", "未覆盖"],
            "panels": ["(a) 正确率，合成零售", "(b) 正确率，TPC-H SF1", "(c) token，合成零售", "(d) token，TPC-H SF1"],
            "y": ["正确（%）", "每题 token（千）"], "flag": "请求澄清"},
 }
@@ -48,7 +48,7 @@ def load():
 def figure(lang):
     t, data = TEXT[lang], load()
     fig = mplstyle.figure(W, H)
-    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.055, right=.995, top=.84, bottom=.27, wspace=.30))
+    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.995, top=.86, bottom=.25, wspace=.26))
     handles = [Patch(**mplstyle.bar_style(arm, HATCHES[arm]), label=LABEL[arm]) for arm in ARMS]
     handles.append(Patch(facecolor="white", edgecolor="black", lw=.4, ls=(0, (1.5, 1)), label=t["flag"]))
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(.52, 1.0), ncol=5, handlelength=1.4,
@@ -89,7 +89,7 @@ def figure(lang):
         if k in (0, 2):
             ax.set_ylabel(t["y"][k // 2], fontsize=7)
         box = ax.get_position()
-        fig.text((box.x0 + box.x1) / 2, .02, t["panels"][k], ha="center", va="bottom", fontsize=7.2)
+        fig.text((box.x0 + box.x1) / 2, .005, t["panels"][k], ha="center", va="bottom", fontsize=7.2)
     return fig
 
 
