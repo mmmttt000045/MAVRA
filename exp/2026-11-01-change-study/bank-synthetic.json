@@ -1,0 +1,1144 @@
+{
+  "rule": "Freeze the question bank of each schema from the model-free probe (metric-bench --bank-probe).\n\nRule (fixed before any paid call, independent of every method's output): for the held-out\nphase and for every change, ask the single-month question (P1, September of the held-out\nyear) and the period-difference question (T1, that month minus June of the learning year)\nof every metric that reads a written table; backfill asks the same two forms in the\nlearning year (suffix -B). All eleven generators write rows of the held-out September or\nthe year around it, so these forms see every change. The probe's reference values (v1,\ngold after the business change, reference SQL after the representation change) are kept\nwith the bank for the record.",
+  "phases": {
+    "holdout": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "append": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "backfill": [
+      "M3-P1-B",
+      "M3-T1-B"
+    ],
+    "correct": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "addcol": [
+      "M3-P1",
+      "M3-T1"
+    ],
+    "status": [
+      "M3-P1",
+      "M3-T1"
+    ],
+    "revision": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "dupload": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "dimhist": [
+      "M5-P1",
+      "M5-T1"
+    ],
+    "latekey": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "unit": [
+      "M1-P1",
+      "M3-P1",
+      "M5-P1",
+      "M1-T1",
+      "M3-T1",
+      "M5-T1"
+    ],
+    "mirror": [
+      "M3-P1",
+      "M3-T1"
+    ]
+  },
+  "all_tasks": [
+    "M1-L1",
+    "M1-L2",
+    "M3-L1",
+    "M3-L2",
+    "M5-L1",
+    "M5-L2",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M3-P1-B",
+    "M3-T1-B",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M3-P1",
+    "M3-T1",
+    "M3-P1",
+    "M3-T1",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M5-P1",
+    "M5-T1",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M1-P1",
+    "M3-P1",
+    "M5-P1",
+    "M1-T1",
+    "M3-T1",
+    "M5-T1",
+    "M3-P1",
+    "M3-T1"
+  ],
+  "counts": {
+    "holdout": 6,
+    "append": 6,
+    "backfill": 2,
+    "correct": 6,
+    "addcol": 2,
+    "status": 2,
+    "revision": 6,
+    "dupload": 6,
+    "dimhist": 2,
+    "latekey": 6,
+    "unit": 6,
+    "mirror": 2
+  },
+  "scored": 52,
+  "detail": {
+    "holdout": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "13069651.80",
+        "stale": "13069651.80",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.8079848462374491",
+        "stale": "23.8079848462374491",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "2659254.20",
+        "stale": "2659254.20",
+        "stale_correct": true
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "-12007.70",
+        "stale": "-12007.70",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0018439449797508",
+        "stale": "-0.0018439449797508",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "-1011.50",
+        "stale": "-1011.50",
+        "stale_correct": true
+      }
+    ],
+    "append": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "26139303.60",
+        "stale": "26139303.60",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "11.9039924231187246",
+        "stale": "11.9039924231187246",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "5318508.40",
+        "stale": "5318508.40",
+        "stale_correct": true
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "13057644.10",
+        "stale": "13057644.10",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-11.9058363680984753",
+        "stale": "-11.9058363680984753",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "2658242.70",
+        "stale": "2658242.70",
+        "stale_correct": true
+      }
+    ],
+    "backfill": [
+      {
+        "task": "M3-P1-B",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          }
+        },
+        "v1": "23.8098287912171999",
+        "gold": "29.8818852455225577",
+        "stale": "29.8818852455225577",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1-B",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2000
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0004695860022587",
+        "gold": "-0.0505047561385366",
+        "stale": "-0.0505047561385366",
+        "stale_correct": true
+      }
+    ],
+    "correct": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "13066936.80",
+        "stale": "13066936.80",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.8129315816389347",
+        "stale": "23.8129315816389347",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "2658711.20",
+        "stale": "2658711.20",
+        "stale_correct": true
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "-14722.70",
+        "stale": "-14722.70",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "0.0031027904217348",
+        "stale": "0.0031027904217348",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "-1554.50",
+        "stale": "-1554.50",
+        "stale_correct": true
+      }
+    ],
+    "addcol": [
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.8079848462374491",
+        "stale": "23.8079848462374491",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0018439449797508",
+        "stale": "-0.0018439449797508",
+        "stale_correct": true
+      }
+    ],
+    "status": [
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.8079848462374491",
+        "stale": "23.8079848462374491",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0018439449797508",
+        "stale": "-0.0018439449797508",
+        "stale_correct": true
+      }
+    ],
+    "revision": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "12932888.04",
+        "stale": "12932888.04",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "24.0597514675461460",
+        "stale": "24.0597514675461460",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "2629274.77",
+        "stale": "2629274.77",
+        "stale_correct": true
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "-9803.47",
+        "stale": "-9803.47",
+        "stale_correct": true
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0057277072719518",
+        "stale": "-0.0057277072719518",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "-1693.12",
+        "stale": "-1693.12",
+        "stale_correct": true
+      }
+    ],
+    "dupload": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "13069651.80",
+        "stale": "26139303.60",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.8079848462374491",
+        "stale": "23.8079848462374491",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "2659254.20",
+        "stale": "5318508.40",
+        "stale_correct": false
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "-12007.70",
+        "stale": "13057644.10",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0018439449797508",
+        "stale": "-0.0018439449797508",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "-1011.50",
+        "stale": "2658242.70",
+        "stale_correct": false
+      }
+    ],
+    "dimhist": [
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "2659254.20",
+        "stale": "2659254.20",
+        "stale_correct": true
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "-1011.50",
+        "stale": "-1011.50",
+        "stale_correct": true
+      }
+    ],
+    "latekey": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "26139303.60",
+        "stale": "13069651.80",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "11.9039924231187246",
+        "stale": "23.8079848462374491",
+        "stale_correct": false
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "5318508.40",
+        "stale": "2659254.20",
+        "stale_correct": false
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "13057644.10",
+        "stale": "-12007.70",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-11.9058363680984753",
+        "stale": "-0.0018439449797508",
+        "stale_correct": false
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "2658242.70",
+        "stale": "-1011.50",
+        "stale_correct": false
+      }
+    ],
+    "unit": [
+      {
+        "task": "M1-P1",
+        "metric": "M1",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "13069651.80",
+        "gold": "13069651.80",
+        "stale": "1306965180.00",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.8079848462374491",
+        "stale": "0.23807984846237449111",
+        "stale_correct": false
+      },
+      {
+        "task": "M5-P1",
+        "metric": "M5",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "2659254.20",
+        "gold": "2659254.20",
+        "stale": "265925420.00",
+        "stale_correct": false
+      },
+      {
+        "task": "M1-T1",
+        "metric": "M1",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-12007.70",
+        "gold": "-12007.70",
+        "stale": "1293883520.50",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0018439449797508",
+        "stale": "-23.57174894275482540889",
+        "stale_correct": false
+      },
+      {
+        "task": "M5-T1",
+        "metric": "M5",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-1011.50",
+        "gold": "-1011.50",
+        "stale": "263265154.30",
+        "stale_correct": false
+      }
+    ],
+    "mirror": [
+      {
+        "task": "M3-P1",
+        "metric": "M3",
+        "ask": {
+          "kind": "single",
+          "period": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          }
+        },
+        "v1": "23.8079848462374491",
+        "gold": "23.7996755200471370",
+        "stale": "47.6076603662845861",
+        "stale_correct": false
+      },
+      {
+        "task": "M3-T1",
+        "metric": "M3",
+        "ask": {
+          "a": {
+            "m1": 9,
+            "m2": 9,
+            "year": 2002
+          },
+          "b": {
+            "m1": 6,
+            "m2": 6,
+            "year": 2001
+          },
+          "kind": "diff"
+        },
+        "v1": "-0.0018439449797508",
+        "gold": "-0.0101532711700629",
+        "stale": "-0.0119972161498138",
+        "stale_correct": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,2123 @@
+[
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "2715413679.6185",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "2715413679.6185",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-11118903.6681",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-11118903.6681",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "8",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "448273121.7813",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "448273121.7813",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "794386.0790",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "794386.0790",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "18598",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "1997 年 9 月的订单数是多少？保留两位小数。",
+    "stale": "18598",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "18598"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-314",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "1997 年 9 月的订单数比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-314",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-314"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "5",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "1997 年哪个月的订单数最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "5",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "5"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "1997 年哪个月的订单数比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "1997 年有几个月的订单数高于当年 12 个月订单数的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2839659212.9062",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "2839659212.9062",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469142424.9895",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "469142424.9895",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "19330",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "1997 年 8 月的订单数是多少？保留两位小数。",
+    "stale": "19330",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "19330"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "5430827359.2370",
+    "metric": "M1",
+    "phase": "append",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "5430827359.2370",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "2704294775.9504",
+    "metric": "M1",
+    "phase": "append",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "2704294775.9504",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "append",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "append",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "1",
+    "metric": "M1",
+    "phase": "append",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "896546243.5626",
+    "metric": "M3",
+    "phase": "append",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "896546243.5626",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "449067507.8603",
+    "metric": "M3",
+    "phase": "append",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "449067507.8603",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M3",
+    "phase": "append",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M3",
+    "phase": "append",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "append",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2839659212.9062",
+    "metric": "M1",
+    "phase": "append",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "2839659212.9062",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469142424.9895",
+    "metric": "M3",
+    "phase": "append",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "469142424.9895",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      }
+    },
+    "gold": "37824",
+    "metric": "M5",
+    "phase": "backfill",
+    "question": "1996 年 6 月的订单数是多少？保留两位小数。",
+    "stale": "37824",
+    "stale_correct": true,
+    "task": "M5-P1-B",
+    "v1": "18912"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1995
+      },
+      "kind": "diff"
+    },
+    "gold": "18950",
+    "metric": "M5",
+    "phase": "backfill",
+    "question": "1996 年 6 月的订单数比1995 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "18950",
+    "stale_correct": true,
+    "task": "M5-T1-B",
+    "v1": "38"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1996
+    },
+    "gold": "6",
+    "metric": "M5",
+    "phase": "backfill",
+    "question": "1996 年哪个月的订单数最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "6",
+    "stale_correct": true,
+    "task": "M5-T2-B",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1996
+    },
+    "gold": "6",
+    "metric": "M5",
+    "phase": "backfill",
+    "question": "1996 年哪个月的订单数比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "6",
+    "stale_correct": true,
+    "task": "M5-T3-B",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1996
+    },
+    "gold": "1",
+    "metric": "M5",
+    "phase": "backfill",
+    "question": "1996 年有几个月的订单数高于当年 12 个月订单数的平均值？只回答月份个数（0–12）。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M5-T4-B",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "2715400953.1385",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "2715400953.1385",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-11131630.1481",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-11131630.1481",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "8",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "448271078.4213",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "448271078.4213",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "792342.7190",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "792342.7190",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2839646059.8962",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "2839646059.8962",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469140273.8195",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "469140273.8195",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "18598",
+    "metric": "M5",
+    "phase": "addcol",
+    "question": "1997 年 9 月的订单数是多少？保留两位小数。",
+    "stale": "18598",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "18598"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-314",
+    "metric": "M5",
+    "phase": "addcol",
+    "question": "1997 年 9 月的订单数比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-314",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-314"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "5",
+    "metric": "M5",
+    "phase": "addcol",
+    "question": "1997 年哪个月的订单数最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "5",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "5"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "addcol",
+    "question": "1997 年哪个月的订单数比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "addcol",
+    "question": "1997 年有几个月的订单数高于当年 12 个月订单数的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "19330",
+    "metric": "M5",
+    "phase": "addcol",
+    "question": "1997 年 8 月的订单数是多少？保留两位小数。",
+    "stale": "19330",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "19330"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "18598",
+    "metric": "M5",
+    "phase": "status",
+    "question": "1997 年 9 月的订单数是多少？保留两位小数。",
+    "stale": "18598",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "18598"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-314",
+    "metric": "M5",
+    "phase": "status",
+    "question": "1997 年 9 月的订单数比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-314",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-314"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "5",
+    "metric": "M5",
+    "phase": "status",
+    "question": "1997 年哪个月的订单数最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "5",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "5"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "status",
+    "question": "1997 年哪个月的订单数比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "status",
+    "question": "1997 年有几个月的订单数高于当年 12 个月订单数的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "19330",
+    "metric": "M5",
+    "phase": "status",
+    "question": "1997 年 8 月的订单数是多少？保留两位小数。",
+    "stale": "19330",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "19330"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "2706144662.8886",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "2706144662.8886",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-10552380.6435",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-10552380.6435",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "8",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "446816483.4383",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "446816483.4383",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "1028651.9069",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "1028651.9069",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2829316654.5626",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "2829316654.5626",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "467267216.6959",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "467267216.6959",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "2715413679.6185",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "5430827359.2370",
+    "stale_correct": false,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-11118903.6681",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "2704294775.9504",
+    "stale_correct": false,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "8",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "4",
+    "stale_correct": false,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "448273121.7813",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "896546243.5626",
+    "stale_correct": false,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "794386.0790",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "449067507.8603",
+    "stale_correct": false,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "4",
+    "stale_correct": false,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2839659212.9062",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "5679318425.8124",
+    "stale_correct": false,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469142424.9895",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "938284849.9790",
+    "stale_correct": false,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "448273121.7813",
+    "metric": "M3",
+    "phase": "dimhist",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "448273121.7813",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "794386.0790",
+    "metric": "M3",
+    "phase": "dimhist",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "794386.0790",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "dimhist",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "dimhist",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "dimhist",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469142424.9895",
+    "metric": "M3",
+    "phase": "dimhist",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "469142424.9895",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "5430827359.2370",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "2715413679.6185",
+    "stale_correct": false,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "2704294775.9504",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-11118903.6681",
+    "stale_correct": false,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": false,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": false,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "1",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "896546243.5626",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "448273121.7813",
+    "stale_correct": false,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "449067507.8603",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "794386.0790",
+    "stale_correct": false,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "9",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": false,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2839659212.9062",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "2839659212.9062",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469142424.9895",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "469142424.9895",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "2715413679.6185",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "1997 年 9 月的发货净收入是多少？保留两位小数。",
+    "stale": "271541367961.8500",
+    "stale_correct": false,
+    "task": "M1-P1",
+    "v1": "2715413679.6185"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-11118903.6681",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "1997 年 9 月的发货净收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "268814835378.5634",
+    "stale_correct": false,
+    "task": "M1-T1",
+    "v1": "-11118903.6681"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "8",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "1997 年哪个月的发货净收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "1997 年哪个月的发货净收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "1997 年有几个月的发货净收入高于当年 12 个月发货净收入的平均值？只回答月份个数（0–12）。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "448273121.7813",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "1997 年 9 月的促销商品收入是多少？保留两位小数。",
+    "stale": "44827312178.1300",
+    "stale_correct": false,
+    "task": "M3-P1",
+    "v1": "448273121.7813"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "794386.0790",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "1997 年 9 月的促销商品收入比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "44379833442.4277",
+    "stale_correct": false,
+    "task": "M3-T1",
+    "v1": "794386.0790"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "1997 年哪个月的促销商品收入最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "1997 年哪个月的促销商品收入比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "1997 年有几个月的促销商品收入高于当年 12 个月促销商品收入的平均值？只回答月份个数（0–12）。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M3-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "2839659212.9062",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "1997 年 8 月的发货净收入是多少？保留两位小数。",
+    "stale": "283965921290.6200",
+    "stale_correct": false,
+    "task": "M1-P2",
+    "v1": "2839659212.9062"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "469142424.9895",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "1997 年 8 月的促销商品收入是多少？保留两位小数。",
+    "stale": "46914242498.9500",
+    "stale_correct": false,
+    "task": "M3-P2",
+    "v1": "469142424.9895"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      }
+    },
+    "gold": "18598",
+    "metric": "M5",
+    "phase": "mirror",
+    "question": "1997 年 9 月的订单数是多少？保留两位小数。",
+    "stale": "37196",
+    "stale_correct": false,
+    "task": "M5-P1",
+    "v1": "18598"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 1997
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 1996
+      },
+      "kind": "diff"
+    },
+    "gold": "-314",
+    "metric": "M5",
+    "phase": "mirror",
+    "question": "1997 年 9 月的订单数比1996 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-628",
+    "stale_correct": false,
+    "task": "M5-T1",
+    "v1": "-314"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 1997
+    },
+    "gold": "5",
+    "metric": "M5",
+    "phase": "mirror",
+    "question": "1997 年哪个月的订单数最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "5",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "5"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 1997
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "mirror",
+    "question": "1997 年哪个月的订单数比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 1997
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "mirror",
+    "question": "1997 年有几个月的订单数高于当年 12 个月订单数的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 1997
+      }
+    },
+    "gold": "19330",
+    "metric": "M5",
+    "phase": "mirror",
+    "question": "1997 年 8 月的订单数是多少？保留两位小数。",
+    "stale": "38660",
+    "stale_correct": false,
+    "task": "M5-P2",
+    "v1": "19330"
+  }
+]

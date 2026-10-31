@@ -1071,7 +1071,8 @@ impl Middle {
                     "revoked"
                 } else {
                     crate::timing::measure("repair", self.restricted_repair(ctx, fk, e, &m, b)).await?;
-                    if self.store.get(fk).is_some_and(|x| x.status == Status::Valid) {
+                    if let Some(now) = self.store.get(fk).filter(|x| x.status == Status::Valid) {
+                        self.note_repaired(e, now.revision, &reason);
                         "repaired"
                     } else {
                         "revoked"
@@ -1594,6 +1595,21 @@ impl Middle {
         }
         self.metric_event(json!({"event": "repair_candidate", "key": old.key, "revision": rev, "change": change}));
         self.regress(ctx, fk).await
+    }
+
+    /// 修复通过回归后，把撤销时发给使用者的通知换成修复通知：旧修订失效的原因与可用的新修订。
+    fn note_repaired(&self, old: &Entry, revision: u32, reason: &str) {
+        let revoked = format!("你用过的经验「{}」已撤销", old.key);
+        let text = format!(
+            "你用过的经验「{}」的 r{} 已失效（{reason}），已修复并发布为 r{revision}，条件在当前数据上成立；此前基于 r{} 得到的结果建议复核，现在请用 r{revision}。",
+            old.key, old.revision, old.revision
+        );
+        let mut n = self.notices.lock();
+        for a in &old.consumers {
+            let list = n.entry(a.clone()).or_default();
+            list.retain(|x| !x.starts_with(&revoked));
+            list.push(text.clone());
+        }
     }
 
     /// 日期键修复：时间关联丢行超过基线时，在日期维度的 DATE 列上尝试另一种日期键编码（`date_key_encodings`）。

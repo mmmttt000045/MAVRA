@@ -1668,3 +1668,213 @@ async fn postgres_change_scenarios() -> Result<()> {
     result.context("场景测试超时")??;
     Ok(())
 }
+
+// ───────────────────────── 共享验证随智能体数的扩展（图 5，不调用模型） ─────────────────────────
+
+const SV_PAIRS: usize = 4;
+const SV_DEFS: usize = 16;
+/// 追加行的小票号偏移（远大于夹具里的小票号）
+const SV_OFFSET: i64 = 1_000_000_000;
+
+/// 一个智能体按自己的随机顺序把全部定义各用一次；返回不可用的次数。
+async fn sv_uses(mid: &Middle, keys: &[String], agent: usize, seed: u64) -> Result<usize> {
+    use rand::{seq::SliceRandom, SeedableRng};
+    let mut order = keys.to_vec();
+    order.shuffle(&mut rand::rngs::StdRng::seed_from_u64(seed * 1000 + agent as u64));
+    let ctx = Ctx::new(&format!("R{agent}"), "shared-validation", "use");
+    let mut unavailable = 0;
+    for key in order {
+        if mid.use_metric(&ctx, &key).await?["status"] != "valid" {
+            unavailable += 1;
+        }
+    }
+    Ok(unavailable)
+}
+
+/// 发布 16 个定义（4 个事实表/日期表对，每对 4 个定义，度量为同一净支付额的不同单位换算）并各用一次。
+async fn sv_seed(mid: &Middle, base: &Metric) -> Result<Vec<String>> {
+    let ctx = Ctx::new("admin", "shared-validation", "seed");
+    let ask = Ask::Single { period: Period::month(2001, 3) };
+    let mut keys = vec![];
+    for i in 0..SV_DEFS {
+        let p = i % SV_PAIRS;
+        let mut m = base.clone();
+        m.name = format!("net_paid_unit_{i}");
+        m.definition = m.name.clone();
+        m.fact = format!("sv_fact{p}");
+        m.time.as_mut().expect("M1 有时间定义").dim = format!("sv_date{p}");
+        m.measure = format!("sum(ss_net_paid) * {}", i + 1);
+        let gold = format!(
+            "select ({}) * {}",
+            metricbench::gold_period("M1", &Period::month(2001, 3))
+                .replace("store_sales", &m.fact)
+                .replace("date_dim", &format!("sv_date{p}"))
+                .trim()
+                .trim_end_matches(';'),
+            i + 1
+        );
+        let r = mid.seed_metric(&ctx, m, ask, 2, &gold).await?;
+        ensure!(r["promoted"] == true, "定义未通过发布：{r}");
+        keys.push(r["key"].as_str().unwrap_or_default().to_string());
+    }
+    sv_uses(mid, &keys, 0, 0).await?;
+    Ok(keys)
+}
+
+/// 一次数据更新后，N 个智能体各把 16 个定义用一次，比较三种验证方式的数据库工作：
+/// per-agent（每个智能体各自保留经验与条件结论，机制与 MAVRA 相同，只是不共享）、full-recheck（共享定义，
+/// 依赖表有写入时重跑该定义的全部条件）、mavra（共享定义与条件结论，只重查读到变化表的条件）。
+/// 更新是向每个事实表追加新业务键的行（常见的增量装载），日期表不变；三种方式都合并同时到达的相同检查。
+async fn shared_validation(url: &str, out: &str) -> Result<Value> {
+    use rand::{seq::SliceRandom, SeedableRng};
+    let admin = Db::connect(url, 2, false)?;
+    admin.query(QKind::Meta, &metricbench::fixture(200_000)).await?;
+    etl::setup(&admin).await?;
+    scenario::setup(&admin).await?;
+    for p in 0..SV_PAIRS {
+        admin
+            .query(QKind::Meta, &format!("create table sv_fact{p} as table store_sales; create table sv_date{p} as table date_dim; analyze sv_fact{p}; analyze sv_date{p}"))
+            .await?;
+    }
+    let base = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("缺少 M1")?.1;
+    // SV_QUICK=1：只跑 1 与 4 个智能体、一轮，用来检查流程
+    let quick = std::env::var_os("SV_QUICK").is_some();
+    let agents_axis: Vec<usize> = if quick { vec![1, 4] } else { vec![1, 2, 4, 8, 16, 32] };
+    let mut order = vec![];
+    for rep in 0..(if quick { 1u64 } else { 3 }) {
+        let mut block = vec![];
+        for &n in agents_axis.iter() {
+            for policy in ["per-agent", "full-recheck", "mavra"] {
+                for arrival in ["staggered", "simultaneous"] {
+                    block.push((rep, n, policy, arrival));
+                }
+            }
+        }
+        block.shuffle(&mut rand::rngs::StdRng::seed_from_u64(20261101 + rep));
+        order.extend(block);
+    }
+    std::fs::write(format!("{out}/order.json"), serde_json::to_string_pretty(&order)?)?;
+    let sv_cols: Vec<String> = {
+        let r = admin
+            .query(
+                QKind::Meta,
+                "select column_name from information_schema.columns where table_name = 'store_sales' order by ordinal_position",
+            )
+            .await?;
+        (0..r.rows.len()).filter_map(|i| r.cell(i, 0).map(str::to_string)).collect()
+    };
+    let mut cells = vec![];
+    for (rep, n, policy, arrival) in order {
+        // 每格从同一份数据开始：删掉上一格追加的行
+        for p in 0..SV_PAIRS {
+            admin.execute(&format!("delete from sv_fact{p} where ss_ticket_number >= {SV_OFFSET}")).await?;
+            admin.query(QKind::Meta, &format!("vacuum analyze sv_fact{p}")).await?;
+        }
+        tokio::time::sleep(Duration::from_millis(1200)).await;
+        let db = Arc::new(Db::connect(url, 8, true)?);
+        let cfg = MiddleConfig {
+            name: policy.into(),
+            metric_maint: if policy == "full-recheck" { Maint::Definition } else { Maint::Condition },
+            cond_reuse: policy != "full-recheck",
+            result_cache: false,
+            version_ttl_ms: 0,
+            ..Default::default()
+        };
+        // per-agent：每个智能体一个独立的中间层实例（私有定义与条件结论）；共享方式：所有智能体一个实例
+        let copies = if policy == "per-agent" { n } else { 1 };
+        let mut mids = vec![];
+        let mut keys = vec![];
+        for _ in 0..copies {
+            let mid = Middle::new(db.clone(), cfg.clone()).await?;
+            keys = sv_seed(&mid, &base).await?;
+            mids.push(mid);
+        }
+        // 增量装载：每个事实表追加约 1% 的行，换成新的小票号（新的业务键），日期表不写
+        for p in 0..SV_PAIRS {
+            admin
+                .execute(&format!(
+                    "insert into sv_fact{p} ({cols}) select {sel} from store_sales where ss_ticket_number % 100 = 7",
+                    cols = sv_cols.join(", "),
+                    sel = sv_cols
+                        .iter()
+                        .map(|c| if c == "ss_ticket_number" { format!("{c} + {SV_OFFSET}") } else { c.clone() })
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ))
+                .await?;
+            metricbench::log_batch(&admin, &format!("sv_fact{p}"), "shared-validation append").await?;
+        }
+        admin.query(QKind::Meta, "select pg_stat_force_next_flush()").await?;
+        tokio::time::sleep(Duration::from_millis(1200)).await;
+        for m in &mids {
+            m.invalidate_versions();
+            m.take_metric_events();
+        }
+        let mid_of = |agent: usize| &mids[if copies == 1 { 0 } else { agent }];
+        let before = db.meter.snap();
+        let start = Instant::now();
+        let mut unavailable = 0;
+        if arrival == "simultaneous" {
+            for r in futures::future::join_all((0..n).map(|a| sv_uses(mid_of(a), &keys, a, rep + 1))).await {
+                unavailable += r?;
+            }
+        } else {
+            for a in 0..n {
+                unavailable += sv_uses(mid_of(a), &keys, a, rep + 1).await?;
+            }
+        }
+        let wall = start.elapsed().as_secs_f64();
+        let meter = crate::db::diff(&before, &db.meter.snap());
+        let mut actions: BTreeMap<String, u64> = BTreeMap::new();
+        for m in &mids {
+            for c in m
+                .take_metric_events()
+                .iter()
+                .filter(|e| e["event"] == "maintenance")
+                .flat_map(|e| e["conditions"].as_array().cloned().unwrap_or_default())
+            {
+                *actions.entry(c["action"].as_str().unwrap_or("unknown").into()).or_default() += 1;
+            }
+        }
+        let row = json!({"repeat": rep, "agents": n, "policy": policy, "arrival": arrival, "definitions": SV_DEFS,
+                         "table_pairs": SV_PAIRS, "rows_per_fact": 200_000, "wall_seconds": wall, "db": meter,
+                         "unavailable": unavailable, "condition_actions": actions});
+        eprintln!(
+            "shared-validation r{rep} n{n} {policy} {arrival}: {:.0} ms DB, {} queries, unavailable {unavailable}",
+            row["db"]["db_ms"].as_f64().unwrap_or(0.0),
+            row["db"]["queries"]
+        );
+        std::fs::write(format!("{out}/cell-r{rep}-n{n}-{policy}-{arrival}.json"), serde_json::to_string_pretty(&row)?)?;
+        cells.push(row);
+    }
+    Ok(json!({"cells": cells, "design": "16 definitions on 4 fact/date pairs (sharing factor 4), 200k rows per fact, \
+               append of new business keys to every fact table, date tables unchanged; 1-32 agents each use all 16 \
+               definitions once after the update; three randomized blocks"}))
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
+async fn postgres_shared_validation_scaling() -> Result<()> {
+    let _ = dotenvy::dotenv();
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_sharedval_{}_{stamp}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    let out = format!("results/shared-validation-{stamp}");
+    std::fs::create_dir_all(&out)?;
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let result = tokio::time::timeout(Duration::from_secs(4 * 3600), shared_validation(test_url.as_str(), &out)).await;
+    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
+    let report = match &result {
+        Ok(Ok(r)) => r.clone(),
+        Ok(Err(e)) => json!({"error": format!("{e:#}")}),
+        Err(_) => json!({"error": "timeout"}),
+    };
+    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&json!({"report": report, "cleaned_up": cleanup.is_ok()}))?)?;
+    eprintln!("saved {out}/report.json");
+    cleanup?;
+    result.context("shared-validation timeout")??;
+    Ok(())
+}

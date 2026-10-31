@@ -1,0 +1,2765 @@
+[
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "13069651.80",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "13069651.80",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-12007.70",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-12007.70",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "12",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.8079848462374491",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.8079848462374491",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0018439449797508",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0018439449797508",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "2659254.20",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2659254.20",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-1011.50",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-1011.50",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13537659.70",
+    "metric": "M1",
+    "phase": "holdout",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "13537659.70",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "holdout",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.6954159070788284",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758988.10",
+    "metric": "M5",
+    "phase": "holdout",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2758988.10",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "26139303.60",
+    "metric": "M1",
+    "phase": "append",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "26139303.60",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "13057644.10",
+    "metric": "M1",
+    "phase": "append",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "13057644.10",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "append",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "append",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M1",
+    "phase": "append",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "11.9039924231187246",
+    "metric": "M3",
+    "phase": "append",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "11.9039924231187246",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-11.9058363680984753",
+    "metric": "M3",
+    "phase": "append",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-11.9058363680984753",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "append",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "10",
+    "metric": "M3",
+    "phase": "append",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "10",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "11",
+    "metric": "M3",
+    "phase": "append",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "11",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "5318508.40",
+    "metric": "M5",
+    "phase": "append",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "5318508.40",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "2658242.70",
+    "metric": "M5",
+    "phase": "append",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "2658242.70",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M5",
+    "phase": "append",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M5",
+    "phase": "append",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "9",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M5",
+    "phase": "append",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13537659.70",
+    "metric": "M1",
+    "phase": "append",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "13537659.70",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "append",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.6954159070788284",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758988.10",
+    "metric": "M5",
+    "phase": "append",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2758988.10",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      }
+    },
+    "gold": "29.8818852455225577",
+    "metric": "M3",
+    "phase": "backfill",
+    "question": "2001 年 6 月的门店退货率是多少？保留两位小数。",
+    "stale": "29.8818852455225577",
+    "stale_correct": true,
+    "task": "M3-P1-B",
+    "v1": "23.8098287912171999"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2000
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0505047561385366",
+    "metric": "M3",
+    "phase": "backfill",
+    "question": "2001 年 6 月的门店退货率比2000 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0505047561385366",
+    "stale_correct": true,
+    "task": "M3-T1-B",
+    "v1": "-0.0004695860022587"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2001
+    },
+    "gold": "12",
+    "metric": "M3",
+    "phase": "backfill",
+    "question": "2001 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": true,
+    "task": "M3-T2-B",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2001
+    },
+    "gold": "12",
+    "metric": "M3",
+    "phase": "backfill",
+    "question": "2001 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": true,
+    "task": "M3-T3-B",
+    "v1": "12"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2001
+    },
+    "gold": "6",
+    "metric": "M3",
+    "phase": "backfill",
+    "question": "2001 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "6",
+    "stale_correct": true,
+    "task": "M3-T4-B",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "13066936.80",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "13066936.80",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-14722.70",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-14722.70",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "12",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.8129315816389347",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.8129315816389347",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "0.0031027904217348",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "0.0031027904217348",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "2658711.20",
+    "metric": "M5",
+    "phase": "correct",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2658711.20",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-1554.50",
+    "metric": "M5",
+    "phase": "correct",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-1554.50",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M5",
+    "phase": "correct",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "correct",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "correct",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13534769.70",
+    "metric": "M1",
+    "phase": "correct",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "13534769.70",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.7004754502767786",
+    "metric": "M3",
+    "phase": "correct",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.7004754502767786",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758410.10",
+    "metric": "M5",
+    "phase": "correct",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2758410.10",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.8079848462374491",
+    "metric": "M3",
+    "phase": "addcol",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.8079848462374491",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0018439449797508",
+    "metric": "M3",
+    "phase": "addcol",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0018439449797508",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "addcol",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "addcol",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "addcol",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "addcol",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.6954159070788284",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.8079848462374491",
+    "metric": "M3",
+    "phase": "status",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.8079848462374491",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0018439449797508",
+    "metric": "M3",
+    "phase": "status",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0018439449797508",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "status",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "status",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "status",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "status",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.6954159070788284",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "12932888.04",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "12932888.04",
+    "stale_correct": true,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-9803.47",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-9803.47",
+    "stale_correct": true,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "12",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "24.0597514675461460",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "24.0597514675461460",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0057277072719518",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0057277072719518",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "2629274.77",
+    "metric": "M5",
+    "phase": "revision",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2629274.77",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-1693.12",
+    "metric": "M5",
+    "phase": "revision",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-1693.12",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M5",
+    "phase": "revision",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "revision",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "revision",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13391194.38",
+    "metric": "M1",
+    "phase": "revision",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "13391194.38",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.9545829817160790",
+    "metric": "M3",
+    "phase": "revision",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.9545829817160790",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2727385.99",
+    "metric": "M5",
+    "phase": "revision",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2727385.99",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "13069651.80",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "26139303.60",
+    "stale_correct": false,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-12007.70",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "13057644.10",
+    "stale_correct": false,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "12",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": false,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "4",
+    "stale_correct": false,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.8079848462374491",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.8079848462374491",
+    "stale_correct": true,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0018439449797508",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0018439449797508",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "2659254.20",
+    "metric": "M5",
+    "phase": "dupload",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "5318508.40",
+    "stale_correct": false,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-1011.50",
+    "metric": "M5",
+    "phase": "dupload",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "2658242.70",
+    "stale_correct": false,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M5",
+    "phase": "dupload",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "dupload",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "dupload",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "4",
+    "stale_correct": false,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13537659.70",
+    "metric": "M1",
+    "phase": "dupload",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "27075319.40",
+    "stale_correct": false,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "dupload",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.6954159070788284",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758988.10",
+    "metric": "M5",
+    "phase": "dupload",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "5517976.20",
+    "stale_correct": false,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "2659254.20",
+    "metric": "M5",
+    "phase": "dimhist",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2659254.20",
+    "stale_correct": true,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-1011.50",
+    "metric": "M5",
+    "phase": "dimhist",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-1011.50",
+    "stale_correct": true,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M5",
+    "phase": "dimhist",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "dimhist",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "dimhist",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": true,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758988.10",
+    "metric": "M5",
+    "phase": "dimhist",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2758988.10",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "26139303.60",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "13069651.80",
+    "stale_correct": false,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "13057644.10",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-12007.70",
+    "stale_correct": false,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": false,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": false,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "11.9039924231187246",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.8079848462374491",
+    "stale_correct": false,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-11.9058363680984753",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0018439449797508",
+    "stale_correct": false,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "10",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": false,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "11",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": false,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "5318508.40",
+    "metric": "M5",
+    "phase": "latekey",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2659254.20",
+    "stale_correct": false,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "2658242.70",
+    "metric": "M5",
+    "phase": "latekey",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-1011.50",
+    "stale_correct": false,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M5",
+    "phase": "latekey",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": false,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "9",
+    "metric": "M5",
+    "phase": "latekey",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": false,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M5",
+    "phase": "latekey",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13537659.70",
+    "metric": "M1",
+    "phase": "latekey",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "13537659.70",
+    "stale_correct": true,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "latekey",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "23.6954159070788284",
+    "stale_correct": true,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758988.10",
+    "metric": "M5",
+    "phase": "latekey",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "2758988.10",
+    "stale_correct": true,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "13069651.80",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "2002 年 9 月的门店营业额是多少？保留两位小数。",
+    "stale": "1306965180.00",
+    "stale_correct": false,
+    "task": "M1-P1",
+    "v1": "13069651.80"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-12007.70",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "2002 年 9 月的门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "1293883520.50",
+    "stale_correct": false,
+    "task": "M1-T1",
+    "v1": "-12007.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "12",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "2002 年哪个月的门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "12",
+    "stale_correct": true,
+    "task": "M1-T2",
+    "v1": "12"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "2002 年哪个月的门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M1-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "2002 年有几个月的门店营业额高于当年 12 个月门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M1-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.8079848462374491",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "0.23807984846237449111",
+    "stale_correct": false,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0018439449797508",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-23.57174894275482540889",
+    "stale_correct": false,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "2659254.20",
+    "metric": "M5",
+    "phase": "unit",
+    "question": "2002 年 9 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "265925420.00",
+    "stale_correct": false,
+    "task": "M5-P1",
+    "v1": "2659254.20"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-1011.50",
+    "metric": "M5",
+    "phase": "unit",
+    "question": "2002 年 9 月的电子品类门店营业额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "263265154.30",
+    "stale_correct": false,
+    "task": "M5-T1",
+    "v1": "-1011.50"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M5",
+    "phase": "unit",
+    "question": "2002 年哪个月的电子品类门店营业额最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M5-T2",
+    "v1": "8"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M5",
+    "phase": "unit",
+    "question": "2002 年哪个月的电子品类门店营业额比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "7",
+    "stale_correct": false,
+    "task": "M5-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "7",
+    "metric": "M5",
+    "phase": "unit",
+    "question": "2002 年有几个月的电子品类门店营业额高于当年 12 个月电子品类门店营业额的平均值？只回答月份个数（0–12）。",
+    "stale": "6",
+    "stale_correct": false,
+    "task": "M5-T4",
+    "v1": "7"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "13537659.70",
+    "metric": "M1",
+    "phase": "unit",
+    "question": "2002 年 8 月的门店营业额是多少？保留两位小数。",
+    "stale": "1353765970.00",
+    "stale_correct": false,
+    "task": "M1-P2",
+    "v1": "13537659.70"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6954159070788284",
+    "metric": "M3",
+    "phase": "unit",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "0.23695415907078828403",
+    "stale_correct": false,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "2758988.10",
+    "metric": "M5",
+    "phase": "unit",
+    "question": "2002 年 8 月的电子品类门店营业额是多少？保留两位小数。",
+    "stale": "275898810.00",
+    "stale_correct": false,
+    "task": "M5-P2",
+    "v1": "2758988.10"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      }
+    },
+    "gold": "23.7996755200471370",
+    "metric": "M3",
+    "phase": "mirror",
+    "question": "2002 年 9 月的门店退货率是多少？保留两位小数。",
+    "stale": "47.6076603662845861",
+    "stale_correct": false,
+    "task": "M3-P1",
+    "v1": "23.8079848462374491"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "a": {
+        "m1": 9,
+        "m2": 9,
+        "year": 2002
+      },
+      "b": {
+        "m1": 6,
+        "m2": 6,
+        "year": 2001
+      },
+      "kind": "diff"
+    },
+    "gold": "-0.0101532711700629",
+    "metric": "M3",
+    "phase": "mirror",
+    "question": "2002 年 9 月的门店退货率比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+    "stale": "-0.0119972161498138",
+    "stale_correct": true,
+    "task": "M3-T1",
+    "v1": "-0.0018439449797508"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "rank_month",
+      "year": 2002
+    },
+    "gold": "1",
+    "metric": "M3",
+    "phase": "mirror",
+    "question": "2002 年哪个月的门店退货率最高？只回答月份数字（1–12），并列取最早月份。",
+    "stale": "1",
+    "stale_correct": true,
+    "task": "M3-T2",
+    "v1": "1"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "peak_rise",
+      "year": 2002
+    },
+    "gold": "3",
+    "metric": "M3",
+    "phase": "mirror",
+    "question": "2002 年哪个月的门店退货率比上一个月增加最多？增加量按本月值减上月值计算。只回答月份数字（2–12），并列取最早月份。",
+    "stale": "3",
+    "stale_correct": true,
+    "task": "M3-T3",
+    "v1": "3"
+  },
+  {
+    "answer_changed": false,
+    "ask": {
+      "kind": "above_mean",
+      "year": 2002
+    },
+    "gold": "8",
+    "metric": "M3",
+    "phase": "mirror",
+    "question": "2002 年有几个月的门店退货率高于当年 12 个月门店退货率的平均值？只回答月份个数（0–12）。",
+    "stale": "8",
+    "stale_correct": true,
+    "task": "M3-T4",
+    "v1": "8"
+  },
+  {
+    "answer_changed": true,
+    "ask": {
+      "kind": "single",
+      "period": {
+        "m1": 8,
+        "m2": 8,
+        "year": 2002
+      }
+    },
+    "gold": "23.6868767649699453",
+    "metric": "M3",
+    "phase": "mirror",
+    "question": "2002 年 8 月的门店退货率是多少？保留两位小数。",
+    "stale": "47.3822926720487737",
+    "stale_correct": false,
+    "task": "M3-P2",
+    "v1": "23.6954159070788284"
+  }
+]
