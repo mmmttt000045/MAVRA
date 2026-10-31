@@ -38,10 +38,10 @@ def bank_path(ds, smoke):
     return HERE / (f'bank-{ds}-smoke.json' if smoke else f'bank-{ds}.json')
 
 
-def command(ds, arm, run, out, smoke):
+def command(ds, arm, run, out, smoke, pool=8):
     bank = json.loads(bank_path(ds, smoke).read_text())
     changes = [c for c in P['changes'] if c in bank['phases']]
-    cmd = [str(ROOT / 'target/release/agentdb-mid'), '--pool', '8', '--out', str(out), 'metric-bench',
+    cmd = [str(ROOT / 'target/release/agentdb-mid'), '--pool', str(pool), '--out', str(out), 'metric-bench',
            '--agent', 'openai', '--extractor', 'openai', '--modes', P['modes'][arm], '--metrics', ','.join(P['metrics']),
            '--phrasings', 'named', '--question-set', 'v2', '--bank', str(bank_path(ds, smoke)),
            '--holdout-agents', 'A', '--changes', ','.join(changes), '--repeats', '1', '--first-repeat', str(run),
@@ -76,6 +76,8 @@ def main():
     a.add_argument('--datasets', default=','.join(P['datasets']))
     a.add_argument('--parallel', type=int, default=8)
     a.add_argument('--smoke', action='store_true', help='tiny banks bank-*-smoke.json, separate results directory')
+    a.add_argument('--pool', type=int, default=8, help='database connections per cell (agent SQL runs one at a time)')
+    a.add_argument('--concurrent-runs', action='store_true', help='start all listed runs together instead of one after another')
     a = a.parse_args()
     out = ROOT / (P['results'] + ('-smoke' if a.smoke else ''))
     out.mkdir(parents=True, exist_ok=True)
@@ -118,7 +120,7 @@ def main():
             key = f'{ds}-r{run}-{arm}'
             folder = out / 'cells' / key
             folder.mkdir(parents=True, exist_ok=False)
-            cmd = command(ds, arm, run, folder, a.smoke)
+            cmd = command(ds, arm, run, folder, a.smoke, a.pool)
             rec = {'key': key, 'dataset': ds, 'arm': arm, 'run': run, 'started_utc': utc(), 'command': cmd}
             save(folder / 'launch.json', rec)
             cell_env = {**env, 'FIG6_CELL_KEY': key, 'OPENAI_BASE_URL': f'http://127.0.0.1:19530/arm/{key}'}
@@ -159,15 +161,16 @@ def main():
             print(json.dumps({k: v for k, v in rec.items() if k != 'command'}), flush=True)
             return rec
 
-        for run in [int(x) for x in a.runs.split(',')]:
+        runs = [int(x) for x in a.runs.split(',')]
+        for run in ([runs] if a.concurrent_runs else [[r] for r in runs]):
             if (out / 'budget' / 'STOP').exists():
                 state['stop_reason'] = 'stop requested'
                 break
             if shutil.disk_usage(ROOT).free < 25 * 1024 ** 3:
                 state['stop_reason'] = 'disk reserve'
                 break
-            cells = [(ds, arm, run) for arm in a.arms.split(',') for ds in a.datasets.split(',')
-                     if not (out / 'cells' / f'{ds}-r{run}-{arm}').exists()]
+            cells = [(ds, arm, r) for r in run for arm in a.arms.split(',') for ds in a.datasets.split(',')
+                     if not (out / 'cells' / f'{ds}-r{r}-{arm}').exists()]
             with ThreadPoolExecutor(max_workers=a.parallel) as pool:
                 done = list(pool.map(lambda c: run_cell(*c), cells))
             state['cells'] += done
