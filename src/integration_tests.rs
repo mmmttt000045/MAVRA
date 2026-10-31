@@ -835,7 +835,9 @@ fn expected(c: Change) -> [&'static str; 4] {
         Change::Append | Change::Backfill | Change::Correct | Change::AddColumn | Change::Unit => [V0, V0, V0, V0],
         Change::Status => [V0, V1, V1, V0],
         Change::Revision => [V1, V0, V1, V1],
-        Change::Duplicate | Change::LateKey => [NA, V0, NA, NA],
+        Change::Duplicate => [NA, V0, NA, NA],
+        // 补录批次的日期键换成 yyyymmdd：日期键修复按两种编码关联，三个按销售日的定义发布新修订
+        Change::LateKey => [V1, V0, V1, V1],
         Change::DimHistory => [V0, V0, V0, V1],
         Change::Mirror => [V0, V1, V1, V0],
         // 未优化的定义不依赖日期键连续：各条件都成立
