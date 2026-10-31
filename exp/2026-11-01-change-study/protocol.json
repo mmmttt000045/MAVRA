@@ -2,7 +2,7 @@
   "study": "change-study-20261101",
   "question": "Do maintained shared definitions keep agents correct after data changes, and at what cost, compared with published agent memories?",
   "authorization": "User 2026-10-31: redo the Fig. 6 experiment on the DeepSeek official API, about CNY 40.",
-  "budget_cny": 40.0,
+  "budget_cny": 39.4,
   "local_token": "change-study-20261101-local",
   "model": "deepseek-flash",
   "reasoning_effort": "low",
@@ -80,5 +80,6 @@
   "scoring": "An answer is correct when it equals the reference answer at the question's precision. Clarification requests and errors count as not correct and are reported separately (correct / clarification / wrong).",
   "aggregation": "Primary: answers pooled per group (micro accuracy), per schema and over both schemas, mean over runs with the range over runs. Per-change and per-run tables are kept in full. Tokens per question include online memory updates and MAVRA's learning-time extraction and optimization charged to the run.",
   "pilot": "Run 1 is the pilot. If a defect is found in any method's harness, the run is stopped, the defect fixed, and the affected cells rerun; the earlier cells stay in the development record with their cost.",
-  "reporting": "All completed runs are reported; no run is selected by outcome."
+  "reporting": "All completed runs are reported; no run is selected by outcome.",
+  "budget_note": "Total authorization about CNY 40; the smoke test spent CNY 0.52 under its own ledger (results/change-study-20261101-smoke/budget), so the formal cap is 39.4."
 }

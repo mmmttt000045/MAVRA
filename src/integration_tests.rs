@@ -1769,7 +1769,13 @@ async fn shared_validation(url: &str, out: &str) -> Result<Value> {
     for (rep, n, policy, arrival) in order {
         // 每格从同一份数据开始：删掉上一格追加的行
         for p in 0..SV_PAIRS {
-            admin.execute(&format!("delete from sv_fact{p} where ss_ticket_number >= {SV_OFFSET}")).await?;
+            // 写入与统计刷新在同一连接、同一批语句里，计数不会在测量期间才到达
+            admin
+                .query(
+                    QKind::Meta,
+                    &format!("delete from sv_fact{p} where ss_ticket_number >= {SV_OFFSET}; select pg_stat_force_next_flush()"),
+                )
+                .await?;
             admin.query(QKind::Meta, &format!("vacuum analyze sv_fact{p}")).await?;
         }
         tokio::time::sleep(Duration::from_millis(1200)).await;
@@ -1794,15 +1800,19 @@ async fn shared_validation(url: &str, out: &str) -> Result<Value> {
         // 增量装载：每个事实表追加约 1% 的行，换成新的小票号（新的业务键），日期表不写
         for p in 0..SV_PAIRS {
             admin
-                .execute(&format!(
-                    "insert into sv_fact{p} ({cols}) select {sel} from store_sales where ss_ticket_number % 100 = 7",
-                    cols = sv_cols.join(", "),
-                    sel = sv_cols
-                        .iter()
-                        .map(|c| if c == "ss_ticket_number" { format!("{c} + {SV_OFFSET}") } else { c.clone() })
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                ))
+                .query(
+                    QKind::Meta,
+                    &format!(
+                        "insert into sv_fact{p} ({cols}) select {sel} from store_sales where ss_ticket_number % 100 = 7; \
+                     select pg_stat_force_next_flush()",
+                        cols = sv_cols.join(", "),
+                        sel = sv_cols
+                            .iter()
+                            .map(|c| if c == "ss_ticket_number" { format!("{c} + {SV_OFFSET}") } else { c.clone() })
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ),
+                )
                 .await?;
             metricbench::log_batch(&admin, &format!("sv_fact{p}"), "shared-validation append").await?;
         }

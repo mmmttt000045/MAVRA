@@ -1988,6 +1988,11 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
         if let Some(bank) = BANK.get() {
             let missing: Vec<&String> = bank.values().flatten().filter(|id| !tasks.iter().any(|t| &&t.id == id)).collect();
             ensure!(missing.is_empty(), "题单中的题号不在题库里：{missing:?}");
+            let empty: Vec<&str> = std::iter::once("holdout")
+                .chain(changes.iter().map(|c| c.name()))
+                .filter(|ph| bank.get(*ph).is_none_or(|v| v.is_empty()))
+                .collect();
+            ensure!(empty.is_empty(), "题单没有给这些阶段出题：{empty:?}");
         }
         let env = Env {
             o: &o,

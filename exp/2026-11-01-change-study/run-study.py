@@ -9,6 +9,7 @@ run 1 doubles as the pilot. Every cell, completed or not, stays in the results.
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -70,7 +71,7 @@ def wait_health(port, proc):
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('--key-file', required=True)
-    a.add_argument('--runs', default='1,2,3')
+    a.add_argument('--runs', default='1')
     a.add_argument('--arms', default=','.join(P['arms']))
     a.add_argument('--datasets', default=','.join(P['datasets']))
     a.add_argument('--parallel', type=int, default=8)
@@ -80,6 +81,14 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     state_path = out / 'execution-state.json'
     state = json.loads(state_path.read_text()) if state_path.exists() else {'cells': []}
+    # the binary and sources must be the committed ones: no tracked change in the working copy
+    dirty = subprocess.run(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT, capture_output=True, text=True).stdout
+    if dirty.strip():
+        raise SystemExit(f'tracked files modified; commit or stash first:\n{dirty}')
+    head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    binary = hashlib.sha256((ROOT / 'target/release/agentdb-mid').read_bytes()).hexdigest()
+    state.setdefault('launches', []).append({'utc': utc(), 'head': head, 'binary_sha256': binary, 'runs': a.runs, 'arms': a.arms,
+                                             'datasets': a.datasets, 'parallel': a.parallel})
     state.update(status='starting', started_utc=utc())
     save(state_path, state)
     db_url = next(line.split('=', 1)[1].strip().strip('"\'') for line in (ROOT / '.env').read_text().splitlines()
@@ -124,18 +133,29 @@ def main():
                 rows = report['cells'][0]['records'] if report.get('cells') else []
                 rec['tasks'] = len(rows)
                 rec['report'] = str(reports[0].relative_to(ROOT))
+                bank = json.loads(bank_path(ds, a.smoke).read_text())
+                expected = [('learn', t) for t in bank['all_tasks'][:len(P['metrics']) * 2]]
+                expected += [(ph, t) for ph, ts in bank['phases'].items() for t in ts]
+                asked = [(r['phase'], r['task']) for r in rows]
+                if sorted(asked) != sorted(expected):
+                    rec.update(completed=False, bank_mismatch=True)
+                if report.get('database_cleaned_up') is not True:
+                    rec.update(completed=False, database_not_cleaned=True)
                 infra = [r['error'] for r in rows if r.get('error') and any(
                     x in r['error'].lower() for x in ['http 402', 'http 5', 'error sending request', 'connection', 'timed out'])]
                 if infra:
                     rec.update(completed=False, infrastructure_errors=infra[:5])
-            rec['finished_utc'] = utc()
-            save(folder / 'completion.json', rec)
+            denied = out / 'budget' / 'denied-requests.jsonl'
+            if denied.exists() and any(json.loads(x)['arm'] == key for x in denied.read_text().splitlines() if x):
+                rec.update(completed=False, budget_or_configuration_denial=True)
             try:
-                data = json.dumps({'op': 'close', 'key': key, 'arm': 'mavra' if arm == 'mavra' else arm}).encode()
+                data = json.dumps({'op': 'close', 'key': key, 'arm': arm}).encode()
                 urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:19531/memory', data=data,
                                                               headers={'Content-Type': 'application/json'}), timeout=45).read()
             except Exception as e:
                 rec['memory_close_error'] = type(e).__name__
+            rec['finished_utc'] = utc()
+            save(folder / 'completion.json', rec)
             print(json.dumps({k: v for k, v in rec.items() if k != 'command'}), flush=True)
             return rec
 
@@ -155,6 +175,10 @@ def main():
             budget = json.loads((out / 'budget' / 'budget-state.json').read_text())
             if budget.get('status') == 'budget_limit':
                 state['stop_reason'] = 'budget limit'
+                break
+            # pilot rule: a run with any incomplete cell stops the queue for inspection
+            if not all(c['completed'] for c in done):
+                state['stop_reason'] = f'incomplete cell in run {run}'
                 break
         state.update(status='finished', finished_utc=utc())
         save(state_path, state)

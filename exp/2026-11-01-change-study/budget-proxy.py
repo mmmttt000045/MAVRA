@@ -66,15 +66,22 @@ class Budget:
         self.save()
 
     def balance(self, force=False):
+        """Account balance, refreshed at most every 15 s. A failed refresh keeps the last known value
+        (the conservative charge ledger still bounds spending); only the very first read must succeed."""
         at, value = self.balance_at
         if not force and value is not None and time.monotonic() - at < 15:
             return value
-        r = self.http.get('https://api.deepseek.com/user/balance', headers=self.headers, timeout=20)
-        r.raise_for_status()
-        values = [float(x['total_balance']) for x in r.json()['balance_infos'] if x['currency'] == 'CNY']
-        if not values:
-            raise RuntimeError('CNY balance unavailable')
-        self.balance_at = (time.monotonic(), sum(values))
+        try:
+            r = self.http.get('https://api.deepseek.com/user/balance', headers=self.headers, timeout=20)
+            r.raise_for_status()
+            values = [float(x['total_balance']) for x in r.json()['balance_infos'] if x['currency'] == 'CNY']
+            if not values:
+                raise RuntimeError('CNY balance unavailable')
+            self.balance_at = (time.monotonic(), sum(values))
+        except Exception:
+            if value is None:
+                raise
+            self.balance_at = (time.monotonic(), value)
         return self.balance_at[1]
 
     def save(self):
@@ -85,11 +92,12 @@ class Budget:
         tmp.replace(self.path)
 
     def acquire(self, body):
+        self.balance()  # refresh outside the lock; the locked read below uses the cached value
         with self.lock:
             if (self.dir / 'STOP').exists():
                 raise RuntimeError('study stop requested')
             need = reservation(body, rates())
-            bal = self.balance()
+            bal = self.balance_at[1]
             spent = max(0.0, self.state['initial_balance_cny'] - bal)
             self.state['observed_decrease_cny'] = spent
             if max(spent, self.state['charged_cny']) + self.reserved + need > self.cap or bal < self.reserved + need:
