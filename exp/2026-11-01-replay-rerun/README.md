@@ -30,3 +30,15 @@ python3 exp/2026-11-01-replay-rerun/analyse.py <dir>
 
 `analyse.py` writes `replay-policies.json` (table, per-change counts, and every MAVRA
 outcome that differs from the archived run) and `overleaf/gen/replay-policies.tex`.
+
+## Result (2026-11-01, binary 67e2fc83 at 96da0bc; reports in `rerun-reports.tgz`)
+
+1,641 common instances. MAVRA: non-breaking 534/0/0, covered breaks 600/3/237, not covered
+89/115/63 (correct/wrong/refused). Compared with the archived condition-policy run, the
+only differences are latekey instances on TPC-DS (135) and SSB (33) moving from refused to
+correct through the date-key repair; TPC-H and BIRD financial store late batches with NULL
+dates, which no encoding can repair, and are unchanged. Other policies (archived):
+invalidate on every write 0/0/534, 0/0/840, 0/0/267; schema check 534/0/0, 204/636/0,
+110/157/0; table tests 534/0/0, 0/0/840, 89/115/63. The SSB and TPC-DS runs spent most of
+their time in repeated failed or ambiguous grain-repair searches (one per definition on
+6–12M-row facts); caching failed searches per table version would remove that cost.

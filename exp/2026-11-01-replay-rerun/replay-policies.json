@@ -1,0 +1,751 @@
+{
+  "table": {
+    "revoke": {
+      "Benign": {
+        "R": 534,
+        "n": 534
+      },
+      "Break": {
+        "R": 840,
+        "n": 840
+      },
+      "Outside": {
+        "R": 267,
+        "n": 267
+      }
+    },
+    "schema": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "W": 636,
+        "n": 840,
+        "C": 204
+      },
+      "Outside": {
+        "W": 157,
+        "n": 267,
+        "C": 110
+      }
+    },
+    "tabletest": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "R": 840,
+        "n": 840
+      },
+      "Outside": {
+        "R": 63,
+        "n": 267,
+        "W": 115,
+        "C": 89
+      }
+    },
+    "condition": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "C": 600,
+        "n": 840,
+        "R": 237,
+        "W": 3
+      },
+      "Outside": {
+        "R": 63,
+        "n": 267,
+        "W": 115,
+        "C": 89
+      }
+    }
+  },
+  "per_change": {
+    "tpcds/dimhist": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 91,
+        "C": 44
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/append": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "C": 135
+      },
+      "tabletest": {
+        "C": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/dupload": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 122,
+        "C": 13
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "R": 135
+      }
+    },
+    "tpcds/correct": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "C": 135
+      },
+      "tabletest": {
+        "C": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/mirror": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    },
+    "tpcds/revision": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 90,
+        "C": 45
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/unit": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 72,
+        "C": 63
+      },
+      "tabletest": {
+        "W": 72,
+        "C": 63
+      },
+      "condition": {
+        "W": 72,
+        "C": 63
+      }
+    },
+    "tpcds/latekey": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 122,
+        "C": 13
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/status": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/backfill": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/addcol": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpch/addcol": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 15
+      },
+      "tabletest": {
+        "C": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/revision": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 18,
+        "C": 9
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/correct": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 27
+      },
+      "tabletest": {
+        "C": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/unit": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 11,
+        "C": 16
+      },
+      "tabletest": {
+        "W": 11,
+        "C": 16
+      },
+      "condition": {
+        "W": 11,
+        "C": 16
+      }
+    },
+    "tpch/dupload": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 18,
+        "C": 9
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "R": 27
+      }
+    },
+    "tpch/mirror": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "W": 10,
+        "C": 5
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "R": 15
+      }
+    },
+    "tpch/append": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 27
+      },
+      "tabletest": {
+        "C": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/backfill": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 15
+      },
+      "tabletest": {
+        "C": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/latekey": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 24,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "R": 24,
+        "W": 3
+      }
+    },
+    "tpch/dimhist": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 4,
+        "W": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "tpch/status": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "W": 10,
+        "C": 5
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "ssb/status": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 11,
+        "W": 22
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/append": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/mirror": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 22,
+        "C": 11
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "R": 33
+      }
+    },
+    "ssb/revision": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 21,
+        "C": 12
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/addcol": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/backfill": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/unit": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 29,
+        "C": 4
+      },
+      "tabletest": {
+        "W": 29,
+        "C": 4
+      },
+      "condition": {
+        "W": 29,
+        "C": 4
+      }
+    },
+    "ssb/dupload": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 30,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "R": 33
+      }
+    },
+    "ssb/correct": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/latekey": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 31,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/dimhist": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 9,
+        "W": 6
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "financial/dimhist": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 3,
+        "C": 6
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/mirror": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 4,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "R": 6
+      }
+    },
+    "financial/status": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 2,
+        "W": 4
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/unit": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 6,
+        "W": 3
+      },
+      "tabletest": {
+        "C": 6,
+        "W": 3
+      },
+      "condition": {
+        "C": 6,
+        "W": 3
+      }
+    },
+    "financial/dupload": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 5,
+        "C": 4
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    },
+    "financial/append": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/correct": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/addcol": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 6
+      },
+      "tabletest": {
+        "C": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/revision": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 3,
+        "W": 6
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/backfill": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 6
+      },
+      "tabletest": {
+        "C": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/latekey": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 4,
+        "W": 5
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    }
+  },
+  "audit": {
+    "tpcds": {
+      "common": 981,
+      "mavra_class_changes": {
+        "latekey: unavailable_needed -> correct": 122,
+        "latekey: unavailable_unneeded -> correct": 13
+      },
+      "new_report": "results/replay-rerun-20261101/tpcds/replay-1793476805870139/report.json"
+    },
+    "tpch": {
+      "common": 228,
+      "mavra_class_changes": {},
+      "new_report": "results/replay-rerun-20261101/tpch/replay-1793462054466983/report.json"
+    },
+    "ssb": {
+      "common": 345,
+      "mavra_class_changes": {
+        "latekey: unavailable_needed -> correct": 31,
+        "latekey: unavailable_unneeded -> correct": 2
+      },
+      "new_report": "results/replay-rerun-20261101/ssb/replay-1793466521224174/report.json"
+    },
+    "financial": {
+      "common": 87,
+      "mavra_class_changes": {},
+      "new_report": "results/replay-rerun-20261101/financial/replay-1793476805862418/report.json"
+    }
+  }
+}
