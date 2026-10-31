@@ -51,7 +51,32 @@ larger bank, and runs every cell fresh with the same binary.
   rule, per-cell completion checks (bank match, denied requests, database cleanup),
   provenance (HEAD, binary sha256), balance-check fallback, empty-phase guard.
 - Run 1 (pilot, 8 cells): complete, CNY 9.02, no API errors; no harness defect found, so
-  run 1 is part of the study. Runs 2–3: see `summary.md`.
+  run 1 is part of the study. Runs 2–3 ran concurrently: all 16 cells complete.
+- Total: 24 cells, 1,104 scored answers and 144 learning tasks, 7,889 official API calls,
+  CNY 27.53 charged (account decrease 27.50) plus 0.52 for the smoke test; 0 API errors.
+  Raw reports, completion records and the usage ledger: `raw-results.tgz`.
+
+## Results (three runs; pooled over both schemas, mean and run range)
+
+| Group | MAVRA | ACE | G-Memory | AWM |
+|---|---:|---:|---:|---:|
+| Held-out (unchanged data) | 100.0 | 100.0 | 86.1 | 83.3 |
+| Non-breaking updates | 100.0 | 95.2 | 67.9 | 69.0 |
+| Covered breaks | 87.7 [87–89] | 66.7 | 57.0 | 49.1 |
+| Not covered (unit, backup copy) | 26.2 | 71.4 | 52.4 | 40.5 |
+
+- Covered breaks, synthetic retail: MAVRA 97.0% (latekey 18/18 through the date-key repair,
+  dupload 16/18); baselines 40.9–68.2%. TPC-H: MAVRA 75.0% plus 12/12 clarification
+  requests on the late batch whose ship dates are NULL (no method can reach the reference);
+  G-Memory 75.0%, ACE 64.6%, AWM 60.4%. MAVRA's wrong answers on covered breaks: 1.8%
+  (baselines 33–51%).
+- MAVRA uses the fewest tokens in every group of both schemas (17.8k per question overall,
+  baselines 32.9–47.2k).
+- Weaknesses kept in the paper: on changes the conditions do not cover, MAVRA serves the
+  still-valid definition while recomputing agents adapt to the binary feedback; on TPC-H
+  breaks the repair search over 6M line items makes MAVRA's sessions slower (124 s vs at
+  most 23 s per question).
+- Per-change counts for every method and run: `summary.md`, `study-stats.json`.
 - Binary for all runs: sha256 `67e2fc83b7a5…` built at `96da0bc`.
 
 ## Reproduce the aggregation
