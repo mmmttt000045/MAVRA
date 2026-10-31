@@ -9,7 +9,7 @@ import mplstyle
 import style
 
 NAME = "shared-validation"
-W, H = style.COLUMN, 46.0
+W, H = style.COLUMN, 43.0
 POLICIES = [("per-agent", "mPrivate", "v", "--"), ("full-recheck", "mDef", "s", ":"), ("mavra", "mCond", "o", "-")]
 TEXT = {
     "en": {"names": {"per-agent": "Per-agent validation", "full-recheck": "Shared, full recheck", "mavra": "MAVRA"},
@@ -33,9 +33,11 @@ def load():
 
 def figure(lang):
     t, data = TEXT[lang], load()
+    lo = min(g["db_s"]["min"] for g in data["groups"])
+    hi = max(g["db_s"]["max"] for g in data["groups"])
     fig = mplstyle.figure(W, H)
     axes = fig.subplots(1, 2, sharey=True)
-    fig.subplots_adjust(left=.14, right=.98, top=.78, bottom=.25, wspace=.12)
+    fig.subplots_adjust(left=.13, right=.98, top=.77, bottom=.24, wspace=.10)
     for col, arrival in enumerate(["staggered", "simultaneous"]):
         ax = axes[col]
         for policy, color, marker, line in POLICIES:
@@ -48,6 +50,9 @@ def figure(lang):
         ax.set_xscale("log", base=2)
         ax.set_yscale("log")
         ax.set_xticks(data["agents"], [str(n) for n in data["agents"]])
+        ticks = [v for v in (1, 3, 10, 30, 100, 300, 1000) if lo / 1.5 <= v <= hi * 1.5]
+        ax.set_yticks(ticks, [str(v) for v in ticks])
+        ax.set_ylim(lo / 1.4, hi * 1.4)
         ax.minorticks_off()
         ax.tick_params(labelsize=6.5)
         ax.grid(axis="y", which="major")

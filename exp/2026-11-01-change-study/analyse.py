@@ -42,6 +42,7 @@ def summarize(rows):
     n = len(rows)
     out = {k: sum(r['outcome'] == k for r in rows) for k in ('correct', 'clarify', 'wrong', 'error')}
     out.update(n=n, accuracy=100 * out['correct'] / n if n else None, wrong_pct=100 * out['wrong'] / n if n else None,
+               clarify_pct=100 * out['clarify'] / n if n else None,
                tokens=mean(tokens(r) for r in rows) if n else None,
                seconds=mean((r.get('run') or {}).get('seconds') or 0 for r in rows) if n else None,
                calls=mean((r.get('run') or {}).get('steps') or 0 for r in rows) if n else None)
@@ -87,6 +88,7 @@ def main():
                 stats['groups'][g][scope][arm] = {
                     'accuracy': mean(acc), 'min': min(acc), 'max': max(acc), 'per_run': acc,
                     'wrong_pct': mean(x['wrong_pct'] for x in per_run), 'clarify': sum(x['clarify'] for x in per_run),
+                    'clarify_pct': mean(x['clarify_pct'] for x in per_run),
                     'n_per_run': per_run[0]['n'], 'tokens': mean(x['tokens'] for x in per_run),
                     'seconds': mean(x['seconds'] for x in per_run), 'calls': mean(x['calls'] for x in per_run)}
     for ds in P['datasets']:
