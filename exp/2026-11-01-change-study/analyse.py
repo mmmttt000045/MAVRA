@@ -156,6 +156,12 @@ def main():
     if lk:
         mac['CsTpchLatekeyClarify'] = str(lk['clarify'])
         mac['CsTpchLatekeyN'] = str(lk['n'])
+    # the text claims MAVRA uses the fewest tokens in every group of every schema: check it
+    fewest = all(g[gn][sc]['mavra']['tokens'] <= min(g[gn][sc][a]['tokens'] for a in P['arms'] if a != 'mavra')
+                 for gn in GROUPS for sc in [*P['datasets'], 'both'])
+    stats['mavra_fewest_tokens_every_group'] = fewest
+    (HERE / 'study-stats.json').write_text(json.dumps(stats, indent=2, ensure_ascii=False) + '\n')
+    print('MAVRA fewest tokens in every group:', fewest)
     mac['CsRuns'] = str(len(full))
     mac['CsScoredPerRun'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']))
     mac['CsScored'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']) * len(full))
