@@ -120,6 +120,8 @@ def figure(lang):
         ax.errorbar([x], [y], xerr=[[x - c['tok']['min']], [c['tok']['max'] - x]],
                     yerr=[[y - c['acc']['min']], [c['acc']['max'] - y]], color=color, marker=marker,
                     mfc='white', mew=.7, ms=4, elinewidth=.5, capsize=1.4, capthick=.5, zorder=3)
+        ax.annotate(f'{y:.0f}%', (x, y), xytext=(4, -1 if y < 97 else -6), textcoords='offset points',
+                    fontsize=6, color=color, ha='left', va='top' if y >= 97 else 'center')
     ax.set_xscale('log')
     ax.set_xlim(5, 150)
     ax.set_xticks([5, 10, 20, 50, 100])

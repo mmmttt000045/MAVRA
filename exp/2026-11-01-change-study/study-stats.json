@@ -1,0 +1,3820 @@
+{
+  "complete_runs": [
+    1,
+    2,
+    3
+  ],
+  "problems": [],
+  "per_cell": {
+    "synthetic-r1-ace": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 16492.166666666668,
+          "seconds": 4.965415898833333,
+          "calls": 2.3333333333333335
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 27149.4375,
+          "seconds": 12.30167302825,
+          "calls": 3.375
+        },
+        "covered_breaks": {
+          "correct": 17,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 22,
+          "accuracy": 77.27272727272727,
+          "wrong_pct": 22.727272727272727,
+          "clarify_pct": 0.0,
+          "tokens": 41886.22727272727,
+          "seconds": 20.0851062455,
+          "calls": 4.090909090909091
+        },
+        "outside_conditions": {
+          "correct": 7,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 8,
+          "accuracy": 87.5,
+          "wrong_pct": 12.5,
+          "clarify_pct": 0.0,
+          "tokens": 48080.375,
+          "seconds": 26.381316914625,
+          "calls": 4.75
+        },
+        "all": {
+          "correct": 46,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 52,
+          "accuracy": 88.46153846153847,
+          "wrong_pct": 11.538461538461538,
+          "clarify_pct": 0.0,
+          "tokens": 35374.692307692305,
+          "seconds": 16.91427185698077,
+          "calls": 3.769230769230769
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 25268.166666666668,
+        "seconds": 9.980981627,
+        "calls": 4.166666666666667
+      }
+    },
+    "synthetic-r1-awm": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 30071.666666666668,
+          "seconds": 18.9753557055,
+          "calls": 4.333333333333333
+        },
+        "non_breaking": {
+          "correct": 7,
+          "clarify": 0,
+          "wrong": 9,
+          "error": 0,
+          "n": 16,
+          "accuracy": 43.75,
+          "wrong_pct": 56.25,
+          "clarify_pct": 0.0,
+          "tokens": 49879.625,
+          "seconds": 29.3348489246875,
+          "calls": 6.3125
+        },
+        "covered_breaks": {
+          "correct": 10,
+          "clarify": 0,
+          "wrong": 12,
+          "error": 0,
+          "n": 22,
+          "accuracy": 45.45454545454545,
+          "wrong_pct": 54.54545454545455,
+          "clarify_pct": 0.0,
+          "tokens": 52298.181818181816,
+          "seconds": 40.93795287281818,
+          "calls": 6.090909090909091
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 8,
+          "accuracy": 25.0,
+          "wrong_pct": 75.0,
+          "clarify_pct": 0.0,
+          "tokens": 96934.625,
+          "seconds": 78.37224038025,
+          "calls": 8.125
+        },
+        "all": {
+          "correct": 23,
+          "clarify": 0,
+          "wrong": 29,
+          "error": 0,
+          "n": 52,
+          "accuracy": 44.23076923076923,
+          "wrong_pct": 55.76923076923077,
+          "clarify_pct": 0.0,
+          "tokens": 55856.557692307695,
+          "seconds": 40.59274237061538,
+          "calls": 6.269230769230769
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 16542,
+        "seconds": 7.318084812666667,
+        "calls": 3.8333333333333335
+      }
+    },
+    "synthetic-r1-gmemory": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 30993.333333333332,
+          "seconds": 10.36606759,
+          "calls": 4
+        },
+        "non_breaking": {
+          "correct": 5,
+          "clarify": 0,
+          "wrong": 11,
+          "error": 0,
+          "n": 16,
+          "accuracy": 31.25,
+          "wrong_pct": 68.75,
+          "clarify_pct": 0.0,
+          "tokens": 73922.9375,
+          "seconds": 38.103581634125,
+          "calls": 7.125
+        },
+        "covered_breaks": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 11,
+          "error": 0,
+          "n": 22,
+          "accuracy": 50.0,
+          "wrong_pct": 50.0,
+          "clarify_pct": 0.0,
+          "tokens": 71295.63636363637,
+          "seconds": 41.22671795827273,
+          "calls": 5.954545454545454
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 8,
+          "accuracy": 25.0,
+          "wrong_pct": 75.0,
+          "clarify_pct": 0.0,
+          "tokens": 103787.625,
+          "seconds": 53.278697857,
+          "calls": 8.375
+        },
+        "all": {
+          "correct": 22,
+          "clarify": 0,
+          "wrong": 30,
+          "error": 0,
+          "n": 52,
+          "accuracy": 42.30769230769231,
+          "wrong_pct": 57.69230769230769,
+          "clarify_pct": 0.0,
+          "tokens": 72452.53846153847,
+          "seconds": 38.55905941584616,
+          "calls": 6.461538461538462
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 14683.333333333334,
+        "seconds": 4.912652510333333,
+        "calls": 2.8333333333333335
+      }
+    },
+    "synthetic-r1-mavra": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 13694.5,
+          "seconds": 4.970287841166667,
+          "calls": 3.1666666666666665
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 12184,
+          "seconds": 5.7469378441875,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 21,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 22,
+          "accuracy": 95.45454545454545,
+          "wrong_pct": 4.545454545454546,
+          "clarify_pct": 0.0,
+          "tokens": 20268.772727272728,
+          "seconds": 17.66763746090909,
+          "calls": 3.9545454545454546
+        },
+        "outside_conditions": {
+          "correct": 0,
+          "clarify": 0,
+          "wrong": 8,
+          "error": 0,
+          "n": 8,
+          "accuracy": 0.0,
+          "wrong_pct": 100.0,
+          "clarify_pct": 0.0,
+          "tokens": 43370.5,
+          "seconds": 31.665652526875,
+          "calls": 5.625
+        },
+        "all": {
+          "correct": 43,
+          "clarify": 0,
+          "wrong": 9,
+          "error": 0,
+          "n": 52,
+          "accuracy": 82.6923076923077,
+          "wrong_pct": 17.307692307692307,
+          "clarify_pct": 0.0,
+          "tokens": 20576.69230769231,
+          "seconds": 14.688191863634616,
+          "calls": 3.826923076923077
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 17015.166666666668,
+        "seconds": 7.734224212,
+        "calls": 4.333333333333333
+      }
+    },
+    "synthetic-r2-ace": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14538,
+          "seconds": 3.717295909,
+          "calls": 2.1666666666666665
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 23481.1875,
+          "seconds": 10.3478260203125,
+          "calls": 3.125
+        },
+        "covered_breaks": {
+          "correct": 15,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 22,
+          "accuracy": 68.18181818181819,
+          "wrong_pct": 31.818181818181817,
+          "clarify_pct": 0.0,
+          "tokens": 42359.86363636364,
+          "seconds": 18.922039456500002,
+          "calls": 3.9545454545454546
+        },
+        "outside_conditions": {
+          "correct": 5,
+          "clarify": 0,
+          "wrong": 3,
+          "error": 0,
+          "n": 8,
+          "accuracy": 62.5,
+          "wrong_pct": 37.5,
+          "clarify_pct": 0.0,
+          "tokens": 59250.75,
+          "seconds": 36.96487284075,
+          "calls": 5.625
+        },
+        "all": {
+          "correct": 42,
+          "clarify": 0,
+          "wrong": 10,
+          "error": 0,
+          "n": 52,
+          "accuracy": 80.76923076923077,
+          "wrong_pct": 19.23076923076923,
+          "clarify_pct": 0.0,
+          "tokens": 35939.42307692308,
+          "seconds": 17.305246972076922,
+          "calls": 3.75
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 19972.333333333332,
+        "seconds": 6.782838374,
+        "calls": 3.1666666666666665
+      }
+    },
+    "synthetic-r2-awm": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 43542,
+          "seconds": 22.22755261083333,
+          "calls": 5.166666666666667
+        },
+        "non_breaking": {
+          "correct": 6,
+          "clarify": 1,
+          "wrong": 9,
+          "error": 0,
+          "n": 16,
+          "accuracy": 37.5,
+          "wrong_pct": 56.25,
+          "clarify_pct": 6.25,
+          "tokens": 58457.625,
+          "seconds": 33.811104928937496,
+          "calls": 6.75
+        },
+        "covered_breaks": {
+          "correct": 7,
+          "clarify": 0,
+          "wrong": 15,
+          "error": 0,
+          "n": 22,
+          "accuracy": 31.818181818181817,
+          "wrong_pct": 68.18181818181819,
+          "clarify_pct": 0.0,
+          "tokens": 70466.77272727272,
+          "seconds": 50.66993837686364,
+          "calls": 6.7272727272727275
+        },
+        "outside_conditions": {
+          "correct": 1,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 8,
+          "accuracy": 12.5,
+          "wrong_pct": 87.5,
+          "clarify_pct": 0.0,
+          "tokens": 83025.25,
+          "seconds": 56.14357887425,
+          "calls": 7
+        },
+        "all": {
+          "correct": 18,
+          "clarify": 1,
+          "wrong": 33,
+          "error": 0,
+          "n": 52,
+          "accuracy": 34.61538461538461,
+          "wrong_pct": 63.46153846153846,
+          "clarify_pct": 1.9230769230769231,
+          "tokens": 65597.01923076923,
+          "seconds": 43.042889804096156,
+          "calls": 6.596153846153846
+        }
+      },
+      "learn": {
+        "correct": 5,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 6,
+        "accuracy": 83.33333333333333,
+        "wrong_pct": 16.666666666666668,
+        "clarify_pct": 0.0,
+        "tokens": 24592.333333333332,
+        "seconds": 9.986640613166667,
+        "calls": 4.666666666666667
+      }
+    },
+    "synthetic-r2-gmemory": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 24171.333333333332,
+          "seconds": 7.912548124666667,
+          "calls": 3.1666666666666665
+        },
+        "non_breaking": {
+          "correct": 7,
+          "clarify": 0,
+          "wrong": 9,
+          "error": 0,
+          "n": 16,
+          "accuracy": 43.75,
+          "wrong_pct": 56.25,
+          "clarify_pct": 0.0,
+          "tokens": 61784.8125,
+          "seconds": 32.1088890529375,
+          "calls": 6.625
+        },
+        "covered_breaks": {
+          "correct": 10,
+          "clarify": 0,
+          "wrong": 12,
+          "error": 0,
+          "n": 22,
+          "accuracy": 45.45454545454545,
+          "wrong_pct": 54.54545454545455,
+          "clarify_pct": 0.0,
+          "tokens": 67534.27272727272,
+          "seconds": 36.83861707940909,
+          "calls": 6.2272727272727275
+        },
+        "outside_conditions": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 8,
+          "accuracy": 50.0,
+          "wrong_pct": 50.0,
+          "clarify_pct": 0.0,
+          "tokens": 96592.25,
+          "seconds": 60.23034356525,
+          "calls": 8.875
+        },
+        "all": {
+          "correct": 25,
+          "clarify": 0,
+          "wrong": 27,
+          "error": 0,
+          "n": 52,
+          "accuracy": 48.07692307692308,
+          "wrong_pct": 51.92307692307692,
+          "clarify_pct": 0.0,
+          "tokens": 65232.25,
+          "seconds": 35.64441995892307,
+          "calls": 6.403846153846154
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 17272.666666666668,
+        "seconds": 4.9917544035,
+        "calls": 3.1666666666666665
+      }
+    },
+    "synthetic-r2-mavra": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 17862.833333333332,
+          "seconds": 5.524501801,
+          "calls": 3.5
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14167.75,
+          "seconds": 6.3705428255625,
+          "calls": 3.0625
+        },
+        "covered_breaks": {
+          "correct": 21,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 22,
+          "accuracy": 95.45454545454545,
+          "wrong_pct": 4.545454545454546,
+          "clarify_pct": 0.0,
+          "tokens": 18563.863636363636,
+          "seconds": 21.88367458859091,
+          "calls": 3.5
+        },
+        "outside_conditions": {
+          "correct": 3,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 8,
+          "accuracy": 37.5,
+          "wrong_pct": 62.5,
+          "clarify_pct": 0.0,
+          "tokens": 46707.75,
+          "seconds": 34.714996701,
+          "calls": 5.875
+        },
+        "all": {
+          "correct": 46,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 52,
+          "accuracy": 88.46153846153847,
+          "wrong_pct": 11.538461538461538,
+          "clarify_pct": 0.0,
+          "tokens": 21460.153846153848,
+          "seconds": 17.19685597253846,
+          "calls": 3.730769230769231
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 18137.666666666668,
+        "seconds": 6.970263039,
+        "calls": 4.5
+      }
+    },
+    "synthetic-r3-ace": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 16322.333333333334,
+          "seconds": 3.7406880816666668,
+          "calls": 2.3333333333333335
+        },
+        "non_breaking": {
+          "correct": 14,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 16,
+          "accuracy": 87.5,
+          "wrong_pct": 12.5,
+          "clarify_pct": 0.0,
+          "tokens": 24871.625,
+          "seconds": 8.1576343678125,
+          "calls": 3.125
+        },
+        "covered_breaks": {
+          "correct": 13,
+          "clarify": 0,
+          "wrong": 9,
+          "error": 0,
+          "n": 22,
+          "accuracy": 59.09090909090909,
+          "wrong_pct": 40.90909090909091,
+          "clarify_pct": 0.0,
+          "tokens": 45596.13636363636,
+          "seconds": 21.42331530431818,
+          "calls": 4.409090909090909
+        },
+        "outside_conditions": {
+          "correct": 7,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 8,
+          "accuracy": 87.5,
+          "wrong_pct": 12.5,
+          "clarify_pct": 0.0,
+          "tokens": 64633.75,
+          "seconds": 31.36681788,
+          "calls": 6.625
+        },
+        "all": {
+          "correct": 40,
+          "clarify": 0,
+          "wrong": 12,
+          "error": 0,
+          "n": 52,
+          "accuracy": 76.92307692307692,
+          "wrong_pct": 23.076923076923077,
+          "clarify_pct": 0.0,
+          "tokens": 38770.480769230766,
+          "seconds": 16.831033809807693,
+          "calls": 4.115384615384615
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 20449.666666666668,
+        "seconds": 8.037992017166667,
+        "calls": 3.3333333333333335
+      }
+    },
+    "synthetic-r3-awm": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 32312.833333333332,
+          "seconds": 15.8836935885,
+          "calls": 5.5
+        },
+        "non_breaking": {
+          "correct": 10,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 16,
+          "accuracy": 62.5,
+          "wrong_pct": 37.5,
+          "clarify_pct": 0.0,
+          "tokens": 63702,
+          "seconds": 41.276539263625,
+          "calls": 6.0625
+        },
+        "covered_breaks": {
+          "correct": 10,
+          "clarify": 0,
+          "wrong": 12,
+          "error": 0,
+          "n": 22,
+          "accuracy": 45.45454545454545,
+          "wrong_pct": 54.54545454545455,
+          "clarify_pct": 0.0,
+          "tokens": 50231.13636363636,
+          "seconds": 40.06056404459091,
+          "calls": 6.045454545454546
+        },
+        "outside_conditions": {
+          "correct": 3,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 8,
+          "accuracy": 37.5,
+          "wrong_pct": 62.5,
+          "clarify_pct": 0.0,
+          "tokens": 107764.5,
+          "seconds": 77.645280982375,
+          "calls": 9
+        },
+        "all": {
+          "correct": 27,
+          "clarify": 0,
+          "wrong": 25,
+          "error": 0,
+          "n": 52,
+          "accuracy": 51.92307692307692,
+          "wrong_pct": 48.07692307692308,
+          "clarify_pct": 0.0,
+          "tokens": 61159.807692307695,
+          "seconds": 43.42733551132692,
+          "calls": 6.4423076923076925
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 16241.833333333334,
+        "seconds": 6.960676922,
+        "calls": 4
+      }
+    },
+    "synthetic-r3-gmemory": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 5,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 6,
+          "accuracy": 83.33333333333333,
+          "wrong_pct": 16.666666666666668,
+          "clarify_pct": 0.0,
+          "tokens": 29097.333333333332,
+          "seconds": 14.368427366166667,
+          "calls": 3.5
+        },
+        "non_breaking": {
+          "correct": 10,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 16,
+          "accuracy": 62.5,
+          "wrong_pct": 37.5,
+          "clarify_pct": 0.0,
+          "tokens": 41386.75,
+          "seconds": 26.3612902705625,
+          "calls": 4.625
+        },
+        "covered_breaks": {
+          "correct": 8,
+          "clarify": 0,
+          "wrong": 14,
+          "error": 0,
+          "n": 22,
+          "accuracy": 36.36363636363637,
+          "wrong_pct": 63.63636363636363,
+          "clarify_pct": 0.0,
+          "tokens": 42458.09090909091,
+          "seconds": 24.258248438545454,
+          "calls": 4.909090909090909
+        },
+        "outside_conditions": {
+          "correct": 1,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 8,
+          "accuracy": 12.5,
+          "wrong_pct": 87.5,
+          "clarify_pct": 0.0,
+          "tokens": 66833.125,
+          "seconds": 39.73940024975,
+          "calls": 7.25
+        },
+        "all": {
+          "correct": 24,
+          "clarify": 0,
+          "wrong": 28,
+          "error": 0,
+          "n": 52,
+          "accuracy": 46.15384615384615,
+          "wrong_pct": 53.84615384615385,
+          "clarify_pct": 0.0,
+          "tokens": 44336.82692307692,
+          "seconds": 26.145920695615384,
+          "calls": 5.019230769230769
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 17626.166666666668,
+        "seconds": 5.221793669166667,
+        "calls": 3.1666666666666665
+      }
+    },
+    "synthetic-r3-mavra": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 12502.666666666666,
+          "seconds": 3.6484046968333335,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 12671.5,
+          "seconds": 5.744099317625,
+          "calls": 3.125
+        },
+        "covered_breaks": {
+          "correct": 22,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 22,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 18875.954545454544,
+          "seconds": 28.105783828,
+          "calls": 3.8636363636363638
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 8,
+          "accuracy": 25.0,
+          "wrong_pct": 75.0,
+          "clarify_pct": 0.0,
+          "tokens": 23571.375,
+          "seconds": 15.612642128125,
+          "calls": 4.5
+        },
+        "all": {
+          "correct": 46,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 52,
+          "accuracy": 88.46153846153847,
+          "wrong_pct": 11.538461538461538,
+          "clarify_pct": 0.0,
+          "tokens": 16953.884615384617,
+          "seconds": 16.48123843276923,
+          "calls": 3.6346153846153846
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 18586.166666666668,
+        "seconds": 7.647299737666667,
+        "calls": 4.833333333333333
+      }
+    },
+    "tpch-r1-ace": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14557.666666666666,
+          "seconds": 5.349284694166666,
+          "calls": 2.6666666666666665
+        },
+        "non_breaking": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 12,
+          "accuracy": 91.66666666666667,
+          "wrong_pct": 8.333333333333334,
+          "clarify_pct": 0.0,
+          "tokens": 22025.583333333332,
+          "seconds": 11.810089293333332,
+          "calls": 3.5
+        },
+        "covered_breaks": {
+          "correct": 8,
+          "clarify": 0,
+          "wrong": 8,
+          "error": 0,
+          "n": 16,
+          "accuracy": 50.0,
+          "wrong_pct": 50.0,
+          "clarify_pct": 0.0,
+          "tokens": 25682.625,
+          "seconds": 20.6591067210625,
+          "calls": 3.75
+        },
+        "outside_conditions": {
+          "correct": 3,
+          "clarify": 0,
+          "wrong": 3,
+          "error": 0,
+          "n": 6,
+          "accuracy": 50.0,
+          "wrong_pct": 50.0,
+          "clarify_pct": 0.0,
+          "tokens": 37904,
+          "seconds": 21.5712815535,
+          "calls": 4.5
+        },
+        "all": {
+          "correct": 28,
+          "clarify": 0,
+          "wrong": 12,
+          "error": 0,
+          "n": 40,
+          "accuracy": 70.0,
+          "wrong_pct": 30.0,
+          "clarify_pct": 0.0,
+          "tokens": 24749.975,
+          "seconds": 15.844754413575,
+          "calls": 3.625
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 10777.5,
+        "seconds": 3.879645164666667,
+        "calls": 2.3333333333333335
+      }
+    },
+    "tpch-r1-awm": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14367.166666666666,
+          "seconds": 5.641950233333334,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 12,
+          "accuracy": 91.66666666666667,
+          "wrong_pct": 8.333333333333334,
+          "clarify_pct": 0.0,
+          "tokens": 29128.25,
+          "seconds": 13.93665329225,
+          "calls": 4.333333333333333
+        },
+        "covered_breaks": {
+          "correct": 9,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 16,
+          "accuracy": 56.25,
+          "wrong_pct": 43.75,
+          "clarify_pct": 0.0,
+          "tokens": 22909.75,
+          "seconds": 14.89589786525,
+          "calls": 4.125
+        },
+        "outside_conditions": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 37261.666666666664,
+          "seconds": 30.866013088166667,
+          "calls": 6
+        },
+        "all": {
+          "correct": 30,
+          "clarify": 0,
+          "wrong": 10,
+          "error": 0,
+          "n": 40,
+          "accuracy": 75.0,
+          "wrong_pct": 25.0,
+          "clarify_pct": 0.0,
+          "tokens": 25646.7,
+          "seconds": 15.615549632,
+          "calls": 4.3
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 13398.666666666666,
+        "seconds": 7.3031955024999995,
+        "calls": 3.5
+      }
+    },
+    "tpch-r1-gmemory": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 17341.666666666668,
+          "seconds": 7.025219677333333,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 17941.583333333332,
+          "seconds": 8.4555354355,
+          "calls": 3.1666666666666665
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 25.0,
+          "clarify_pct": 0.0,
+          "tokens": 24740.875,
+          "seconds": 13.935409390875,
+          "calls": 3.75
+        },
+        "outside_conditions": {
+          "correct": 5,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 6,
+          "accuracy": 83.33333333333333,
+          "wrong_pct": 16.666666666666668,
+          "clarify_pct": 0.0,
+          "tokens": 31760,
+          "seconds": 17.519147073166668,
+          "calls": 4.666666666666667
+        },
+        "all": {
+          "correct": 35,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 40,
+          "accuracy": 87.5,
+          "wrong_pct": 12.5,
+          "clarify_pct": 0.0,
+          "tokens": 22644.075,
+          "seconds": 11.792479399575,
+          "calls": 3.6
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 15494.166666666666,
+        "seconds": 4.7673387025,
+        "calls": 3.1666666666666665
+      }
+    },
+    "tpch-r1-mavra": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10733,
+          "seconds": 3.449213679666667,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10655.25,
+          "seconds": 10.2706641905,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 4,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 25.0,
+          "tokens": 16945.8125,
+          "seconds": 115.10495001875,
+          "calls": 3.8125
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 6,
+          "accuracy": 33.333333333333336,
+          "wrong_pct": 66.66666666666667,
+          "clarify_pct": 0.0,
+          "tokens": 21232.5,
+          "seconds": 31.57835346683333,
+          "calls": 4.666666666666667
+        },
+        "all": {
+          "correct": 32,
+          "clarify": 4,
+          "wrong": 4,
+          "error": 0,
+          "n": 40,
+          "accuracy": 80.0,
+          "wrong_pct": 10.0,
+          "clarify_pct": 10.0,
+          "tokens": 14769.725,
+          "seconds": 54.377314336625,
+          "calls": 3.575
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 14136.333333333334,
+        "seconds": 6.660693311833334,
+        "calls": 4
+      }
+    },
+    "tpch-r2-ace": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14499.166666666666,
+          "seconds": 3.942933524,
+          "calls": 2.5
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 29076.083333333332,
+          "seconds": 12.989079410166667,
+          "calls": 4.166666666666667
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 25.0,
+          "clarify_pct": 0.0,
+          "tokens": 30018.625,
+          "seconds": 13.25338324525,
+          "calls": 4.1875
+        },
+        "outside_conditions": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 44505.666666666664,
+          "seconds": 24.869548207166666,
+          "calls": 5.666666666666667
+        },
+        "all": {
+          "correct": 34,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 40,
+          "accuracy": 85.0,
+          "wrong_pct": 15.0,
+          "clarify_pct": 0.0,
+          "tokens": 29581,
+          "seconds": 13.519949380825,
+          "calls": 4.15
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 15636,
+        "seconds": 5.7745276793333336,
+        "calls": 3.3333333333333335
+      }
+    },
+    "tpch-r2-awm": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 13752,
+          "seconds": 4.643287885333334,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 21930.75,
+          "seconds": 17.367082034833334,
+          "calls": 3.6666666666666665
+        },
+        "covered_breaks": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 16,
+          "accuracy": 68.75,
+          "wrong_pct": 31.25,
+          "clarify_pct": 0.0,
+          "tokens": 52495.1875,
+          "seconds": 31.687977047,
+          "calls": 5.25
+        },
+        "outside_conditions": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 45958,
+          "seconds": 26.861418349666668,
+          "calls": 5.666666666666667
+        },
+        "all": {
+          "correct": 33,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 40,
+          "accuracy": 82.5,
+          "wrong_pct": 17.5,
+          "clarify_pct": 0.0,
+          "tokens": 36533.8,
+          "seconds": 22.6110213645,
+          "calls": 4.5
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 12918.666666666666,
+        "seconds": 4.9626258493333335,
+        "calls": 3.1666666666666665
+      }
+    },
+    "tpch-r2-gmemory": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 21955,
+          "seconds": 5.951640926833333,
+          "calls": 3.3333333333333335
+        },
+        "non_breaking": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 12,
+          "accuracy": 91.66666666666667,
+          "wrong_pct": 8.333333333333334,
+          "clarify_pct": 0.0,
+          "tokens": 38526.333333333336,
+          "seconds": 17.617718386416666,
+          "calls": 4.083333333333333
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 25.0,
+          "clarify_pct": 0.0,
+          "tokens": 23585.3125,
+          "seconds": 10.663078344375,
+          "calls": 3.25
+        },
+        "outside_conditions": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 33244.833333333336,
+          "seconds": 17.336503820166666,
+          "calls": 4.5
+        },
+        "all": {
+          "correct": 35,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 40,
+          "accuracy": 87.5,
+          "wrong_pct": 12.5,
+          "clarify_pct": 0.0,
+          "tokens": 29272,
+          "seconds": 13.043768565725,
+          "calls": 3.7
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 14846.833333333334,
+        "seconds": 9.120401554833334,
+        "calls": 3
+      }
+    },
+    "tpch-r2-mavra": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10949.666666666666,
+          "seconds": 3.682303458333333,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 11043.833333333334,
+          "seconds": 17.7197231225,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 4,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 25.0,
+          "tokens": 18610.4375,
+          "seconds": 106.1549570611875,
+          "calls": 4
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 6,
+          "accuracy": 33.333333333333336,
+          "wrong_pct": 66.66666666666667,
+          "clarify_pct": 0.0,
+          "tokens": 22839.5,
+          "seconds": 38.421003776166664,
+          "calls": 5
+        },
+        "all": {
+          "correct": 32,
+          "clarify": 4,
+          "wrong": 4,
+          "error": 0,
+          "n": 40,
+          "accuracy": 80.0,
+          "wrong_pct": 10.0,
+          "clarify_pct": 10.0,
+          "tokens": 15825.7,
+          "seconds": 54.0933958464,
+          "calls": 3.7
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 14717.333333333334,
+        "seconds": 5.794258825166667,
+        "calls": 4.166666666666667
+      }
+    },
+    "tpch-r3-ace": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14252.666666666666,
+          "seconds": 3.774691153,
+          "calls": 2.5
+        },
+        "non_breaking": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 1,
+          "error": 0,
+          "n": 12,
+          "accuracy": 91.66666666666667,
+          "wrong_pct": 8.333333333333334,
+          "clarify_pct": 0.0,
+          "tokens": 21065.333333333332,
+          "seconds": 10.478922471416666,
+          "calls": 3.0833333333333335
+        },
+        "covered_breaks": {
+          "correct": 11,
+          "clarify": 0,
+          "wrong": 5,
+          "error": 0,
+          "n": 16,
+          "accuracy": 68.75,
+          "wrong_pct": 31.25,
+          "clarify_pct": 0.0,
+          "tokens": 39668.25,
+          "seconds": 27.1377153858125,
+          "calls": 3.9375
+        },
+        "outside_conditions": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 34901.666666666664,
+          "seconds": 15.126022318833332,
+          "calls": 4.166666666666667
+        },
+        "all": {
+          "correct": 32,
+          "clarify": 0,
+          "wrong": 8,
+          "error": 0,
+          "n": 40,
+          "accuracy": 80.0,
+          "wrong_pct": 20.0,
+          "clarify_pct": 0.0,
+          "tokens": 29560.05,
+          "seconds": 16.833869916525,
+          "calls": 3.5
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 15592.166666666666,
+        "seconds": 5.033011390666666,
+        "calls": 3
+      }
+    },
+    "tpch-r3-awm": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 19757.666666666668,
+          "seconds": 8.646490396333334,
+          "calls": 3.8333333333333335
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 16100.75,
+          "seconds": 7.6661240345833335,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 9,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 16,
+          "accuracy": 56.25,
+          "wrong_pct": 43.75,
+          "clarify_pct": 0.0,
+          "tokens": 32468.625,
+          "seconds": 22.333356034624998,
+          "calls": 4.4375
+        },
+        "outside_conditions": {
+          "correct": 3,
+          "clarify": 0,
+          "wrong": 3,
+          "error": 0,
+          "n": 6,
+          "accuracy": 50.0,
+          "wrong_pct": 50.0,
+          "clarify_pct": 0.0,
+          "tokens": 33207,
+          "seconds": 22.036115555166667,
+          "calls": 5.333333333333333
+        },
+        "all": {
+          "correct": 30,
+          "clarify": 0,
+          "wrong": 10,
+          "error": 0,
+          "n": 40,
+          "accuracy": 75.0,
+          "wrong_pct": 25.0,
+          "clarify_pct": 0.0,
+          "tokens": 25762.375,
+          "seconds": 15.83557051695,
+          "calls": 4.05
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 10360,
+        "seconds": 4.519807728166667,
+        "calls": 2.8333333333333335
+      }
+    },
+    "tpch-r3-gmemory": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 19388.833333333332,
+          "seconds": 5.824394743166667,
+          "calls": 3.1666666666666665
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 17469.166666666668,
+          "seconds": 8.161720816083333,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 25.0,
+          "clarify_pct": 0.0,
+          "tokens": 24076.5625,
+          "seconds": 11.64252712725,
+          "calls": 3.6875
+        },
+        "outside_conditions": {
+          "correct": 4,
+          "clarify": 0,
+          "wrong": 2,
+          "error": 0,
+          "n": 6,
+          "accuracy": 66.66666666666667,
+          "wrong_pct": 33.333333333333336,
+          "clarify_pct": 0.0,
+          "tokens": 43418.333333333336,
+          "seconds": 21.158308750666666,
+          "calls": 5.5
+        },
+        "all": {
+          "correct": 34,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 40,
+          "accuracy": 85.0,
+          "wrong_pct": 15.0,
+          "clarify_pct": 0.0,
+          "tokens": 24292.45,
+          "seconds": 11.1529326198,
+          "calls": 3.675
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 16305.666666666666,
+        "seconds": 5.072230075666667,
+        "calls": 3.1666666666666665
+      }
+    },
+    "tpch-r3-mavra": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10840.833333333334,
+          "seconds": 3.6793863965,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 11236.333333333334,
+          "seconds": 10.717319237083334,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 4,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 25.0,
+          "tokens": 17655.5625,
+          "seconds": 152.1318767826875,
+          "calls": 3.8125
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 6,
+          "accuracy": 33.333333333333336,
+          "wrong_pct": 66.66666666666667,
+          "clarify_pct": 0.0,
+          "tokens": 23310.666666666668,
+          "seconds": 36.479532337500004,
+          "calls": 5
+        },
+        "all": {
+          "correct": 32,
+          "clarify": 4,
+          "wrong": 4,
+          "error": 0,
+          "n": 40,
+          "accuracy": 80.0,
+          "wrong_pct": 10.0,
+          "clarify_pct": 10.0,
+          "tokens": 15555.85,
+          "seconds": 70.0917842943,
+          "calls": 3.625
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 13391.5,
+        "seconds": 5.248907842166666,
+        "calls": 3.8333333333333335
+      }
+    }
+  },
+  "groups": {
+    "holdout": {
+      "synthetic": {
+        "ace": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 15784.166666666668,
+          "seconds": 4.1411332965,
+          "calls": 2.2777777777777777
+        },
+        "awm": {
+          "accuracy": 66.66666666666667,
+          "min": 66.66666666666667,
+          "max": 66.66666666666667,
+          "per_run": [
+            66.66666666666667,
+            66.66666666666667,
+            66.66666666666667
+          ],
+          "wrong_pct": 33.333333333333336,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 35308.833333333336,
+          "seconds": 19.02886730161111,
+          "calls": 5.0
+        },
+        "gmemory": {
+          "accuracy": 72.22222222222223,
+          "min": 66.66666666666667,
+          "max": 83.33333333333333,
+          "per_run": [
+            66.66666666666667,
+            66.66666666666667,
+            83.33333333333333
+          ],
+          "wrong_pct": 27.77777777777778,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 28087.333333333332,
+          "seconds": 10.882347693611111,
+          "calls": 3.5555555555555554
+        },
+        "mavra": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 14686.666666666666,
+          "seconds": 4.714398113000001,
+          "calls": 3.2222222222222223
+        }
+      },
+      "tpch": {
+        "ace": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 14436.5,
+          "seconds": 4.355636457055556,
+          "calls": 2.5555555555555554
+        },
+        "awm": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 15958.944444444445,
+          "seconds": 6.310576171666667,
+          "calls": 3.2777777777777777
+        },
+        "gmemory": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 19561.833333333332,
+          "seconds": 6.267085115777777,
+          "calls": 3.1666666666666665
+        },
+        "mavra": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 10841.166666666666,
+          "seconds": 3.6036345115,
+          "calls": 3
+        }
+      },
+      "both": {
+        "ace": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 15110.333333333334,
+          "seconds": 4.248384876777778,
+          "calls": 2.4166666666666665
+        },
+        "awm": {
+          "accuracy": 83.33333333333333,
+          "min": 83.33333333333333,
+          "max": 83.33333333333333,
+          "per_run": [
+            83.33333333333333,
+            83.33333333333333,
+            83.33333333333333
+          ],
+          "wrong_pct": 16.666666666666668,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 25633.88888888889,
+          "seconds": 12.66972173663889,
+          "calls": 4.138888888888889
+        },
+        "gmemory": {
+          "accuracy": 86.11111111111111,
+          "min": 83.33333333333333,
+          "max": 91.66666666666667,
+          "per_run": [
+            83.33333333333333,
+            83.33333333333333,
+            91.66666666666667
+          ],
+          "wrong_pct": 13.88888888888889,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 23824.583333333332,
+          "seconds": 8.574716404694444,
+          "calls": 3.361111111111111
+        },
+        "mavra": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 12763.916666666666,
+          "seconds": 4.15901631225,
+          "calls": 3.111111111111111
+        }
+      }
+    },
+    "non_breaking": {
+      "synthetic": {
+        "ace": {
+          "accuracy": 95.83333333333333,
+          "min": 87.5,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            87.5
+          ],
+          "wrong_pct": 4.166666666666667,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 16,
+          "tokens": 25167.416666666668,
+          "seconds": 10.269044472125,
+          "calls": 3.2083333333333335
+        },
+        "awm": {
+          "accuracy": 47.916666666666664,
+          "min": 37.5,
+          "max": 62.5,
+          "per_run": [
+            43.75,
+            37.5,
+            62.5
+          ],
+          "wrong_pct": 50.0,
+          "clarify": 1,
+          "clarify_pct": 2.0833333333333335,
+          "n_per_run": 16,
+          "tokens": 57346.416666666664,
+          "seconds": 34.807497705749995,
+          "calls": 6.375
+        },
+        "gmemory": {
+          "accuracy": 45.833333333333336,
+          "min": 31.25,
+          "max": 62.5,
+          "per_run": [
+            31.25,
+            43.75,
+            62.5
+          ],
+          "wrong_pct": 54.166666666666664,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 16,
+          "tokens": 59031.5,
+          "seconds": 32.19125365254167,
+          "calls": 6.125
+        },
+        "mavra": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 16,
+          "tokens": 13007.75,
+          "seconds": 5.9538599957916665,
+          "calls": 3.0625
+        }
+      },
+      "tpch": {
+        "ace": {
+          "accuracy": 94.44444444444444,
+          "min": 91.66666666666667,
+          "max": 100.0,
+          "per_run": [
+            91.66666666666667,
+            100.0,
+            91.66666666666667
+          ],
+          "wrong_pct": 5.555555555555556,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 24055.666666666664,
+          "seconds": 11.759363724972221,
+          "calls": 3.5833333333333335
+        },
+        "awm": {
+          "accuracy": 97.22222222222223,
+          "min": 91.66666666666667,
+          "max": 100.0,
+          "per_run": [
+            91.66666666666667,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 2.777777777777778,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 22386.583333333332,
+          "seconds": 12.989953120555557,
+          "calls": 3.6666666666666665
+        },
+        "gmemory": {
+          "accuracy": 97.22222222222223,
+          "min": 91.66666666666667,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            91.66666666666667,
+            100.0
+          ],
+          "wrong_pct": 2.777777777777778,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 24645.694444444445,
+          "seconds": 11.411658212666666,
+          "calls": 3.4166666666666665
+        },
+        "mavra": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 12,
+          "tokens": 10978.472222222223,
+          "seconds": 12.902568850027778,
+          "calls": 3
+        }
+      },
+      "both": {
+        "ace": {
+          "accuracy": 95.23809523809524,
+          "min": 89.28571428571429,
+          "max": 100.0,
+          "per_run": [
+            96.42857142857143,
+            100.0,
+            89.28571428571429
+          ],
+          "wrong_pct": 4.761904761904762,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 28,
+          "tokens": 24690.95238095238,
+          "seconds": 10.907752723345238,
+          "calls": 3.369047619047619
+        },
+        "awm": {
+          "accuracy": 69.04761904761905,
+          "min": 64.28571428571429,
+          "max": 78.57142857142857,
+          "per_run": [
+            64.28571428571429,
+            64.28571428571429,
+            78.57142857142857
+          ],
+          "wrong_pct": 29.761904761904763,
+          "clarify": 1,
+          "clarify_pct": 1.1904761904761905,
+          "n_per_run": 28,
+          "tokens": 42363.630952380954,
+          "seconds": 25.45712145495238,
+          "calls": 5.214285714285714
+        },
+        "gmemory": {
+          "accuracy": 67.85714285714286,
+          "min": 60.714285714285715,
+          "max": 78.57142857142857,
+          "per_run": [
+            60.714285714285715,
+            64.28571428571429,
+            78.57142857142857
+          ],
+          "wrong_pct": 32.14285714285714,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 28,
+          "tokens": 44294.72619047619,
+          "seconds": 23.285712749738096,
+          "calls": 4.964285714285714
+        },
+        "mavra": {
+          "accuracy": 100.0,
+          "min": 100.0,
+          "max": 100.0,
+          "per_run": [
+            100.0,
+            100.0,
+            100.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 28,
+          "tokens": 12138.059523809523,
+          "seconds": 8.93187807617857,
+          "calls": 3.0357142857142856
+        }
+      }
+    },
+    "covered_breaks": {
+      "synthetic": {
+        "ace": {
+          "accuracy": 68.18181818181819,
+          "min": 59.09090909090909,
+          "max": 77.27272727272727,
+          "per_run": [
+            77.27272727272727,
+            68.18181818181819,
+            59.09090909090909
+          ],
+          "wrong_pct": 31.818181818181817,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 22,
+          "tokens": 43280.742424242424,
+          "seconds": 20.14348700210606,
+          "calls": 4.151515151515151
+        },
+        "awm": {
+          "accuracy": 40.90909090909091,
+          "min": 31.818181818181817,
+          "max": 45.45454545454545,
+          "per_run": [
+            45.45454545454545,
+            31.818181818181817,
+            45.45454545454545
+          ],
+          "wrong_pct": 59.09090909090909,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 22,
+          "tokens": 57665.36363636363,
+          "seconds": 43.88948509809091,
+          "calls": 6.287878787878788
+        },
+        "gmemory": {
+          "accuracy": 43.93939393939394,
+          "min": 36.36363636363637,
+          "max": 50.0,
+          "per_run": [
+            50.0,
+            45.45454545454545,
+            36.36363636363637
+          ],
+          "wrong_pct": 56.06060606060606,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 22,
+          "tokens": 60429.333333333336,
+          "seconds": 34.10786115874242,
+          "calls": 5.696969696969697
+        },
+        "mavra": {
+          "accuracy": 96.96969696969697,
+          "min": 95.45454545454545,
+          "max": 100.0,
+          "per_run": [
+            95.45454545454545,
+            95.45454545454545,
+            100.0
+          ],
+          "wrong_pct": 3.0303030303030307,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 22,
+          "tokens": 19236.196969696968,
+          "seconds": 22.5523652925,
+          "calls": 3.772727272727273
+        }
+      },
+      "tpch": {
+        "ace": {
+          "accuracy": 64.58333333333333,
+          "min": 50.0,
+          "max": 75.0,
+          "per_run": [
+            50.0,
+            75.0,
+            68.75
+          ],
+          "wrong_pct": 35.416666666666664,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 16,
+          "tokens": 31789.833333333332,
+          "seconds": 20.35006845070833,
+          "calls": 3.9583333333333335
+        },
+        "awm": {
+          "accuracy": 60.416666666666664,
+          "min": 56.25,
+          "max": 68.75,
+          "per_run": [
+            56.25,
+            68.75,
+            56.25
+          ],
+          "wrong_pct": 39.583333333333336,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 16,
+          "tokens": 35957.854166666664,
+          "seconds": 22.972410315624998,
+          "calls": 4.604166666666667
+        },
+        "gmemory": {
+          "accuracy": 75.0,
+          "min": 75.0,
+          "max": 75.0,
+          "per_run": [
+            75.0,
+            75.0,
+            75.0
+          ],
+          "wrong_pct": 25.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 16,
+          "tokens": 24134.25,
+          "seconds": 12.0803382875,
+          "calls": 3.5625
+        },
+        "mavra": {
+          "accuracy": 75.0,
+          "min": 75.0,
+          "max": 75.0,
+          "per_run": [
+            75.0,
+            75.0,
+            75.0
+          ],
+          "wrong_pct": 0.0,
+          "clarify": 12,
+          "clarify_pct": 25.0,
+          "n_per_run": 16,
+          "tokens": 17737.270833333332,
+          "seconds": 124.46392795420833,
+          "calls": 3.875
+        }
+      },
+      "both": {
+        "ace": {
+          "accuracy": 66.66666666666666,
+          "min": 63.1578947368421,
+          "max": 71.05263157894737,
+          "per_run": [
+            65.78947368421052,
+            71.05263157894737,
+            63.1578947368421
+          ],
+          "wrong_pct": 33.333333333333336,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 38,
+          "tokens": 38442.4649122807,
+          "seconds": 20.23046866467544,
+          "calls": 4.0701754385964914
+        },
+        "awm": {
+          "accuracy": 49.12280701754386,
+          "min": 47.36842105263158,
+          "max": 50.0,
+          "per_run": [
+            50.0,
+            47.36842105263158,
+            50.0
+          ],
+          "wrong_pct": 50.87719298245614,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 38,
+          "tokens": 48525.35964912281,
+          "seconds": 35.082295716,
+          "calls": 5.578947368421053
+        },
+        "gmemory": {
+          "accuracy": 57.01754385964912,
+          "min": 52.63157894736842,
+          "max": 60.526315789473685,
+          "per_run": [
+            60.526315789473685,
+            57.89473684210526,
+            52.63157894736842
+          ],
+          "wrong_pct": 42.98245614035088,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 38,
+          "tokens": 45147.19298245614,
+          "seconds": 24.83311468664035,
+          "calls": 4.798245614035087
+        },
+        "mavra": {
+          "accuracy": 87.71929824561403,
+          "min": 86.84210526315789,
+          "max": 89.47368421052632,
+          "per_run": [
+            86.84210526315789,
+            86.84210526315789,
+            89.47368421052632
+          ],
+          "wrong_pct": 1.7543859649122808,
+          "clarify": 12,
+          "clarify_pct": 10.526315789473685,
+          "n_per_run": 38,
+          "tokens": 18605.070175438595,
+          "seconds": 65.46249693953509,
+          "calls": 3.8157894736842106
+        }
+      }
+    },
+    "outside_conditions": {
+      "synthetic": {
+        "ace": {
+          "accuracy": 79.16666666666667,
+          "min": 62.5,
+          "max": 87.5,
+          "per_run": [
+            87.5,
+            62.5,
+            87.5
+          ],
+          "wrong_pct": 20.833333333333332,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 8,
+          "tokens": 57321.625,
+          "seconds": 31.571002545124998,
+          "calls": 5.666666666666667
+        },
+        "awm": {
+          "accuracy": 25.0,
+          "min": 12.5,
+          "max": 37.5,
+          "per_run": [
+            25.0,
+            12.5,
+            37.5
+          ],
+          "wrong_pct": 75.0,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 8,
+          "tokens": 95908.125,
+          "seconds": 70.720366745625,
+          "calls": 8.041666666666666
+        },
+        "gmemory": {
+          "accuracy": 29.166666666666668,
+          "min": 12.5,
+          "max": 50.0,
+          "per_run": [
+            25.0,
+            50.0,
+            12.5
+          ],
+          "wrong_pct": 70.83333333333333,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 8,
+          "tokens": 89071.0,
+          "seconds": 51.082813890666664,
+          "calls": 8.166666666666666
+        },
+        "mavra": {
+          "accuracy": 20.833333333333332,
+          "min": 0.0,
+          "max": 37.5,
+          "per_run": [
+            0.0,
+            37.5,
+            25.0
+          ],
+          "wrong_pct": 79.16666666666667,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 8,
+          "tokens": 37883.208333333336,
+          "seconds": 27.331097118666666,
+          "calls": 5.333333333333333
+        }
+      },
+      "tpch": {
+        "ace": {
+          "accuracy": 61.111111111111114,
+          "min": 50.0,
+          "max": 66.66666666666667,
+          "per_run": [
+            50.0,
+            66.66666666666667,
+            66.66666666666667
+          ],
+          "wrong_pct": 38.88888888888889,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 39103.777777777774,
+          "seconds": 20.5222840265,
+          "calls": 4.777777777777778
+        },
+        "awm": {
+          "accuracy": 61.111111111111114,
+          "min": 50.0,
+          "max": 66.66666666666667,
+          "per_run": [
+            66.66666666666667,
+            66.66666666666667,
+            50.0
+          ],
+          "wrong_pct": 38.88888888888889,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 38808.88888888889,
+          "seconds": 26.58784899766667,
+          "calls": 5.666666666666667
+        },
+        "gmemory": {
+          "accuracy": 83.33333333333333,
+          "min": 66.66666666666667,
+          "max": 100.0,
+          "per_run": [
+            83.33333333333333,
+            100.0,
+            66.66666666666667
+          ],
+          "wrong_pct": 16.666666666666668,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 36141.055555555555,
+          "seconds": 18.671319881333332,
+          "calls": 4.888888888888889
+        },
+        "mavra": {
+          "accuracy": 33.333333333333336,
+          "min": 33.333333333333336,
+          "max": 33.333333333333336,
+          "per_run": [
+            33.333333333333336,
+            33.333333333333336,
+            33.333333333333336
+          ],
+          "wrong_pct": 66.66666666666667,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 6,
+          "tokens": 22460.88888888889,
+          "seconds": 35.4929631935,
+          "calls": 4.888888888888889
+        }
+      },
+      "both": {
+        "ace": {
+          "accuracy": 71.42857142857143,
+          "min": 64.28571428571429,
+          "max": 78.57142857142857,
+          "per_run": [
+            71.42857142857143,
+            64.28571428571429,
+            78.57142857142857
+          ],
+          "wrong_pct": 28.571428571428573,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 14,
+          "tokens": 49513.97619047619,
+          "seconds": 26.835837465714285,
+          "calls": 5.285714285714286
+        },
+        "awm": {
+          "accuracy": 40.476190476190474,
+          "min": 35.714285714285715,
+          "max": 42.857142857142854,
+          "per_run": [
+            42.857142857142854,
+            35.714285714285715,
+            42.857142857142854
+          ],
+          "wrong_pct": 59.523809523809526,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 14,
+          "tokens": 71437.0238095238,
+          "seconds": 51.80643056792857,
+          "calls": 7.023809523809524
+        },
+        "gmemory": {
+          "accuracy": 52.38095238095238,
+          "min": 35.714285714285715,
+          "max": 71.42857142857143,
+          "per_run": [
+            50.0,
+            71.42857142857143,
+            35.714285714285715
+          ],
+          "wrong_pct": 47.61904761904762,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 14,
+          "tokens": 66386.73809523809,
+          "seconds": 37.19217360095238,
+          "calls": 6.761904761904762
+        },
+        "mavra": {
+          "accuracy": 26.19047619047619,
+          "min": 14.285714285714286,
+          "max": 35.714285714285715,
+          "per_run": [
+            14.285714285714286,
+            35.714285714285715,
+            28.571428571428573
+          ],
+          "wrong_pct": 73.80952380952381,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 14,
+          "tokens": 31273.64285714286,
+          "seconds": 30.829039722166666,
+          "calls": 5.142857142857143
+        }
+      }
+    },
+    "all": {
+      "synthetic": {
+        "ace": {
+          "accuracy": 82.05128205128206,
+          "min": 76.92307692307692,
+          "max": 88.46153846153847,
+          "per_run": [
+            88.46153846153847,
+            80.76923076923077,
+            76.92307692307692
+          ],
+          "wrong_pct": 17.94871794871795,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 52,
+          "tokens": 36694.86538461538,
+          "seconds": 17.016850879621796,
+          "calls": 3.878205128205128
+        },
+        "awm": {
+          "accuracy": 43.58974358974359,
+          "min": 34.61538461538461,
+          "max": 51.92307692307692,
+          "per_run": [
+            44.23076923076923,
+            34.61538461538461,
+            51.92307692307692
+          ],
+          "wrong_pct": 55.76923076923077,
+          "clarify": 1,
+          "clarify_pct": 0.6410256410256411,
+          "n_per_run": 52,
+          "tokens": 60871.12820512821,
+          "seconds": 42.35432256201282,
+          "calls": 6.435897435897436
+        },
+        "gmemory": {
+          "accuracy": 45.51282051282051,
+          "min": 42.30769230769231,
+          "max": 48.07692307692308,
+          "per_run": [
+            42.30769230769231,
+            48.07692307692308,
+            46.15384615384615
+          ],
+          "wrong_pct": 54.48717948717949,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 52,
+          "tokens": 60673.8717948718,
+          "seconds": 33.449800023461535,
+          "calls": 5.961538461538462
+        },
+        "mavra": {
+          "accuracy": 86.53846153846155,
+          "min": 82.6923076923077,
+          "max": 88.46153846153847,
+          "per_run": [
+            82.6923076923077,
+            88.46153846153847,
+            88.46153846153847
+          ],
+          "wrong_pct": 13.461538461538462,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 52,
+          "tokens": 19663.576923076926,
+          "seconds": 16.12209542298077,
+          "calls": 3.730769230769231
+        }
+      },
+      "tpch": {
+        "ace": {
+          "accuracy": 78.33333333333333,
+          "min": 70.0,
+          "max": 85.0,
+          "per_run": [
+            70.0,
+            85.0,
+            80.0
+          ],
+          "wrong_pct": 21.666666666666668,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 40,
+          "tokens": 27963.675,
+          "seconds": 15.399524570308333,
+          "calls": 3.7583333333333333
+        },
+        "awm": {
+          "accuracy": 77.5,
+          "min": 75.0,
+          "max": 82.5,
+          "per_run": [
+            75.0,
+            82.5,
+            75.0
+          ],
+          "wrong_pct": 22.5,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 40,
+          "tokens": 29314.291666666668,
+          "seconds": 18.02071383781667,
+          "calls": 4.283333333333333
+        },
+        "gmemory": {
+          "accuracy": 86.66666666666667,
+          "min": 85.0,
+          "max": 87.5,
+          "per_run": [
+            87.5,
+            87.5,
+            85.0
+          ],
+          "wrong_pct": 13.333333333333334,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 40,
+          "tokens": 25402.841666666667,
+          "seconds": 11.996393528366667,
+          "calls": 3.658333333333333
+        },
+        "mavra": {
+          "accuracy": 80.0,
+          "min": 80.0,
+          "max": 80.0,
+          "per_run": [
+            80.0,
+            80.0,
+            80.0
+          ],
+          "wrong_pct": 10.0,
+          "clarify": 12,
+          "clarify_pct": 10.0,
+          "n_per_run": 40,
+          "tokens": 15383.758333333333,
+          "seconds": 59.520831492441665,
+          "calls": 3.6333333333333333
+        }
+      },
+      "both": {
+        "ace": {
+          "accuracy": 80.43478260869566,
+          "min": 78.26086956521739,
+          "max": 82.6086956521739,
+          "per_run": [
+            80.43478260869566,
+            82.6086956521739,
+            78.26086956521739
+          ],
+          "wrong_pct": 19.565217391304348,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 92,
+          "tokens": 32898.69565217391,
+          "seconds": 16.313665527746377,
+          "calls": 3.8260869565217392
+        },
+        "awm": {
+          "accuracy": 58.333333333333336,
+          "min": 55.43478260869565,
+          "max": 61.95652173913044,
+          "per_run": [
+            57.608695652173914,
+            55.43478260869565,
+            61.95652173913044
+          ],
+          "wrong_pct": 41.30434782608695,
+          "clarify": 1,
+          "clarify_pct": 0.36231884057971014,
+          "n_per_run": 92,
+          "tokens": 47150.764492753624,
+          "seconds": 31.774492681927537,
+          "calls": 5.5
+        },
+        "gmemory": {
+          "accuracy": 63.405797101449274,
+          "min": 61.95652173913044,
+          "max": 65.21739130434783,
+          "per_run": [
+            61.95652173913044,
+            65.21739130434783,
+            63.04347826086956
+          ],
+          "wrong_pct": 36.594202898550726,
+          "clarify": 0,
+          "clarify_pct": 0.0,
+          "n_per_run": 92,
+          "tokens": 45338.641304347824,
+          "seconds": 24.12223198211594,
+          "calls": 4.960144927536232
+        },
+        "mavra": {
+          "accuracy": 83.69565217391305,
+          "min": 81.52173913043478,
+          "max": 84.78260869565217,
+          "per_run": [
+            81.52173913043478,
+            84.78260869565217,
+            84.78260869565217
+          ],
+          "wrong_pct": 11.956521739130435,
+          "clarify": 12,
+          "clarify_pct": 4.3478260869565215,
+          "n_per_run": 92,
+          "tokens": 17802.78623188406,
+          "seconds": 34.991111105355074,
+          "calls": 3.6884057971014492
+        }
+      }
+    }
+  },
+  "per_change": {
+    "synthetic/holdout": {
+      "ace": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 6,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 13,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/append": {
+      "ace": {
+        "correct": 16,
+        "clarify": 0,
+        "wrong": 2,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 9,
+        "clarify": 0,
+        "wrong": 9,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 8,
+        "clarify": 0,
+        "wrong": 10,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/backfill": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 1,
+        "clarify": 1,
+        "wrong": 4,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 1,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "synthetic/correct": {
+      "ace": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 6,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 6,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/addcol": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 1,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 1,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "synthetic/status": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 2,
+        "clarify": 0,
+        "wrong": 4,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 1,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "synthetic/revision": {
+      "ace": {
+        "correct": 15,
+        "clarify": 0,
+        "wrong": 3,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 10,
+        "clarify": 0,
+        "wrong": 8,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 11,
+        "clarify": 0,
+        "wrong": 7,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/dupload": {
+      "ace": {
+        "correct": 13,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 9,
+        "clarify": 0,
+        "wrong": 9,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 11,
+        "clarify": 0,
+        "wrong": 7,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 16,
+        "clarify": 0,
+        "wrong": 2,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/dimhist": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "synthetic/latekey": {
+      "ace": {
+        "correct": 5,
+        "clarify": 0,
+        "wrong": 13,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 18,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 18,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/unit": {
+      "ace": {
+        "correct": 13,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 12,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 7,
+        "clarify": 0,
+        "wrong": 11,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 1,
+        "clarify": 0,
+        "wrong": 17,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "synthetic/mirror": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 6,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 6,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 4,
+        "clarify": 0,
+        "wrong": 2,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "tpch/holdout": {
+      "ace": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      },
+      "awm": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      },
+      "gmemory": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      },
+      "mavra": {
+        "correct": 18,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 18
+      }
+    },
+    "tpch/append": {
+      "ace": {
+        "correct": 11,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 12
+      },
+      "awm": {
+        "correct": 11,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 12
+      },
+      "gmemory": {
+        "correct": 11,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 12
+      },
+      "mavra": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      }
+    },
+    "tpch/backfill": {
+      "ace": {
+        "correct": 5,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "tpch/correct": {
+      "ace": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      },
+      "awm": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      },
+      "gmemory": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      },
+      "mavra": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      }
+    },
+    "tpch/addcol": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "tpch/status": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 5,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "tpch/revision": {
+      "ace": {
+        "correct": 9,
+        "clarify": 0,
+        "wrong": 3,
+        "error": 0,
+        "n": 12
+      },
+      "awm": {
+        "correct": 7,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 12
+      },
+      "gmemory": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      },
+      "mavra": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      }
+    },
+    "tpch/dupload": {
+      "ace": {
+        "correct": 10,
+        "clarify": 0,
+        "wrong": 2,
+        "error": 0,
+        "n": 12
+      },
+      "awm": {
+        "correct": 11,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 12
+      },
+      "gmemory": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      },
+      "mavra": {
+        "correct": 12,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      }
+    },
+    "tpch/dimhist": {
+      "ace": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    },
+    "tpch/latekey": {
+      "ace": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 12,
+        "error": 0,
+        "n": 12
+      },
+      "awm": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 12,
+        "error": 0,
+        "n": 12
+      },
+      "gmemory": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 12,
+        "error": 0,
+        "n": 12
+      },
+      "mavra": {
+        "correct": 0,
+        "clarify": 12,
+        "wrong": 0,
+        "error": 0,
+        "n": 12
+      }
+    },
+    "tpch/unit": {
+      "ace": {
+        "correct": 7,
+        "clarify": 0,
+        "wrong": 5,
+        "error": 0,
+        "n": 12
+      },
+      "awm": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 6,
+        "error": 0,
+        "n": 12
+      },
+      "gmemory": {
+        "correct": 9,
+        "clarify": 0,
+        "wrong": 3,
+        "error": 0,
+        "n": 12
+      },
+      "mavra": {
+        "correct": 0,
+        "clarify": 0,
+        "wrong": 12,
+        "error": 0,
+        "n": 12
+      }
+    },
+    "tpch/mirror": {
+      "ace": {
+        "correct": 4,
+        "clarify": 0,
+        "wrong": 2,
+        "error": 0,
+        "n": 6
+      },
+      "awm": {
+        "correct": 5,
+        "clarify": 0,
+        "wrong": 1,
+        "error": 0,
+        "n": 6
+      },
+      "gmemory": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      },
+      "mavra": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6
+      }
+    }
+  },
+  "cost": {
+    "charged_cny": 27.525404759999986,
+    "calls": 7889,
+    "errors": 0,
+    "models": {
+      "deepseek-flash": 7889
+    },
+    "observed_decrease_cny": 27.5
+  },
+  "mavra_fewest_tokens_every_group": true
+}
