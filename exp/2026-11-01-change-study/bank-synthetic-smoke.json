@@ -1,0 +1,23 @@
+{
+  "rule": "smoke test only: plumbing of all four methods, the bank, memory checkpoints and the date-key repair; not scored in the study",
+  "phases": {
+    "holdout": [
+      "M1-P1"
+    ],
+    "latekey": [
+      "M1-P1",
+      "M5-T1"
+    ]
+  },
+  "all_tasks": [
+    "M1-L1",
+    "M1-L2",
+    "M3-L1",
+    "M3-L2",
+    "M5-L1",
+    "M5-L2",
+    "M1-P1",
+    "M1-P1",
+    "M5-T1"
+  ]
+}

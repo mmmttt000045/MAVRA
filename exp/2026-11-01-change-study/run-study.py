@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+"""Run the change study: four methods x two schemas x repeated runs on the frozen question banks.
+
+Starts the loopback budget relay and the published-memory service, then runs one
+metric-bench process per (schema, method, run) cell. Cells of one run start
+together; the next run starts only after every cell of the previous one ended, so
+run 1 doubles as the pilot. Every cell, completed or not, stays in the results.
+"""
+import argparse
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import subprocess
+import time
+import urllib.request
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+P = json.loads((HERE / 'protocol.json').read_text())
+
+
+def utc():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def save(path, value):
+    tmp = path.with_suffix('.tmp')
+    tmp.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+    tmp.replace(path)
+
+
+def bank_path(ds, smoke):
+    return HERE / (f'bank-{ds}-smoke.json' if smoke else f'bank-{ds}.json')
+
+
+def command(ds, arm, run, out, smoke):
+    bank = json.loads(bank_path(ds, smoke).read_text())
+    changes = [c for c in P['changes'] if c in bank['phases']]
+    cmd = [str(ROOT / 'target/release/agentdb-mid'), '--pool', '8', '--out', str(out), 'metric-bench',
+           '--agent', 'openai', '--extractor', 'openai', '--modes', P['modes'][arm], '--metrics', ','.join(P['metrics']),
+           '--phrasings', 'named', '--question-set', 'v2', '--bank', str(bank_path(ds, smoke)),
+           '--holdout-agents', 'A', '--changes', ','.join(changes), '--repeats', '1', '--first-repeat', str(run),
+           '--max-steps', str(P['max_steps']), '--sql-timeout-secs', str(P['sql_timeout_seconds']),
+           '--concurrency', '1', '--trace', '--no-explain']
+    if ds == 'tpch':
+        cmd += ['--spec', 'exp/2026-10-11-generality/schemas/tpch.json', '--defs', 'exp/2026-10-11-generality/e2e/tpch-defs.json']
+    else:
+        cmd += ['--rows', str(P['synthetic_rows'])]
+    return cmd
+
+
+def wait_health(port, proc):
+    until = time.monotonic() + 60
+    while time.monotonic() < until:
+        if proc.poll() is not None:
+            raise RuntimeError(f'service on {port} exited')
+        try:
+            with urllib.request.urlopen(f'http://127.0.0.1:{port}/health', timeout=2) as r:
+                if r.status == 200:
+                    return
+        except OSError:
+            time.sleep(.5)
+    raise RuntimeError(f'service on {port} did not start')
+
+
+def main():
+    a = argparse.ArgumentParser()
+    a.add_argument('--key-file', required=True)
+    a.add_argument('--runs', default='1,2,3')
+    a.add_argument('--arms', default=','.join(P['arms']))
+    a.add_argument('--datasets', default=','.join(P['datasets']))
+    a.add_argument('--parallel', type=int, default=8)
+    a.add_argument('--smoke', action='store_true', help='tiny banks bank-*-smoke.json, separate results directory')
+    a = a.parse_args()
+    out = ROOT / (P['results'] + ('-smoke' if a.smoke else ''))
+    out.mkdir(parents=True, exist_ok=True)
+    state_path = out / 'execution-state.json'
+    state = json.loads(state_path.read_text()) if state_path.exists() else {'cells': []}
+    state.update(status='starting', started_utc=utc())
+    save(state_path, state)
+    db_url = next(line.split('=', 1)[1].strip().strip('"\'') for line in (ROOT / '.env').read_text().splitlines()
+                  if line.startswith('AGENTDB_URL='))
+    env = {k: v for k, v in os.environ.items() if 'proxy' not in k.lower() and not k.startswith(('OPENAI_', 'DEEPSEEK_'))}
+    env.update(AGENTDB_URL=db_url, PYTHONPATH=str(ROOT / '.pydeps-relbench'), NO_PROXY='127.0.0.1,localhost',
+               FIG6_PRESERVE_REASONING='1', FIG6_MEMORY_URL='http://127.0.0.1:19531/memory',
+               OPENAI_API_KEY=P['local_token'], OPENAI_MODEL=P['model'], OPENAI_REQUIRE_MODEL=P['model'], OPENAI_HEDGE='1',
+               OPENAI_REASONING_EFFORT=P['reasoning_effort'], OPENAI_THINKING='enabled',
+               OMP_NUM_THREADS='4', OPENBLAS_NUM_THREADS='4', MKL_NUM_THREADS='4', MALLOC_ARENA_MAX='2')
+    totals = ','.join(f'{ds}={len(json.loads(bank_path(ds, a.smoke).read_text())["all_tasks"])}'
+                      for ds in a.datasets.split(','))
+    services, logs = [], []
+    try:
+        for name, port, extra in [('budget-proxy', 19530, ['--key-file', a.key_file, '--out', str(out / 'budget')]),
+                                  ('memory-service', 19531, ['--out', str(out / 'memory'), '--total-tasks', totals])]:
+            log = (out / f'{name}.log').open('a')
+            logs.append(log)
+            proc = subprocess.Popen(['python3', '-u', str(HERE / f'{name}.py'), '--port', str(port), *extra], cwd=ROOT, env=env,
+                                    stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+            services.append(proc)
+            wait_health(port, proc)
+        state['status'] = 'running'
+        save(state_path, state)
+
+        def run_cell(ds, arm, run):
+            key = f'{ds}-r{run}-{arm}'
+            folder = out / 'cells' / key
+            folder.mkdir(parents=True, exist_ok=False)
+            cmd = command(ds, arm, run, folder, a.smoke)
+            rec = {'key': key, 'dataset': ds, 'arm': arm, 'run': run, 'started_utc': utc(), 'command': cmd}
+            save(folder / 'launch.json', rec)
+            cell_env = {**env, 'FIG6_CELL_KEY': key, 'OPENAI_BASE_URL': f'http://127.0.0.1:19530/arm/{key}'}
+            with (folder / 'console.log').open('x') as log:
+                proc = subprocess.Popen(cmd, cwd=ROOT, env=cell_env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                (folder / 'process.pid').write_text(str(proc.pid))
+                rec['returncode'] = proc.wait()
+            reports = list(folder.glob('metric-*/report.json'))
+            rec['completed'] = rec['returncode'] == 0 and len(reports) == 1
+            if reports:
+                report = json.loads(reports[0].read_text())
+                rows = report['cells'][0]['records'] if report.get('cells') else []
+                rec['tasks'] = len(rows)
+                rec['report'] = str(reports[0].relative_to(ROOT))
+                infra = [r['error'] for r in rows if r.get('error') and any(
+                    x in r['error'].lower() for x in ['http 402', 'http 5', 'error sending request', 'connection', 'timed out'])]
+                if infra:
+                    rec.update(completed=False, infrastructure_errors=infra[:5])
+            rec['finished_utc'] = utc()
+            save(folder / 'completion.json', rec)
+            try:
+                data = json.dumps({'op': 'close', 'key': key, 'arm': 'mavra' if arm == 'mavra' else arm}).encode()
+                urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:19531/memory', data=data,
+                                                              headers={'Content-Type': 'application/json'}), timeout=45).read()
+            except Exception as e:
+                rec['memory_close_error'] = type(e).__name__
+            print(json.dumps({k: v for k, v in rec.items() if k != 'command'}), flush=True)
+            return rec
+
+        for run in [int(x) for x in a.runs.split(',')]:
+            if (out / 'budget' / 'STOP').exists():
+                state['stop_reason'] = 'stop requested'
+                break
+            if shutil.disk_usage(ROOT).free < 25 * 1024 ** 3:
+                state['stop_reason'] = 'disk reserve'
+                break
+            cells = [(ds, arm, run) for arm in a.arms.split(',') for ds in a.datasets.split(',')
+                     if not (out / 'cells' / f'{ds}-r{run}-{arm}').exists()]
+            with ThreadPoolExecutor(max_workers=a.parallel) as pool:
+                done = list(pool.map(lambda c: run_cell(*c), cells))
+            state['cells'] += done
+            save(state_path, state)
+            budget = json.loads((out / 'budget' / 'budget-state.json').read_text())
+            if budget.get('status') == 'budget_limit':
+                state['stop_reason'] = 'budget limit'
+                break
+        state.update(status='finished', finished_utc=utc())
+        save(state_path, state)
+    except Exception as e:
+        state.update(status='failed', error=f'{type(e).__name__}: {e}', finished_utc=utc())
+        save(state_path, state)
+        raise
+    finally:
+        for proc in reversed(services):
+            if proc.poll() is None:
+                os.killpg(proc.pid, signal.SIGTERM)
+                try:
+                    proc.wait(35)
+                except subprocess.TimeoutExpired:
+                    os.killpg(proc.pid, signal.SIGKILL)
+        for log in logs:
+            log.close()
+
+
+if __name__ == '__main__':
+    main()

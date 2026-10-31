@@ -155,6 +155,7 @@ async fn date_key_repair(url: &str) -> Result<Value> {
                from generate_series(date '2002-08-01', date '2002-09-30', interval '1 day') d; \
              create table fs (f_ticket int, f_item int, f_date_sk int, f_paid numeric(12,2)); \
              insert into fs select d_date_sk, 1, d_date_sk, 10 from ds; \
+             create table etl_batch_log (table_name text, batch_id bigint); \
              analyze ds; analyze fs",
         )
         .await?;
@@ -188,9 +189,11 @@ async fn date_key_repair(url: &str) -> Result<Value> {
         .query(
             QKind::Meta,
             "insert into fs select f_ticket + 1000, f_item, to_char(d_date, 'YYYYMMDD')::int, f_paid \
-             from fs join ds on f_date_sk = d_date_sk where d_moy = 9; analyze fs",
+             from fs join ds on f_date_sk = d_date_sk where d_moy = 9; \
+             select pg_stat_force_next_flush(); insert into etl_batch_log values ('fs', 2); analyze fs",
         )
         .await?;
+    tokio::time::sleep(Duration::from_millis(1500)).await;
     mid.invalidate_versions();
     let old = mid.call_tool(&ctx, "run_metric", &request).await?;
     ensure!(old["rejected"] == true && old.get("result").is_none(), "the pre-repair revision must not execute: {old}");

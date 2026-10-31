@@ -1,0 +1,84 @@
+{
+  "study": "change-study-20261101",
+  "question": "Do maintained shared definitions keep agents correct after data changes, and at what cost, compared with published agent memories?",
+  "authorization": "User 2026-10-31: redo the Fig. 6 experiment on the DeepSeek official API, about CNY 40.",
+  "budget_cny": 40.0,
+  "local_token": "change-study-20261101-local",
+  "model": "deepseek-flash",
+  "reasoning_effort": "low",
+  "max_output_tokens": 16384,
+  "max_steps": 20,
+  "sql_timeout_seconds": 120,
+  "synthetic_rows": 1000000,
+  "datasets": [
+    "synthetic",
+    "tpch"
+  ],
+  "arms": [
+    "ace",
+    "awm",
+    "gmemory",
+    "mavra"
+  ],
+  "modes": {
+    "ace": "paper-ace",
+    "awm": "paper-awm",
+    "gmemory": "paper-gmemory",
+    "mavra": "metric-global-full"
+  },
+  "metrics": [
+    "M1",
+    "M3",
+    "M5"
+  ],
+  "changes": [
+    "append",
+    "backfill",
+    "correct",
+    "addcol",
+    "status",
+    "revision",
+    "dupload",
+    "dimhist",
+    "latekey",
+    "unit",
+    "mirror"
+  ],
+  "runs": [
+    1,
+    2,
+    3
+  ],
+  "results": "results/change-study-20261101",
+  "groups": {
+    "holdout": [
+      "holdout"
+    ],
+    "non_breaking": [
+      "append",
+      "backfill",
+      "correct",
+      "addcol"
+    ],
+    "covered_breaks": [
+      "status",
+      "revision",
+      "dupload",
+      "dimhist",
+      "latekey"
+    ],
+    "outside_conditions": [
+      "unit",
+      "mirror"
+    ]
+  },
+  "bank": "select-bank.py on the model-free probe: single-month (P1) and period-difference (T1) questions of every metric that reads a written table, per phase; bank-synthetic.json and bank-tpch.json are frozen before the first paid call and identical for all methods and runs.",
+  "agents": "One agent A learns (six learning questions, two per metric, with the business definition and a verified answer) and answers every scored question by metric name only. Every question starts a new conversation.",
+  "memory_scope": "ACE and AWM keep agent A's memory; G-Memory shares within the database; MAVRA keeps global definitions. Each change starts from v1 data and the post-held-out memory of the method.",
+  "feedback": "All four methods receive the same bounded record of their own three latest questions, answers, SQL, observations and binary correctness. No reference answer, reference SQL or change label reaches any method.",
+  "shared_prompt": "All methods use the same planner prompt, including the business-key rule; MAVRA additionally has its native metric tools and their usage rule.",
+  "scoring": "An answer is correct when it equals the reference answer at the question's precision. Clarification requests and errors count as not correct and are reported separately (correct / clarification / wrong).",
+  "aggregation": "Primary: answers pooled per group (micro accuracy), per schema and over both schemas, mean over runs with the range over runs. Per-change and per-run tables are kept in full. Tokens per question include online memory updates and MAVRA's learning-time extraction and optimization charged to the run.",
+  "pilot": "Run 1 is the pilot. If a defect is found in any method's harness, the run is stopped, the defect fixed, and the affected cells rerun; the earlier cells stay in the development record with their cost.",
+  "reporting": "All completed runs are reported; no run is selected by outcome."
+}
