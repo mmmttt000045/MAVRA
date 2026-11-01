@@ -49,3 +49,14 @@ runs 32 checks regardless of agents (16.6 s at 32 agents, 3.3x) and falls to 14 
 (6.9 s, 1.7x) with simultaneous arrivals, where its in-flight merging combines identical
 checks. Block ranges are within a few percent. The noctis LLM study was running during
 the first half of the cells; medians over three randomized blocks are reported.
+
+## Final binary (2026-11-01 afternoon, used in the paper; `results/shared-validation-1793508134275611`, `cells-final.tgz`)
+
+Rerun with the binary of the final change study (HEAD fdf56be), alone on the machine, 108 cells,
+every use served a valid definition. Key-uniqueness checks now count groups with hash
+aggregation, so every check is about 4x faster than in the run above, for all policies alike.
+After the load, MAVRA runs 8 checks for 1–32 agents; its database time grows from 0.9 s to 2.0 s
+(staggered) only through per-use version reads (552 metadata queries at 32 agents, 0.97 s; the
+8 checks take 0.86 s), and stays at 1.0–1.1 s for simultaneous arrivals. Per-agent validation:
+256 checks at 32 agents, 30.0 s staggered (15x MAVRA) and 36.6 s simultaneous (34x). Full
+recheck: 32 checks, 4.7 s staggered (2.4x); 14 checks, 1.8 s simultaneous (1.7x).
