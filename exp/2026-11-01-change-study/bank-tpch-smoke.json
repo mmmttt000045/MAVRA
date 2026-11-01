@@ -1,0 +1,37 @@
+{
+  "rule": "smoke test only: final-binary MAVRA on TPC-H (status filter repair, revision, exact-duplicate repair, ambiguous backup copy, timing); not scored in the study",
+  "phases": {
+    "holdout": [
+      "M1-P1"
+    ],
+    "status": [
+      "M5-P1"
+    ],
+    "revision": [
+      "M1-P1"
+    ],
+    "dupload": [
+      "M1-P1",
+      "M3-P1",
+      "M1-T1"
+    ],
+    "mirror": [
+      "M5-P1"
+    ]
+  },
+  "all_tasks": [
+    "M1-L1",
+    "M1-L2",
+    "M3-L1",
+    "M3-L2",
+    "M5-L1",
+    "M5-L2",
+    "M1-P1",
+    "M5-P1",
+    "M1-P1",
+    "M1-P1",
+    "M3-P1",
+    "M1-T1",
+    "M5-P1"
+  ]
+}

@@ -7,13 +7,15 @@ exactly its frozen bank, and writes study-stats.json, summary.md and the LaTeX m
 the answers of a group (per schema, and over both schemas), averaged over runs with
 the range over runs. Tokens per scored question include the agent session (memory
 lookups included) and the method's online memory update after the answer.
-Usage: analyse.py [--results DIR] [--tex PATH]
+Usage: analyse.py [--results DIR] [--arm-results ARM=DIR ...] [--tex PATH]
+--arm-results takes one method's cells from another results directory (the final-binary
+MAVRA rerun); the other methods' cells come from --results.
 """
 import argparse
 import glob
 import json
 from pathlib import Path
-from statistics import mean
+from statistics import mean, median
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -45,6 +47,7 @@ def summarize(rows):
                clarify_pct=100 * out['clarify'] / n if n else None,
                tokens=mean(tokens(r) for r in rows) if n else None,
                seconds=mean((r.get('run') or {}).get('seconds') or 0 for r in rows) if n else None,
+               median_seconds=median((r.get('run') or {}).get('seconds') or 0 for r in rows) if n else None,
                calls=mean((r.get('run') or {}).get('steps') or 0 for r in rows) if n else None)
     return out
 
@@ -52,12 +55,17 @@ def summarize(rows):
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('--results', default=str(ROOT / P['results']))
+    a.add_argument('--arm-results', action='append', default=[], metavar='ARM=DIR')
     a.add_argument('--tex', default=str(ROOT / 'overleaf/gen/change-study.tex'))
     a = a.parse_args()
     res = Path(a.results)
+    override = dict(x.split('=', 1) for x in a.arm_results)
     banks = {ds: json.loads((HERE / f'bank-{ds}.json').read_text()) for ds in P['datasets']}
     cells, problems = {}, []
-    for cell in sorted((res / 'cells').glob('*')):
+    folders = [c for c in sorted((res / 'cells').glob('*')) if c.name.split('-r', 1)[1].split('-', 1)[1] not in override]
+    for arm, d in override.items():
+        folders += [c for c in sorted((Path(d) / 'cells').glob('*')) if c.name.endswith(f'-{arm}')]
+    for cell in folders:
         ds, rest = cell.name.split('-r', 1)
         run, arm = rest.split('-', 1)
         rows, complete = records(cell)
@@ -69,7 +77,8 @@ def main():
         cells[(ds, arm, int(run))] = {'rows': scored, 'learn': [r for r in rows if r['phase'] == 'learn'], 'complete': complete}
     runs = sorted({k[2] for k, v in cells.items() if v['complete']})
     full = [r for r in runs if all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'] for arm in P['arms'])]
-    stats = {'complete_runs': full, 'problems': problems, 'per_cell': {}, 'groups': {}, 'per_change': {}}
+    stats = {'complete_runs': full, 'problems': problems, 'per_cell': {}, 'groups': {}, 'per_change': {},
+             'sources': {'results': str(res), 'arm_results': override}}
     for (ds, arm, run), c in cells.items():
         stats['per_cell'][f'{ds}-r{run}-{arm}'] = {
             'complete': c['complete'], 'scored': len(c['rows']),
@@ -85,12 +94,17 @@ def main():
                 if not per_run:
                     continue
                 acc = [x['accuracy'] for x in per_run]
+                wrong = [x['wrong_pct'] for x in per_run]
+                pooled = [r for run in full for ds in dss for r in cells[(ds, arm, run)]['rows'] if r['phase'] in phases]
                 stats['groups'][g][scope][arm] = {
                     'accuracy': mean(acc), 'min': min(acc), 'max': max(acc), 'per_run': acc,
-                    'wrong_pct': mean(x['wrong_pct'] for x in per_run), 'clarify': sum(x['clarify'] for x in per_run),
+                    'wrong_pct': mean(wrong), 'wrong_min': min(wrong), 'wrong_max': max(wrong), 'wrong_per_run': wrong,
+                    'clarify': sum(x['clarify'] for x in per_run),
                     'clarify_pct': mean(x['clarify_pct'] for x in per_run),
                     'n_per_run': per_run[0]['n'], 'tokens': mean(x['tokens'] for x in per_run),
-                    'seconds': mean(x['seconds'] for x in per_run), 'calls': mean(x['calls'] for x in per_run)}
+                    'seconds': mean(x['seconds'] for x in per_run), 'calls': mean(x['calls'] for x in per_run),
+                    'median_seconds': median((r.get('run') or {}).get('seconds') or 0 for r in pooled),
+                    'seconds_per_run': [x['seconds'] for x in per_run]}
     for ds in P['datasets']:
         for ph in ['holdout', *P['changes']]:
             stats['per_change'][f'{ds}/{ph}'] = {
@@ -140,6 +154,7 @@ def main():
                     mac[f'Cs{gtag}{stag}{tag[arm]}Wrong'] = f"{x['wrong_pct']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}TokK'] = f"{x['tokens']/1000:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}S'] = f"{x['seconds']:.0f}"
+                    mac[f'Cs{gtag}{stag}{tag[arm]}MedS'] = f"{x['median_seconds']:.0f}"
             base = {arm: g[gname][scope][arm] for arm in P['arms'] if arm != 'mavra' and arm in g[gname][scope]}
             if base and 'mavra' in g[gname][scope]:
                 m = g[gname][scope]['mavra']
@@ -151,6 +166,7 @@ def main():
                 mac[f'Cs{gtag}{stag}BaseTokMinK'] = f"{cheap['tokens']/1000:.1f}"
                 mac[f'Cs{gtag}{stag}BaseTokMaxK'] = f"{max(x['tokens'] for x in base.values())/1000:.1f}"
                 mac[f'Cs{gtag}{stag}BaseSMax'] = f"{max(x['seconds'] for x in base.values()):.0f}"
+                mac[f'Cs{gtag}{stag}BaseSMin'] = f"{min(x['seconds'] for x in base.values()):.0f}"
                 mac[f'Cs{gtag}{stag}TokSave'] = f"{100 * (1 - m['tokens'] / cheap['tokens']):.0f}"
     lk = stats['per_change'].get('tpch/latekey', {}).get('mavra')
     if lk:

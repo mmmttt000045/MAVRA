@@ -42,10 +42,10 @@ def reservation(body, r):
 
 
 class Budget:
-    def __init__(self, directory, key_file):
+    def __init__(self, directory, key_file, cap=None):
         import requests
         self.protocol = json.loads((HERE / 'protocol.json').read_text())
-        self.cap = float(self.protocol['budget_cny'])
+        self.cap = float(self.protocol['budget_cny'] if cap is None else cap)
         self.dir = Path(directory)
         self.dir.mkdir(parents=True, exist_ok=True)
         self.path = self.dir / 'budget-state.json'
@@ -182,7 +182,8 @@ if __name__ == '__main__':
     p.add_argument('--port', type=int, default=19530)
     p.add_argument('--out', required=True)
     p.add_argument('--key-file', required=True)
+    p.add_argument('--cap', type=float, default=None, help='spending cap in CNY for this ledger (default: protocol budget_cny)')
     a = p.parse_args()
     server = ThreadingHTTPServer(('127.0.0.1', a.port), Handler)
-    server.budget = Budget(a.out, a.key_file)
+    server.budget = Budget(a.out, a.key_file, a.cap)
     server.serve_forever()

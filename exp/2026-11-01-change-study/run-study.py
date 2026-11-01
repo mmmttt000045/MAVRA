@@ -78,8 +78,10 @@ def main():
     a.add_argument('--smoke', action='store_true', help='tiny banks bank-*-smoke.json, separate results directory')
     a.add_argument('--pool', type=int, default=8, help='database connections per cell (agent SQL runs one at a time)')
     a.add_argument('--concurrent-runs', action='store_true', help='start all listed runs together instead of one after another')
+    a.add_argument('--results', default=P['results'], help='results directory (relative to the repository)')
+    a.add_argument('--cap', type=float, default=None, help='spending cap of this results directory in CNY (default: protocol)')
     a = a.parse_args()
-    out = ROOT / (P['results'] + ('-smoke' if a.smoke else ''))
+    out = ROOT / (a.results + ('-smoke' if a.smoke else ''))
     out.mkdir(parents=True, exist_ok=True)
     state_path = out / 'execution-state.json'
     state = json.loads(state_path.read_text()) if state_path.exists() else {'cells': []}
@@ -90,7 +92,8 @@ def main():
     head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     binary = hashlib.sha256((ROOT / 'target/release/agentdb-mid').read_bytes()).hexdigest()
     state.setdefault('launches', []).append({'utc': utc(), 'head': head, 'binary_sha256': binary, 'runs': a.runs, 'arms': a.arms,
-                                             'datasets': a.datasets, 'parallel': a.parallel})
+                                             'datasets': a.datasets, 'parallel': a.parallel, 'pool': a.pool,
+                                             'concurrent_runs': a.concurrent_runs, 'cap': a.cap})
     state.update(status='starting', started_utc=utc())
     save(state_path, state)
     db_url = next(line.split('=', 1)[1].strip().strip('"\'') for line in (ROOT / '.env').read_text().splitlines()
@@ -105,7 +108,8 @@ def main():
                       for ds in a.datasets.split(','))
     services, logs = [], []
     try:
-        for name, port, extra in [('budget-proxy', 19530, ['--key-file', a.key_file, '--out', str(out / 'budget')]),
+        cap = [] if a.cap is None else ['--cap', str(a.cap)]
+        for name, port, extra in [('budget-proxy', 19530, ['--key-file', a.key_file, '--out', str(out / 'budget'), *cap]),
                                   ('memory-service', 19531, ['--out', str(out / 'memory'), '--total-tasks', totals])]:
             log = (out / f'{name}.log').open('a')
             logs.append(log)
