@@ -168,6 +168,14 @@ def main():
                 mac[f'Cs{gtag}{stag}BaseSMax'] = f"{max(x['seconds'] for x in base.values()):.0f}"
                 mac[f'Cs{gtag}{stag}BaseSMin'] = f"{min(x['seconds'] for x in base.values()):.0f}"
                 mac[f'Cs{gtag}{stag}TokSave'] = f"{100 * (1 - m['tokens'] / cheap['tokens']):.0f}"
+    # per-change counts over both schemas and all runs (correct, wrong, total)
+    for ph in ['holdout', *P['changes']]:
+        for arm in P['arms']:
+            rows = [stats['per_change'][f'{ds}/{ph}'][arm] for ds in P['datasets'] if f'{ds}/{ph}' in stats['per_change']]
+            if rows:
+                mac[f'Cs{ph.capitalize()}{tag[arm]}C'] = str(sum(x['correct'] for x in rows))
+                mac[f'Cs{ph.capitalize()}{tag[arm]}W'] = str(sum(x['wrong'] for x in rows))
+                mac[f'Cs{ph.capitalize()}N'] = str(sum(x['n'] for x in rows))
     lk = stats['per_change'].get('tpch/latekey', {}).get('mavra')
     if lk:
         mac['CsTpchLatekeyClarify'] = str(lk['clarify'])
