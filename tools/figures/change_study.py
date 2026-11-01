@@ -17,7 +17,7 @@ import mplstyle
 import style
 
 NAME = "change-study"
-W, H = style.TEXTWIDTH, 44.0
+W, H = style.TEXTWIDTH, 39.0
 ARMS = ["ace", "awm", "gmemory", "mavra"]
 GROUPS = ["holdout", "non_breaking", "covered_breaks", "outside_conditions"]
 SCHEMAS = ["synthetic", "tpch"]
@@ -32,11 +32,11 @@ TEXT = {
     "en": {"groups": ["Held-\nout", "Non-\nbreaking", "Covered\nbreaks", "Not\ncovered"],
            "panels": ["(a) Answers, synthetic retail", "(b) Answers, TPC-H SF1", "(c) Tokens, both schemas",
                       "(d) Time, both schemas"],
-           "up": "Correct (%)", "down": "Wrong (%)", "y": ["Answers (%)", "Tokens per question (k)", "Seconds per question"],
+           "up": "Correct", "down": "Wrong", "y": ["Answers (%)", "Tokens per question (k)", "Seconds per question"],
            "flag": "Asked for clarification"},
-    "zh": {"groups": ["留出", "正常\n更新", "覆盖\n变化", "未覆盖"],
+    "zh": {"groups": ["留出", "正常\n更新", "覆盖\n破坏", "未覆盖"],
            "panels": ["(a) 作答，合成零售", "(b) 作答，TPC-H SF1", "(c) token，两种模式", "(d) 耗时，两种模式"],
-           "up": "正确（%）", "down": "错误（%）", "y": ["作答（%）", "每题 token（千）", "每题耗时（秒）"], "flag": "请求澄清"},
+           "up": "正确", "down": "错误", "y": ["作答（%）", "每题 token（千）", "每题耗时（秒）"], "flag": "请求澄清"},
 }
 
 
@@ -114,7 +114,7 @@ def cost(ax, data, field):
 def figure(lang):
     t, data = TEXT[lang], load()
     fig = mplstyle.figure(W, H)
-    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.995, top=.875, bottom=.215, wspace=.26))
+    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.995, top=.862, bottom=.24, wspace=.26))
     handles = [Patch(**mplstyle.bar_style(arm, HATCHES[arm]), label=LABEL[arm]) for arm in ARMS]
     handles.append(Patch(facecolor="white", edgecolor="black", lw=.4, ls=(0, (1.5, 1)), label=t["flag"]))
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(.52, 1.0), ncol=5, handlelength=1.4,

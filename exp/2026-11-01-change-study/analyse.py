@@ -161,6 +161,8 @@ def main():
                 best = max(base.values(), key=lambda x: x['accuracy'])
                 cheap = min(base.values(), key=lambda x: x['tokens'])
                 mac[f'Cs{gtag}{stag}Gain'] = f"{m['accuracy'] - best['accuracy']:.1f}"
+                mac[f'Cs{gtag}{stag}BaseMin'] = f"{min(x['accuracy'] for x in base.values()):.1f}"
+                mac[f'Cs{gtag}{stag}BaseMax'] = f"{max(x['accuracy'] for x in base.values()):.1f}"
                 mac[f'Cs{gtag}{stag}BaseWrongMin'] = f"{min(x['wrong_pct'] for x in base.values()):.0f}"
                 mac[f'Cs{gtag}{stag}BaseWrongMax'] = f"{max(x['wrong_pct'] for x in base.values()):.0f}"
                 mac[f'Cs{gtag}{stag}BaseTokMinK'] = f"{cheap['tokens']/1000:.1f}"

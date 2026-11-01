@@ -32,6 +32,6 @@
 \item \bi{We design dependency-aware validation and repair mechanisms that recheck affected conditions after data updates and block reuse of metric definitions whose recorded conditions fail on the query snapshot. The mechanisms selectively repair or invalidate affected definitions, preserve unaffected knowledge, and share validated repairs across consumers.}
 {我们设计了基于依赖的动态验证与修复机制，在数据更新后重验受影响的条件，并阻止复用在查询快照上不满足已记录条件的指标定义。这些机制定向修复受影响的定义或将其标记为不可复用，保留未受影响的知识，并在使用者之间共享经过验证的修复。}
 
-\item \bi{We evaluate \system\ on RelBench, TPC-DS, and TPC-H to study cross-agent reuse, maintenance under data updates, answer and predictive quality, token consumption, and end-to-end time. The evaluation accounts for the costs of learning, publication, validation, and maintenance.}
-{我们在 RelBench、TPC-DS 和 TPC-H 上评估 \system，考察跨智能体复用、数据更新后的维护、答案与预测质量、token 消耗以及端到端耗时，并计入学习、发布、验证和维护的开销。}
+\item \bi{We evaluate \system\ on RelBench and five analytical schemas against agent memories, feature-engineering systems, and maintenance policies, covering cross-agent reuse, correctness after eleven kinds of data change, quality, tokens, and end-to-end time, with the costs of learning, publication, validation, and maintenance.}
+{我们在 RelBench 与五个分析模式上，将 \system 与智能体记忆、特征工程系统和各种维护策略比较，考察跨智能体复用、十一种数据变化后的正确性、质量、token 与端到端耗时，并计入学习、发布、验证和维护的开销。}
 \end{itemize}

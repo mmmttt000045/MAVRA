@@ -16,7 +16,7 @@ import mplstyle  # noqa: E402
 import style  # noqa: E402
 
 NAME = 'population'
-W, H = style.TEXTWIDTH, 44.0
+W, H = style.TEXTWIDTH, 39.0
 DATA = style.ROOT / 'exp/2026-10-12-population/population-stats.json'
 METHODS = [('middle-alone', 'None', '^'), ('metric-private', 'Private', 'D'), ('metric-global-snap', 'Mavra', 'o')]
 CHANGE = [('middle-alone', 'None', '^'), ('metric-private', 'Private', 'D'), ('traj-global', 'Traj', 's'),
@@ -72,7 +72,7 @@ def figure(lang):
     data, _ = load()
     T = TEXT[lang]
     fig = mplstyle.figure(W, H)
-    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.99, top=.85, bottom=.255, wspace=.42))
+    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.99, top=.832, bottom=.284, wspace=.42))
     methods = [m for m in METHODS if m[0] in data]
     linestyles = {'middle-alone': '--', 'metric-private': '-.', 'traj-global': ':', 'metric-global-snap': '-'}
     handles = [
@@ -111,7 +111,7 @@ def figure(lang):
         ax.set_xticks([1, 4, 8, 12, 16] if n == 16 else xs[::max(1, n // 4)])
         ax.yaxis.grid(True)
         box = ax.get_position()
-        fig.text((box.x0 + box.x1) / 2, .025, T['panels'][k],
+        fig.text((box.x0 + box.x1) / 2, .028, T['panels'][k],
                  ha='center', va='bottom', fontsize=mplstyle.TITLE)
     ax = axes[3]
     for mode, _, marker in CHANGE:
@@ -133,7 +133,7 @@ def figure(lang):
     ax.set_xlabel(T['x'][3])
     ax.grid(True)
     box = ax.get_position()
-    fig.text((box.x0 + box.x1) / 2, .025, T['panels'][3], ha='center', va='bottom', fontsize=mplstyle.TITLE)
+    fig.text((box.x0 + box.x1) / 2, .028, T['panels'][3], ha='center', va='bottom', fontsize=mplstyle.TITLE)
     return fig
 
 if __name__ == '__main__':

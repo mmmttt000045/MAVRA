@@ -21,6 +21,7 @@
           "clarify_pct": 0.0,
           "tokens": 16492.166666666668,
           "seconds": 4.965415898833333,
+          "median_seconds": 4.0935252065,
           "calls": 2.3333333333333335
         },
         "non_breaking": {
@@ -34,6 +35,7 @@
           "clarify_pct": 0.0,
           "tokens": 27149.4375,
           "seconds": 12.30167302825,
+          "median_seconds": 6.358048552,
           "calls": 3.375
         },
         "covered_breaks": {
@@ -47,6 +49,7 @@
           "clarify_pct": 0.0,
           "tokens": 41886.22727272727,
           "seconds": 20.0851062455,
+          "median_seconds": 10.97504302,
           "calls": 4.090909090909091
         },
         "outside_conditions": {
@@ -60,6 +63,7 @@
           "clarify_pct": 0.0,
           "tokens": 48080.375,
           "seconds": 26.381316914625,
+          "median_seconds": 12.231693508,
           "calls": 4.75
         },
         "all": {
@@ -73,6 +77,7 @@
           "clarify_pct": 0.0,
           "tokens": 35374.692307692305,
           "seconds": 16.91427185698077,
+          "median_seconds": 7.599505231,
           "calls": 3.769230769230769
         }
       },
@@ -87,6 +92,7 @@
         "clarify_pct": 0.0,
         "tokens": 25268.166666666668,
         "seconds": 9.980981627,
+        "median_seconds": 7.1578823785,
         "calls": 4.166666666666667
       }
     },
@@ -105,6 +111,7 @@
           "clarify_pct": 0.0,
           "tokens": 30071.666666666668,
           "seconds": 18.9753557055,
+          "median_seconds": 8.6932821665,
           "calls": 4.333333333333333
         },
         "non_breaking": {
@@ -118,6 +125,7 @@
           "clarify_pct": 0.0,
           "tokens": 49879.625,
           "seconds": 29.3348489246875,
+          "median_seconds": 23.7223249735,
           "calls": 6.3125
         },
         "covered_breaks": {
@@ -131,6 +139,7 @@
           "clarify_pct": 0.0,
           "tokens": 52298.181818181816,
           "seconds": 40.93795287281818,
+          "median_seconds": 24.756118978499998,
           "calls": 6.090909090909091
         },
         "outside_conditions": {
@@ -144,6 +153,7 @@
           "clarify_pct": 0.0,
           "tokens": 96934.625,
           "seconds": 78.37224038025,
+          "median_seconds": 43.836752036,
           "calls": 8.125
         },
         "all": {
@@ -157,6 +167,7 @@
           "clarify_pct": 0.0,
           "tokens": 55856.557692307695,
           "seconds": 40.59274237061538,
+          "median_seconds": 22.762583968,
           "calls": 6.269230769230769
         }
       },
@@ -171,6 +182,7 @@
         "clarify_pct": 0.0,
         "tokens": 16542,
         "seconds": 7.318084812666667,
+        "median_seconds": 6.6261899015,
         "calls": 3.8333333333333335
       }
     },
@@ -189,6 +201,7 @@
           "clarify_pct": 0.0,
           "tokens": 30993.333333333332,
           "seconds": 10.36606759,
+          "median_seconds": 5.6746974885,
           "calls": 4
         },
         "non_breaking": {
@@ -202,6 +215,7 @@
           "clarify_pct": 0.0,
           "tokens": 73922.9375,
           "seconds": 38.103581634125,
+          "median_seconds": 28.4356960995,
           "calls": 7.125
         },
         "covered_breaks": {
@@ -215,6 +229,7 @@
           "clarify_pct": 0.0,
           "tokens": 71295.63636363637,
           "seconds": 41.22671795827273,
+          "median_seconds": 9.2005124175,
           "calls": 5.954545454545454
         },
         "outside_conditions": {
@@ -228,6 +243,7 @@
           "clarify_pct": 0.0,
           "tokens": 103787.625,
           "seconds": 53.278697857,
+          "median_seconds": 35.6458581775,
           "calls": 8.375
         },
         "all": {
@@ -241,6 +257,7 @@
           "clarify_pct": 0.0,
           "tokens": 72452.53846153847,
           "seconds": 38.55905941584616,
+          "median_seconds": 20.058596312,
           "calls": 6.461538461538462
         }
       },
@@ -255,91 +272,8 @@
         "clarify_pct": 0.0,
         "tokens": 14683.333333333334,
         "seconds": 4.912652510333333,
+        "median_seconds": 3.9499909265,
         "calls": 2.8333333333333335
-      }
-    },
-    "synthetic-r1-mavra": {
-      "complete": true,
-      "scored": 52,
-      "groups": {
-        "holdout": {
-          "correct": 6,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 6,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 13694.5,
-          "seconds": 4.970287841166667,
-          "calls": 3.1666666666666665
-        },
-        "non_breaking": {
-          "correct": 16,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 16,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 12184,
-          "seconds": 5.7469378441875,
-          "calls": 3
-        },
-        "covered_breaks": {
-          "correct": 21,
-          "clarify": 0,
-          "wrong": 1,
-          "error": 0,
-          "n": 22,
-          "accuracy": 95.45454545454545,
-          "wrong_pct": 4.545454545454546,
-          "clarify_pct": 0.0,
-          "tokens": 20268.772727272728,
-          "seconds": 17.66763746090909,
-          "calls": 3.9545454545454546
-        },
-        "outside_conditions": {
-          "correct": 0,
-          "clarify": 0,
-          "wrong": 8,
-          "error": 0,
-          "n": 8,
-          "accuracy": 0.0,
-          "wrong_pct": 100.0,
-          "clarify_pct": 0.0,
-          "tokens": 43370.5,
-          "seconds": 31.665652526875,
-          "calls": 5.625
-        },
-        "all": {
-          "correct": 43,
-          "clarify": 0,
-          "wrong": 9,
-          "error": 0,
-          "n": 52,
-          "accuracy": 82.6923076923077,
-          "wrong_pct": 17.307692307692307,
-          "clarify_pct": 0.0,
-          "tokens": 20576.69230769231,
-          "seconds": 14.688191863634616,
-          "calls": 3.826923076923077
-        }
-      },
-      "learn": {
-        "correct": 6,
-        "clarify": 0,
-        "wrong": 0,
-        "error": 0,
-        "n": 6,
-        "accuracy": 100.0,
-        "wrong_pct": 0.0,
-        "clarify_pct": 0.0,
-        "tokens": 17015.166666666668,
-        "seconds": 7.734224212,
-        "calls": 4.333333333333333
       }
     },
     "synthetic-r2-ace": {
@@ -357,6 +291,7 @@
           "clarify_pct": 0.0,
           "tokens": 14538,
           "seconds": 3.717295909,
+          "median_seconds": 3.1847837334999998,
           "calls": 2.1666666666666665
         },
         "non_breaking": {
@@ -370,6 +305,7 @@
           "clarify_pct": 0.0,
           "tokens": 23481.1875,
           "seconds": 10.3478260203125,
+          "median_seconds": 6.0071140545,
           "calls": 3.125
         },
         "covered_breaks": {
@@ -383,6 +319,7 @@
           "clarify_pct": 0.0,
           "tokens": 42359.86363636364,
           "seconds": 18.922039456500002,
+          "median_seconds": 8.9113413645,
           "calls": 3.9545454545454546
         },
         "outside_conditions": {
@@ -396,6 +333,7 @@
           "clarify_pct": 0.0,
           "tokens": 59250.75,
           "seconds": 36.96487284075,
+          "median_seconds": 20.22803947,
           "calls": 5.625
         },
         "all": {
@@ -409,6 +347,7 @@
           "clarify_pct": 0.0,
           "tokens": 35939.42307692308,
           "seconds": 17.305246972076922,
+          "median_seconds": 8.120506549,
           "calls": 3.75
         }
       },
@@ -423,6 +362,7 @@
         "clarify_pct": 0.0,
         "tokens": 19972.333333333332,
         "seconds": 6.782838374,
+        "median_seconds": 4.8786545,
         "calls": 3.1666666666666665
       }
     },
@@ -441,6 +381,7 @@
           "clarify_pct": 0.0,
           "tokens": 43542,
           "seconds": 22.22755261083333,
+          "median_seconds": 5.3423000285,
           "calls": 5.166666666666667
         },
         "non_breaking": {
@@ -454,6 +395,7 @@
           "clarify_pct": 6.25,
           "tokens": 58457.625,
           "seconds": 33.811104928937496,
+          "median_seconds": 33.305976712,
           "calls": 6.75
         },
         "covered_breaks": {
@@ -467,6 +409,7 @@
           "clarify_pct": 0.0,
           "tokens": 70466.77272727272,
           "seconds": 50.66993837686364,
+          "median_seconds": 22.012006120499997,
           "calls": 6.7272727272727275
         },
         "outside_conditions": {
@@ -480,6 +423,7 @@
           "clarify_pct": 0.0,
           "tokens": 83025.25,
           "seconds": 56.14357887425,
+          "median_seconds": 39.070923261,
           "calls": 7
         },
         "all": {
@@ -493,6 +437,7 @@
           "clarify_pct": 1.9230769230769231,
           "tokens": 65597.01923076923,
           "seconds": 43.042889804096156,
+          "median_seconds": 22.709672572499997,
           "calls": 6.596153846153846
         }
       },
@@ -507,6 +452,7 @@
         "clarify_pct": 0.0,
         "tokens": 24592.333333333332,
         "seconds": 9.986640613166667,
+        "median_seconds": 6.331727187,
         "calls": 4.666666666666667
       }
     },
@@ -525,6 +471,7 @@
           "clarify_pct": 0.0,
           "tokens": 24171.333333333332,
           "seconds": 7.912548124666667,
+          "median_seconds": 2.982555455,
           "calls": 3.1666666666666665
         },
         "non_breaking": {
@@ -538,6 +485,7 @@
           "clarify_pct": 0.0,
           "tokens": 61784.8125,
           "seconds": 32.1088890529375,
+          "median_seconds": 28.2989732555,
           "calls": 6.625
         },
         "covered_breaks": {
@@ -551,6 +499,7 @@
           "clarify_pct": 0.0,
           "tokens": 67534.27272727272,
           "seconds": 36.83861707940909,
+          "median_seconds": 13.127509424500001,
           "calls": 6.2272727272727275
         },
         "outside_conditions": {
@@ -564,6 +513,7 @@
           "clarify_pct": 0.0,
           "tokens": 96592.25,
           "seconds": 60.23034356525,
+          "median_seconds": 44.901011021,
           "calls": 8.875
         },
         "all": {
@@ -577,6 +527,7 @@
           "clarify_pct": 0.0,
           "tokens": 65232.25,
           "seconds": 35.64441995892307,
+          "median_seconds": 21.161866425,
           "calls": 6.403846153846154
         }
       },
@@ -591,91 +542,8 @@
         "clarify_pct": 0.0,
         "tokens": 17272.666666666668,
         "seconds": 4.9917544035,
+        "median_seconds": 4.0531463745,
         "calls": 3.1666666666666665
-      }
-    },
-    "synthetic-r2-mavra": {
-      "complete": true,
-      "scored": 52,
-      "groups": {
-        "holdout": {
-          "correct": 6,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 6,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 17862.833333333332,
-          "seconds": 5.524501801,
-          "calls": 3.5
-        },
-        "non_breaking": {
-          "correct": 16,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 16,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 14167.75,
-          "seconds": 6.3705428255625,
-          "calls": 3.0625
-        },
-        "covered_breaks": {
-          "correct": 21,
-          "clarify": 0,
-          "wrong": 1,
-          "error": 0,
-          "n": 22,
-          "accuracy": 95.45454545454545,
-          "wrong_pct": 4.545454545454546,
-          "clarify_pct": 0.0,
-          "tokens": 18563.863636363636,
-          "seconds": 21.88367458859091,
-          "calls": 3.5
-        },
-        "outside_conditions": {
-          "correct": 3,
-          "clarify": 0,
-          "wrong": 5,
-          "error": 0,
-          "n": 8,
-          "accuracy": 37.5,
-          "wrong_pct": 62.5,
-          "clarify_pct": 0.0,
-          "tokens": 46707.75,
-          "seconds": 34.714996701,
-          "calls": 5.875
-        },
-        "all": {
-          "correct": 46,
-          "clarify": 0,
-          "wrong": 6,
-          "error": 0,
-          "n": 52,
-          "accuracy": 88.46153846153847,
-          "wrong_pct": 11.538461538461538,
-          "clarify_pct": 0.0,
-          "tokens": 21460.153846153848,
-          "seconds": 17.19685597253846,
-          "calls": 3.730769230769231
-        }
-      },
-      "learn": {
-        "correct": 6,
-        "clarify": 0,
-        "wrong": 0,
-        "error": 0,
-        "n": 6,
-        "accuracy": 100.0,
-        "wrong_pct": 0.0,
-        "clarify_pct": 0.0,
-        "tokens": 18137.666666666668,
-        "seconds": 6.970263039,
-        "calls": 4.5
       }
     },
     "synthetic-r3-ace": {
@@ -693,6 +561,7 @@
           "clarify_pct": 0.0,
           "tokens": 16322.333333333334,
           "seconds": 3.7406880816666668,
+          "median_seconds": 3.78906953,
           "calls": 2.3333333333333335
         },
         "non_breaking": {
@@ -706,6 +575,7 @@
           "clarify_pct": 0.0,
           "tokens": 24871.625,
           "seconds": 8.1576343678125,
+          "median_seconds": 5.219398173,
           "calls": 3.125
         },
         "covered_breaks": {
@@ -719,6 +589,7 @@
           "clarify_pct": 0.0,
           "tokens": 45596.13636363636,
           "seconds": 21.42331530431818,
+          "median_seconds": 7.119218905,
           "calls": 4.409090909090909
         },
         "outside_conditions": {
@@ -732,6 +603,7 @@
           "clarify_pct": 0.0,
           "tokens": 64633.75,
           "seconds": 31.36681788,
+          "median_seconds": 20.6822579515,
           "calls": 6.625
         },
         "all": {
@@ -745,6 +617,7 @@
           "clarify_pct": 0.0,
           "tokens": 38770.480769230766,
           "seconds": 16.831033809807693,
+          "median_seconds": 5.9224231204999995,
           "calls": 4.115384615384615
         }
       },
@@ -759,6 +632,7 @@
         "clarify_pct": 0.0,
         "tokens": 20449.666666666668,
         "seconds": 8.037992017166667,
+        "median_seconds": 4.386846157,
         "calls": 3.3333333333333335
       }
     },
@@ -777,6 +651,7 @@
           "clarify_pct": 0.0,
           "tokens": 32312.833333333332,
           "seconds": 15.8836935885,
+          "median_seconds": 6.7196468575,
           "calls": 5.5
         },
         "non_breaking": {
@@ -790,6 +665,7 @@
           "clarify_pct": 0.0,
           "tokens": 63702,
           "seconds": 41.276539263625,
+          "median_seconds": 13.658640783,
           "calls": 6.0625
         },
         "covered_breaks": {
@@ -803,6 +679,7 @@
           "clarify_pct": 0.0,
           "tokens": 50231.13636363636,
           "seconds": 40.06056404459091,
+          "median_seconds": 28.432465313500003,
           "calls": 6.045454545454546
         },
         "outside_conditions": {
@@ -816,6 +693,7 @@
           "clarify_pct": 0.0,
           "tokens": 107764.5,
           "seconds": 77.645280982375,
+          "median_seconds": 69.879188176,
           "calls": 9
         },
         "all": {
@@ -829,6 +707,7 @@
           "clarify_pct": 0.0,
           "tokens": 61159.807692307695,
           "seconds": 43.42733551132692,
+          "median_seconds": 21.732989611500003,
           "calls": 6.4423076923076925
         }
       },
@@ -843,6 +722,7 @@
         "clarify_pct": 0.0,
         "tokens": 16241.833333333334,
         "seconds": 6.960676922,
+        "median_seconds": 5.4543748525,
         "calls": 4
       }
     },
@@ -861,6 +741,7 @@
           "clarify_pct": 0.0,
           "tokens": 29097.333333333332,
           "seconds": 14.368427366166667,
+          "median_seconds": 2.7708409035,
           "calls": 3.5
         },
         "non_breaking": {
@@ -874,6 +755,7 @@
           "clarify_pct": 0.0,
           "tokens": 41386.75,
           "seconds": 26.3612902705625,
+          "median_seconds": 8.4479595745,
           "calls": 4.625
         },
         "covered_breaks": {
@@ -887,6 +769,7 @@
           "clarify_pct": 0.0,
           "tokens": 42458.09090909091,
           "seconds": 24.258248438545454,
+          "median_seconds": 11.0924385585,
           "calls": 4.909090909090909
         },
         "outside_conditions": {
@@ -900,6 +783,7 @@
           "clarify_pct": 0.0,
           "tokens": 66833.125,
           "seconds": 39.73940024975,
+          "median_seconds": 37.988037284499995,
           "calls": 7.25
         },
         "all": {
@@ -913,6 +797,7 @@
           "clarify_pct": 0.0,
           "tokens": 44336.82692307692,
           "seconds": 26.145920695615384,
+          "median_seconds": 11.557959902,
           "calls": 5.019230769230769
         }
       },
@@ -927,91 +812,8 @@
         "clarify_pct": 0.0,
         "tokens": 17626.166666666668,
         "seconds": 5.221793669166667,
+        "median_seconds": 4.625195489,
         "calls": 3.1666666666666665
-      }
-    },
-    "synthetic-r3-mavra": {
-      "complete": true,
-      "scored": 52,
-      "groups": {
-        "holdout": {
-          "correct": 6,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 6,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 12502.666666666666,
-          "seconds": 3.6484046968333335,
-          "calls": 3
-        },
-        "non_breaking": {
-          "correct": 16,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 16,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 12671.5,
-          "seconds": 5.744099317625,
-          "calls": 3.125
-        },
-        "covered_breaks": {
-          "correct": 22,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 22,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 18875.954545454544,
-          "seconds": 28.105783828,
-          "calls": 3.8636363636363638
-        },
-        "outside_conditions": {
-          "correct": 2,
-          "clarify": 0,
-          "wrong": 6,
-          "error": 0,
-          "n": 8,
-          "accuracy": 25.0,
-          "wrong_pct": 75.0,
-          "clarify_pct": 0.0,
-          "tokens": 23571.375,
-          "seconds": 15.612642128125,
-          "calls": 4.5
-        },
-        "all": {
-          "correct": 46,
-          "clarify": 0,
-          "wrong": 6,
-          "error": 0,
-          "n": 52,
-          "accuracy": 88.46153846153847,
-          "wrong_pct": 11.538461538461538,
-          "clarify_pct": 0.0,
-          "tokens": 16953.884615384617,
-          "seconds": 16.48123843276923,
-          "calls": 3.6346153846153846
-        }
-      },
-      "learn": {
-        "correct": 6,
-        "clarify": 0,
-        "wrong": 0,
-        "error": 0,
-        "n": 6,
-        "accuracy": 100.0,
-        "wrong_pct": 0.0,
-        "clarify_pct": 0.0,
-        "tokens": 18586.166666666668,
-        "seconds": 7.647299737666667,
-        "calls": 4.833333333333333
       }
     },
     "tpch-r1-ace": {
@@ -1029,6 +831,7 @@
           "clarify_pct": 0.0,
           "tokens": 14557.666666666666,
           "seconds": 5.349284694166666,
+          "median_seconds": 4.4578547355,
           "calls": 2.6666666666666665
         },
         "non_breaking": {
@@ -1042,6 +845,7 @@
           "clarify_pct": 0.0,
           "tokens": 22025.583333333332,
           "seconds": 11.810089293333332,
+          "median_seconds": 3.603398335,
           "calls": 3.5
         },
         "covered_breaks": {
@@ -1055,6 +859,7 @@
           "clarify_pct": 0.0,
           "tokens": 25682.625,
           "seconds": 20.6591067210625,
+          "median_seconds": 9.4973402655,
           "calls": 3.75
         },
         "outside_conditions": {
@@ -1068,6 +873,7 @@
           "clarify_pct": 0.0,
           "tokens": 37904,
           "seconds": 21.5712815535,
+          "median_seconds": 7.257434792,
           "calls": 4.5
         },
         "all": {
@@ -1081,6 +887,7 @@
           "clarify_pct": 0.0,
           "tokens": 24749.975,
           "seconds": 15.844754413575,
+          "median_seconds": 4.850973474,
           "calls": 3.625
         }
       },
@@ -1095,6 +902,7 @@
         "clarify_pct": 0.0,
         "tokens": 10777.5,
         "seconds": 3.879645164666667,
+        "median_seconds": 2.860582915,
         "calls": 2.3333333333333335
       }
     },
@@ -1113,6 +921,7 @@
           "clarify_pct": 0.0,
           "tokens": 14367.166666666666,
           "seconds": 5.641950233333334,
+          "median_seconds": 5.068389836,
           "calls": 3
         },
         "non_breaking": {
@@ -1126,6 +935,7 @@
           "clarify_pct": 0.0,
           "tokens": 29128.25,
           "seconds": 13.93665329225,
+          "median_seconds": 3.8116202045,
           "calls": 4.333333333333333
         },
         "covered_breaks": {
@@ -1139,6 +949,7 @@
           "clarify_pct": 0.0,
           "tokens": 22909.75,
           "seconds": 14.89589786525,
+          "median_seconds": 8.632467699500001,
           "calls": 4.125
         },
         "outside_conditions": {
@@ -1152,6 +963,7 @@
           "clarify_pct": 0.0,
           "tokens": 37261.666666666664,
           "seconds": 30.866013088166667,
+          "median_seconds": 19.083108089,
           "calls": 6
         },
         "all": {
@@ -1165,6 +977,7 @@
           "clarify_pct": 0.0,
           "tokens": 25646.7,
           "seconds": 15.615549632,
+          "median_seconds": 7.4182543085,
           "calls": 4.3
         }
       },
@@ -1179,6 +992,7 @@
         "clarify_pct": 0.0,
         "tokens": 13398.666666666666,
         "seconds": 7.3031955024999995,
+        "median_seconds": 5.8957123725,
         "calls": 3.5
       }
     },
@@ -1197,6 +1011,7 @@
           "clarify_pct": 0.0,
           "tokens": 17341.666666666668,
           "seconds": 7.025219677333333,
+          "median_seconds": 4.5760775435,
           "calls": 3
         },
         "non_breaking": {
@@ -1210,6 +1025,7 @@
           "clarify_pct": 0.0,
           "tokens": 17941.583333333332,
           "seconds": 8.4555354355,
+          "median_seconds": 3.5573143345,
           "calls": 3.1666666666666665
         },
         "covered_breaks": {
@@ -1223,6 +1039,7 @@
           "clarify_pct": 0.0,
           "tokens": 24740.875,
           "seconds": 13.935409390875,
+          "median_seconds": 8.145335991,
           "calls": 3.75
         },
         "outside_conditions": {
@@ -1236,6 +1053,7 @@
           "clarify_pct": 0.0,
           "tokens": 31760,
           "seconds": 17.519147073166668,
+          "median_seconds": 8.3366219065,
           "calls": 4.666666666666667
         },
         "all": {
@@ -1249,6 +1067,7 @@
           "clarify_pct": 0.0,
           "tokens": 22644.075,
           "seconds": 11.792479399575,
+          "median_seconds": 5.7425187635,
           "calls": 3.6
         }
       },
@@ -1263,91 +1082,8 @@
         "clarify_pct": 0.0,
         "tokens": 15494.166666666666,
         "seconds": 4.7673387025,
+        "median_seconds": 4.179395148,
         "calls": 3.1666666666666665
-      }
-    },
-    "tpch-r1-mavra": {
-      "complete": true,
-      "scored": 40,
-      "groups": {
-        "holdout": {
-          "correct": 6,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 6,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 10733,
-          "seconds": 3.449213679666667,
-          "calls": 3
-        },
-        "non_breaking": {
-          "correct": 12,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 12,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 10655.25,
-          "seconds": 10.2706641905,
-          "calls": 3
-        },
-        "covered_breaks": {
-          "correct": 12,
-          "clarify": 4,
-          "wrong": 0,
-          "error": 0,
-          "n": 16,
-          "accuracy": 75.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 25.0,
-          "tokens": 16945.8125,
-          "seconds": 115.10495001875,
-          "calls": 3.8125
-        },
-        "outside_conditions": {
-          "correct": 2,
-          "clarify": 0,
-          "wrong": 4,
-          "error": 0,
-          "n": 6,
-          "accuracy": 33.333333333333336,
-          "wrong_pct": 66.66666666666667,
-          "clarify_pct": 0.0,
-          "tokens": 21232.5,
-          "seconds": 31.57835346683333,
-          "calls": 4.666666666666667
-        },
-        "all": {
-          "correct": 32,
-          "clarify": 4,
-          "wrong": 4,
-          "error": 0,
-          "n": 40,
-          "accuracy": 80.0,
-          "wrong_pct": 10.0,
-          "clarify_pct": 10.0,
-          "tokens": 14769.725,
-          "seconds": 54.377314336625,
-          "calls": 3.575
-        }
-      },
-      "learn": {
-        "correct": 6,
-        "clarify": 0,
-        "wrong": 0,
-        "error": 0,
-        "n": 6,
-        "accuracy": 100.0,
-        "wrong_pct": 0.0,
-        "clarify_pct": 0.0,
-        "tokens": 14136.333333333334,
-        "seconds": 6.660693311833334,
-        "calls": 4
       }
     },
     "tpch-r2-ace": {
@@ -1365,6 +1101,7 @@
           "clarify_pct": 0.0,
           "tokens": 14499.166666666666,
           "seconds": 3.942933524,
+          "median_seconds": 3.7918909110000003,
           "calls": 2.5
         },
         "non_breaking": {
@@ -1378,6 +1115,7 @@
           "clarify_pct": 0.0,
           "tokens": 29076.083333333332,
           "seconds": 12.989079410166667,
+          "median_seconds": 6.1952281175,
           "calls": 4.166666666666667
         },
         "covered_breaks": {
@@ -1391,6 +1129,7 @@
           "clarify_pct": 0.0,
           "tokens": 30018.625,
           "seconds": 13.25338324525,
+          "median_seconds": 11.643574172000001,
           "calls": 4.1875
         },
         "outside_conditions": {
@@ -1404,6 +1143,7 @@
           "clarify_pct": 0.0,
           "tokens": 44505.666666666664,
           "seconds": 24.869548207166666,
+          "median_seconds": 12.851190152,
           "calls": 5.666666666666667
         },
         "all": {
@@ -1417,6 +1157,7 @@
           "clarify_pct": 0.0,
           "tokens": 29581,
           "seconds": 13.519949380825,
+          "median_seconds": 6.6827710565,
           "calls": 4.15
         }
       },
@@ -1431,6 +1172,7 @@
         "clarify_pct": 0.0,
         "tokens": 15636,
         "seconds": 5.7745276793333336,
+        "median_seconds": 3.896209202,
         "calls": 3.3333333333333335
       }
     },
@@ -1449,6 +1191,7 @@
           "clarify_pct": 0.0,
           "tokens": 13752,
           "seconds": 4.643287885333334,
+          "median_seconds": 4.16242102,
           "calls": 3
         },
         "non_breaking": {
@@ -1462,6 +1205,7 @@
           "clarify_pct": 0.0,
           "tokens": 21930.75,
           "seconds": 17.367082034833334,
+          "median_seconds": 4.948674189,
           "calls": 3.6666666666666665
         },
         "covered_breaks": {
@@ -1475,6 +1219,7 @@
           "clarify_pct": 0.0,
           "tokens": 52495.1875,
           "seconds": 31.687977047,
+          "median_seconds": 6.465081798,
           "calls": 5.25
         },
         "outside_conditions": {
@@ -1488,6 +1233,7 @@
           "clarify_pct": 0.0,
           "tokens": 45958,
           "seconds": 26.861418349666668,
+          "median_seconds": 11.278487921,
           "calls": 5.666666666666667
         },
         "all": {
@@ -1501,6 +1247,7 @@
           "clarify_pct": 0.0,
           "tokens": 36533.8,
           "seconds": 22.6110213645,
+          "median_seconds": 6.033961861,
           "calls": 4.5
         }
       },
@@ -1515,6 +1262,7 @@
         "clarify_pct": 0.0,
         "tokens": 12918.666666666666,
         "seconds": 4.9626258493333335,
+        "median_seconds": 4.75038506,
         "calls": 3.1666666666666665
       }
     },
@@ -1533,6 +1281,7 @@
           "clarify_pct": 0.0,
           "tokens": 21955,
           "seconds": 5.951640926833333,
+          "median_seconds": 4.3828308074999995,
           "calls": 3.3333333333333335
         },
         "non_breaking": {
@@ -1546,6 +1295,7 @@
           "clarify_pct": 0.0,
           "tokens": 38526.333333333336,
           "seconds": 17.617718386416666,
+          "median_seconds": 3.263392181,
           "calls": 4.083333333333333
         },
         "covered_breaks": {
@@ -1559,6 +1309,7 @@
           "clarify_pct": 0.0,
           "tokens": 23585.3125,
           "seconds": 10.663078344375,
+          "median_seconds": 4.7089973025,
           "calls": 3.25
         },
         "outside_conditions": {
@@ -1572,6 +1323,7 @@
           "clarify_pct": 0.0,
           "tokens": 33244.833333333336,
           "seconds": 17.336503820166666,
+          "median_seconds": 15.292535005,
           "calls": 4.5
         },
         "all": {
@@ -1585,6 +1337,7 @@
           "clarify_pct": 0.0,
           "tokens": 29272,
           "seconds": 13.043768565725,
+          "median_seconds": 4.1969410825,
           "calls": 3.7
         }
       },
@@ -1599,91 +1352,8 @@
         "clarify_pct": 0.0,
         "tokens": 14846.833333333334,
         "seconds": 9.120401554833334,
+        "median_seconds": 4.3666171525,
         "calls": 3
-      }
-    },
-    "tpch-r2-mavra": {
-      "complete": true,
-      "scored": 40,
-      "groups": {
-        "holdout": {
-          "correct": 6,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 6,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 10949.666666666666,
-          "seconds": 3.682303458333333,
-          "calls": 3
-        },
-        "non_breaking": {
-          "correct": 12,
-          "clarify": 0,
-          "wrong": 0,
-          "error": 0,
-          "n": 12,
-          "accuracy": 100.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 0.0,
-          "tokens": 11043.833333333334,
-          "seconds": 17.7197231225,
-          "calls": 3
-        },
-        "covered_breaks": {
-          "correct": 12,
-          "clarify": 4,
-          "wrong": 0,
-          "error": 0,
-          "n": 16,
-          "accuracy": 75.0,
-          "wrong_pct": 0.0,
-          "clarify_pct": 25.0,
-          "tokens": 18610.4375,
-          "seconds": 106.1549570611875,
-          "calls": 4
-        },
-        "outside_conditions": {
-          "correct": 2,
-          "clarify": 0,
-          "wrong": 4,
-          "error": 0,
-          "n": 6,
-          "accuracy": 33.333333333333336,
-          "wrong_pct": 66.66666666666667,
-          "clarify_pct": 0.0,
-          "tokens": 22839.5,
-          "seconds": 38.421003776166664,
-          "calls": 5
-        },
-        "all": {
-          "correct": 32,
-          "clarify": 4,
-          "wrong": 4,
-          "error": 0,
-          "n": 40,
-          "accuracy": 80.0,
-          "wrong_pct": 10.0,
-          "clarify_pct": 10.0,
-          "tokens": 15825.7,
-          "seconds": 54.0933958464,
-          "calls": 3.7
-        }
-      },
-      "learn": {
-        "correct": 6,
-        "clarify": 0,
-        "wrong": 0,
-        "error": 0,
-        "n": 6,
-        "accuracy": 100.0,
-        "wrong_pct": 0.0,
-        "clarify_pct": 0.0,
-        "tokens": 14717.333333333334,
-        "seconds": 5.794258825166667,
-        "calls": 4.166666666666667
       }
     },
     "tpch-r3-ace": {
@@ -1701,6 +1371,7 @@
           "clarify_pct": 0.0,
           "tokens": 14252.666666666666,
           "seconds": 3.774691153,
+          "median_seconds": 3.713212255,
           "calls": 2.5
         },
         "non_breaking": {
@@ -1714,6 +1385,7 @@
           "clarify_pct": 0.0,
           "tokens": 21065.333333333332,
           "seconds": 10.478922471416666,
+          "median_seconds": 3.6946148205,
           "calls": 3.0833333333333335
         },
         "covered_breaks": {
@@ -1727,6 +1399,7 @@
           "clarify_pct": 0.0,
           "tokens": 39668.25,
           "seconds": 27.1377153858125,
+          "median_seconds": 7.3970650345,
           "calls": 3.9375
         },
         "outside_conditions": {
@@ -1740,6 +1413,7 @@
           "clarify_pct": 0.0,
           "tokens": 34901.666666666664,
           "seconds": 15.126022318833332,
+          "median_seconds": 7.095964884,
           "calls": 4.166666666666667
         },
         "all": {
@@ -1753,6 +1427,7 @@
           "clarify_pct": 0.0,
           "tokens": 29560.05,
           "seconds": 16.833869916525,
+          "median_seconds": 4.668412686,
           "calls": 3.5
         }
       },
@@ -1767,6 +1442,7 @@
         "clarify_pct": 0.0,
         "tokens": 15592.166666666666,
         "seconds": 5.033011390666666,
+        "median_seconds": 3.535708754,
         "calls": 3
       }
     },
@@ -1785,6 +1461,7 @@
           "clarify_pct": 0.0,
           "tokens": 19757.666666666668,
           "seconds": 8.646490396333334,
+          "median_seconds": 5.934486615,
           "calls": 3.8333333333333335
         },
         "non_breaking": {
@@ -1798,6 +1475,7 @@
           "clarify_pct": 0.0,
           "tokens": 16100.75,
           "seconds": 7.6661240345833335,
+          "median_seconds": 3.6548502515,
           "calls": 3
         },
         "covered_breaks": {
@@ -1811,6 +1489,7 @@
           "clarify_pct": 0.0,
           "tokens": 32468.625,
           "seconds": 22.333356034624998,
+          "median_seconds": 6.279102761,
           "calls": 4.4375
         },
         "outside_conditions": {
@@ -1824,6 +1503,7 @@
           "clarify_pct": 0.0,
           "tokens": 33207,
           "seconds": 22.036115555166667,
+          "median_seconds": 20.2696457885,
           "calls": 5.333333333333333
         },
         "all": {
@@ -1837,6 +1517,7 @@
           "clarify_pct": 0.0,
           "tokens": 25762.375,
           "seconds": 15.83557051695,
+          "median_seconds": 5.916828731,
           "calls": 4.05
         }
       },
@@ -1851,6 +1532,7 @@
         "clarify_pct": 0.0,
         "tokens": 10360,
         "seconds": 4.519807728166667,
+        "median_seconds": 3.8533128005,
         "calls": 2.8333333333333335
       }
     },
@@ -1869,6 +1551,7 @@
           "clarify_pct": 0.0,
           "tokens": 19388.833333333332,
           "seconds": 5.824394743166667,
+          "median_seconds": 5.721362802,
           "calls": 3.1666666666666665
         },
         "non_breaking": {
@@ -1882,6 +1565,7 @@
           "clarify_pct": 0.0,
           "tokens": 17469.166666666668,
           "seconds": 8.161720816083333,
+          "median_seconds": 5.108741248499999,
           "calls": 3
         },
         "covered_breaks": {
@@ -1895,6 +1579,7 @@
           "clarify_pct": 0.0,
           "tokens": 24076.5625,
           "seconds": 11.64252712725,
+          "median_seconds": 7.543299284,
           "calls": 3.6875
         },
         "outside_conditions": {
@@ -1908,6 +1593,7 @@
           "clarify_pct": 0.0,
           "tokens": 43418.333333333336,
           "seconds": 21.158308750666666,
+          "median_seconds": 14.930285059000001,
           "calls": 5.5
         },
         "all": {
@@ -1921,6 +1607,7 @@
           "clarify_pct": 0.0,
           "tokens": 24292.45,
           "seconds": 11.1529326198,
+          "median_seconds": 6.9505163345,
           "calls": 3.675
         }
       },
@@ -1935,7 +1622,458 @@
         "clarify_pct": 0.0,
         "tokens": 16305.666666666666,
         "seconds": 5.072230075666667,
+        "median_seconds": 3.9376024634999998,
         "calls": 3.1666666666666665
+      }
+    },
+    "synthetic-r1-mavra": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 14091.833333333334,
+          "seconds": 4.210500651166667,
+          "median_seconds": 3.4959874314999997,
+          "calls": 3.1666666666666665
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 13183.6875,
+          "seconds": 4.265999261125,
+          "median_seconds": 4.154122018,
+          "calls": 3.0625
+        },
+        "covered_breaks": {
+          "correct": 22,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 22,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 13219.727272727272,
+          "seconds": 5.820057729454545,
+          "median_seconds": 5.14949996,
+          "calls": 3.0454545454545454
+        },
+        "outside_conditions": {
+          "correct": 1,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 8,
+          "accuracy": 12.5,
+          "wrong_pct": 87.5,
+          "clarify_pct": 0.0,
+          "tokens": 37962.5,
+          "seconds": 20.2825993435,
+          "median_seconds": 3.7675581974999997,
+          "calls": 5.25
+        },
+        "all": {
+          "correct": 45,
+          "clarify": 0,
+          "wrong": 7,
+          "error": 0,
+          "n": 52,
+          "accuracy": 86.53846153846153,
+          "wrong_pct": 13.461538461538462,
+          "clarify_pct": 0.0,
+          "tokens": 17115.846153846152,
+          "seconds": 7.381174170788461,
+          "median_seconds": 4.175517976,
+          "calls": 3.4038461538461537
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 14130.5,
+        "seconds": 5.575038293666666,
+        "median_seconds": 4.2695490045,
+        "calls": 3.8333333333333335
+      }
+    },
+    "synthetic-r2-mavra": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 12995.333333333334,
+          "seconds": 4.1955493693333334,
+          "median_seconds": 3.954913161,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 12449.5,
+          "seconds": 3.9708509608125,
+          "median_seconds": 3.834349385,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 22,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 22,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 13502.818181818182,
+          "seconds": 5.527772027090909,
+          "median_seconds": 4.6409678225,
+          "calls": 3.0454545454545454
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 8,
+          "accuracy": 25.0,
+          "wrong_pct": 75.0,
+          "clarify_pct": 0.0,
+          "tokens": 46220,
+          "seconds": 28.189637612000002,
+          "median_seconds": 13.63868903,
+          "calls": 6
+        },
+        "all": {
+          "correct": 46,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 52,
+          "accuracy": 88.46153846153847,
+          "wrong_pct": 11.538461538461538,
+          "clarify_pct": 0.0,
+          "tokens": 18153.576923076922,
+          "seconds": 8.381442251557692,
+          "median_seconds": 4.2353105535,
+          "calls": 3.480769230769231
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 13637.5,
+        "seconds": 5.840497869,
+        "median_seconds": 4.4706296519999995,
+        "calls": 3.8333333333333335
+      }
+    },
+    "synthetic-r3-mavra": {
+      "complete": true,
+      "scored": 52,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 11531,
+          "seconds": 3.8062230356666666,
+          "median_seconds": 3.8463513144999997,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 16,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 11663.6875,
+          "seconds": 4.1415931266875,
+          "median_seconds": 3.9286055665,
+          "calls": 3.125
+        },
+        "covered_breaks": {
+          "correct": 22,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 22,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 11463.954545454546,
+          "seconds": 4.674430551045455,
+          "median_seconds": 3.986520359,
+          "calls": 3
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 8,
+          "accuracy": 25.0,
+          "wrong_pct": 75.0,
+          "clarify_pct": 0.0,
+          "tokens": 39465.125,
+          "seconds": 24.764493381374997,
+          "median_seconds": 5.207291360999999,
+          "calls": 5.625
+        },
+        "all": {
+          "correct": 46,
+          "clarify": 0,
+          "wrong": 6,
+          "error": 0,
+          "n": 52,
+          "accuracy": 88.46153846153847,
+          "wrong_pct": 11.538461538461538,
+          "clarify_pct": 0.0,
+          "tokens": 15841.01923076923,
+          "seconds": 7.501081681057692,
+          "median_seconds": 3.980949394,
+          "calls": 3.4423076923076925
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 15494.833333333334,
+        "seconds": 6.436839502833333,
+        "median_seconds": 5.765135873,
+        "calls": 4.333333333333333
+      }
+    },
+    "tpch-r1-mavra": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10931.333333333334,
+          "seconds": 3.729480746,
+          "median_seconds": 3.5682984600000003,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10921.333333333334,
+          "seconds": 5.8698937254166665,
+          "median_seconds": 4.24172768,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 4,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 25.0,
+          "tokens": 10914.875,
+          "seconds": 8.7849308180625,
+          "median_seconds": 4.9881969195,
+          "calls": 2.875
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 6,
+          "accuracy": 33.333333333333336,
+          "wrong_pct": 66.66666666666667,
+          "clarify_pct": 0.0,
+          "tokens": 14435.166666666666,
+          "seconds": 15.607041897,
+          "median_seconds": 10.3314567855,
+          "calls": 3.6666666666666665
+        },
+        "all": {
+          "correct": 32,
+          "clarify": 4,
+          "wrong": 4,
+          "error": 0,
+          "n": 40,
+          "accuracy": 80.0,
+          "wrong_pct": 10.0,
+          "clarify_pct": 10.0,
+          "tokens": 11447.325,
+          "seconds": 8.1754188413,
+          "median_seconds": 4.899886803999999,
+          "calls": 3.05
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 13620.166666666666,
+        "seconds": 5.18629013,
+        "median_seconds": 4.4025932645,
+        "calls": 4
+      }
+    },
+    "tpch-r2-mavra": {
+      "complete": true,
+      "scored": 40,
+      "groups": {
+        "holdout": {
+          "correct": 6,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 6,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10411.833333333334,
+          "seconds": 4.0144721526666665,
+          "median_seconds": 4.065526382,
+          "calls": 3
+        },
+        "non_breaking": {
+          "correct": 12,
+          "clarify": 0,
+          "wrong": 0,
+          "error": 0,
+          "n": 12,
+          "accuracy": 100.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 0.0,
+          "tokens": 10499.083333333334,
+          "seconds": 5.914910148833333,
+          "median_seconds": 4.3348383665,
+          "calls": 3
+        },
+        "covered_breaks": {
+          "correct": 12,
+          "clarify": 4,
+          "wrong": 0,
+          "error": 0,
+          "n": 16,
+          "accuracy": 75.0,
+          "wrong_pct": 0.0,
+          "clarify_pct": 25.0,
+          "tokens": 10276.4375,
+          "seconds": 8.420660377625,
+          "median_seconds": 5.1489014475,
+          "calls": 2.875
+        },
+        "outside_conditions": {
+          "correct": 2,
+          "clarify": 0,
+          "wrong": 4,
+          "error": 0,
+          "n": 6,
+          "accuracy": 33.333333333333336,
+          "wrong_pct": 66.66666666666667,
+          "clarify_pct": 0.0,
+          "tokens": 18725.833333333332,
+          "seconds": 20.045385910500002,
+          "median_seconds": 9.6787129985,
+          "calls": 4.5
+        },
+        "all": {
+          "correct": 32,
+          "clarify": 4,
+          "wrong": 4,
+          "error": 0,
+          "n": 40,
+          "accuracy": 80.0,
+          "wrong_pct": 10.0,
+          "clarify_pct": 10.0,
+          "tokens": 11630.95,
+          "seconds": 8.751715905175,
+          "median_seconds": 4.77884451,
+          "calls": 3.175
+        }
+      },
+      "learn": {
+        "correct": 6,
+        "clarify": 0,
+        "wrong": 0,
+        "error": 0,
+        "n": 6,
+        "accuracy": 100.0,
+        "wrong_pct": 0.0,
+        "clarify_pct": 0.0,
+        "tokens": 13011.666666666666,
+        "seconds": 5.4639205155,
+        "median_seconds": 4.365950997,
+        "calls": 3.6666666666666665
       }
     },
     "tpch-r3-mavra": {
@@ -1951,8 +2089,9 @@
           "accuracy": 100.0,
           "wrong_pct": 0.0,
           "clarify_pct": 0.0,
-          "tokens": 10840.833333333334,
-          "seconds": 3.6793863965,
+          "tokens": 10813.666666666666,
+          "seconds": 3.697829452166667,
+          "median_seconds": 3.608911741,
           "calls": 3
         },
         "non_breaking": {
@@ -1964,8 +2103,9 @@
           "accuracy": 100.0,
           "wrong_pct": 0.0,
           "clarify_pct": 0.0,
-          "tokens": 11236.333333333334,
-          "seconds": 10.717319237083334,
+          "tokens": 10763.75,
+          "seconds": 5.3959186015,
+          "median_seconds": 5.017450781,
           "calls": 3
         },
         "covered_breaks": {
@@ -1977,9 +2117,10 @@
           "accuracy": 75.0,
           "wrong_pct": 0.0,
           "clarify_pct": 25.0,
-          "tokens": 17655.5625,
-          "seconds": 152.1318767826875,
-          "calls": 3.8125
+          "tokens": 10898.5625,
+          "seconds": 10.5491661064375,
+          "median_seconds": 5.898655943,
+          "calls": 2.9375
         },
         "outside_conditions": {
           "correct": 2,
@@ -1990,9 +2131,10 @@
           "accuracy": 33.333333333333336,
           "wrong_pct": 66.66666666666667,
           "clarify_pct": 0.0,
-          "tokens": 23310.666666666668,
-          "seconds": 36.479532337500004,
-          "calls": 5
+          "tokens": 14957.5,
+          "seconds": 14.324837771666667,
+          "median_seconds": 7.018803544000001,
+          "calls": 3.8333333333333335
         },
         "all": {
           "correct": 32,
@@ -2003,9 +2145,10 @@
           "accuracy": 80.0,
           "wrong_pct": 10.0,
           "clarify_pct": 10.0,
-          "tokens": 15555.85,
-          "seconds": 70.0917842943,
-          "calls": 3.625
+          "tokens": 11454.225,
+          "seconds": 8.5418421066,
+          "median_seconds": 5.197286048,
+          "calls": 3.1
         }
       },
       "learn": {
@@ -2017,8 +2160,9 @@
         "accuracy": 100.0,
         "wrong_pct": 0.0,
         "clarify_pct": 0.0,
-        "tokens": 13391.5,
-        "seconds": 5.248907842166666,
+        "tokens": 13745.333333333334,
+        "seconds": 5.650144872333334,
+        "median_seconds": 4.540312426,
         "calls": 3.8333333333333335
       }
     }
@@ -2036,12 +2180,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 15784.166666666668,
           "seconds": 4.1411332965,
-          "calls": 2.2777777777777777
+          "calls": 2.2777777777777777,
+          "median_seconds": 3.295871586,
+          "seconds_per_run": [
+            4.965415898833333,
+            3.717295909,
+            3.7406880816666668
+          ]
         },
         "awm": {
           "accuracy": 66.66666666666667,
@@ -2053,12 +2210,25 @@
             66.66666666666667
           ],
           "wrong_pct": 33.333333333333336,
+          "wrong_min": 33.333333333333336,
+          "wrong_max": 33.333333333333336,
+          "wrong_per_run": [
+            33.333333333333336,
+            33.333333333333336,
+            33.333333333333336
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 35308.833333333336,
           "seconds": 19.02886730161111,
-          "calls": 5.0
+          "calls": 5.0,
+          "median_seconds": 6.3259328235000005,
+          "seconds_per_run": [
+            18.9753557055,
+            22.22755261083333,
+            15.8836935885
+          ]
         },
         "gmemory": {
           "accuracy": 72.22222222222223,
@@ -2070,12 +2240,25 @@
             83.33333333333333
           ],
           "wrong_pct": 27.77777777777778,
+          "wrong_min": 16.666666666666668,
+          "wrong_max": 33.333333333333336,
+          "wrong_per_run": [
+            33.333333333333336,
+            33.333333333333336,
+            16.666666666666668
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 28087.333333333332,
           "seconds": 10.882347693611111,
-          "calls": 3.5555555555555554
+          "calls": 3.5555555555555554,
+          "median_seconds": 3.0681391395000004,
+          "seconds_per_run": [
+            10.36606759,
+            7.912548124666667,
+            14.368427366166667
+          ]
         },
         "mavra": {
           "accuracy": 100.0,
@@ -2087,12 +2270,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
-          "tokens": 14686.666666666666,
-          "seconds": 4.714398113000001,
-          "calls": 3.2222222222222223
+          "tokens": 12872.722222222223,
+          "seconds": 4.070757685388889,
+          "calls": 3.0555555555555554,
+          "median_seconds": 3.785963711,
+          "seconds_per_run": [
+            4.210500651166667,
+            4.1955493693333334,
+            3.8062230356666666
+          ]
         }
       },
       "tpch": {
@@ -2106,12 +2302,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 14436.5,
           "seconds": 4.355636457055556,
-          "calls": 2.5555555555555554
+          "calls": 2.5555555555555554,
+          "median_seconds": 3.713212255,
+          "seconds_per_run": [
+            5.349284694166666,
+            3.942933524,
+            3.774691153
+          ]
         },
         "awm": {
           "accuracy": 100.0,
@@ -2123,12 +2332,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 15958.944444444445,
           "seconds": 6.310576171666667,
-          "calls": 3.2777777777777777
+          "calls": 3.2777777777777777,
+          "median_seconds": 4.406210905,
+          "seconds_per_run": [
+            5.641950233333334,
+            4.643287885333334,
+            8.646490396333334
+          ]
         },
         "gmemory": {
           "accuracy": 100.0,
@@ -2140,12 +2362,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 19561.833333333332,
           "seconds": 6.267085115777777,
-          "calls": 3.1666666666666665
+          "calls": 3.1666666666666665,
+          "median_seconds": 4.574695526499999,
+          "seconds_per_run": [
+            7.025219677333333,
+            5.951640926833333,
+            5.824394743166667
+          ]
         },
         "mavra": {
           "accuracy": 100.0,
@@ -2157,12 +2392,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
-          "tokens": 10841.166666666666,
-          "seconds": 3.6036345115,
-          "calls": 3
+          "tokens": 10718.944444444445,
+          "seconds": 3.813927450277778,
+          "calls": 3,
+          "median_seconds": 3.7679726075,
+          "seconds_per_run": [
+            3.729480746,
+            4.0144721526666665,
+            3.697829452166667
+          ]
         }
       },
       "both": {
@@ -2176,12 +2424,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
           "tokens": 15110.333333333334,
           "seconds": 4.248384876777778,
-          "calls": 2.4166666666666665
+          "calls": 2.4166666666666665,
+          "median_seconds": 3.384748673,
+          "seconds_per_run": [
+            5.1573502965,
+            3.8301147165000002,
+            3.7576896173333334
+          ]
         },
         "awm": {
           "accuracy": 83.33333333333333,
@@ -2193,12 +2454,25 @@
             83.33333333333333
           ],
           "wrong_pct": 16.666666666666668,
+          "wrong_min": 16.666666666666668,
+          "wrong_max": 16.666666666666668,
+          "wrong_per_run": [
+            16.666666666666668,
+            16.666666666666668,
+            16.666666666666668
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
           "tokens": 25633.88888888889,
           "seconds": 12.66972173663889,
-          "calls": 4.138888888888889
+          "calls": 4.138888888888889,
+          "median_seconds": 5.7533415015000005,
+          "seconds_per_run": [
+            12.308652969416666,
+            13.435420248083334,
+            12.265091992416666
+          ]
         },
         "gmemory": {
           "accuracy": 86.11111111111111,
@@ -2210,12 +2484,25 @@
             91.66666666666667
           ],
           "wrong_pct": 13.88888888888889,
+          "wrong_min": 8.333333333333334,
+          "wrong_max": 16.666666666666668,
+          "wrong_per_run": [
+            16.666666666666668,
+            16.666666666666668,
+            8.333333333333334
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
           "tokens": 23824.583333333332,
           "seconds": 8.574716404694444,
-          "calls": 3.361111111111111
+          "calls": 3.361111111111111,
+          "median_seconds": 4.174220998,
+          "seconds_per_run": [
+            8.695643633666666,
+            6.93209452575,
+            10.096411054666666
+          ]
         },
         "mavra": {
           "accuracy": 100.0,
@@ -2227,12 +2514,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
-          "tokens": 12763.916666666666,
-          "seconds": 4.15901631225,
-          "calls": 3.111111111111111
+          "tokens": 11795.833333333334,
+          "seconds": 3.9423425678333333,
+          "calls": 3.0277777777777777,
+          "median_seconds": 3.781387522,
+          "seconds_per_run": [
+            3.9699906985833335,
+            4.105010761,
+            3.7520262439166667
+          ]
         }
       }
     },
@@ -2248,12 +2548,25 @@
             87.5
           ],
           "wrong_pct": 4.166666666666667,
+          "wrong_min": 0.0,
+          "wrong_max": 12.5,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            12.5
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 16,
           "tokens": 25167.416666666668,
           "seconds": 10.269044472125,
-          "calls": 3.2083333333333335
+          "calls": 3.2083333333333335,
+          "median_seconds": 5.855995523,
+          "seconds_per_run": [
+            12.30167302825,
+            10.3478260203125,
+            8.1576343678125
+          ]
         },
         "awm": {
           "accuracy": 47.916666666666664,
@@ -2265,12 +2578,25 @@
             62.5
           ],
           "wrong_pct": 50.0,
+          "wrong_min": 37.5,
+          "wrong_max": 56.25,
+          "wrong_per_run": [
+            56.25,
+            56.25,
+            37.5
+          ],
           "clarify": 1,
           "clarify_pct": 2.0833333333333335,
           "n_per_run": 16,
           "tokens": 57346.416666666664,
           "seconds": 34.807497705749995,
-          "calls": 6.375
+          "calls": 6.375,
+          "median_seconds": 24.485154973500002,
+          "seconds_per_run": [
+            29.3348489246875,
+            33.811104928937496,
+            41.276539263625
+          ]
         },
         "gmemory": {
           "accuracy": 45.833333333333336,
@@ -2282,12 +2608,25 @@
             62.5
           ],
           "wrong_pct": 54.166666666666664,
+          "wrong_min": 37.5,
+          "wrong_max": 68.75,
+          "wrong_per_run": [
+            68.75,
+            56.25,
+            37.5
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 16,
           "tokens": 59031.5,
           "seconds": 32.19125365254167,
-          "calls": 6.125
+          "calls": 6.125,
+          "median_seconds": 21.770010589,
+          "seconds_per_run": [
+            38.103581634125,
+            32.1088890529375,
+            26.3612902705625
+          ]
         },
         "mavra": {
           "accuracy": 100.0,
@@ -2299,12 +2638,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 16,
-          "tokens": 13007.75,
-          "seconds": 5.9538599957916665,
-          "calls": 3.0625
+          "tokens": 12432.291666666666,
+          "seconds": 4.126147782875,
+          "calls": 3.0625,
+          "median_seconds": 3.8975722715,
+          "seconds_per_run": [
+            4.265999261125,
+            3.9708509608125,
+            4.1415931266875
+          ]
         }
       },
       "tpch": {
@@ -2318,12 +2670,25 @@
             91.66666666666667
           ],
           "wrong_pct": 5.555555555555556,
+          "wrong_min": 0.0,
+          "wrong_max": 8.333333333333334,
+          "wrong_per_run": [
+            8.333333333333334,
+            0.0,
+            8.333333333333334
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
           "tokens": 24055.666666666664,
           "seconds": 11.759363724972221,
-          "calls": 3.5833333333333335
+          "calls": 3.5833333333333335,
+          "median_seconds": 4.088681698,
+          "seconds_per_run": [
+            11.810089293333332,
+            12.989079410166667,
+            10.478922471416666
+          ]
         },
         "awm": {
           "accuracy": 97.22222222222223,
@@ -2335,12 +2700,25 @@
             100.0
           ],
           "wrong_pct": 2.777777777777778,
+          "wrong_min": 0.0,
+          "wrong_max": 8.333333333333334,
+          "wrong_per_run": [
+            8.333333333333334,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
           "tokens": 22386.583333333332,
           "seconds": 12.989953120555557,
-          "calls": 3.6666666666666665
+          "calls": 3.6666666666666665,
+          "median_seconds": 3.872618304,
+          "seconds_per_run": [
+            13.93665329225,
+            17.367082034833334,
+            7.6661240345833335
+          ]
         },
         "gmemory": {
           "accuracy": 97.22222222222223,
@@ -2352,12 +2730,25 @@
             100.0
           ],
           "wrong_pct": 2.777777777777778,
+          "wrong_min": 0.0,
+          "wrong_max": 8.333333333333334,
+          "wrong_per_run": [
+            0.0,
+            8.333333333333334,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
           "tokens": 24645.694444444445,
           "seconds": 11.411658212666666,
-          "calls": 3.4166666666666665
+          "calls": 3.4166666666666665,
+          "median_seconds": 3.5573143345,
+          "seconds_per_run": [
+            8.4555354355,
+            17.617718386416666,
+            8.161720816083333
+          ]
         },
         "mavra": {
           "accuracy": 100.0,
@@ -2369,12 +2760,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 12,
-          "tokens": 10978.472222222223,
-          "seconds": 12.902568850027778,
-          "calls": 3
+          "tokens": 10728.055555555557,
+          "seconds": 5.726907491916666,
+          "calls": 3,
+          "median_seconds": 4.650637542,
+          "seconds_per_run": [
+            5.8698937254166665,
+            5.914910148833333,
+            5.3959186015
+          ]
         }
       },
       "both": {
@@ -2388,12 +2792,25 @@
             89.28571428571429
           ],
           "wrong_pct": 4.761904761904762,
+          "wrong_min": 0.0,
+          "wrong_max": 10.714285714285714,
+          "wrong_per_run": [
+            3.5714285714285716,
+            0.0,
+            10.714285714285714
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 28,
           "tokens": 24690.95238095238,
           "seconds": 10.907752723345238,
-          "calls": 3.369047619047619
+          "calls": 3.369047619047619,
+          "median_seconds": 5.2775664995,
+          "seconds_per_run": [
+            12.090994284714286,
+            11.47979175882143,
+            9.1524721265
+          ]
         },
         "awm": {
           "accuracy": 69.04761904761905,
@@ -2405,12 +2822,25 @@
             78.57142857142857
           ],
           "wrong_pct": 29.761904761904763,
+          "wrong_min": 21.428571428571427,
+          "wrong_max": 35.714285714285715,
+          "wrong_per_run": [
+            35.714285714285715,
+            32.142857142857146,
+            21.428571428571427
+          ],
           "clarify": 1,
           "clarify_pct": 1.1904761904761905,
           "n_per_run": 28,
           "tokens": 42363.630952380954,
           "seconds": 25.45712145495238,
-          "calls": 5.214285714285714
+          "calls": 5.214285714285714,
+          "median_seconds": 7.480623208,
+          "seconds_per_run": [
+            22.735622225071427,
+            26.76366654575,
+            26.872075594035714
+          ]
         },
         "gmemory": {
           "accuracy": 67.85714285714286,
@@ -2422,12 +2852,25 @@
             78.57142857142857
           ],
           "wrong_pct": 32.14285714285714,
+          "wrong_min": 21.428571428571427,
+          "wrong_max": 39.285714285714285,
+          "wrong_per_run": [
+            39.285714285714285,
+            35.714285714285715,
+            21.428571428571427
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 28,
           "tokens": 44294.72619047619,
           "seconds": 23.285712749738096,
-          "calls": 4.964285714285714
+          "calls": 4.964285714285714,
+          "median_seconds": 7.558919396,
+          "seconds_per_run": [
+            25.39727612042857,
+            25.898387338714286,
+            18.56147479007143
+          ]
         },
         "mavra": {
           "accuracy": 100.0,
@@ -2439,12 +2882,25 @@
             100.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 28,
-          "tokens": 12138.059523809523,
-          "seconds": 8.93187807617857,
-          "calls": 3.0357142857142856
+          "tokens": 11701.904761904761,
+          "seconds": 4.812187658178572,
+          "calls": 3.0357142857142856,
+          "median_seconds": 4.135573881499999,
+          "seconds_per_run": [
+            4.953382602964286,
+            4.80401918425,
+            4.679161187321428
+          ]
         }
       }
     },
@@ -2460,12 +2916,25 @@
             59.09090909090909
           ],
           "wrong_pct": 31.818181818181817,
+          "wrong_min": 22.727272727272727,
+          "wrong_max": 40.90909090909091,
+          "wrong_per_run": [
+            22.727272727272727,
+            31.818181818181817,
+            40.90909090909091
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 22,
           "tokens": 43280.742424242424,
           "seconds": 20.14348700210606,
-          "calls": 4.151515151515151
+          "calls": 4.151515151515151,
+          "median_seconds": 8.9113413645,
+          "seconds_per_run": [
+            20.0851062455,
+            18.922039456500002,
+            21.42331530431818
+          ]
         },
         "awm": {
           "accuracy": 40.90909090909091,
@@ -2477,12 +2946,25 @@
             45.45454545454545
           ],
           "wrong_pct": 59.09090909090909,
+          "wrong_min": 54.54545454545455,
+          "wrong_max": 68.18181818181819,
+          "wrong_per_run": [
+            54.54545454545455,
+            68.18181818181819,
+            54.54545454545455
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 22,
           "tokens": 57665.36363636363,
           "seconds": 43.88948509809091,
-          "calls": 6.287878787878788
+          "calls": 6.287878787878788,
+          "median_seconds": 22.9637731145,
+          "seconds_per_run": [
+            40.93795287281818,
+            50.66993837686364,
+            40.06056404459091
+          ]
         },
         "gmemory": {
           "accuracy": 43.93939393939394,
@@ -2494,29 +2976,55 @@
             36.36363636363637
           ],
           "wrong_pct": 56.06060606060606,
+          "wrong_min": 50.0,
+          "wrong_max": 63.63636363636363,
+          "wrong_per_run": [
+            50.0,
+            54.54545454545455,
+            63.63636363636363
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 22,
           "tokens": 60429.333333333336,
           "seconds": 34.10786115874242,
-          "calls": 5.696969696969697
+          "calls": 5.696969696969697,
+          "median_seconds": 10.123282314,
+          "seconds_per_run": [
+            41.22671795827273,
+            36.83861707940909,
+            24.258248438545454
+          ]
         },
         "mavra": {
-          "accuracy": 96.96969696969697,
-          "min": 95.45454545454545,
+          "accuracy": 100.0,
+          "min": 100.0,
           "max": 100.0,
           "per_run": [
-            95.45454545454545,
-            95.45454545454545,
+            100.0,
+            100.0,
             100.0
           ],
-          "wrong_pct": 3.0303030303030307,
+          "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 22,
-          "tokens": 19236.196969696968,
-          "seconds": 22.5523652925,
-          "calls": 3.772727272727273
+          "tokens": 12728.833333333334,
+          "seconds": 5.340753435863636,
+          "calls": 3.0303030303030303,
+          "median_seconds": 4.6409678225,
+          "seconds_per_run": [
+            5.820057729454545,
+            5.527772027090909,
+            4.674430551045455
+          ]
         }
       },
       "tpch": {
@@ -2530,12 +3038,25 @@
             68.75
           ],
           "wrong_pct": 35.416666666666664,
+          "wrong_min": 25.0,
+          "wrong_max": 50.0,
+          "wrong_per_run": [
+            50.0,
+            25.0,
+            31.25
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 16,
           "tokens": 31789.833333333332,
           "seconds": 20.35006845070833,
-          "calls": 3.9583333333333335
+          "calls": 3.9583333333333335,
+          "median_seconds": 8.536743066500001,
+          "seconds_per_run": [
+            20.6591067210625,
+            13.25338324525,
+            27.1377153858125
+          ]
         },
         "awm": {
           "accuracy": 60.416666666666664,
@@ -2547,12 +3068,25 @@
             56.25
           ],
           "wrong_pct": 39.583333333333336,
+          "wrong_min": 31.25,
+          "wrong_max": 43.75,
+          "wrong_per_run": [
+            43.75,
+            31.25,
+            43.75
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 16,
           "tokens": 35957.854166666664,
           "seconds": 22.972410315624998,
-          "calls": 4.604166666666667
+          "calls": 4.604166666666667,
+          "median_seconds": 7.064168211,
+          "seconds_per_run": [
+            14.89589786525,
+            31.687977047,
+            22.333356034624998
+          ]
         },
         "gmemory": {
           "accuracy": 75.0,
@@ -2564,12 +3098,25 @@
             75.0
           ],
           "wrong_pct": 25.0,
+          "wrong_min": 25.0,
+          "wrong_max": 25.0,
+          "wrong_per_run": [
+            25.0,
+            25.0,
+            25.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 16,
           "tokens": 24134.25,
           "seconds": 12.0803382875,
-          "calls": 3.5625
+          "calls": 3.5625,
+          "median_seconds": 6.0379073635000005,
+          "seconds_per_run": [
+            13.935409390875,
+            10.663078344375,
+            11.64252712725
+          ]
         },
         "mavra": {
           "accuracy": 75.0,
@@ -2581,12 +3128,25 @@
             75.0
           ],
           "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 12,
           "clarify_pct": 25.0,
           "n_per_run": 16,
-          "tokens": 17737.270833333332,
-          "seconds": 124.46392795420833,
-          "calls": 3.875
+          "tokens": 10696.625,
+          "seconds": 9.251585767375,
+          "calls": 2.8958333333333335,
+          "median_seconds": 5.459869385499999,
+          "seconds_per_run": [
+            8.7849308180625,
+            8.420660377625,
+            10.5491661064375
+          ]
         }
       },
       "both": {
@@ -2600,12 +3160,25 @@
             63.1578947368421
           ],
           "wrong_pct": 33.333333333333336,
+          "wrong_min": 28.94736842105263,
+          "wrong_max": 36.8421052631579,
+          "wrong_per_run": [
+            34.21052631578947,
+            28.94736842105263,
+            36.8421052631579
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 38,
           "tokens": 38442.4649122807,
           "seconds": 20.23046866467544,
-          "calls": 4.0701754385964914
+          "calls": 4.0701754385964914,
+          "median_seconds": 8.6982962995,
+          "seconds_per_run": [
+            20.326790656263157,
+            16.53523684123684,
+            23.829378496526314
+          ]
         },
         "awm": {
           "accuracy": 49.12280701754386,
@@ -2617,12 +3190,25 @@
             50.0
           ],
           "wrong_pct": 50.87719298245614,
+          "wrong_min": 50.0,
+          "wrong_max": 52.63157894736842,
+          "wrong_per_run": [
+            50.0,
+            52.63157894736842,
+            50.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 38,
           "tokens": 48525.35964912281,
           "seconds": 35.082295716,
-          "calls": 5.578947368421053
+          "calls": 5.578947368421053,
+          "median_seconds": 11.012974207500001,
+          "seconds_per_run": [
+            29.972877080157893,
+            42.67753360639474,
+            32.59647646144737
+          ]
         },
         "gmemory": {
           "accuracy": 57.01754385964912,
@@ -2634,29 +3220,55 @@
             52.63157894736842
           ],
           "wrong_pct": 42.98245614035088,
+          "wrong_min": 39.473684210526315,
+          "wrong_max": 47.36842105263158,
+          "wrong_per_run": [
+            39.473684210526315,
+            42.10526315789474,
+            47.36842105263158
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 38,
           "tokens": 45147.19298245614,
           "seconds": 24.83311468664035,
-          "calls": 4.798245614035087
+          "calls": 4.798245614035087,
+          "median_seconds": 8.3279891995,
+          "seconds_per_run": [
+            29.735640666736842,
+            25.817337612026314,
+            18.946365781157894
+          ]
         },
         "mavra": {
-          "accuracy": 87.71929824561403,
-          "min": 86.84210526315789,
+          "accuracy": 89.47368421052632,
+          "min": 89.47368421052632,
           "max": 89.47368421052632,
           "per_run": [
-            86.84210526315789,
-            86.84210526315789,
+            89.47368421052632,
+            89.47368421052632,
             89.47368421052632
           ],
-          "wrong_pct": 1.7543859649122808,
+          "wrong_pct": 0.0,
+          "wrong_min": 0.0,
+          "wrong_max": 0.0,
+          "wrong_per_run": [
+            0.0,
+            0.0,
+            0.0
+          ],
           "clarify": 12,
           "clarify_pct": 10.526315789473685,
           "n_per_run": 38,
-          "tokens": 18605.070175438595,
-          "seconds": 65.46249693953509,
-          "calls": 3.8157894736842106
+          "tokens": 11873.166666666666,
+          "seconds": 6.987419680710526,
+          "calls": 2.973684210526316,
+          "median_seconds": 4.9704331845,
+          "seconds_per_run": [
+            7.068425345710526,
+            6.745830279947368,
+            7.148003416473684
+          ]
         }
       }
     },
@@ -2672,12 +3284,25 @@
             87.5
           ],
           "wrong_pct": 20.833333333333332,
+          "wrong_min": 12.5,
+          "wrong_max": 37.5,
+          "wrong_per_run": [
+            12.5,
+            37.5,
+            12.5
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 8,
           "tokens": 57321.625,
           "seconds": 31.571002545124998,
-          "calls": 5.666666666666667
+          "calls": 5.666666666666667,
+          "median_seconds": 15.8042170265,
+          "seconds_per_run": [
+            26.381316914625,
+            36.96487284075,
+            31.36681788
+          ]
         },
         "awm": {
           "accuracy": 25.0,
@@ -2689,12 +3314,25 @@
             37.5
           ],
           "wrong_pct": 75.0,
+          "wrong_min": 62.5,
+          "wrong_max": 87.5,
+          "wrong_per_run": [
+            75.0,
+            87.5,
+            62.5
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 8,
           "tokens": 95908.125,
           "seconds": 70.720366745625,
-          "calls": 8.041666666666666
+          "calls": 8.041666666666666,
+          "median_seconds": 58.303995410499994,
+          "seconds_per_run": [
+            78.37224038025,
+            56.14357887425,
+            77.645280982375
+          ]
         },
         "gmemory": {
           "accuracy": 29.166666666666668,
@@ -2706,29 +3344,55 @@
             12.5
           ],
           "wrong_pct": 70.83333333333333,
+          "wrong_min": 50.0,
+          "wrong_max": 87.5,
+          "wrong_per_run": [
+            75.0,
+            50.0,
+            87.5
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 8,
           "tokens": 89071.0,
           "seconds": 51.082813890666664,
-          "calls": 8.166666666666666
+          "calls": 8.166666666666666,
+          "median_seconds": 42.0051726565,
+          "seconds_per_run": [
+            53.278697857,
+            60.23034356525,
+            39.73940024975
+          ]
         },
         "mavra": {
           "accuracy": 20.833333333333332,
-          "min": 0.0,
-          "max": 37.5,
+          "min": 12.5,
+          "max": 25.0,
           "per_run": [
-            0.0,
-            37.5,
+            12.5,
+            25.0,
             25.0
           ],
           "wrong_pct": 79.16666666666667,
+          "wrong_min": 75.0,
+          "wrong_max": 87.5,
+          "wrong_per_run": [
+            87.5,
+            75.0,
+            75.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 8,
-          "tokens": 37883.208333333336,
-          "seconds": 27.331097118666666,
-          "calls": 5.333333333333333
+          "tokens": 41215.875,
+          "seconds": 24.412243445625,
+          "calls": 5.625,
+          "median_seconds": 4.73609808,
+          "seconds_per_run": [
+            20.2825993435,
+            28.189637612000002,
+            24.764493381374997
+          ]
         }
       },
       "tpch": {
@@ -2742,12 +3406,25 @@
             66.66666666666667
           ],
           "wrong_pct": 38.88888888888889,
+          "wrong_min": 33.333333333333336,
+          "wrong_max": 50.0,
+          "wrong_per_run": [
+            50.0,
+            33.333333333333336,
+            33.333333333333336
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 39103.777777777774,
           "seconds": 20.5222840265,
-          "calls": 4.777777777777778
+          "calls": 4.777777777777778,
+          "median_seconds": 8.481593232,
+          "seconds_per_run": [
+            21.5712815535,
+            24.869548207166666,
+            15.126022318833332
+          ]
         },
         "awm": {
           "accuracy": 61.111111111111114,
@@ -2759,12 +3436,25 @@
             50.0
           ],
           "wrong_pct": 38.88888888888889,
+          "wrong_min": 33.333333333333336,
+          "wrong_max": 50.0,
+          "wrong_per_run": [
+            33.333333333333336,
+            33.333333333333336,
+            50.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 38808.88888888889,
           "seconds": 26.58784899766667,
-          "calls": 5.666666666666667
+          "calls": 5.666666666666667,
+          "median_seconds": 17.996571478,
+          "seconds_per_run": [
+            30.866013088166667,
+            26.861418349666668,
+            22.036115555166667
+          ]
         },
         "gmemory": {
           "accuracy": 83.33333333333333,
@@ -2776,12 +3466,25 @@
             66.66666666666667
           ],
           "wrong_pct": 16.666666666666668,
+          "wrong_min": 0.0,
+          "wrong_max": 33.333333333333336,
+          "wrong_per_run": [
+            16.666666666666668,
+            0.0,
+            33.333333333333336
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
           "tokens": 36141.055555555555,
           "seconds": 18.671319881333332,
-          "calls": 4.888888888888889
+          "calls": 4.888888888888889,
+          "median_seconds": 12.11149187,
+          "seconds_per_run": [
+            17.519147073166668,
+            17.336503820166666,
+            21.158308750666666
+          ]
         },
         "mavra": {
           "accuracy": 33.333333333333336,
@@ -2793,12 +3496,25 @@
             33.333333333333336
           ],
           "wrong_pct": 66.66666666666667,
+          "wrong_min": 66.66666666666667,
+          "wrong_max": 66.66666666666667,
+          "wrong_per_run": [
+            66.66666666666667,
+            66.66666666666667,
+            66.66666666666667
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 6,
-          "tokens": 22460.88888888889,
-          "seconds": 35.4929631935,
-          "calls": 4.888888888888889
+          "tokens": 16039.5,
+          "seconds": 16.65908852638889,
+          "calls": 4.0,
+          "median_seconds": 7.018803544000001,
+          "seconds_per_run": [
+            15.607041897,
+            20.045385910500002,
+            14.324837771666667
+          ]
         }
       },
       "both": {
@@ -2812,12 +3528,25 @@
             78.57142857142857
           ],
           "wrong_pct": 28.571428571428573,
+          "wrong_min": 21.428571428571427,
+          "wrong_max": 35.714285714285715,
+          "wrong_per_run": [
+            28.571428571428573,
+            35.714285714285715,
+            21.428571428571427
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 14,
           "tokens": 49513.97619047619,
           "seconds": 26.835837465714285,
-          "calls": 5.285714285714286
+          "calls": 5.285714285714286,
+          "median_seconds": 12.4578960055,
+          "seconds_per_run": [
+            24.31987318842857,
+            31.7811622835,
+            24.406476925214285
+          ]
         },
         "awm": {
           "accuracy": 40.476190476190474,
@@ -2829,12 +3558,25 @@
             42.857142857142854
           ],
           "wrong_pct": 59.523809523809526,
+          "wrong_min": 57.142857142857146,
+          "wrong_max": 64.28571428571429,
+          "wrong_per_run": [
+            57.142857142857146,
+            64.28571428571429,
+            57.142857142857146
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 14,
           "tokens": 71437.0238095238,
           "seconds": 51.80643056792857,
-          "calls": 7.023809523809524
+          "calls": 7.023809523809524,
+          "median_seconds": 22.339335980999998,
+          "seconds_per_run": [
+            58.01242868364286,
+            43.59408150657143,
+            53.81278151357143
+          ]
         },
         "gmemory": {
           "accuracy": 52.38095238095238,
@@ -2846,29 +3588,55 @@
             35.714285714285715
           ],
           "wrong_pct": 47.61904761904762,
+          "wrong_min": 28.571428571428573,
+          "wrong_max": 64.28571428571429,
+          "wrong_per_run": [
+            50.0,
+            28.571428571428573,
+            64.28571428571429
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 14,
           "tokens": 66386.73809523809,
           "seconds": 37.19217360095238,
-          "calls": 6.761904761904762
+          "calls": 6.761904761904762,
+          "median_seconds": 27.9664411055,
+          "seconds_per_run": [
+            37.9531760925,
+            41.84726938878571,
+            31.77607532157143
+          ]
         },
         "mavra": {
           "accuracy": 26.19047619047619,
-          "min": 14.285714285714286,
-          "max": 35.714285714285715,
+          "min": 21.428571428571427,
+          "max": 28.571428571428573,
           "per_run": [
-            14.285714285714286,
-            35.714285714285715,
+            21.428571428571427,
+            28.571428571428573,
             28.571428571428573
           ],
           "wrong_pct": 73.80952380952381,
+          "wrong_min": 71.42857142857143,
+          "wrong_max": 78.57142857142857,
+          "wrong_per_run": [
+            78.57142857142857,
+            71.42857142857143,
+            71.42857142857143
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 14,
-          "tokens": 31273.64285714286,
-          "seconds": 30.829039722166666,
-          "calls": 5.142857142857143
+          "tokens": 30426.0,
+          "seconds": 21.08946276595238,
+          "calls": 4.928571428571428,
+          "median_seconds": 5.688705077,
+          "seconds_per_run": [
+            18.278789009285713,
+            24.69924402564286,
+            20.29035526292857
+          ]
         }
       }
     },
@@ -2884,12 +3652,25 @@
             76.92307692307692
           ],
           "wrong_pct": 17.94871794871795,
+          "wrong_min": 11.538461538461538,
+          "wrong_max": 23.076923076923077,
+          "wrong_per_run": [
+            11.538461538461538,
+            19.23076923076923,
+            23.076923076923077
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 52,
           "tokens": 36694.86538461538,
           "seconds": 17.016850879621796,
-          "calls": 3.878205128205128
+          "calls": 3.878205128205128,
+          "median_seconds": 6.89649384,
+          "seconds_per_run": [
+            16.91427185698077,
+            17.305246972076922,
+            16.831033809807693
+          ]
         },
         "awm": {
           "accuracy": 43.58974358974359,
@@ -2901,12 +3682,25 @@
             51.92307692307692
           ],
           "wrong_pct": 55.76923076923077,
+          "wrong_min": 48.07692307692308,
+          "wrong_max": 63.46153846153846,
+          "wrong_per_run": [
+            55.76923076923077,
+            63.46153846153846,
+            48.07692307692308
+          ],
           "clarify": 1,
           "clarify_pct": 0.6410256410256411,
           "n_per_run": 52,
           "tokens": 60871.12820512821,
           "seconds": 42.35432256201282,
-          "calls": 6.435897435897436
+          "calls": 6.435897435897436,
+          "median_seconds": 22.632650107499998,
+          "seconds_per_run": [
+            40.59274237061538,
+            43.042889804096156,
+            43.42733551132692
+          ]
         },
         "gmemory": {
           "accuracy": 45.51282051282051,
@@ -2918,29 +3712,55 @@
             46.15384615384615
           ],
           "wrong_pct": 54.48717948717949,
+          "wrong_min": 51.92307692307692,
+          "wrong_max": 57.69230769230769,
+          "wrong_per_run": [
+            57.69230769230769,
+            51.92307692307692,
+            53.84615384615385
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 52,
           "tokens": 60673.8717948718,
           "seconds": 33.449800023461535,
-          "calls": 5.961538461538462
+          "calls": 5.961538461538462,
+          "median_seconds": 15.726011257,
+          "seconds_per_run": [
+            38.55905941584616,
+            35.64441995892307,
+            26.145920695615384
+          ]
         },
         "mavra": {
-          "accuracy": 86.53846153846155,
-          "min": 82.6923076923077,
+          "accuracy": 87.82051282051282,
+          "min": 86.53846153846153,
           "max": 88.46153846153847,
           "per_run": [
-            82.6923076923077,
+            86.53846153846153,
             88.46153846153847,
             88.46153846153847
           ],
-          "wrong_pct": 13.461538461538462,
+          "wrong_pct": 12.179487179487179,
+          "wrong_min": 11.538461538461538,
+          "wrong_max": 13.461538461538462,
+          "wrong_per_run": [
+            13.461538461538462,
+            11.538461538461538,
+            11.538461538461538
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 52,
-          "tokens": 19663.576923076926,
-          "seconds": 16.12209542298077,
-          "calls": 3.730769230769231
+          "tokens": 17036.8141025641,
+          "seconds": 7.754566034467948,
+          "calls": 3.4423076923076925,
+          "median_seconds": 4.1099744345,
+          "seconds_per_run": [
+            7.381174170788461,
+            8.381442251557692,
+            7.501081681057692
+          ]
         }
       },
       "tpch": {
@@ -2954,12 +3774,25 @@
             80.0
           ],
           "wrong_pct": 21.666666666666668,
+          "wrong_min": 15.0,
+          "wrong_max": 30.0,
+          "wrong_per_run": [
+            30.0,
+            15.0,
+            20.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 40,
           "tokens": 27963.675,
           "seconds": 15.399524570308333,
-          "calls": 3.7583333333333333
+          "calls": 3.7583333333333333,
+          "median_seconds": 5.833954821000001,
+          "seconds_per_run": [
+            15.844754413575,
+            13.519949380825,
+            16.833869916525
+          ]
         },
         "awm": {
           "accuracy": 77.5,
@@ -2971,12 +3804,25 @@
             75.0
           ],
           "wrong_pct": 22.5,
+          "wrong_min": 17.5,
+          "wrong_max": 25.0,
+          "wrong_per_run": [
+            25.0,
+            17.5,
+            25.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 40,
           "tokens": 29314.291666666668,
           "seconds": 18.02071383781667,
-          "calls": 4.283333333333333
+          "calls": 4.283333333333333,
+          "median_seconds": 6.4838066025,
+          "seconds_per_run": [
+            15.615549632,
+            22.6110213645,
+            15.83557051695
+          ]
         },
         "gmemory": {
           "accuracy": 86.66666666666667,
@@ -2988,12 +3834,25 @@
             85.0
           ],
           "wrong_pct": 13.333333333333334,
+          "wrong_min": 12.5,
+          "wrong_max": 15.0,
+          "wrong_per_run": [
+            12.5,
+            12.5,
+            15.0
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 40,
           "tokens": 25402.841666666667,
           "seconds": 11.996393528366667,
-          "calls": 3.658333333333333
+          "calls": 3.658333333333333,
+          "median_seconds": 5.769370969500001,
+          "seconds_per_run": [
+            11.792479399575,
+            13.043768565725,
+            11.1529326198
+          ]
         },
         "mavra": {
           "accuracy": 80.0,
@@ -3005,12 +3864,25 @@
             80.0
           ],
           "wrong_pct": 10.0,
+          "wrong_min": 10.0,
+          "wrong_max": 10.0,
+          "wrong_per_run": [
+            10.0,
+            10.0,
+            10.0
+          ],
           "clarify": 12,
           "clarify_pct": 10.0,
           "n_per_run": 40,
-          "tokens": 15383.758333333333,
-          "seconds": 59.520831492441665,
-          "calls": 3.6333333333333333
+          "tokens": 11510.833333333334,
+          "seconds": 8.489658951025001,
+          "calls": 3.1083333333333334,
+          "median_seconds": 4.925753815,
+          "seconds_per_run": [
+            8.1754188413,
+            8.751715905175,
+            8.5418421066
+          ]
         }
       },
       "both": {
@@ -3024,12 +3896,25 @@
             78.26086956521739
           ],
           "wrong_pct": 19.565217391304348,
+          "wrong_min": 17.391304347826086,
+          "wrong_max": 21.73913043478261,
+          "wrong_per_run": [
+            19.565217391304348,
+            17.391304347826086,
+            21.73913043478261
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 92,
           "tokens": 32898.69565217391,
           "seconds": 16.313665527746377,
-          "calls": 3.8260869565217392
+          "calls": 3.8260869565217392,
+          "median_seconds": 6.3177030115,
+          "seconds_per_run": [
+            16.449264272891305,
+            15.659465410663044,
+            16.832266899684782
+          ]
         },
         "awm": {
           "accuracy": 58.333333333333336,
@@ -3041,12 +3926,25 @@
             61.95652173913044
           ],
           "wrong_pct": 41.30434782608695,
+          "wrong_min": 38.04347826086956,
+          "wrong_max": 43.47826086956522,
+          "wrong_per_run": [
+            42.391304347826086,
+            43.47826086956522,
+            38.04347826086956
+          ],
           "clarify": 1,
           "clarify_pct": 0.36231884057971014,
           "n_per_run": 92,
           "tokens": 47150.764492753624,
           "seconds": 31.774492681927537,
-          "calls": 5.5
+          "calls": 5.5,
+          "median_seconds": 10.095500647000001,
+          "seconds_per_run": [
+            29.73309335382609,
+            34.15946874340217,
+            31.430915948554347
+          ]
         },
         "gmemory": {
           "accuracy": 63.405797101449274,
@@ -3058,29 +3956,55 @@
             63.04347826086956
           ],
           "wrong_pct": 36.594202898550726,
+          "wrong_min": 34.78260869565217,
+          "wrong_max": 38.04347826086956,
+          "wrong_per_run": [
+            38.04347826086956,
+            34.78260869565217,
+            36.95652173913044
+          ],
           "clarify": 0,
           "clarify_pct": 0.0,
           "n_per_run": 92,
           "tokens": 45338.641304347824,
           "seconds": 24.12223198211594,
-          "calls": 4.960144927536232
+          "calls": 4.960144927536232,
+          "median_seconds": 9.0642902605,
+          "seconds_per_run": [
+            26.921415930510868,
+            25.818049787967393,
+            19.627230227869564
+          ]
         },
         "mavra": {
-          "accuracy": 83.69565217391305,
-          "min": 81.52173913043478,
+          "accuracy": 84.42028985507247,
+          "min": 83.69565217391305,
           "max": 84.78260869565217,
           "per_run": [
-            81.52173913043478,
+            83.69565217391305,
             84.78260869565217,
             84.78260869565217
           ],
-          "wrong_pct": 11.956521739130435,
+          "wrong_pct": 11.231884057971016,
+          "wrong_min": 10.869565217391305,
+          "wrong_max": 11.956521739130435,
+          "wrong_per_run": [
+            11.956521739130435,
+            10.869565217391305,
+            10.869565217391305
+          ],
           "clarify": 12,
           "clarify_pct": 4.3478260869565215,
           "n_per_run": 92,
-          "tokens": 17802.78623188406,
-          "seconds": 34.991111105355074,
-          "calls": 3.6884057971014492
+          "tokens": 14634.213768115942,
+          "seconds": 8.074171650362318,
+          "calls": 3.2971014492753623,
+          "median_seconds": 4.399666304,
+          "seconds_per_run": [
+            7.7264979405760865,
+            8.542430796608695,
+            7.953586213902174
+          ]
         }
       }
     }
@@ -3319,9 +4243,9 @@
         "n": 18
       },
       "mavra": {
-        "correct": 16,
+        "correct": 18,
         "clarify": 0,
-        "wrong": 2,
+        "wrong": 0,
         "error": 0,
         "n": 18
       }
@@ -3409,9 +4333,9 @@
         "n": 18
       },
       "mavra": {
-        "correct": 1,
+        "correct": 0,
         "clarify": 0,
-        "wrong": 17,
+        "wrong": 18,
         "error": 0,
         "n": 18
       }
@@ -3439,9 +4363,9 @@
         "n": 6
       },
       "mavra": {
-        "correct": 4,
+        "correct": 5,
         "clarify": 0,
-        "wrong": 2,
+        "wrong": 1,
         "error": 0,
         "n": 6
       }
@@ -3805,6 +4729,12 @@
         "error": 0,
         "n": 6
       }
+    }
+  },
+  "sources": {
+    "results": "/root/agentdb-mid/results/change-study-20261101",
+    "arm_results": {
+      "mavra": "/root/agentdb-mid/results/change-study-20261101-final"
     }
   },
   "cost": {

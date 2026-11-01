@@ -1,4 +1,4 @@
 \section{\bt{Discussion and Conclusion}{讨论与结论}}
 \label{sec:limitations}
-\bi{\system{} shares learned executable definitions, versioned checks, repairs, and rewrites across agents, with metric execution bound to a checked snapshot. Sharing saves up to \PpMavraTokSaveNone\% of tokens on TPC-DS and \RbStackMavraTokSave\% on RelBench, and maintenance keeps answers correct after covered data changes. Future work covers many-to-many joins, incremental features, and unit and source-of-record checks.}
-{\system{} 在智能体间共享学得的可执行定义、版本化检查、修复与改写，指标执行绑定已核验快照。共享在 TPC-DS 上最多节省 \PpMavraTokSaveNone\% 的 token、在 RelBench 上节省 \RbStackMavraTokSave\%，维护使条件覆盖的数据变化之后答案保持正确。后续工作包括多对多连接、增量特征，以及量纲与权威来源检查。}
+\bi{\system{} shares learned executable definitions, versioned checks, repairs, and rewrites across agents, with metric execution bound to a checked snapshot. Sharing saves up to \PpMavraTokSaveNone\% of tokens; after covered data changes \system{} gives no wrong answer (agent memories: \CsBreakBaseWrongMin--\CsBreakBaseWrongMax\%), with validation cost flat in the number of agents. Future work covers premises B1--B2, many-to-many joins, and incremental features.}
+{\system{} 在智能体间共享学得的可执行定义、版本化检查、修复与改写，指标执行绑定已核验快照。共享最多节省 \PpMavraTokSaveNone\% 的 token；条件覆盖的数据变化之后 \system{} 没有答错（智能体记忆：\CsBreakBaseWrongMin--\CsBreakBaseWrongMax\%），验证代价不随智能体数量增长。后续工作包括前提 B1--B2、多对多连接与增量特征。}
