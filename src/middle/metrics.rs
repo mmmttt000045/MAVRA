@@ -155,10 +155,9 @@ fn same_cond(a: &Check, b: &Check) -> bool {
     };
     match (a, b) {
         (Check::KeyUnique { table: t1, cols: c1, filter: f1 }, Check::KeyUnique { table: t2, cols: c2, filter: f2 })
-        | (
-            Check::DistinctKeyUnique { table: t1, cols: c1, filter: f1 },
-            Check::DistinctKeyUnique { table: t2, cols: c2, filter: f2 },
-        ) => same(t1, c1, f1, t2, c2, f2),
+        | (Check::DistinctKeyUnique { table: t1, cols: c1, filter: f1 }, Check::DistinctKeyUnique { table: t2, cols: c2, filter: f2 }) => {
+            same(t1, c1, f1, t2, c2, f2)
+        }
         _ => a == b,
     }
 }
