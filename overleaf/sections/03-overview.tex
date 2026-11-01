@@ -1,7 +1,7 @@
 \section{\bt{System Overview}{系统概览}}
 \label{sec:overview}
-\bi{\system{} stores reusable computations and applicability conditions between data agents and PostgreSQL (Figure~\ref{fig:architecture}); agents retain their own session histories.}
-{\system{} 在数据智能体与 PostgreSQL 之间保存可复用计算及适用条件（图~\ref{fig:architecture}），智能体保留自身会话历史。}
+\bi{\system{} stores reusable computations and applicability conditions between data agents and PostgreSQL (Figure~\ref{fig:architecture}).}
+{\system{} 在数据智能体与 PostgreSQL 之间保存可复用计算及适用条件（图~\ref{fig:architecture}）。}
 \subsection{\bt{Components and shared state}{组件与共享状态}}
 \bi{\emph{Shared knowledge} stores metric revisions $m_i^r$, feature revisions $f_i^r$, and their required conditions $C$. Here $i$ identifies an object and $r$ its revision. Each condition $c$ has a check query $Q_c$; cached results carry the versions $V(T)$ of tables $T$ read by that query. Table descriptions and verified joins are also shared. \emph{Publish} extracts and checks candidates; \emph{Lookup} consults the \emph{Version tracker}; \emph{Maintain} refreshes checks and invokes \emph{Metric repair}; \emph{Compile and run} instantiates accepted definitions. Independent ETL jobs and writers change the database.}
 {\emph{共享知识}保存指标修订 $m_i^r$、特征修订 $f_i^r$ 及所需条件 $C$，对象标识 $i$ 与修订号 $r$ 分开。各条件 $c$ 具有检查查询 $Q_c$，缓存结果携带所读表 $T$ 的版本 $V(T)$。定义、检查结果、表描述和验证连接在智能体间共享。\emph{发布}提取并检查候选，\emph{查找}访问\emph{版本跟踪}，\emph{维护}刷新检查并调用\emph{指标修复}，\emph{编译与执行}实例化已通过检查的定义。ETL 和其他写入方独立修改数据库。}
