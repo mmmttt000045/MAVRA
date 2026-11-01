@@ -344,11 +344,12 @@ pub fn check_join_orientation(m: &Metric) -> Result<()> {
 /// 日期键修复后，扩展日期维度上统一的键列名。
 pub const DATE_KEY: &str = "mavra_date_key";
 
-/// 规范 SQL 中的事实表：去重修复后是去除完全重复行的子查询，别名仍是表名，列引用不变。
-/// 事实表上的过滤与期间谓词在子查询外，PostgreSQL 把只引用子查询输出列的条件下推到 DISTINCT 之下（选择与去重可交换）。
-fn fact_source(m: &Metric) -> String {
+/// 规范 SQL 中的事实表：去重修复后是去除完全重复行的子查询，别名仍是表名，列引用不变。`keep` 是只引用事实表自身列的
+/// 期间条件（日期键属于期间），在去重之前过滤：选择与去重可交换，结果不变，去重只作用于该期间的行。
+fn fact_source(m: &Metric, keep: Option<&str>) -> String {
     if m.dedup {
-        format!("(select distinct * from {f}) {f}", f = m.fact)
+        let w = keep.map(|k| format!(" where {k}")).unwrap_or_default();
+        format!("(select distinct * from {f}{w}) {f}", f = m.fact)
     } else {
         m.fact.clone()
     }
@@ -358,7 +359,7 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     check_join_orientation(m)?;
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义，无法按期间编译"))?;
     ensure!(time.is_column() || !(time.dim.is_empty() || time.dim_col.is_empty()), "日期维度方式需要维度表与键列");
-    let mut from = fact_source(m);
+    let mut tail = String::new();
     let mut wheres = vec![];
     let mut seen = BTreeSet::new();
     for j in &m.joins {
@@ -376,14 +377,17 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
             push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&j.left, f)?);
         }
         let kw = if j.kind == JoinKind::Left { "left join" } else { "join" };
-        from.push_str(&format!(" {kw} {other} on {}", conds.join(" and ")));
+        tail.push_str(&format!(" {kw} {other} on {}", conds.join(" and ")));
     }
     if let Some(f) = m.filters.get(&m.fact) {
         push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&m.fact, f)?);
     }
-    let joined = if time.is_column() {
-        from.clone()
-    } else {
+    let from = |keep: Option<&str>| format!("{}{tail}", fact_source(m, keep));
+    let joined = |keep: Option<&str>| {
+        let from = from(keep);
+        if time.is_column() {
+            return from;
+        }
         match &time.key_alias {
             // 日期键修复后：日期维度按两种键编码各出一行（两者互不重叠，由条件 KeyAliasUnique 维护），事实键与其中之一相等
             Some(alias) => format!(
@@ -396,6 +400,25 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
             ),
             None => format!("{from} join {d} on {}.{} = {d}.{}", m.fact, time.fact_col, time.dim_col, d = time.dim),
         }
+    };
+    // 去重的事实表先按期间过滤：日期列在事实表上时就是期间谓词；日期维度方式下是“事实日期键属于期间的键集合”
+    // （日期键修复后含另一种编码），与随后的维度连接和期间谓词选出同一批事实行
+    let keep = |pp: &str| -> Option<String> {
+        if !m.dedup {
+            return None;
+        }
+        if time.is_column() {
+            return (time.column_of(&m.fact).0 == m.fact).then(|| pp.to_string());
+        }
+        let keys = match &time.key_alias {
+            Some(alias) => format!(
+                "select {d}.{dc} from {d} where {pp} union all select {alias} from {d} where {pp}",
+                d = time.dim,
+                dc = time.dim_col
+            ),
+            None => format!("select {d}.{dc} from {d} where {pp}", d = time.dim, dc = time.dim_col),
+        };
+        Some(format!("{}.{} in ({keys})", m.fact, time.fact_col))
     };
     let cond = |extra: String| {
         let mut w = wheres.clone();
@@ -418,22 +441,29 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
                 dc = time.dim_col,
                 dim = time.dim
             );
-            format!("select {expr} as value from {from} where {}", cond(between))
+            let src = from(m.dedup.then_some(between.as_str()));
+            format!("select {expr} as value from {src} where {}", cond(between))
         } else {
-            format!("select {expr} as value from {joined} where {}", cond(pred(p)))
+            let pp = pred(p);
+            let src = joined(keep(&pp).as_deref());
+            format!("select {expr} as value from {src} where {}", cond(pp))
         }
     };
     // 按月比较的题型需要月份，日期维度方式下两种策略都连接维度
     let mo = month_expr(time, &m.fact);
-    let monthly = |y: i32| format!("select {mo} as mo, {expr} as v from {joined} where {} group by 1", cond(year(y)));
+    let monthly = |y: i32| {
+        let yp = year(y);
+        let src = joined(keep(&yp).as_deref());
+        format!("select {mo} as mo, {expr} as v from {src} where {} group by 1", cond(yp))
+    };
     Ok(match ask {
         Ask::Single { period } => value(period),
         Ask::Diff { a, b } => format!("select ({}) - ({}) as value", value(a), value(b)),
-        Ask::RankMonth { year: y } => format!(
-            "select {mo} as value from {joined} where {} group by 1 order by {} desc nulls last, 1 limit 1",
-            cond(year(*y)),
-            m.measure
-        ),
+        Ask::RankMonth { year: y } => {
+            let yp = year(*y);
+            let src = joined(keep(&yp).as_deref());
+            format!("select {mo} as value from {src} where {} group by 1 order by {} desc nulls last, 1 limit 1", cond(yp), m.measure)
+        }
         Ask::PeakRise { year: y } => format!(
             "select mo as value from (select mo, v - lag(v) over (order by mo) as rise from ({}) m) r \
              where rise is not null order by rise desc nulls last, mo limit 1",
@@ -471,7 +501,7 @@ pub fn feature_lateral(m: &Metric, alias: &str, seed_key: &str) -> Result<String
     let time = m.time.as_ref().filter(|t| t.is_column()).ok_or_else(|| anyhow!("特征定义的时间须为日期列方式"))?;
     let (tt, tc) = time.column_of(&m.fact);
     let (vt, vc) = e.via_of(&m.fact);
-    let mut from = fact_source(m);
+    let mut from = fact_source(m, None);
     let mut wheres = vec![];
     let mut seen = BTreeSet::new();
     for j in &m.joins {
@@ -1496,9 +1526,19 @@ mod tests {
         let mut m = rate();
         m.dedup = true;
         let s = compile(&m, &Ask::Single { period: Period::month(2002, 9) }).unwrap();
+        // 去重之前先按期间的日期键过滤（只引用事实表自己的列），再照常连接维度与按期间过滤
         assert!(s.starts_with(
-            "select 100.0 * sum(sr_return_amt) / sum(ss_net_paid) as value from (select distinct * from store_sales) store_sales \
-             left join store_returns on store_sales.ss_ticket_number = store_returns.sr_ticket_number"
+            "select 100.0 * sum(sr_return_amt) / sum(ss_net_paid) as value from (select distinct * from store_sales \
+             where store_sales.ss_sold_date_sk in (select date_dim.d_date_sk from date_dim where date_dim.d_year = 2002 and date_dim.d_moy between 9 and 9)) \
+             store_sales left join store_returns on store_sales.ss_ticket_number = store_returns.sr_ticket_number"
+        ));
+        assert!(s.contains("join date_dim on store_sales.ss_sold_date_sk = date_dim.d_date_sk where date_dim.d_year = 2002"));
+        // 未去重的定义编译结果不变
+        let plain_sql = compile(&rate(), &Ask::Single { period: Period::month(2002, 9) }).unwrap();
+        assert!(plain_sql.contains("from store_sales left join store_returns"));
+        let rank = compile(&m, &Ask::RankMonth { year: 2001 }).unwrap();
+        assert!(rank.contains(
+            "(select distinct * from store_sales where store_sales.ss_sold_date_sk in (select date_dim.d_date_sk from date_dim where date_dim.d_year = 2001)) store_sales"
         ));
         // 未去重的定义序列化时不带该字段，旧的经验文件照常读取
         let plain = serde_json::to_value(rate()).unwrap();
