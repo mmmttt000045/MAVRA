@@ -9,7 +9,7 @@ import mplstyle
 import style
 
 NAME = "shared-validation"
-W, H = style.COLUMN, 40.0
+W, H = style.COLUMN, 37.0
 POLICIES = [("per-agent", "mPrivate", "v", "--"), ("full-recheck", "mDef", "s", ":"), ("mavra", "mCond", "o", "-")]
 TEXT = {
     "en": {"names": {"per-agent": "Per-agent validation", "full-recheck": "Shared, full recheck", "mavra": "MAVRA"},
@@ -37,7 +37,7 @@ def figure(lang):
     hi = max(g["db_s"]["max"] for g in data["groups"])
     fig = mplstyle.figure(W, H)
     axes = fig.subplots(1, 2, sharey=True)
-    fig.subplots_adjust(left=.13, right=.98, top=.77, bottom=.24, wspace=.10)
+    fig.subplots_adjust(left=.13, right=.98, top=.751, bottom=.178, wspace=.10)
     for col, arrival in enumerate(["staggered", "simultaneous"]):
         ax = axes[col]
         for policy, color, marker, line in POLICIES:

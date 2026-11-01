@@ -15,7 +15,7 @@ import mplstyle
 import style
 
 NAME = "reuse-work"
-W, H = style.COLUMN, 41.0
+W, H = style.COLUMN, 37.8
 METHODS = [("none", "No memory", "无记忆"), ("ace", "ACE", "ACE"), ("awm", "AWM", "AWM"),
            ("gmemory", "G-Memory", "G-Memory"), ("mavra", "MAVRA", "MAVRA")]
 KINDS = [("schema", "Schema", "结构检查", "#B8CDE5", ""),
@@ -30,7 +30,7 @@ TEXT = {"en": {"y": "Agent tool calls per session", "panels": ["(a) rel-stack", 
 def figure(lang):
     work = json.loads((ROOT / "exp/2026-10-29-fig45-official/figure-data.json").read_text(encoding="utf-8"))["work"]
     fig = mplstyle.figure(W, H)
-    axes = fig.subplots(1, 2, gridspec_kw=dict(left=.11, right=.99, top=.80, bottom=.29, wspace=.22))
+    axes = fig.subplots(1, 2, gridspec_kw=dict(left=.11, right=.99, top=.783, bottom=.230, wspace=.22))
     for ax, ds, title in zip(axes, ["rel-stack", "rel-trial"], TEXT[lang]["panels"]):
         bottom = [0.0] * len(METHODS)
         for key, en, zh, color, hatch in KINDS:

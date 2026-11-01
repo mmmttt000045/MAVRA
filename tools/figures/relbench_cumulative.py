@@ -15,7 +15,7 @@ from style import INK, MUTED  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 NAME = 'relbench-cumulative'
-W, H = 88.9, 74.0
+W, H = 88.9, 71.8
 DATA = style.ROOT / 'exp/2026-10-20-relbench/paper-sessions.json'
 ARMS = [('none', 'No memory', '无记忆', 'mNoShare', '^'), ('ace', 'ACE', 'ACE', 'mACE', 'v'),
         ('gmemory', 'G-Memory', 'G-Memory', 'mGMem', 'P'), ('awm', 'AWM', 'AWM', 'mAWM', 'X'),
@@ -64,14 +64,14 @@ def draw(lang, data_path=DATA, out_dir=None):
             ax.text(x, .98, label, transform=transform, ha='center', va='top',
                     fontsize=6.5, color=MUTED)
     axes[-1].set_xlabel(TEXT[lang]['x'], color=MUTED, fontsize=7)
-    fig.text(.015, .45, TEXT[lang]['y'], rotation=90, va='center', fontsize=7, color=INK)
+    fig.text(.015, .433, TEXT[lang]['y'], rotation=90, va='center', fontsize=7, color=INK)
     handles, labels = axes[0].get_legend_handles_labels()
     legend = fig.legend(handles, labels, loc='upper center', ncol=3, bbox_to_anchor=(.53, .99),
                         fontsize=7, handlelength=1.8, columnspacing=.8, labelspacing=.35)
     for label in legend.get_texts():
         if label.get_text().startswith('MAVRA'):
             label.set_weight('bold')
-    fig.subplots_adjust(left=.15, right=.99, bottom=.115, top=.80, hspace=.65)
+    fig.subplots_adjust(left=.15, right=.99, bottom=.088, top=.794, hspace=.65)
     out = Path(out_dir or style.OUT) / (f'{NAME}.pdf' if lang == 'en' else f'{NAME}-zh.pdf')
     mplstyle.save(fig, out)
     print(out)
