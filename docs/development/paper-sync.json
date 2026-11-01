@@ -5,19 +5,17 @@
   "branch": "main",
   "status": "pushed_and_verified",
   "direction": "agent4db-adapter overleaf/ -> paper repo (manuscript sync)",
-  "previous_head": "c245537d5ce236b22a08575a21a6be795e52b04d",
-  "remote_commit": "91c55bc443b2f285742e10434527d49500ffc22f",
+  "previous_head": "91c55bc443b2f285742e10434527d49500ffc22f",
+  "remote_commit": "a504d41c2929cc53e752208cab8a3cb5d95b2e07",
   "pending_payload": null,
   "changed_paths": [
-    "sections/01-introduction.tex",
-    "sections/02-background.tex",
-    "sections/03-overview.tex",
+    "figures/change-study-zh.pdf",
+    "figures/change-study.pdf",
+    "figures/two-schemas.tex",
     "sections/04-design.tex",
     "sections/05-evaluation.tex",
-    "sections/06-related-work.tex",
-    "sections/07-conclusion.tex",
-    "sections/abstract.tex",
-    "tables/capabilities.tex"
+    "tables/capabilities.tex",
+    "tables/replay-policies.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
@@ -32,8 +30,8 @@
     "bilingual_pages": 20,
     "cited_references": 50
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/91c55bc443b2f285742e10434527d49500ffc22f",
-  "remote_tree": "1f18c5cf64f88c9dd8cfab72d6a8e4cfba69336f",
-  "source_commit": "e2d7684181fee0a4ce175221bca43bb3d218df4f",
-  "sync_authorization": "User asked to commit and sync to Overleaf (2026-11-01)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/a504d41c2929cc53e752208cab8a3cb5d95b2e07",
+  "remote_tree": "7065ccea3d017c9a1b64a17d6163bd13637b4a3f",
+  "source_commit": "6621d829528d73b18a0c14e602eae230e20d7113",
+  "sync_authorization": "User asked to commit and share with the advisor (2026-11-01)."
 }
