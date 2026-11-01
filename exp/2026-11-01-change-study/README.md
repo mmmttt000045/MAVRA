@@ -79,6 +79,43 @@ larger bank, and runs every cell fresh with the same binary.
 - Per-change counts for every method and run: `summary.md`, `study-stats.json`.
 - Binary for all runs: sha256 `67e2fc83b7a5…` built at `96da0bc`.
 
+## Final-binary MAVRA cells (2026-11-01, used in the paper)
+
+After the first study, TPC-H breaks were slow for MAVRA (124 s per session against at most
+23 s): the duplicate load writes exact copies, so the grain-filter search over 6.3M line items
+failed (8–16 `count(distinct …)` queries per definition, repeated for each definition), and the
+agent then wrote its own deduplicating SQL. The main repository fixed this before the rerun
+(commits 8db523b–de69b83): hash-aggregate key checks; a value-count prescreen in the filter
+search; failed and ambiguous searches recorded per table version and reused; a new restricted
+repair for exact duplicates (`Metric.dedup`, `Check::DistinctKeyUnique`); fact filters
+qualified so that equivalent filters share one condition. Unit and integration tests pass
+(the change-scenario test now expects repaired revisions on duplicate loads).
+
+- Smoke test (TPC-H, `bank-tpch-smoke.json`, 7 scored tasks): all correct, CNY 0.16; the
+  first answer after the duplicate load took 30 s (was 500–861 s).
+- Formal rerun: MAVRA only, runs 1–3 on both schemas, six cells concurrently with `--pool 4`,
+  cap CNY 6.0; HEAD fdf56be, binary sha256 `3ec110d060fe…`; 1,104 API calls, CNY 2.33, 0
+  errors (`results/change-study-20261101-final`). The baseline cells are those of the first
+  study (same banks, prompts, model, and machine); they ran 10-31 night with 8–16 concurrent
+  cells, the MAVRA cells 11-01 midday with six.
+- Aggregation: `analyse.py --results results/change-study-20261101 --arm-results
+  mavra=results/change-study-20261101-final` (the paper's Fig. 6 and Cs* macros).
+
+| Group (both schemas) | MAVRA | ACE | G-Memory | AWM |
+|---|---:|---:|---:|---:|
+| Held-out | 100.0 · 11.8k · 3.9 s | 100.0 · 15.1k · 4.3 s | 86.1 · 23.8k · 9 s | 83.3 · 25.6k · 13 s |
+| Non-breaking | 100.0 · 11.7k · 4.8 s | 95.2 · 24.7k · 11 s | 67.9 · 44.3k · 23 s | 69.0 · 42.4k · 25 s |
+| Covered breaks | 89.5 [89–89], 0 wrong · 11.9k · 7.0 s | 66.7 · 38.4k · 20 s | 57.0 · 45.1k · 25 s | 49.1 · 48.5k · 35 s |
+| Not covered | 26.2 · 30.4k · 21 s | 71.4 · 49.5k · 27 s | 52.4 · 66.4k · 37 s | 40.5 · 71.4k · 52 s |
+
+(accuracy % · tokens per question · mean session seconds). MAVRA has the fewest tokens and the
+lowest mean session time in every group of both schemas; on held-out questions its time ties
+ACE. Covered breaks: synthetic 66/66 correct; TPC-H 36 correct and 12 clarification requests
+on the late batch without ship dates (every baseline answers those 12 wrongly). Not covered:
+backup copy 11/12 (best of all methods; ACE 10/12), unit change 0/30 (ACE 20/30). Raw reports,
+journals, completion records and the usage ledger of these cells: `raw-results-final.tgz`. The
+earlier MAVRA cells (old binary) stay in `raw-results.tgz` and the tables above this section.
+
 ## Reproduce the aggregation
 
 ```
