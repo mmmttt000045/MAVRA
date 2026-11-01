@@ -29,12 +29,12 @@ TAG = {"ace": "Ace", "awm": "Awm", "gmemory": "Gmem", "mavra": "Mavra"}
 GTAG = {"holdout": "Hold", "non_breaking": "Benign", "covered_breaks": "Break", "outside_conditions": "Outside"}
 STAG = {"synthetic": "Syn", "tpch": "Tpch"}
 TEXT = {
-    "en": {"groups": ["Held-\nout", "Non-\nbreaking", "Covered\nbreaks", "Not\ncovered"],
+    "en": {"groups": ["Held-\nout", "Non-\nbreaking", "Covered\nbreaks", "Premise\nchanges"],
            "panels": ["(a) Answers, synthetic retail", "(b) Answers, TPC-H SF1", "(c) Tokens, both schemas",
                       "(d) Time, both schemas"],
            "up": "Correct", "down": "Wrong", "y": ["Answers (%)", "Tokens per question (k)", "Seconds per question"],
            "flag": "Asked for clarification"},
-    "zh": {"groups": ["留出", "正常\n更新", "覆盖\n破坏", "未覆盖"],
+    "zh": {"groups": ["留出", "正常\n更新", "覆盖\n破坏", "前提\n变化"],
            "panels": ["(a) 作答，合成零售", "(b) 作答，TPC-H SF1", "(c) token，两种模式", "(d) 耗时，两种模式"],
            "up": "正确", "down": "错误", "y": ["作答（%）", "每题 token（千）", "每题耗时（秒）"], "flag": "请求澄清"},
 }

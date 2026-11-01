@@ -27,19 +27,19 @@
 % Queue the wide result table before its discussion on the next page.
 \input{tables/relbench}
 \subsubsection{\bt{Models and execution budgets}{模型与执行预算}}
-\bi{Predictive agents use \code{deepseek-flash} (\llmmodel{}) with low thinking effort. Analytical agents and extraction use high effort, 20 turns, and a 60\,s SQL limit (120\,s for TPC-DS and TPC-H). The change study in Section~\ref{sec:changes-eval} uses low effort and a 120\,s SQL limit.}
-{预测智能体使用 \code{deepseek-flash}（\llmmodel{}），采用 low 思考强度。分析智能体与提炼采用 high 强度、20 轮和 60 秒 SQL 限时，TPC-DS 与 TPC-H 为 120 秒。第~\ref{sec:changes-eval} 节的变化实验采用 low 强度和 120 秒 SQL 限时。}
+\bi{Predictive agents use \code{deepseek-flash} (\llmmodel{}) with low thinking effort. Analytical agents and extraction use high effort, 20 turns, and a 60\,s SQL limit (120\,s for TPC-DS and TPC-H), and each question allows at most three memory lookups. In the change study (Section~\ref{sec:changes-eval}), every method runs with low effort and a 120\,s SQL limit.}
+{预测智能体使用 \code{deepseek-flash}（\llmmodel{}），采用 low 思考强度。分析智能体与提炼采用 high 强度、20 轮和 60 秒 SQL 限时，TPC-DS 与 TPC-H 为 120 秒；每题最多查找三次记忆。第~\ref{sec:changes-eval} 节的变化实验中，所有方法均采用 low 强度和 120 秒 SQL 限时。}
 
-\bi{All predictive methods use LightGBM 4.6.0~\cite{ke2017lightgbm} with 50k training rows (seed 42), 300 trees, a learning rate of 0.05, and 63 leaves. SQL returns one row per seed and at most 100 features within 600\,s. Leakage audits hide future data and recompute up to 5,000 seeds. The five-cutoff study allows 40 planner calls and eight validations per session, and the three-cutoff study allows 24 calls and five validations. Two consecutive validations without improvement can end planning. In the three-cutoff study, \system{} validates a saved program before retrieving cross-task definitions.}
-{全部预测方法共用 LightGBM 4.6.0~\cite{ke2017lightgbm}，使用 5 万行训练数据（种子 42）、300 棵树、0.05 学习率和 63 个叶子。SQL 在 600 秒内为每个种子返回一行，最多 100 个特征。泄漏审计隐藏未来数据，对最多 5,000 个种子重算特征。五截点实验每个会话最多调用规划器 40 次、验证八次，三截点实验分别为 24 次和五次。连续两次验证未改进可结束规划。三截点实验中，\system{} 先验证已保存的程序，再按需检索跨任务定义。}
+\bi{All predictive methods use LightGBM 4.6.0~\cite{ke2017lightgbm} with 50k training rows (seed 42), 300 trees, a learning rate of 0.05, and 63 leaves. SQL returns one row per seed and at most 100 features within 600\,s. Leakage audits hide future data and recompute up to 5,000 seeds. The five-cutoff study allows 40 planner calls and eight validations per session, and the three-cutoff study allows 24 calls and five validations; within this smaller budget, \system{} validates the saved program first and retrieves cross-task definitions only when needed. Two consecutive validations without improvement can end planning.}
+{全部预测方法共用 LightGBM 4.6.0~\cite{ke2017lightgbm}，使用 5 万行训练数据（种子 42）、300 棵树、0.05 学习率和 63 个叶子。SQL 在 600 秒内为每个种子返回一行，最多 100 个特征。泄漏审计隐藏未来数据，对最多 5,000 个种子重算特征。五截点实验每个会话最多调用规划器 40 次、验证八次，三截点实验分别为 24 次和五次；在这一较小预算下，\system{} 先验证已保存的程序，再按需检索跨任务定义。连续两次验证未改进可结束规划。}
 
 \subsubsection{\bt{Evaluation metrics}{评估指标}}
 \label{sec:setup-metrics}
-\bi{We compare each predictive task mean with no memory, allowing at most a 0.01 AUC decrease or a 2\% MAE increase; invalid or leaking solutions keep their cost and receive the entity-reference score. Token counts include memory operations, and reuse cost covers every cutoff after the first. Session time covers LLM calls and online database work; leakage audits and publication run offline after the session.}
-{我们将各预测任务的均值与无记忆比较，质量门槛为 AUC 下降不超过 0.01 或 MAE 增加不超过 2\%；无效或泄漏方案保留其成本，并回退到实体参照分数。token 数计入记忆操作，复用代价计入第一个截点之后的全部截点。会话耗时涵盖大模型调用与在线数据库工作；泄漏审计与发布在会话结束后离线进行。}
+\bi{We compare each predictive task mean with no memory, allowing at most a 0.01 AUC decrease or a 2\% MAE increase; invalid or leaking solutions keep their cost and receive the entity-reference score. Token counts include memory operations, and reuse cost covers every cutoff after the first. Session time covers the LLM calls and database work within the session; every method's memory update and the leakage audit run after it.}
+{我们将各预测任务的均值与无记忆比较，质量门槛为 AUC 下降不超过 0.01 或 MAE 增加不超过 2\%；无效或泄漏方案保留其成本，并回退到实体参照分数。token 数计入记忆操作，复用代价计入第一个截点之后的全部截点。会话耗时涵盖会话内的大模型调用与数据库工作；各方法的记忆更新与泄漏审计均在会话结束后进行。}
 
-\bi{Analytical reference answers give the business truth after each change. In the change study, rates use all scored questions in each group; clarification requests and execution errors earn no credit, and other missing or mismatched answers count as wrong. Fixed-library replay scores the result each policy serves, or records that it withholds the definition, without an answering agent.}
-{分析任务的参照答案给出每次变化后的业务真值。变化实验的比率以组内全部计分题为分母；请求澄清与执行错误不得分，其他缺失或不匹配的答案计为错答。固定库回放对各策略提供的结果计分，或记录其未提供定义，不需要智能体作答。}
+\bi{Analytical reference answers give the business truth after each change and verify learning sessions: before extraction, an automated oracle compares a session's final scalar with the reference answer on the same snapshot. In the change study, rates use all scored questions in each group; clarification requests and execution errors earn no credit, and other missing or mismatched answers count as wrong. Fixed-library replay scores the result each policy serves, or records that it withholds the definition, without an answering agent.}
+{分析任务的参照答案给出每次变化后的业务真值，并用于核实学习会话：提取之前，自动判题器在同一快照上将会话的最终标量与参照答案核对。变化实验的比率以组内全部计分题为分母；请求澄清与执行错误不得分，其他缺失或不匹配的答案计为错答。固定库回放对各策略提供的结果计分，或记录其未提供定义，不需要智能体作答。}
 
 \subsection{\bt{Overall performance}{总体表现}}
 \label{sec:overall-eval}
@@ -97,8 +97,8 @@
 
 \subsubsection{\bt{Changes to source and measurement}{来源与度量的变化}}
 \input{figures/fixed-sharing}
-\bi{A backup copy breaks the grain condition, and two source filters each restore it. \system{} detects the violation and withholds the definition instead of guessing the source; its agent then answers \CsMirrorMavraC{} of \CsMirrorN{} questions correctly, more than any baseline. Changing units alters the measurement premise (B2) while every data condition still holds, so it lies outside Proposition~\ref{prop:sufficiency}; such business-level changes call for revising the definition itself (Section~\ref{sec:limitations}).}
-{备份副本使粒度条件失效，且两个来源过滤条件都能恢复该粒度。\system{} 检测到违例后停用定义，而不是猜测来源；其智能体随后答对 \CsMirrorN{} 题中的 \CsMirrorMavraC{} 题，多于任何基线。单位变化改变的是度量前提（B2），全部数据条件依然成立，因此不属于命题~\ref{prop:sufficiency} 的范围；这类业务层面的变化需要修订定义本身（第~\ref{sec:limitations} 节）。}
+\bi{Both changes in this group alter a domain premise of Proposition~\ref{prop:sufficiency}. The backup copy (B1) also breaks the grain condition, and a filter on either source restores it, so the data alone cannot identify the authoritative source. \system{} detects the violation and withholds the definition instead of guessing; its agent then answers \CsMirrorMavraC{} of \CsMirrorN{} questions correctly, more than any baseline. The unit change (B2) leaves every statistic that the conditions read unchanged, which marks the boundary of data checks: a change of measurement is a change of business definition.}
+{本组两种变化都改变命题~\ref{prop:sufficiency} 的一条领域前提。备份副本（B1）同时使粒度条件失效，而任一来源上的过滤都能恢复粒度，因此仅凭数据无法确定权威来源。\system{} 检测到违例后停用定义，而不是猜测；其智能体随后答对 \CsMirrorN{} 题中的 \CsMirrorMavraC{} 题，多于任何基线。单位变化（B2）不改变条件所读的任何统计量，这标出了数据检查的边界：度量方式的变化即业务定义的变化。}
 
 \subsection{\bt{Mechanism analysis and overhead}{机制分析与开销}}
 \label{sec:maint-cost-eval}
