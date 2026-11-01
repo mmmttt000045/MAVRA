@@ -16,7 +16,7 @@ import mplstyle  # noqa: E402
 import style  # noqa: E402
 
 NAME = 'population'
-W, H = style.TEXTWIDTH, 39.0
+W, H = style.COLUMN, 74.0  # single-column 2x2 grid
 DATA = style.ROOT / 'exp/2026-10-12-population/population-stats.json'
 METHODS = [('middle-alone', 'None', '^'), ('metric-private', 'Private', 'D'), ('metric-global-snap', 'Mavra', 'o')]
 CHANGE = [('middle-alone', 'None', '^'), ('metric-private', 'Private', 'D'), ('traj-global', 'Traj', 's'),
@@ -72,7 +72,8 @@ def figure(lang):
     data, _ = load()
     T = TEXT[lang]
     fig = mplstyle.figure(W, H)
-    axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.99, top=.832, bottom=.284, wspace=.42))
+    axes = fig.subplots(2, 2, gridspec_kw=dict(left=.17, right=.985, top=.85, bottom=.16,
+                                               wspace=.65, hspace=.88)).flatten()
     methods = [m for m in METHODS if m[0] in data]
     linestyles = {'middle-alone': '--', 'metric-private': '-.', 'traj-global': ':', 'metric-global-snap': '-'}
     handles = [
@@ -80,8 +81,9 @@ def figure(lang):
                linestyle=linestyles[mode], label=mplstyle.name(mode, lang))
         for mode, _, marker in CHANGE
     ]
-    fig.legend(handles=handles, loc='upper center', bbox_to_anchor=(.53, 1.0),
-               ncol=len(handles), handlelength=2.4, columnspacing=2.0)
+    # Two columns, read row by row: No memory, single-agent memory / example retrieval, MAVRA.
+    fig.legend(handles=[handles[i] for i in (0, 2, 1, 3)], loc='upper center', bbox_to_anchor=(.52, 1.0),
+               ncol=2, handlelength=1.8, columnspacing=1.2)
     n = len(data['middle-alone']['tok'])
     xs = list(range(1, n + 1))
     for k, ax in enumerate(axes[:3]):
@@ -110,9 +112,7 @@ def figure(lang):
         ax.set_xlim(.7, n + .3)
         ax.set_xticks([1, 4, 8, 12, 16] if n == 16 else xs[::max(1, n // 4)])
         ax.yaxis.grid(True)
-        box = ax.get_position()
-        fig.text((box.x0 + box.x1) / 2, .028, T['panels'][k],
-                 ha='center', va='bottom', fontsize=mplstyle.TITLE)
+        panel_title(fig, ax, T['panels'][k])
     ax = axes[3]
     for mode, _, marker in CHANGE:
         c, color = data['_change'][mode], mplstyle.color(mode)
@@ -132,9 +132,15 @@ def figure(lang):
     ax.set_ylabel(T['y'][3])
     ax.set_xlabel(T['x'][3])
     ax.grid(True)
-    box = ax.get_position()
-    fig.text((box.x0 + box.x1) / 2, .028, T['panels'][3], ha='center', va='bottom', fontsize=mplstyle.TITLE)
+    panel_title(fig, ax, T['panels'][3])
     return fig
+
+
+def panel_title(fig, ax, text):
+    """Panel title centred below the panel's x-axis label."""
+    box = ax.get_position()
+    fig.text((box.x0 + box.x1) / 2, box.y0 - .144, text, ha='center', va='bottom', fontsize=mplstyle.TITLE)
+
 
 if __name__ == '__main__':
     for path in style.build(sys.modules[__name__]):
