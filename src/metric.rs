@@ -411,11 +411,9 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
             return (time.column_of(&m.fact).0 == m.fact).then(|| pp.to_string());
         }
         let keys = match &time.key_alias {
-            Some(alias) => format!(
-                "select {d}.{dc} from {d} where {pp} union all select {alias} from {d} where {pp}",
-                d = time.dim,
-                dc = time.dim_col
-            ),
+            Some(alias) => {
+                format!("select {d}.{dc} from {d} where {pp} union all select {alias} from {d} where {pp}", d = time.dim, dc = time.dim_col)
+            }
             None => format!("select {d}.{dc} from {d} where {pp}", d = time.dim, dc = time.dim_col),
         };
         Some(format!("{}.{} in ({keys})", m.fact, time.fact_col))
