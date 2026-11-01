@@ -260,16 +260,19 @@ fn loss_of(o: &Outcome) -> f64 {
 }
 
 /// 规范 SQL 实际作用于事实表的过滤：口径过滤与各关联上的事实表过滤（`metric::compile` 都放进 WHERE），去重后合取。
+/// 裸列按事实表限定（与 `metric::compile` 相同），写法不同的同一过滤（`is_current = 1` 与 `lineitem.is_current = 1`）
+/// 得到同一条件，检查结论在定义间复用。
 fn fact_filter(m: &Metric) -> Option<String> {
-    let mut fs: Vec<&String> = vec![];
-    for f in m.filters.get(&m.fact).into_iter().chain(m.joins.iter().filter_map(|j| j.filters.get(&m.fact))) {
-        if !fs.iter().any(|x| squash(x) == squash(f)) {
+    let own = |f: &String| metric::qualify_owned_filter(&m.fact, f).unwrap_or_else(|_| f.clone());
+    let mut fs: Vec<String> = vec![];
+    for f in m.filters.get(&m.fact).into_iter().chain(m.joins.iter().filter_map(|j| j.filters.get(&m.fact))).map(own) {
+        if !fs.iter().any(|x| squash(x) == squash(&f)) {
             fs.push(f);
         }
     }
     match fs.as_slice() {
         [] => None,
-        [f] => Some((*f).clone()),
+        [f] => Some(f.clone()),
         _ => Some(fs.iter().map(|f| format!("({f})")).collect::<Vec<_>>().join(" and ")),
     }
 }
@@ -1966,6 +1969,12 @@ mod tests {
         assert_eq!(exact_duplicates(&m), dk(&["a", "b"], None));
         m.dedup = true;
         assert_eq!(grain_check(&m), dk(&["a", "b"], None));
+        // 裸列与带表名的同一过滤得到同一条件
+        m.filters.insert("t".into(), "x = 1".into());
+        let bare = grain_check(&m);
+        m.filters.insert("t".into(), "t.x = 1".into());
+        assert_eq!(grain_check(&m), bare);
+        assert_eq!(bare, dk(&["a", "b"], Some("t.x = 1")));
     }
 
     #[test]

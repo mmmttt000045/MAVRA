@@ -605,7 +605,7 @@ pub fn qualify_aliases(expr: &str, allowed: &BTreeSet<String>, cat: &Catalog) ->
 /// A table-keyed filter has a known owner even when joined tables share a column
 /// name. Bind identifiers through the SQL AST; leave literals and function names
 /// alone, and preserve the original text when no binding changes are needed.
-fn qualify_owned_filter(table: &str, filter: &str) -> Result<String> {
+pub(crate) fn qualify_owned_filter(table: &str, filter: &str) -> Result<String> {
     struct Bind<'a> {
         table: &'a str,
         changed: bool,
