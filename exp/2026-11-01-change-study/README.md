@@ -98,6 +98,9 @@ qualified so that equivalent filters share one condition. Unit and integration t
   errors (`results/change-study-20261101-final`). The baseline cells are those of the first
   study (same banks, prompts, model, and machine); they ran 10-31 night with 8–16 concurrent
   cells, the MAVRA cells 11-01 midday with six.
+- The final repository (d648f3d) additionally filters deduplicated facts by the period's date
+  keys before DISTINCT; answers are identical, only deduplicated queries over a date dimension run
+  faster, so the MAVRA times above are conservative.
 - Aggregation: `analyse.py --results results/change-study-20261101 --arm-results
   mavra=results/change-study-20261101-final` (the paper's Fig. 6 and Cs* macros).
 

@@ -42,3 +42,19 @@ invalidate on every write 0/0/534, 0/0/840, 0/0/267; schema check 534/0/0, 204/6
 110/157/0; table tests 534/0/0, 0/0/840, 89/115/63. The SSB and TPC-DS runs spent most of
 their time in repeated failed or ambiguous grain-repair searches (one per definition on
 6–12M-row facts); caching failed searches per table version would remove that cost.
+
+## Final binary (2026-11-01 afternoon, used in the paper; `results/replay-final2-20261101`, `rerun-final-reports.tgz`)
+
+Rerun of the condition policy with the final binary (HEAD d648f3d): exact-duplicate repair, the
+prescreened and shared grain-repair search, and deduplicated facts filtered by the period's date
+keys before DISTINCT. Wall time: financial 81 s, TPC-H 991 s, SSB 1,069 s, TPC-DS 4,878 s (four
+schemas in parallel). MAVRA: non-breaking 534/0/0, covered breaks 804/3/33 (96% correct), not
+covered 89/115/63. Against the archived condition-policy run, duplicate-load instances move from
+refused to correct on all four schemas (TPC-DS 135, SSB 33, TPC-H 27, financial 9) through the
+exact-duplicate repair, and late-key instances on TPC-DS (135) and SSB (33) through the date-key
+repair (`replay-policies.json`, audit). The 3 wrong answers
+remain the TPC-H Q12 definition with a null auxiliary filter. Other policies keep their archived
+outcomes: schema check 534/0/0, 204/636/0, 110/157/0; table tests 534/0/0, 0/0/840, 89/115/63;
+invalidate on every write refuses everything. An intermediate rerun with the binary before the
+DISTINCT pushdown (`results/replay-final-20261101`) was stopped in the TPC-DS duplicate-load phase,
+where each query deduplicated the whole store_sales table; it is not used.

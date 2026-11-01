@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-31",
+  "reviewed_on": "2026-11-01",
   "experiments": [
     {
       "id": "2026-09-29-maint-share",
@@ -88,7 +88,7 @@
       "id": "2026-10-02-cache-baseline-tpcds",
       "title": "验证缓存、并发快照与 TPC-DS 回放",
       "status": "current",
-      "scope": "维护成本与回放依据；不同时期的回放、修复和快照协议按 README 分开解释。",
+      "scope": "维护成本与回放依据（Table VI 的 TPC-DS 存档策略结果）；不同时期的回放、修复和快照协议按 README 分开解释。",
       "evidence": [
         "exp/2026-10-02-cache-baseline-tpcds/cb-1m-share-stats.json",
         "exp/2026-10-02-cache-baseline-tpcds/tpcds-replay-stats.json",
@@ -211,7 +211,7 @@
       "id": "2026-10-10-scenarios-q5",
       "title": "题集 v2、每种方法五轮",
       "status": "historical",
-      "scope": "历史合成场景五轮协议及宏保留；当前 Fig.6 改用 10-31 修复与统一反馈批次。旧使用成本宏随旧稿归档，失败、替换与排除规则仍按本批协议。",
+      "scope": "历史合成场景五轮协议及宏保留；当前 Fig.6 改用 2026-11-01-change-study。旧使用成本宏随旧稿归档，失败、替换与排除规则仍按本批协议。",
       "evidence": [
         "exp/2026-10-10-scenarios-q5/scen-stats.json",
         "exp/2026-10-10-scenarios-q5/paper-results.json",
@@ -234,7 +234,7 @@
       "id": "2026-10-11-generality",
       "title": "TPC-H、SSB、financial 与回放安全",
       "status": "current",
-      "scope": "当前固定库四模式回放及服务／拒绝审计，按共同题次统计并保留错误服务；旧 TPC-H 端到端场景保留，当前 Fig.6 已改用 10-31 修复与统一反馈批次。",
+      "scope": "固定库四模式回放的存档结果（Table VI 中撤销、模式检查与表测试三种策略）及服务／拒绝审计，按共同题次统计并保留错误服务；旧 TPC-H 端到端场景保留，当前 Fig.6 改用 2026-11-01-change-study。",
       "evidence": [
         "exp/2026-10-11-generality/generality-stats.json",
         "exp/2026-10-11-generality/replay-safety-summary.json",
@@ -396,7 +396,7 @@
       "id": "2026-10-29-mechanism-pilot",
       "title": "三幅机制图预实验与受控补充",
       "status": "current",
-      "scope": "用户确认后合入论文 Fig.5/6/7：A 为八格开发预实验，B 为 72 格固定定义数共享对照，C 为 30 次同版本源快照对照及单列归档开销。A 不支持正式表示或组合增益结论，B 保留强缓存对照和异常格，C 各批次限制明示。",
+      "scope": "论文 V-E 的快照绑定对照与 SQL 缓存对照来自本批：A 为八格开发预实验，B 为 72 格固定定义数共享对照，C 为 30 次同版本源快照对照及单列归档开销。A 不支持正式表示或组合增益结论，B 保留强缓存对照和异常格，C 各批次限制明示。",
       "evidence": [
         "exp/2026-10-29-mechanism-pilot/protocol.json",
         "exp/2026-10-29-mechanism-pilot/systems-protocol.json",
@@ -524,7 +524,7 @@
       "id": "2026-10-30-published-scenarios",
       "title": "修复前已发表记忆基线比较与失败分析",
       "status": "supporting",
-      "scope": "修复前两轮比较及逐例分析：发现共用 SQL 审查误拒绝、失效语义丢失及反馈条件差异；原始分数和费用保留。当前 Fig.6 采用 10-31 统一修复后的完整批次，旧结果不与其合并。",
+      "scope": "修复前两轮比较及逐例分析：发现共用 SQL 审查误拒绝、失效语义丢失及反馈条件差异；原始分数和费用保留。当前 Fig.6 采用 2026-11-01-change-study，旧结果不与其合并。",
       "evidence": [
         "exp/2026-10-30-published-scenarios/protocol.json",
         "exp/2026-10-30-published-scenarios/frozen-source-manifest.json",
@@ -593,8 +593,8 @@
     {
       "id": "2026-10-31-diverse-scenarios",
       "title": "受检指标执行与跨智能体多题型比较",
-      "status": "current",
-      "scope": "当前 Fig.6：12 道不同问题、四题型、208 次计分；六个冻结基线格、两格原生重跑和八格新增题。两库全情形等权描述性汇总 MAVRA 84.6%、AWM 81.4%，分库结果及全部失败保留。新增六题全对，比 AWM 少 36.7% 调用和 33.3% token；累计扣费 19.72 元。",
+      "status": "historical",
+      "scope": "原 Fig.6（已由 2026-11-01-change-study 取代）：12 道不同问题、四题型、208 次计分；六个冻结基线格、两格原生重跑和八格新增题。两库全情形等权描述性汇总 MAVRA 84.6%、AWM 81.4%，分库结果及全部失败保留。新增六题全对，比 AWM 少 36.7% 调用和 33.3% token；累计扣费 19.72 元。",
       "evidence": [
         "exp/2026-10-31-diverse-scenarios/paired-reuse-protocol.json",
         "exp/2026-10-31-diverse-scenarios/extra-protocol.json",
@@ -636,6 +636,75 @@
       ],
       "raw_data": "新批 raw-results.tgz 与本地 results/diverse-scenarios-20261031/ 共684文件逐项核验，包含被排除的开发运行、两格正式原生、八格新增题及全部1946次本批请求；另复用旧有效对照归档492文件。72个缓存源任务不重复计分；两项私有余额字段脱敏，密钥／连接串扫描通过。",
       "code_record": "57项 Rust 测试及发布版 PostgreSQL 回归通过；完整轨迹丢失的开发批次全部排除但保留费用。按 compatible 与 extra 源码增量修复并冻结；六个对照全量复用，原生原题库重跑。新增题量由先固定的成本门槛选择，不按准确率选题；主／额外源码、17数据输入及206个上游／适配器文件最终哈希核验通过。"
+    },
+    {
+      "id": "2026-11-01-change-study",
+      "title": "十一种数据变化下与 ACE、AWM、G-Memory 的比较",
+      "status": "current",
+      "scope": "当前 Fig.6：合成零售与 TPC-H SF1，四方法×三轮，1,104 次计分作答。基线格取首批（CNY 27.53），MAVRA 格以最终二进制重跑（CNY 2.33）：条件覆盖的破坏答对 89.5%、零错误，基线答对 49.1–66.7%、答错 33–51%；每组 token 与平均耗时最少；未覆盖变化中备份副本 11/12、单位变化 0/30 如实报告。",
+      "evidence": [
+        "exp/2026-11-01-change-study/protocol.json",
+        "exp/2026-11-01-change-study/bank-synthetic.json",
+        "exp/2026-11-01-change-study/bank-tpch.json",
+        "exp/2026-11-01-change-study/bank-synthetic-smoke.json",
+        "exp/2026-11-01-change-study/bank-tpch-smoke.json",
+        "exp/2026-11-01-change-study/probe-synthetic.json",
+        "exp/2026-11-01-change-study/probe-tpch.json",
+        "exp/2026-11-01-change-study/raw-results.tgz",
+        "exp/2026-11-01-change-study/raw-results-final.tgz"
+      ],
+      "analysis": [
+        "exp/2026-11-01-change-study/analyse.py",
+        "exp/2026-11-01-change-study/run-study.py",
+        "exp/2026-11-01-change-study/budget-proxy.py",
+        "exp/2026-11-01-change-study/memory-service.py",
+        "exp/2026-11-01-change-study/select-bank.py"
+      ],
+      "outputs": [
+        "exp/2026-11-01-change-study/study-stats.json",
+        "exp/2026-11-01-change-study/summary.md",
+        "overleaf/gen/change-study.tex"
+      ],
+      "raw_data": "raw-results.tgz：首批 24 格报告、完成记录与用量账本；raw-results-final.tgz：最终二进制 MAVRA 六格的报告、逐题日志、完成记录与用量账本。服务器 results/change-study-20261101 与 results/change-study-20261101-final 保留完整输出；API 密钥只在服务器私有文件中，不入库。",
+      "code_record": "首批二进制 67e2fc83（96da0bc）；最终 MAVRA 格 HEAD fdf56be、二进制 3ec110d0，新增去重修复、修复搜索预筛与失败结论共享，Rust 单元与 PostgreSQL 集成测试通过。冒烟测试 0.52 + 0.16 元；累计约 30.5 元，在用户授权的 40 元内。命令见 README。"
+    },
+    {
+      "id": "2026-11-01-replay-rerun",
+      "title": "固定库回放：按维护策略比较（Table VI）",
+      "status": "current",
+      "scope": "当前 Table VI：四个模式的已学定义库保持不变，只改变维护方式；MAVRA（条件级维护）行用最终二进制重跑，其余三种策略沿用 10-02、10-11 的存档结果。1,641 个共同题次中，MAVRA 在条件覆盖的破坏上正确 804、错误 3、拒绝 33（96%），只检查模式答错 636（76%），表级测试全部拒绝。",
+      "evidence": [
+        "exp/2026-11-01-replay-rerun/rerun-reports.tgz",
+        "exp/2026-11-01-replay-rerun/rerun-final-reports.tgz"
+      ],
+      "analysis": [
+        "exp/2026-11-01-replay-rerun/analyse.py"
+      ],
+      "outputs": [
+        "exp/2026-11-01-replay-rerun/replay-policies.json",
+        "overleaf/gen/replay-policies.tex"
+      ],
+      "raw_data": "rerun-final-reports.tgz：最终二进制四模式报告（results/replay-final2-20261101）；rerun-reports.tgz：上一版二进制重跑报告。存档策略结果见 exp/2026-10-02-cache-baseline-tpcds 与 exp/2026-10-11-generality。",
+      "code_record": "replay-bench --policies condition --oracles snapshot；最终运行 HEAD d648f3d（含去重修复与期间日期键下推）。命令与差异见 README。"
+    },
+    {
+      "id": "2026-11-01-shared-validation",
+      "title": "一次更新后验证代价随智能体数增长",
+      "status": "current",
+      "scope": "当前 Fig.7：16 个定义、四个事实／日期表对、1–32 个智能体、交错与同时到达、三轮随机块（108 格，无模型调用）。最终二进制：MAVRA 始终 8 次检查；32 个智能体时各自验证为 MAVRA 的 15 倍（同时到达 34 倍），整定义重查 2.4 倍（1.7 倍）。首轮旧二进制结果保留。",
+      "evidence": [
+        "exp/2026-11-01-shared-validation/cells.tgz",
+        "exp/2026-11-01-shared-validation/cells-final.tgz"
+      ],
+      "analysis": [
+        "exp/2026-11-01-shared-validation/analyse.py"
+      ],
+      "outputs": [
+        "exp/2026-11-01-shared-validation/stats.json",
+        "overleaf/gen/shared-validation.tex"
+      ],
+      "raw_data": "cells-final.tgz：最终二进制 108 格（results/shared-validation-1793508134275611）；cells.tgz：旧二进制 108 格（results/shared-validation-1793471974128556）。",
+      "code_record": "src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。"
     }
   ]
 }
