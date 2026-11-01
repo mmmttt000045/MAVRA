@@ -30,6 +30,9 @@ pub enum Check {
     KeyAliasCoverage { fact: String, fact_col: String, dim: String, dim_col: String, alias: String },
     /// 日期键两种编码合起来仍唯一：维度键与另一种编码的取值互不重叠，各自唯一，任一事实键至多对应一个日期。
     KeyAliasUnique { dim: String, dim_col: String, alias: String },
+    /// 去除完全重复的行后键唯一：`table` 中满足过滤、在 `cols` 上重复的每个键，其各行在所有列上都相同。
+    /// 成立时 `select distinct *` 后每键恰好一行（去重修复后的粒度条件）；没有重复键时也成立。
+    DistinctKeyUnique { table: String, cols: Vec<String>, filter: Option<String> },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -50,6 +53,7 @@ impl Check {
             Check::PathCoverage { .. } => "PathCoverage",
             Check::KeyAliasCoverage { .. } => "KeyAliasCoverage",
             Check::KeyAliasUnique { .. } => "KeyAliasUnique",
+            Check::DistinctKeyUnique { .. } => "DistinctKeyUnique",
         }
     }
 
@@ -59,7 +63,7 @@ impl Check {
 
     pub fn tables(&self) -> Vec<String> {
         match self {
-            Check::KeyUnique { table, .. } => vec![table.clone()],
+            Check::KeyUnique { table, .. } | Check::DistinctKeyUnique { table, .. } => vec![table.clone()],
             Check::DateKeysContiguous { dim, .. } => vec![dim.clone()],
             Check::DateCoverage { table, .. } => vec![table.clone()],
             Check::PathCoverage { fact, path } => {
@@ -81,6 +85,7 @@ impl Check {
     pub fn context(&self) -> String {
         match self {
             Check::KeyUnique { table, cols, .. } => format!("{table}({})", cols.join(",")),
+            Check::DistinctKeyUnique { table, cols, .. } => format!("{table}({}) distinct", cols.join(",")),
             Check::DateKeysContiguous { dim, key, .. } => format!("{dim}({key})"),
             Check::DateCoverage { table, col } => format!("{table}({col})"),
             Check::PathCoverage { fact, path } => {
@@ -98,6 +103,7 @@ impl Check {
     pub fn rows_touched(&self, rows: &dyn Fn(&str) -> f64) -> f64 {
         match self {
             Check::KeyUnique { table, cols, .. } => rows(table) * (1.0 + 0.5 * (cols.len() as f64 - 1.0)),
+            Check::DistinctKeyUnique { table, cols, .. } => rows(table) * (1.5 + 0.5 * (cols.len() as f64 - 1.0)),
             Check::DateKeysContiguous { dim, .. } => rows(dim),
             Check::DateCoverage { table, .. } => rows(table),
             Check::PathCoverage { fact, path } => rows(fact) * (1.0 + path.len() as f64),
@@ -113,6 +119,11 @@ impl Check {
             Check::KeyUnique { table, cols, filter } => {
                 format!("{table}({}) 是否唯一{}", cols.join(", "), filter.as_ref().map(|f| format!(" [过滤 {f}]")).unwrap_or_default())
             }
+            Check::DistinctKeyUnique { table, cols, filter } => format!(
+                "{table}({}) 去除完全重复的行后是否唯一{}",
+                cols.join(", "),
+                filter.as_ref().map(|f| format!(" [过滤 {f}]")).unwrap_or_default()
+            ),
             Check::DateKeysContiguous { dim, key, .. } => format!("{dim}({key}) 日期键是否按月连续"),
             Check::DateCoverage { table, col } => format!("{table}.{col} 有日期的行占比"),
             Check::PathCoverage { fact, path } => {
@@ -132,12 +143,24 @@ impl Check {
     pub fn sql(&self) -> String {
         match self {
             Check::KeyUnique { table, cols, filter } => {
-                let key = if cols.len() == 1 { cols[0].clone() } else { format!("({})", cols.join(", ")) };
-                let mut conds: Vec<String> = cols.iter().map(|c| format!("{c} is not null")).collect();
-                if let Some(f) = filter {
-                    conds.push(format!("({f})"));
-                }
-                format!("select count(*) as n_rows, count(distinct {key}) as n_keys from {table} where {}", conds.join(" and "))
+                // 按键分组计数：与 count(distinct (键列)) 等价（键列都不为空），可以用哈希聚合，大表上快得多
+                format!(
+                    "select coalesce(sum(c), 0)::bigint as n_rows, count(*) as n_keys from \
+                     (select count(*) as c from {table} where {} group by {}) g",
+                    key_conds(cols, filter),
+                    cols.join(", ")
+                )
+            }
+            Check::DistinctKeyUnique { table, cols, filter } => {
+                // 只看重复的键：这些键上去除完全相同的行之后的行数，与重复键数比较
+                let keys = cols.join(", ");
+                let wf = filter.as_ref().map(|f| format!(" where ({f})")).unwrap_or_default();
+                format!(
+                    "with d as (select {keys} from {table} where {} group by {keys} having count(*) > 1) \
+                     select (select count(*) from (select distinct {table}.* from {table} join d using ({keys}){wf}) x) as n_rows, \
+                            (select count(*) from d) as n_keys",
+                    key_conds(cols, filter)
+                )
             }
             Check::DateKeysContiguous { dim, key, year_col, month_col } => format!(
                 "with m as (select {year_col} as y, {month_col} as mo, count(*) as c, min({key}) as mn, max({key}) as mx \
@@ -206,7 +229,7 @@ impl Check {
 
     pub fn eval(&self, rows: &Rows, ms: f64) -> Outcome {
         match self {
-            Check::KeyUnique { .. } | Check::KeyAliasUnique { .. } => {
+            Check::KeyUnique { .. } | Check::KeyAliasUnique { .. } | Check::DistinctKeyUnique { .. } => {
                 let (n_rows, n_keys) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
                 let avg = if n_keys > 0 { n_rows as f64 / n_keys as f64 } else { 0.0 };
                 Outcome { pass: n_rows == n_keys, metrics: json!({"n_rows": n_rows, "n_keys": n_keys, "avg_mult": avg}), ms }
@@ -251,6 +274,15 @@ impl Check {
     }
 }
 
+/// 键唯一性检查统计的行：键列都不为空且满足过滤。
+fn key_conds(cols: &[String], filter: &Option<String>) -> String {
+    let mut conds: Vec<String> = cols.iter().map(|c| format!("{c} is not null")).collect();
+    if let Some(f) = filter {
+        conds.push(format!("({f})"));
+    }
+    conds.join(" and ")
+}
+
 pub fn fmt_on(on: &On) -> String {
     let s: Vec<String> = on.iter().map(|(l, r)| format!("{l}={r}")).collect();
     format!("({})", s.join(", "))
@@ -291,5 +323,26 @@ mod tests {
              join orders on lineitem.l_orderkey = orders.o_orderkey left join customer on orders.o_custkey = customer.c_custkey"
         );
         assert_eq!(c.tables(), vec!["lineitem".to_string(), "orders".to_string(), "customer".to_string()]);
+    }
+
+    #[test]
+    fn key_uniqueness_counts_groups_of_non_null_filtered_rows() {
+        let cols = vec!["l_linenumber".to_string(), "l_orderkey".to_string()];
+        let k = Check::KeyUnique { table: "lineitem".into(), cols: cols.clone(), filter: Some("is_current = 1".into()) };
+        assert_eq!(
+            k.sql(),
+            "select coalesce(sum(c), 0)::bigint as n_rows, count(*) as n_keys from \
+             (select count(*) as c from lineitem where l_linenumber is not null and l_orderkey is not null and (is_current = 1) \
+             group by l_linenumber, l_orderkey) g"
+        );
+        let d = Check::DistinctKeyUnique { table: "lineitem".into(), cols, filter: None };
+        assert_eq!(
+            d.sql(),
+            "with d as (select l_linenumber, l_orderkey from lineitem where l_linenumber is not null and l_orderkey is not null \
+             group by l_linenumber, l_orderkey having count(*) > 1) \
+             select (select count(*) from (select distinct lineitem.* from lineitem join d using (l_linenumber, l_orderkey)) x) as n_rows, \
+                    (select count(*) from d) as n_keys"
+        );
+        assert_eq!(d.tables(), vec!["lineitem".to_string()]);
     }
 }

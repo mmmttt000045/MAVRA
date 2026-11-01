@@ -95,6 +95,10 @@ pub struct Metric {
     /// 特征定义（RelBench）：按实体、相对种子时间逐种子聚合；为空时是按期间提问的指标
     #[serde(default)]
     pub entity: Option<EntityRef>,
+    /// 事实表去除完全重复的行后再读（受限修复“去重”）：粒度键上重复的各行在所有列上都相同时，重复行不携带信息，
+    /// 规范 SQL 以 `select distinct *` 读事实表；粒度条件相应换成去重后的键唯一性
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub dedup: bool,
 }
 
 /// 特征定义的实体与回看窗口。编译出的 SQL 按种子表逐行聚合，`时间列 <= seed_time` 与窗口下界写在 SQL 里。

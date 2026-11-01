@@ -422,6 +422,9 @@ fn outcome_text(c: &Check, o: &Outcome) -> String {
         Check::KeyUnique { .. } | Check::KeyAliasUnique { .. } => {
             format!("{} 行只有 {} 个不同键（平均每键 {:.2} 行）", o.metrics["n_rows"], o.metrics["n_keys"], metric(o, "avg_mult"))
         }
+        Check::DistinctKeyUnique { .. } => {
+            format!("{} 个重复键去除完全相同的行后仍有 {} 行", o.metrics["n_keys"], o.metrics["n_rows"])
+        }
         Check::DateKeysContiguous { .. } => {
             format!("{} 个月份中 {} 个月的日期键不连续", o.metrics["n_months"], o.metrics["n_bad"])
         }
@@ -1178,6 +1181,16 @@ impl Middle {
                 self.log(ctx, format!("粒度修复：复用 {table} 在当前版本上已找到的过滤 {f}"));
                 return Ok(Some(f));
             }
+            // 同一张表、同一组键在当前版本上已搜索过且没有唯一可用的过滤：搜索结论与检查结论一样按版本共享
+            if let Some(cands) = self.known_grain_failure(ctx, table, cols).await? {
+                self.log(ctx, format!("粒度修复：复用 {table} 在当前版本上的搜索结论（没有唯一可用的过滤）"));
+                let mut amb = self.ambiguous.lock();
+                amb.remove(table);
+                if cands.len() > 1 {
+                    amb.insert(table.to_string(), cands);
+                }
+                return Ok(None);
+            }
         }
         let st = self
             .db
@@ -1197,25 +1210,36 @@ impl Middle {
             .filter(|(nd, c)| (1.0..=20.0).contains(nd) && !cols.contains(c))
             .collect();
         cands.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
-        let key = if cols.len() == 1 { cols[0].clone() } else { format!("({})", cols.join(", ")) };
-        let nn: Vec<String> = cols.iter().map(|c| format!("{c} is not null")).collect();
+        let keys = cols.join(", ");
+        let nn = cols.iter().map(|c| format!("{c} is not null")).collect::<Vec<_>>().join(" and ");
+        // 不同键的个数（按键分组，可用哈希聚合）
         let total = self
-            .vquery(QKind::Repair, &format!("select count(distinct {key}) from {table} where {}", nn.join(" and ")))
+            .vquery(QKind::Repair, &format!("select count(*) from (select 1 from {table} where {nn} group by {keys}) g"))
             .await?
             .i64(0, 0)
             .unwrap_or(0);
+        // 过滤 c = v 可用，当且仅当取 v 的行恰好 total 行且覆盖全部 total 个键（每键一行、不丢键）。
+        // 先按取值计行数（便宜），行数不等于 total 的取值不可能可用；只对剩下的取值数键
         let mut found: Vec<String> = vec![];
         'search: for (_, c) in cands {
-            let r = self
-                .vquery(
-                    QKind::Repair,
-                    &format!("select {c}::text, count(*), count(distinct {key}) from {table} where {} group by {c}", nn.join(" and ")),
-                )
-                .await?;
+            let r = self.vquery(QKind::Repair, &format!("select {c}::text, count(*) from {table} where {nn} group by 1")).await?;
             for i in 0..r.rows.len() {
-                let (Some(v), Some(n), Some(k)) = (r.cell(i, 0), r.i64(i, 1), r.i64(i, 2)) else { continue };
-                if n == k && k == total {
-                    found.push(format!("{table}.{c} = {}", lit(v)));
+                let (Some(v), Some(n)) = (r.cell(i, 0), r.i64(i, 1)) else { continue };
+                if n != total {
+                    continue;
+                }
+                let f = format!("{table}.{c} = {}", lit(v));
+                let u = self
+                    .vquery(
+                        QKind::Repair,
+                        &format!(
+                            "select coalesce(sum(n), 0)::bigint, count(*) from \
+                             (select count(*) as n from {table} where {nn} and {f} group by {keys}) g"
+                        ),
+                    )
+                    .await?;
+                if u.i64(0, 0) == Some(total) && u.i64(0, 1) == Some(total) {
+                    found.push(f);
                     if !self.cfg.repair_unique {
                         break 'search;
                     }
@@ -1223,6 +1247,9 @@ impl Middle {
             }
         }
         self.ambiguous.lock().remove(table);
+        if found.len() != 1 {
+            self.save_grain_failure(ctx, table, cols, &found).await?;
+        }
         match found.as_slice() {
             [] => {
                 self.log(ctx, format!("粒度修复：{table} 没找到能恢复唯一性的过滤"));
@@ -1257,6 +1284,32 @@ impl Middle {
         let content = Content::Profile(json!({"table": table, "key": cols, "filter": filter}));
         self.store.put(&self.fk(ctx, &key), self.new_entry(ctx, &key, content, deps, vec![guard]));
         Ok(())
+    }
+
+    fn grain_failure_key(table: &str, cols: &[String]) -> String {
+        let mut c = cols.to_vec();
+        c.sort();
+        format!("grain-search:{table}:{}", c.join(","))
+    }
+
+    /// 记录一次没有唯一可用过滤的粒度修复搜索（没找到，或多个候选分不出对错），绑定表的当前版本。
+    async fn save_grain_failure(&self, ctx: &Ctx, table: &str, cols: &[String], cands: &[String]) -> Result<()> {
+        let key = Self::grain_failure_key(table, cols);
+        let deps = self.deps_for(&[table.to_string()]).await?;
+        let content = Content::Profile(json!({"table": table, "key": cols, "candidates": cands}));
+        self.store.put(&self.fk(ctx, &key), self.new_entry(ctx, &key, content, deps, vec![]));
+        Ok(())
+    }
+
+    /// 当前版本上已有的失败搜索结论：返回当时的候选（空表示没找到）；表有写入后失效。
+    pub(crate) async fn known_grain_failure(&self, ctx: &Ctx, table: &str, cols: &[String]) -> Result<Option<Vec<String>>> {
+        let Some(e) = self.store.get(&self.fk(ctx, &Self::grain_failure_key(table, cols))) else { return Ok(None) };
+        let Content::Profile(g) = &e.content else { return Ok(None) };
+        let deps = self.deps_for(&[table.to_string()]).await?;
+        if e.status != Status::Valid || e.deps != deps {
+            return Ok(None);
+        }
+        Ok(Some(serde_json::from_value(g["candidates"].clone()).unwrap_or_default()))
     }
 
     /// 工具 join_path：两表怎么关联？已知就复用，未知就探索（先单列、再补第二列）。

@@ -136,22 +136,29 @@ fn squash(s: &str) -> String {
 /// 已通过的 `known` 蕴含 `c` 通过：同表、同过滤的键唯一性，`known` 的键列是 `c` 的子集。
 /// 检查只统计键列全不为空且满足过滤的行；键列变多时这些行只会变少，子集键唯一则超集键也唯一。
 fn implies(known: &Check, c: &Check) -> bool {
+    let norm = |f: &Option<String>| f.as_deref().map(squash).unwrap_or_default();
     match (known, c) {
-        (Check::KeyUnique { table: t1, cols: c1, filter: f1 }, Check::KeyUnique { table: t2, cols: c2, filter: f2 }) => {
-            let norm = |f: &Option<String>| f.as_deref().map(squash).unwrap_or_default();
-            t1 == t2 && norm(f1) == norm(f2) && c1.iter().all(|x| c2.contains(x))
-        }
+        // 去重前已唯一，去重后当然唯一
+        (
+            Check::KeyUnique { table: t1, cols: c1, filter: f1 },
+            Check::KeyUnique { table: t2, cols: c2, filter: f2 } | Check::DistinctKeyUnique { table: t2, cols: c2, filter: f2 },
+        ) => t1 == t2 && norm(f1) == norm(f2) && c1.iter().all(|x| c2.contains(x)),
         _ => false,
     }
 }
 
 /// 同一条件：键唯一性按表、列集合与过滤 token 比较，保留字符串值，其他检查要求完全相同。
 fn same_cond(a: &Check, b: &Check) -> bool {
+    let norm = |f: &Option<String>| f.as_deref().map(squash).unwrap_or_default();
+    let same = |t1: &String, c1: &[String], f1: &Option<String>, t2: &String, c2: &[String], f2: &Option<String>| {
+        t1 == t2 && c1.iter().collect::<BTreeSet<_>>() == c2.iter().collect::<BTreeSet<_>>() && norm(f1) == norm(f2)
+    };
     match (a, b) {
-        (Check::KeyUnique { table: t1, cols: c1, filter: f1 }, Check::KeyUnique { table: t2, cols: c2, filter: f2 }) => {
-            let norm = |f: &Option<String>| f.as_deref().map(squash).unwrap_or_default();
-            t1 == t2 && c1.iter().collect::<BTreeSet<_>>() == c2.iter().collect::<BTreeSet<_>>() && norm(f1) == norm(f2)
-        }
+        (Check::KeyUnique { table: t1, cols: c1, filter: f1 }, Check::KeyUnique { table: t2, cols: c2, filter: f2 })
+        | (
+            Check::DistinctKeyUnique { table: t1, cols: c1, filter: f1 },
+            Check::DistinctKeyUnique { table: t2, cols: c2, filter: f2 },
+        ) => same(t1, c1, f1, t2, c2, f2),
         _ => a == b,
     }
 }
@@ -269,10 +276,24 @@ fn fact_filter(m: &Metric) -> Option<String> {
 }
 
 /// 粒度条件。键列排序，使列顺序不同的同一条件得到相同的检查键（在途合并按检查键进行）。
+/// 去重修复后的定义读去除完全重复行的事实表，粒度条件是去重后的键唯一性。
 pub(super) fn grain_check(m: &Metric) -> Check {
     let mut cols = m.grain.clone();
     cols.sort();
-    Check::KeyUnique { table: m.fact.clone(), cols, filter: fact_filter(m) }
+    if m.dedup {
+        Check::DistinctKeyUnique { table: m.fact.clone(), cols, filter: fact_filter(m) }
+    } else {
+        Check::KeyUnique { table: m.fact.clone(), cols, filter: fact_filter(m) }
+    }
+}
+
+/// 去重修复的前提：事实表上（带口径过滤）确有重复的键，且每个重复键的各行在所有列上都相同。
+/// 这时任何过滤都对同一键的各行一视同仁，过滤修复不可能既恢复唯一又不丢键，去重是唯一的受限修复。
+fn exact_duplicates(m: &Metric) -> Check {
+    match grain_check(m) {
+        Check::KeyUnique { table, cols, filter } => Check::DistinctKeyUnique { table, cols, filter },
+        c => c,
+    }
 }
 
 /// 日期键修复后的唯一性条件：维度键与另一种编码合起来仍唯一。
@@ -1518,23 +1539,30 @@ impl Middle {
         let change = match b {
             Breach::Grain(_) => {
                 let known = if self.cfg.cond_reuse { self.known_grain_filter(ctx, &m.fact, &m.grain).await? } else { None };
-                let found = match known {
-                    Some(f) => {
+                // 重复的键全是完全相同的行：去重（过滤不可能区分相同的行，不必搜索）
+                let dup = if known.is_none() && !m.dedup { self.exact_duplicate_repair(ctx, m).await? } else { None };
+                let found = match (known, &dup) {
+                    (Some(f), _) => {
                         self.metric_event(
                             json!({"event": "repair_reused", "key": old.key, "revision": old.revision, "table": m.fact, "filter": f}),
                         );
                         Some(f)
                     }
-                    None => self.repair_grain(ctx, &m.fact, &m.grain).await?,
+                    (None, Some(_)) => None,
+                    (None, None) => self.repair_grain(ctx, &m.fact, &m.grain).await?,
                 };
-                match found {
-                    Some(f) => {
+                match (found, dup) {
+                    (_, Some(evidence)) => {
+                        m2.dedup = true;
+                        format!("{} 去除完全重复的行（{evidence}）", m.fact)
+                    }
+                    (Some(f), None) => {
                         // 与定义原有的事实表过滤合取，不能替换它
                         let v = m2.filters.entry(m.fact.clone()).or_default();
                         *v = if v.trim().is_empty() { f.clone() } else { format!("({v}) and {f}") };
                         format!("{} 增加粒度过滤 {f}", m.fact)
                     }
-                    None => {
+                    (None, None) => {
                         let reason = match self.ambiguous_repair(&m.fact) {
                             Some(c) => format!("多个过滤都能恢复唯一性，结构上分不出哪个对：{}", c.join("；")),
                             None => "没有找到能恢复唯一性的过滤".into(),
@@ -1651,6 +1679,32 @@ impl Middle {
             }
             _ => Err(format!("多个日期键编码都能恢复覆盖，结构上分不出哪个对：{}", found.join("；"))),
         })
+    }
+
+    /// 去重修复：粒度条件不成立时，若重复的键全是完全相同的行（`exact_duplicates`），返回证据；否则返回 None。
+    /// 条件级维护下，同一条件在当前版本上的结论与其他定义共享；检查执行失败（如有不能比较相等的列类型）时不修复。
+    async fn exact_duplicate_repair(&self, ctx: &Ctx, m: &Metric) -> Result<Option<String>> {
+        let c = exact_duplicates(m);
+        let r = if self.cfg.cond_reuse {
+            self.cond_check(ctx, &c, QKind::Repair).await
+        } else {
+            self.exec_check(ctx, &c, QKind::Repair).await.map(|(o, _)| (o, "executed"))
+        };
+        let o = match r {
+            Ok((_, "implied")) => return Ok(None),
+            Ok((o, _)) => o,
+            Err(e) => {
+                self.log(ctx, format!("去重修复：{} 的完全重复检查失败：{e:#}", m.fact));
+                return Ok(None);
+            }
+        };
+        let n_keys = o.metrics["n_keys"].as_i64().unwrap_or(0);
+        if !o.pass || n_keys == 0 {
+            return Ok(None);
+        }
+        inc(&self.stats.repairs);
+        self.log(ctx, format!("去重修复：{} 的 {n_keys} 个重复键各自的行完全相同，去重后每键一行", m.fact));
+        Ok(Some(format!("{n_keys} 个重复键的各行完全相同")))
     }
 
     /// 修复候选的回归：G3、G4、G5 与 G8 全部通过才恢复有效，否则保持候选（不可用）。
@@ -1878,6 +1932,41 @@ mod tests {
         assert!(!implies(&ku("t", &["a"], None), &ku("u", &["a", "b"], None)));
         assert!(!implies(&ku("t", &["a"], Some("s = 'ABC'")), &ku("t", &["a", "b"], Some("s = 'abc'"))));
         assert!(!implies(&ku("t", &["a"], Some("s = 'A B'")), &ku("t", &["a", "b"], Some("s = 'AB'"))));
+    }
+
+    #[test]
+    fn dedup_grain_condition_is_distinct_key_uniqueness() {
+        let dk = |cols: &[&str], filter: Option<&str>| Check::DistinctKeyUnique {
+            table: "t".into(),
+            cols: cols.iter().map(|c| c.to_string()).collect(),
+            filter: filter.map(str::to_string),
+        };
+        // 去重前唯一蕴含去重后唯一，反过来不成立
+        assert!(implies(&ku("t", &["a"], Some("x = 1")), &dk(&["a", "b"], Some("x=1"))));
+        assert!(!implies(&dk(&["a"], None), &ku("t", &["a"], None)));
+        assert!(same_cond(&dk(&["a", "b"], None), &dk(&["b", "a"], None)));
+        assert!(!same_cond(&dk(&["a"], None), &ku("t", &["a"], None)));
+        let mut m = Metric {
+            name: "m".into(),
+            aliases: vec![],
+            definition: String::new(),
+            fact: "t".into(),
+            measure: "sum(v)".into(),
+            grain: vec!["b".into(), "a".into()],
+            time: None,
+            joins: vec![],
+            filters: BTreeMap::new(),
+            empty: Default::default(),
+            caveats: vec![],
+            examples: vec![],
+            basis: Default::default(),
+            entity: None,
+            dedup: false,
+        };
+        assert_eq!(grain_check(&m), ku("t", &["a", "b"], None));
+        assert_eq!(exact_duplicates(&m), dk(&["a", "b"], None));
+        m.dedup = true;
+        assert_eq!(grain_check(&m), dk(&["a", "b"], None));
     }
 
     #[test]

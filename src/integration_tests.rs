@@ -809,6 +809,7 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
         examples: vec![],
         basis: Basis::None,
         entity: None,
+        dedup: false,
     };
     let sales = ["ss_ticket_number", "ss_item_sk"];
     let mut m1 = base("门店营业额", "store_sales", "sum(ss_net_paid)", &sales);
@@ -830,12 +831,12 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
 fn expected(c: Change) -> [&'static str; 4] {
     const V0: &str = "valid0";
     const V1: &str = "valid1";
-    const NA: &str = "unavailable";
     match c {
         Change::Append | Change::Backfill | Change::Correct | Change::AddColumn | Change::Unit => [V0, V0, V0, V0],
         Change::Status => [V0, V1, V1, V0],
         Change::Revision => [V1, V0, V1, V1],
-        Change::Duplicate => [NA, V0, NA, NA],
+        // 重复装载的行与原行完全相同：去重修复，三个读门店销售的定义发布新修订
+        Change::Duplicate => [V1, V0, V1, V1],
         // 补录批次的日期键换成 yyyymmdd：日期键修复按两种编码关联，三个按销售日的定义发布新修订
         Change::LateKey => [V1, V0, V1, V1],
         Change::DimHistory => [V0, V0, V0, V1],

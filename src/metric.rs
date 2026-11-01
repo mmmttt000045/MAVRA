@@ -344,11 +344,21 @@ pub fn check_join_orientation(m: &Metric) -> Result<()> {
 /// 日期键修复后，扩展日期维度上统一的键列名。
 pub const DATE_KEY: &str = "mavra_date_key";
 
+/// 规范 SQL 中的事实表：去重修复后是去除完全重复行的子查询，别名仍是表名，列引用不变。
+/// 事实表上的过滤与期间谓词在子查询外，PostgreSQL 把只引用子查询输出列的条件下推到 DISTINCT 之下（选择与去重可交换）。
+fn fact_source(m: &Metric) -> String {
+    if m.dedup {
+        format!("(select distinct * from {f}) {f}", f = m.fact)
+    } else {
+        m.fact.clone()
+    }
+}
+
 pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     check_join_orientation(m)?;
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义，无法按期间编译"))?;
     ensure!(time.is_column() || !(time.dim.is_empty() || time.dim_col.is_empty()), "日期维度方式需要维度表与键列");
-    let mut from = m.fact.clone();
+    let mut from = fact_source(m);
     let mut wheres = vec![];
     let mut seen = BTreeSet::new();
     for j in &m.joins {
@@ -461,7 +471,7 @@ pub fn feature_lateral(m: &Metric, alias: &str, seed_key: &str) -> Result<String
     let time = m.time.as_ref().filter(|t| t.is_column()).ok_or_else(|| anyhow!("特征定义的时间须为日期列方式"))?;
     let (tt, tc) = time.column_of(&m.fact);
     let (vt, vc) = e.via_of(&m.fact);
-    let mut from = m.fact.clone();
+    let mut from = fact_source(m);
     let mut wheres = vec![];
     let mut seen = BTreeSet::new();
     for j in &m.joins {
@@ -1351,6 +1361,7 @@ mod tests {
             examples: vec![],
             basis: Basis::None,
             entity: None,
+            dedup: false,
         }
     }
 
@@ -1478,6 +1489,22 @@ mod tests {
         let mut untimed = m;
         untimed.time = None;
         assert!(compile(&untimed, &Ask::RankMonth { year: 2001 }).is_err());
+    }
+
+    #[test]
+    fn compile_dedup_reads_distinct_fact_rows_under_the_table_name() {
+        let mut m = rate();
+        m.dedup = true;
+        let s = compile(&m, &Ask::Single { period: Period::month(2002, 9) }).unwrap();
+        assert!(s.starts_with(
+            "select 100.0 * sum(sr_return_amt) / sum(ss_net_paid) as value from (select distinct * from store_sales) store_sales \
+             left join store_returns on store_sales.ss_ticket_number = store_returns.sr_ticket_number"
+        ));
+        // 未去重的定义序列化时不带该字段，旧的经验文件照常读取
+        let plain = serde_json::to_value(rate()).unwrap();
+        assert!(plain.get("dedup").is_none());
+        let back: Metric = serde_json::from_value(serde_json::to_value(&m).unwrap()).unwrap();
+        assert!(back.dedup);
     }
 
     #[test]
