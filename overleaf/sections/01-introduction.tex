@@ -18,8 +18,8 @@
 \bi{We present \system\ (\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents), a shared memory layer between heterogeneous data agents and the database. It manages \emph{executable definitions with checkable reuse conditions}. Metrics separate measures, grain, joins, and filters from question parameters; features additionally identify entities and temporal windows. Deterministic publication checks validate definitions and compare compiled results with verified metric answers or submitted feature values. Later agents instantiate accepted definitions for new periods or prediction instances.}
 {本文提出 \system{}（\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents），一个位于异构数据智能体与数据库之间的共享记忆层。它共同管理\emph{可执行定义与可检查的复用条件}。指标将度量、粒度、连接和过滤与问题参数分离；特征进一步记录实体与时间窗口。确定性发布检查验证定义，并将编译结果与核实的指标答案或提交的特征值比较。后续智能体为新的期间或预测样本实例化已通过检查的定义。}
 
-\bi{Condition identities and dependency versions let consumers share validation evidence and locate checks requiring renewal. Failed conditions trigger repair or invalidation of affected metrics while valid knowledge remains available. Validated repairs serve subsequent consumers, avoiding repeated correction. Metric validation and execution use the same database snapshot, extending shared work from initial discovery to continued maintenance.}
-{条件标识与依赖版本使使用者共享验证证据，并定位需要更新的检查。条件失败时，系统修复受影响的指标或将其标记为不可复用，同时保留有效知识。通过验证的修复服务于后续使用者，避免重复纠正。指标验证与执行使用同一数据库快照，将共享工作从最初的知识发现延伸到持续维护。}
+\bi{Condition identities and dependency versions let consumers share validation evidence and locate checks requiring renewal. Failed conditions trigger repair or invalidation of affected metrics while valid knowledge remains available. Validated repairs serve subsequent consumers, avoiding repeated correction. When a query reuses a metric, \system{} establishes its required conditions on the same database snapshot that the query reads.}
+{条件标识与依赖版本使使用者共享验证证据，并定位需要更新的检查。条件失败时，系统修复受影响的指标或将其标记为不可复用，同时保留有效知识。通过验证的修复服务于后续使用者，避免重复纠正。查询复用指标时，\system{} 在查询实际读取的同一数据库快照上确认所需条件成立。}
 
 \bi{Our contributions are:}
 {本文的主要贡献如下：}
@@ -33,6 +33,6 @@
 \item \bi{We develop dependency-aware validation and repair that rechecks affected conditions, blocks metric reuse when required conditions fail on the query snapshot, preserves unaffected knowledge, and shares validated repairs.}
 {我们设计基于依赖的验证与修复，重验受影响的条件，阻止复用在查询快照上不满足所需条件的指标，保留未受影响的知识，并共享通过验证的修复。}
 
-\item \bi{We evaluate \system\ on RelBench and five analytical schemas against agent memories, feature-engineering systems, and maintenance policies, measuring cross-agent reuse, correctness under eleven data changes, quality, tokens, and end-to-end time, including learning, publication, validation, and maintenance costs.}
-{我们在 RelBench 与五种分析模式上，将 \system 与智能体记忆、特征工程系统及维护策略比较，测量跨智能体复用、十一种数据变化后的正确性、质量、token 与端到端耗时，并计入学习、发布、验证和维护的开销。}
+\item \bi{We compare \system\ with agent memories and feature-engineering systems over five RelBench cutoffs and examine exploration calls in a separate three-cutoff study. Token counts include memory operations, while session times exclude leakage audits and post-session publication. Across five analytical schemas, we measure cross-agent reuse on TPC-DS, score final answers under eleven changes on synthetic retail and TPC-H, and replay fixed libraries to distinguish correct and incorrect results from withheld definitions.}
+{我们在 RelBench 五截点实验中将 \system\ 与智能体记忆及特征工程系统比较，并在独立的三截点实验中测量探索调用。token 数计入记忆操作，会话耗时不含泄漏审计和会话后发布。在五种分析模式上，我们测量 TPC-DS 的跨智能体复用，评估合成零售与 TPC-H 上十一种变化后的最终答案，并在固定库回放中区分正确结果、错误结果与未提供定义。}
 \end{itemize}
