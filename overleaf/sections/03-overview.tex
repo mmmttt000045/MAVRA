@@ -5,7 +5,6 @@
 \subsection{\bt{Components and shared state}{组件与共享状态}}
 \bi{\emph{Shared knowledge} stores metric revisions $m_i^r$, feature revisions $f_i^r$, and their required conditions $C$. Here $i$ identifies an object and $r$ its revision. Each condition $c$ has a check query $Q_c$; cached results carry the versions $V(T)$ of tables $T$ read by that query. Table descriptions and verified joins are also shared. \emph{Publish} extracts and checks candidates; \emph{Lookup} consults the \emph{Version tracker}; \emph{Maintain} refreshes checks and invokes \emph{Metric repair}; \emph{Compile and run} instantiates accepted definitions. Independent ETL jobs and writers change the database.}
 {\emph{共享知识}保存指标修订 $m_i^r$、特征修订 $f_i^r$ 及所需条件 $C$，对象标识 $i$ 与修订号 $r$ 分开。各条件 $c$ 具有检查查询 $Q_c$，缓存结果携带所读表 $T$ 的版本 $V(T)$。定义、检查结果、表描述和验证连接在智能体间共享。\emph{发布}提取并检查候选，\emph{查找}访问\emph{版本跟踪}，\emph{维护}刷新检查并调用\emph{指标修复}，\emph{编译与执行}实例化已通过检查的定义。ETL 和其他写入方独立修改数据库。}
-\input{figures/architecture}
 \subsection{\bt{End-to-end workflow}{端到端工作流程}}
 \bi{\emph{Publication (1--3).} A successful session supplies its question, SQL trace, and answer provenance. The extractor separates reusable computation from question parameters; the deterministic gate checks fields, data assumptions, and reproduction before publishing a revision. Sections~\ref{sec:publication} and~\ref{sec:features} give metric and feature checks.}
 {\emph{发布（1--3）。}成功会话提供题目、SQL 轨迹和答案溯源。提取器分离可复用计算与问题参数，确定性检查验证字段、数据前提和计算重现后发布修订。第~\ref{sec:publication}、\ref{sec:features} 节给出指标及特征检查。}
@@ -16,3 +15,6 @@
 \subsection{\bt{Sharing and selective revalidation}{共享与选择性重验}}
 \bi{In Figure~\ref{fig:architecture}, two agents reuse $m_1^{\mathrm{v}3}$ for September/October, and a prediction agent reuses $f_1^{\mathrm{v}1}$. Condition $c_2$ on $T_3$ serves $m_1^{\mathrm{v}3}$, $m_2^{\mathrm{v}1}$, and $f_1^{\mathrm{v}1}$. If ETL changes $V(T_2)$ from \ensuremath{\mathrm{v}13} to \ensuremath{\mathrm{v}14}, $c_3$ loses matching evidence and $m_2^{\mathrm{v}1}$ becomes pending; unchanged $T_1/T_3$ preserve the revenue and spending definitions. Failed $c_4$ makes $m_3^{\mathrm{v}2}$ invalid. }
 {图~\ref{fig:architecture}中，两个智能体为九／十月复用 $m_1^{\mathrm{v}3}$，预测智能体复用 $f_1^{\mathrm{v}1}$。$T_3$ 上的条件 $c_2$ 服务于 $m_1^{\mathrm{v}3}$、$m_2^{\mathrm{v}1}$ 和 $f_1^{\mathrm{v}1}$。若 ETL 将 $V(T_2)$ 从 \ensuremath{\mathrm{v}13} 改为 \ensuremath{\mathrm{v}14}，$c_3$ 失去匹配证据，$m_2^{\mathrm{v}1}$ 转为待验证；未变的 $T_1/T_3$ 保留营业额与消费定义。失败的 $c_4$ 使 $m_3^{\mathrm{v}2}$ 无效。}
+% Flush earlier tables before queuing the architecture, keeping Table III and Fig. 2 apart.
+\FloatBarrier
+\input{figures/architecture}
