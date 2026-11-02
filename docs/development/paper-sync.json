@@ -5,12 +5,12 @@
   "branch": "main",
   "status": "imported_into_main",
   "direction": "paper repo -> agent4db-adapter overleaf/ (Overleaf edits imported)",
-  "previous_head": "a504d41c2929cc53e752208cab8a3cb5d95b2e07",
-  "remote_commit": "587098f39ffb3c70c4e4a14bdeb4a8ed2d1bdc2e",
+  "previous_head": "587098f39ffb3c70c4e4a14bdeb4a8ed2d1bdc2e",
+  "remote_commit": "a17f3d7b281c8dc2da7aecf7159b53385db8655f",
   "pending_payload": null,
   "changed_paths": [
-    "sections/01-introduction.tex",
-    "sections/abstract.tex"
+    "sections/05-evaluation.tex",
+    "tables/workload.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
@@ -25,8 +25,8 @@
     "bilingual_pages": 20,
     "cited_references": 50
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/587098f39ffb3c70c4e4a14bdeb4a8ed2d1bdc2e",
-  "remote_tree": "2c8f24e3a114b32775400a882b3ab82016b97057",
-  "source_commit": "c0d2d249ca2850e08d062dac4e34645796282f5a",
-  "sync_authorization": "User asked to pull the advisor's Overleaf edits (2026-11-02)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/a17f3d7b281c8dc2da7aecf7159b53385db8655f",
+  "remote_tree": "82e5bc71314ae440d15f7cb2469747d9d8ddcaeb",
+  "source_commit": "af57762c5b8bbcb9f1d35c19c5cd3c205d096311",
+  "sync_authorization": "User edited on Overleaf and asked to pull (2026-11-02)."
 }
