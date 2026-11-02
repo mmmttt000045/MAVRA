@@ -89,7 +89,6 @@
 {\system{} 答对了全部留出题与正常更新题。在未变化的数据上，基线的错答全部涉及退货率，它们按数量或按退货日期重新计算，这与只给指标名时存在的歧义一致（第~\ref{sec:workload-characterization} 节）。在各组内汇总两种模式后，\system{} 的 token 用量与会话平均耗时均为最低（图~\ref{fig:twoschemas}c、d）。两种模式合计，\system{} 每题使用 \CsAllMavraTokK\,k token、耗时 \CsAllMavraS\,s，基线分别为 \CsAllBaseTokMinK--\CsAllBaseTokMaxK\,k token 和 \CsAllBaseSMin--\CsAllBaseSMax\,s。在覆盖破坏题中，\system{} 平均每个会话耗时 \CsBreakMavraS\,s，基线为 \CsBreakBaseSMin--\CsBreakBaseSMax\,s。}
 
 \ifbilingual\else
-\suppressfloats[t]
 \input{figures/reuse-work}
 \input{figures/population}
 \input{figures/two-schemas}
