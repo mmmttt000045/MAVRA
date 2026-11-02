@@ -10,7 +10,7 @@
 {全部实验均在一台配备 48 个逻辑 CPU（Hygon C86 5390，2.90\,GHz）和 98\,GiB 内存的服务器上进行。服务器运行 Ubuntu 22.04.5 LTS，数据库为 PostgreSQL 18.6。}
 
 \subsubsection{\bt{Datasets and workloads}{数据集与负载}}
-\bi{RelBench v1~\cite{robinson2024relbench} supplies six classification and regression tasks. We compare seven methods at five cutoffs (210 sessions), 91 days apart on rel-stack and 365 on rel-trial. Each cutoff appends data and starts a new conversation. The fifth matches the official split. A separate study compares five methods at cutoffs 1--3 (90 sessions) with smaller budgets. Both use DeepSeek's official API.}
+\bi{RelBench v1~\cite{robinson2024relbench} supplies six classification and regression tasks. We compare seven methods at five cutoffs (210 sessions), 91 days apart on rel-stack and 365 on rel-trial. Each cutoff appends data and starts a new conversation. The fifth matches the official split. A separate study compares five methods at cutoffs 1--3 (90 sessions) with smaller budgets. }
 {RelBench v1~\cite{robinson2024relbench} 提供六项分类与回归任务。主实验在五个截点比较七种方法（210 个会话），rel-stack 和 rel-trial 的截点间隔分别为 91 天和 365 天。每个截点追加数据并重启对话，第五个截点与官方划分一致。另一项独立实验采用较小预算，在第 1--3 个截点比较五种方法（90 个会话）。两项实验均使用 DeepSeek 官方 API。}
 
 \bi{The TPC-DS SF1~\cite{tpcds2026benchmark} population study uses 24 tables and 2.9M store-sales rows. Each of its five metrics has two learning questions and five evaluation forms covering new periods, differences, and monthly comparisons. The eleven-change study uses three metrics per schema on synthetic retail (1M sales, 396k returns, and 500k catalog sales) and TPC-H SF1~\cite{tpch2026benchmark}. Fixed-library replay also covers SSB~\cite{oneil2009ssb} and BIRD financial~\cite{li2023bird}.}
