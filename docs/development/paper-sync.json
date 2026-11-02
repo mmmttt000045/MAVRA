@@ -3,14 +3,15 @@
   "date": "2026-11-02",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
-  "status": "imported_into_main",
-  "direction": "paper repo -> agent4db-adapter overleaf/ (Overleaf edits imported)",
-  "previous_head": "587098f39ffb3c70c4e4a14bdeb4a8ed2d1bdc2e",
-  "remote_commit": "a17f3d7b281c8dc2da7aecf7159b53385db8655f",
+  "status": "pushed_and_verified",
+  "direction": "agent4db-adapter overleaf/ -> paper repo (manuscript sync)",
+  "previous_head": "a17f3d7b281c8dc2da7aecf7159b53385db8655f",
+  "remote_commit": "04e0ef60eba51c3bfc78a63cdd657129e50ee909",
   "pending_payload": null,
   "changed_paths": [
+    "references.bib",
     "sections/05-evaluation.tex",
-    "tables/workload.tex"
+    "sections/06-related-work.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
@@ -22,11 +23,11 @@
     "overfull_boxes": 0,
     "undefined_references": 0,
     "identical_to_remote": "every mirrored file in overleaf/ equals the paper repo at remote_commit",
-    "bilingual_pages": 20,
-    "cited_references": 50
+    "bilingual_pages": 22,
+    "cited_references": 56
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/a17f3d7b281c8dc2da7aecf7159b53385db8655f",
-  "remote_tree": "82e5bc71314ae440d15f7cb2469747d9d8ddcaeb",
-  "source_commit": "af57762c5b8bbcb9f1d35c19c5cd3c205d096311",
-  "sync_authorization": "User edited on Overleaf and asked to pull (2026-11-02)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/04e0ef60eba51c3bfc78a63cdd657129e50ee909",
+  "remote_tree": "43ed4536ee623ef8efed47f17a1e80ed066b1a88",
+  "source_commit": "cdee055883af7572cad2478b080c0414f6817c38",
+  "sync_authorization": "User asked to sync everything to the paper repo (2026-11-02)."
 }
