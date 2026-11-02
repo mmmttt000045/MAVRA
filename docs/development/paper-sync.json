@@ -1,21 +1,16 @@
 {
   "schema_version": 1,
-  "date": "2026-11-01",
+  "date": "2026-11-02",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
-  "status": "pushed_and_verified",
-  "direction": "agent4db-adapter overleaf/ -> paper repo (manuscript sync)",
-  "previous_head": "91c55bc443b2f285742e10434527d49500ffc22f",
-  "remote_commit": "a504d41c2929cc53e752208cab8a3cb5d95b2e07",
+  "status": "imported_into_main",
+  "direction": "paper repo -> agent4db-adapter overleaf/ (Overleaf edits imported)",
+  "previous_head": "a504d41c2929cc53e752208cab8a3cb5d95b2e07",
+  "remote_commit": "587098f39ffb3c70c4e4a14bdeb4a8ed2d1bdc2e",
   "pending_payload": null,
   "changed_paths": [
-    "figures/change-study-zh.pdf",
-    "figures/change-study.pdf",
-    "figures/two-schemas.tex",
-    "sections/04-design.tex",
-    "sections/05-evaluation.tex",
-    "tables/capabilities.tex",
-    "tables/replay-policies.tex"
+    "sections/01-introduction.tex",
+    "sections/abstract.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
@@ -30,8 +25,8 @@
     "bilingual_pages": 20,
     "cited_references": 50
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/a504d41c2929cc53e752208cab8a3cb5d95b2e07",
-  "remote_tree": "7065ccea3d017c9a1b64a17d6163bd13637b4a3f",
-  "source_commit": "6621d829528d73b18a0c14e602eae230e20d7113",
-  "sync_authorization": "User asked to commit and share with the advisor (2026-11-01)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/587098f39ffb3c70c4e4a14bdeb4a8ed2d1bdc2e",
+  "remote_tree": "2c8f24e3a114b32775400a882b3ab82016b97057",
+  "source_commit": "c0d2d249ca2850e08d062dac4e34645796282f5a",
+  "sync_authorization": "User asked to pull the advisor's Overleaf edits (2026-11-02)."
 }
