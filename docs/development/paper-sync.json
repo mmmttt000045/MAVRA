@@ -1,33 +1,40 @@
 {
   "schema_version": 1,
-  "date": "2026-11-02",
+  "date": "2026-11-03",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed_and_verified",
-  "direction": "agent4db-adapter overleaf/ -> paper repo (manuscript sync)",
-  "previous_head": "a17f3d7b281c8dc2da7aecf7159b53385db8655f",
-  "remote_commit": "04e0ef60eba51c3bfc78a63cdd657129e50ee909",
+  "direction": "agent4db-adapter overleaf/ -> paper repo (manuscript sync; Overleaf commit 4ceb970 already merged into overleaf/)",
+  "previous_head": "4ceb970543a9eee2a8761f8b8d3b3f844632ba90",
+  "remote_commit": "0855e7d33a4330374582e9e038acb1147cdec9e4",
   "pending_payload": null,
   "changed_paths": [
-    "references.bib",
-    "sections/05-evaluation.tex",
-    "sections/06-related-work.tex"
+    "figures/architecture-zh.pdf",
+    "figures/architecture.pdf",
+    "figures/architecture.tex",
+    "sections/01-introduction.tex",
+    "sections/02-background.tex",
+    "sections/03-overview.tex",
+    "sections/04-design.tex",
+    "sections/06-related-work.tex",
+    "sections/07-conclusion.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "noctis",
     "english_entry": "main.tex (pdfLaTeX)",
-    "english_pages": 14,
-    "body_pages": 12,
+    "english_pages": 15,
+    "body_pages": 13,
     "overfull_boxes": 0,
     "undefined_references": 0,
     "identical_to_remote": "every mirrored file in overleaf/ equals the paper repo at remote_commit",
     "bilingual_pages": 22,
-    "cited_references": 56
+    "cited_references": 56,
+    "body_note": "conclusion ends about 30 lines into page 13 (limit: 12 body pages); AI statement and references on pp. 14-15"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/04e0ef60eba51c3bfc78a63cdd657129e50ee909",
-  "remote_tree": "43ed4536ee623ef8efed47f17a1e80ed066b1a88",
-  "source_commit": "cdee055883af7572cad2478b080c0414f6817c38",
-  "sync_authorization": "User asked to sync everything to the paper repo (2026-11-02)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/0855e7d33a4330374582e9e038acb1147cdec9e4",
+  "remote_tree": "d2583fb649b623e2f25bc6d239168533d0fa2b4a",
+  "source_commit": "61edb585f6446d8325a9e97c89188c37c1d5e79c",
+  "sync_authorization": "User asked to sync the current paper fully to GitHub (2026-11-03)."
 }
