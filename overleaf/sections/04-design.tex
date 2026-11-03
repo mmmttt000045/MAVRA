@@ -1,7 +1,7 @@
 \section{\bt{Design of \system}{\system\ 的设计}}
 \label{sec:model}
-\bi{The design follows the lifecycle in Figure~\ref{fig:architecture}. We first define the objects in Shared knowledge, then explain how Publish creates them, how Lookup and Maintain sustain their use, and how Compile and run aligns validation with execution. The central distinction is between a definition revision, which specifies a computation, and versioned condition evidence, which determines where that computation can be reused.}
-{本节沿图~\ref{fig:architecture} 的生命周期展开：先定义共享知识中的对象，再说明发布组件如何创建这些对象、查找与维护组件如何支持持续复用，以及编译与执行组件如何对齐验证和执行。设计的核心区别在于：定义版本规定计算，带版本的条件证据则决定该计算能够在哪些数据状态上复用。}
+\bi{The design follows Figure~\ref{fig:architecture}, from the objects in Shared knowledge to Publish, Lookup and Maintain, and Check and run. The central distinction is between a definition revision, which specifies a computation, and versioned condition evidence, which determines where that computation can be reused.}
+{本节沿图~\ref{fig:architecture} 依次介绍共享知识中的对象、发布、查找与维护，以及校验并执行。设计的核心区别在于：定义版本规定计算，带版本的条件证据则决定该计算能够在哪些数据状态上复用。}
 
 \subsection{\bt{Shared representation and compilation}{共享表示与编译}}
 \label{sec:shared-object}
@@ -23,16 +23,16 @@ m^r=(B,I,C,E,r).
 \label{eq:compiled-metric}
 q(D_s)=\mathrm{AGG}_{e}\!\left(\sigma_{\tau\in p}\bigl(J_I(D_s)\bigr)\right).
 \end{equation}
-\bi{The selection $\sigma_{\tau\in p}$ retains rows whose assigned time belongs to $p$. Period differences and rankings compose these aggregates without relearning $I$. Thus, the two revenue agents in Figure~\ref{fig:architecture} share the same implementation and conditions while changing $p$.}
-{选择 $\sigma_{\tau\in p}$ 保留时间归属落在 $p$ 内的行。期间差值与排名可在这些聚合上组合，无需重新学习 $I$。因此，图~\ref{fig:architecture} 中两个营业额智能体共享同一实现与条件，仅改变 $p$。}
+\bi{The selection $\sigma_{\tau\in p}$ retains rows whose assigned time belongs to $p$. Period differences and rankings compose these aggregates without relearning $I$. Thus, Agents A and B in Figure~\ref{fig:architecture} share the same implementation and conditions while changing $p$.}
+{选择 $\sigma_{\tau\in p}$ 保留时间归属落在 $p$ 内的行。期间差值与排名可在这些聚合上组合，无需重新学习 $I$。因此，图~\ref{fig:architecture} 中智能体 A 与 B 共享同一实现与条件，仅改变 $p$。}
 
 \bi{Definitions also refer to shared join entries and their revisions. These entries retain validated join directions, cardinalities, and filters, while table descriptions expose schema knowledge discovered during exploration. Check results are separate objects because a condition may be required by several otherwise different definitions. This separation implements both forms of sharing in Figure~\ref{fig:architecture}: the same definition feeds several agents, and the same check feeds several definitions.}
 {定义还引用共享连接条目及其修订号。这些条目保留经过验证的连接方向、基数与过滤；表描述提供探索中发现的模式知识。检查结果独立存储，因为同一条件可能被多个不同定义需要。这一分离实现图~\ref{fig:architecture} 中两种共享：同一定义供多个智能体使用，同一检查供多个定义使用。}
 
 \subsection{\bt{Learning and checked publication}{学习与受检查的发布}}
 \label{sec:publication}
-\bi{Publish extracts a candidate revision from a successful session and applies deterministic checks before sharing it (Figure~\ref{fig:architecture}, steps 1--3). A metric session supplies the business definition, the independently verified answer from a user, report, or analyst, and the query references and arithmetic that produced it.}
-{发布组件从成功会话中提取候选版本，经确定性检查后将其共享（图~\ref{fig:architecture}，第 1--3 步）。指标会话须给出业务定义和经独立核实的答案，并记录得出该答案所用的查询编号和计算过程。核实依据来自用户、报表或分析师。}
+\bi{Publish extracts a candidate revision from a successful session and applies deterministic checks before sharing it (Figure~\ref{fig:architecture}, steps 1--2). A metric session supplies the business definition, the independently verified answer from a user, report, or analyst, and the query references and arithmetic that produced it.}
+{发布组件从成功会话中提取候选版本，经确定性检查后将其共享（图~\ref{fig:architecture}，第 1--2 步）。指标会话须给出业务定义和经独立核实的答案，并记录得出该答案所用的查询编号和计算过程。核实依据来自用户、报表或分析师。}
 
 \bi{The LLM extractor receives the question, SQL and arithmetic trace, rejected queries, and schema and join metadata. It drafts the metric's meaning and structured fields in JSON. The server parses the draft, derives its conditions and dependencies, and builds $E$ from the session record.}
 {LLM 提取器接收题目、SQL 与算术轨迹、被拒绝的查询，以及模式和连接元数据。提取器据此生成 JSON 草稿，写入指标的业务含义与结构化字段。服务器解析草稿，推导条件与依赖，并从会话记录构建 $E$。}
@@ -62,8 +62,8 @@ q(D_s)=\mathrm{AGG}_{e}\!\left(\sigma_{\tau\in p}\bigl(J_I(D_s)\bigr)\right).
 \bi{B1 and filtered key uniqueness give one fact row per event. Join cardinality prevents duplication; date and inner joins may remove unmatched rows. B2 and B3 assign each retained row its measurement and intended period. Complete matching retains all qualifying events, while completeness predicates bound the unmatched fraction on their respective tables and paths.\ifbilingual\else\qedhere\fi}
 {B1 与过滤后键唯一性保证每个事件有一条事实行。连接基数防止行被复制；日期连接与内连接可能移除未匹配的行。B2、B3 将每条保留的行归入预期期间并提供其度量值。完整匹配保留全部合格事件；完整性谓词约束各受检查表和路径的未匹配比例。\qedhere}
 \end{proof}
-\bi{Because completeness is checked on whole tables and join paths rather than per period, one check result serves every period query. The orange condition in Figure~\ref{fig:architecture}, $\forall c\in C(m^r):c(D_s)$, is the conjunction that the execution path establishes.}
-{完整性在整表和连接路径上检查，而不是按期间检查，因此一个检查结果可服务于所有期间查询。图~\ref{fig:architecture} 中橙色框内的 $\forall c\in C(m^r):c(D_s)$，正是执行路径建立的条件合取。}
+\bi{Because completeness is checked on whole tables and join paths rather than per period, one check result serves every period query. Step 4 in Figure~\ref{fig:architecture} establishes the conjunction $\forall c\in C(m^r):c(D_s)$ on the query's snapshot.}
+{完整性在整表和连接路径上检查，而不是按期间检查，因此一个检查结果可服务于所有期间查询。图~\ref{fig:architecture} 的第 4 步在查询快照上建立条件合取 $\forall c\in C(m^r):c(D_s)$。}
 
 \subsection{\bt{Lookup and shared maintenance}{查找与共享维护}}
 \label{sec:maintenance}
@@ -79,25 +79,25 @@ q(D_s)=\mathrm{AGG}_{e}\!\left(\sigma_{\tau\in p}\bigl(J_I(D_s)\bigr)\right).
 \label{eq:condition-result-key}
 k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr).
 \end{equation}
-\bi{An outcome $o$ contains the statistics returned by $Q_c$ and the check's verdict. We use $\operatorname{Accept}(c,o)$ to apply the condition's acceptance rule; completeness conditions additionally compare the measured loss with their definition's recorded bound. Sharing the statistics therefore preserves each consumer's own bound. In Figure~\ref{fig:architecture}, the three references to $c_2$ find the same outcome at $V(T_3)$, whereas the write to $T_2$ changes the key for $c_3$.}
-{结果 $o$ 包含 $Q_c$ 返回的统计量及检查判定。$\operatorname{Accept}(c,o)$ 表示应用该条件的接纳规则；完整性条件还将测得的丢行比例与所属定义记录的界限比较。因此，共享统计量仍保留各使用者自己的界限。图~\ref{fig:architecture} 中三个对 $c_2$ 的引用在 $V(T_3)$ 上找到同一结果，而对 $T_2$ 的写入改变了 $c_3$ 的结果键。}
+\bi{An outcome $o$ contains the statistics returned by $Q_c$ and the check's verdict. We use $\operatorname{Accept}(c,o)$ to apply the condition's acceptance rule; completeness conditions additionally compare the measured loss with their definition's recorded bound. Sharing the statistics therefore preserves each consumer's own bound. In Figure~\ref{fig:architecture}, three definitions find the same \code{date\_dim} check result, whereas the item load changes the version in the item guard's key.}
+{结果 $o$ 包含 $Q_c$ 返回的统计量及检查判定。$\operatorname{Accept}(c,o)$ 表示应用该条件的接纳规则；完整性条件还将测得的丢行比例与所属定义记录的界限比较。因此，共享统计量仍保留各使用者自己的界限。图~\ref{fig:architecture} 中三个定义找到同一个 \code{date\_dim} 检查结果，而 item 的载入改变了 item 守卫结果键中的版本。}
 
-\bi{Algorithm~\ref{alg:maintenance} implements steps 5--7 for a requested revision $x$, where $x$ is either a metric or a feature and $\bot$ denotes unavailability. Unchanged conditions retain their evidence. For an affected condition, Maintain first checks $\mathcal H$ at the required versions and runs $Q_c$ only on a miss. Concurrent requests for the same missing check join one in-flight execution; requests maintaining the same definition similarly join its current maintenance operation. The owner refreshes referenced joins and records the resulting dependency stamps before making the revision available. Thus, an update is handled by its distinct missing checks and affected definitions, rather than by repeating the work for every arriving agent.}
-{算法~\ref{alg:maintenance} 对请求的版本 $x$ 实现第 5--7 步，$x$ 可以是指标或特征，$\bot$ 表示不可用。未变化条件保留原有证据。对于受影响条件，维护组件先在所需版本上查找 $\mathcal H$，仅未命中时才执行 $Q_c$。请求同一缺失检查的并发使用者合并到同次执行；维护同一定义的请求也合并到该定义当前的维护操作。负责请求刷新引用的连接，并记录更新后的依赖版本，再将版本置为可用。因此，一次更新按不同的缺失检查和受影响定义处理，无需对每个到达的智能体重复工作。}
+\bi{Algorithm~\ref{alg:maintenance} implements step 6 for a requested revision $x$, where $x$ is either a metric or a feature and $\bot$ denotes unavailability. Unchanged conditions retain their evidence. For an affected condition, Maintain first checks $\mathcal H$ at the required versions and runs $Q_c$ only on a miss. Concurrent requests for the same missing check join one in-flight execution; requests maintaining the same definition similarly join its current maintenance operation. The owner refreshes referenced joins and records the resulting dependency stamps before making the revision available. Thus, an update is handled by its distinct missing checks and affected definitions, rather than by repeating the work for every arriving agent.}
+{算法~\ref{alg:maintenance} 对请求的版本 $x$ 实现第 6 步，$x$ 可以是指标或特征，$\bot$ 表示不可用。未变化条件保留原有证据。对于受影响条件，维护组件先在所需版本上查找 $\mathcal H$，仅未命中时才执行 $Q_c$。请求同一缺失检查的并发使用者合并到同次执行；维护同一定义的请求也合并到该定义当前的维护操作。负责请求刷新引用的连接，并记录更新后的依赖版本，再将版本置为可用。因此，一次更新按不同的缺失检查和受影响定义处理，无需对每个到达的智能体重复工作。}
 
 \input{algorithms/maintenance}
 
 \bi{\emph{Repair and regression.} The algorithm's $\operatorname{Recover}$ operation first handles rollback of an optimized metric when only its added assumption fails (Section~\ref{sec:optimization}). For other metric failures, Metric repair searches a restricted space. If grain uniqueness fails and every duplicated key consists of identical rows, no filter can separate them; repair reads distinct fact rows, and the grain condition becomes uniqueness after duplicate removal. Otherwise it considers equality filters on low-cardinality columns, pruning values whose row count differs from the key count. A passing filter must restore one row per business key without losing keys, and exactly one filter must pass, so the repair is unambiguous. The filter is conjoined with the definition's existing filters. Search outcomes, including failed and ambiguous ones, are recorded per table version and shared like condition evidence. A revalidated join can likewise contribute an additional required filter. If date coverage fails, repair considers common re-encodings of the date key over the dimension's date columns (\code{yyyymmdd} and day number). An encoding passes when, together with the dimension key, it remains unique and restores coverage to the publication baseline; exactly one encoding must pass, and the definition then joins on either key.}
 {\emph{修复与回归。}算法的 $\operatorname{Recover}$ 操作首先处理仅新增前提失败时的优化指标回退（第~\ref{sec:optimization} 节）。对于其他指标失败，指标修复在受限空间中搜索。粒度唯一性失败时，若每个重复键的各行完全相同，任何过滤都无法区分这些副本，修复改为读取事实表去重后的行，粒度条件随之变为去重后的键唯一性；否则，系统考虑低基数列上的等值过滤，并先排除行数与键数不等的取值。通过的过滤须恢复每个业务键一行且不丢键，并且恰好只有一个过滤通过，以保证修复无歧义。该过滤与定义已有过滤合取。搜索结论（包括没有找到与有歧义）按表版本记录，与条件证据一样共享。重新验证的连接同样可以提供新增的必需过滤。日期覆盖失败时，修复在维度的日期列上考虑日期键的常见重编码（\code{yyyymmdd} 与天数编号）：编码与维度键合起来仍唯一、且使覆盖回到发布基线时通过；恰好一种编码通过才采用，定义随后按两种键之一关联。}
 
-\bi{The repair becomes a candidate revision $m^{r+1}$, which must pass the static, grain, and read-only SQL checks, then reproduce the verified learning computation through an as-of query on the learning snapshot. The regression diamond in Figure~\ref{fig:architecture} represents this final test. A passing revision is published once and serves all consumers; an ambiguous or rejected repair leaves the metric invalid. Failed feature definitions are invalidated, and later successful sessions relearn unavailable definitions through publication.}
-{修复生成候选版本 $m^{r+1}$，候选须通过静态、粒度和只读 SQL 检查，再通过学习快照上的 as-of 查询重现已核实的学习计算。图~\ref{fig:architecture} 中回归菱形表示这一最终测试。通过的版本只发布一次，供全部使用者复用；歧义或被拒绝的修复使指标保持失效。失败的特征定义被标记为失效；后续成功会话经发布路径重新学习不可用的定义。}
+\bi{The repair becomes a candidate revision $m^{r+1}$, which must pass the static, grain, and read-only SQL checks, then reproduce the verified learning computation through an as-of query on the learning snapshot. Step 6 in Figure~\ref{fig:architecture} ends with this regression test. A passing revision is published once and serves all consumers; an ambiguous or rejected repair leaves the metric invalid. Failed feature definitions are invalidated, and later successful sessions relearn unavailable definitions through publication.}
+{修复生成候选版本 $m^{r+1}$，候选须通过静态、粒度和只读 SQL 检查，再通过学习快照上的 as-of 查询重现已核实的学习计算。图~\ref{fig:architecture} 的第 6 步以这一回归测试结束。通过的版本只发布一次，供全部使用者复用；歧义或被拒绝的修复使指标保持失效。失败的特征定义被标记为失效；后续成功会话经发布路径重新学习不可用的定义。}
 
 \subsection{\bt{Snapshot-bound metric execution}{快照绑定的指标执行}}
 \label{sec:execution}
 \label{sec:snapshot}
-\bi{A write may commit after lookup, so the orange execution path in Figure~\ref{fig:architecture} rechecks evidence. Given a revision and question parameters, \code{run\_metric} compiles the stored fields, qualifies filters by their owning table, and attaches the revision to the query. Custom SQL declares its revisions through \code{run\_sql}. Both paths check availability, revision references, grain filters, and read-only SQL safety, then validate conditions on the query's execution snapshot.}
-{查找之后仍可能有写入提交，因此图~\ref{fig:architecture} 中的橙色执行路径重新检查证据。给定修订号和题目参数，\code{run\_metric} 编译所存字段，将过滤列绑定到所属表，并为查询附上修订引用。自定义 SQL 通过 \code{run\_sql} 声明所用修订。两条路径均检查可用性、修订引用、粒度过滤与只读 SQL 安全性，再在查询执行快照上验证条件。}
+\bi{A write may commit after lookup, so step 4 in Figure~\ref{fig:architecture} rechecks evidence. Given a revision and question parameters, \code{run\_metric} compiles the stored fields, qualifies filters by their owning table, and attaches the revision to the query. Custom SQL declares its revisions through \code{run\_sql}. Both paths check availability, revision references, grain filters, and read-only SQL safety, then validate conditions on the query's execution snapshot.}
+{查找之后仍可能有写入提交，因此图~\ref{fig:architecture} 的第 4 步重新检查证据。给定修订号和题目参数，\code{run\_metric} 编译所存字段，将过滤列绑定到所属表，并为查询附上修订引用。自定义 SQL 通过 \code{run\_sql} 声明所用修订。两条路径均检查可用性、修订引用、粒度过滤与只读 SQL 安全性，再在查询执行快照上验证条件。}
 
 \bi{\emph{Transactional versions.} Let $v_s(T)$ be the transactional version of $T$ visible in snapshot $s$. A statement-level trigger increments one metadata counter for each modified table and writing statement, in the same transaction as the write. The trigger fires on every \code{INSERT}, \code{UPDATE}, \code{DELETE}, and \code{TRUNCATE}, including \code{COPY FROM} and cascading foreign-key actions. Commits and rollbacks therefore affect data and counters atomically. Reading the transactional version through the query's multi-version concurrency control (MVCC) snapshot binds its stamp to the visible table data.}
 {\emph{事务性版本。}设 $v_s(T)$ 为快照 $s$ 中可见的 $T$ 的事务性版本。语句级触发器对每个被修改的表、每条写语句递增一个元数据计数器，该操作与数据写入处于同一事务。触发器在每条 \code{INSERT}、\code{UPDATE}、\code{DELETE} 与 \code{TRUNCATE} 上触发，包括 \code{COPY FROM} 与外键级联操作。因此，提交和回滚原子地作用于数据与计数器。通过查询的多版本并发控制（MVCC）快照读取事务性版本，使版本标记与可见的表数据绑定。}
@@ -118,8 +118,8 @@ k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr).
 \bi{The visible committed-transaction sets are nested in snapshot acquisition order, say $s_1\subseteq s_2$. A transaction that writes $T$ increments $T$'s counter in the same transaction. Equal versions leave no transaction in $s_2\setminus s_1$ that writes $T$, so both snapshots see the same state of every table that $Q_c$ reads.\ifbilingual\else\qedhere\fi}
 {按快照获取顺序，可见的已提交事务集合相互包含，不妨设 $s_1\subseteq s_2$。写 $T$ 的事务在同一事务内递增 $T$ 的计数。版本相等意味着 $s_2\setminus s_1$ 中没有写 $T$ 的事务，因此两个快照看到 $Q_c$ 所读各表的同一状态。\qedhere}
 \end{proof}
-\bi{A write committed after snapshot acquisition is invisible to both the checks and $q$, closing the validation-to-execution gap illustrated by the two orange $D_s$ boxes.}
-{快照获取后提交的写入对检查和 $q$ 都不可见，由此消除图中两个橙色 $D_s$ 框所表达的验证与执行之间的间隙。}
+\bi{A write committed after snapshot acquisition is invisible to both the checks and $q$, closing the validation-to-execution gap in step 4.}
+{快照获取后提交的写入对检查和 $q$ 都不可见，由此消除第 4 步中验证与执行之间的间隙。}
 
 \subsection{\bt{Shared optimization and rollback}{共享优化与回退}}
 \label{sec:optimization}
@@ -142,8 +142,8 @@ k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr).
 
 \subsection{\bt{Entity-level feature definitions}{实体级特征定义}}
 \label{sec:features}
-\bi{Predictive tasks reuse the same fact, measure, grain, joins, and filters, but aggregate relative to individual prediction instances rather than a reporting period. RelBench's forecasting tasks use seed rows containing an entity and a seed time~\cite{robinson2024relbench}. A feature revision $f^r$ extends $I$ with an entity mapping, an optional look-back window, and a fill value. The entity mapping records the target table and key, the column reached through a foreign key or verified join, and an optional anchor such as a seed post's owner. Thus, the past-spending definition in Figure~\ref{fig:architecture} can be instantiated for each consumer's seed table.}
-{预测任务复用同样的事实表、度量、粒度、连接与过滤，但围绕单个预测样本聚合，而不是报表期间。RelBench 的预测任务使用包含实体和种子时间的种子行~\cite{robinson2024relbench}。特征版本 $f^r$ 在 $I$ 上增加实体映射、可选的回看窗口和填充值。实体映射记录目标表与键、经外键或已验证连接到达的列，以及可选锚列，例如种子帖子的作者。因此，图~\ref{fig:architecture} 中的历史消费定义可针对各使用者的种子表实例化。}
+\bi{Predictive tasks reuse the same fact, measure, grain, joins, and filters, but aggregate relative to individual prediction instances rather than a reporting period. RelBench's forecasting tasks use seed rows containing an entity and a seed time~\cite{robinson2024relbench}. A feature revision $f^r$ extends $I$ with an entity mapping, an optional look-back window, and a fill value. The entity mapping records the target table and key, the column reached through a foreign key or verified join, and an optional anchor such as a seed post's owner. Thus, the \code{spend\_90d} feature in Figure~\ref{fig:architecture} can be instantiated for each consumer's seed table.}
+{预测任务复用同样的事实表、度量、粒度、连接与过滤，但围绕单个预测样本聚合，而不是报表期间。RelBench 的预测任务使用包含实体和种子时间的种子行~\cite{robinson2024relbench}。特征版本 $f^r$ 在 $I$ 上增加实体映射、可选的回看窗口和填充值。实体映射记录目标表与键、经外键或已验证连接到达的列，以及可选锚列，例如种子帖子的作者。因此，图~\ref{fig:architecture} 中的 \code{spend\_90d} 特征可针对各使用者的种子表实例化。}
 
 \bi{Let seed $i$ contain entity key $u_i$ and cutoff $t_i$. For a joined fact row $x\in J_I(D_s)$, let $\eta(x)$ be its mapped entity key and $t(x)$ its event time. Let $a(u_i)$ be the seed's anchor value, or $u_i$ itself when no anchor is used. With a look-back window of $w$ days, compilation aggregates rows satisfying}
 {设种子 $i$ 包含实体键 $u_i$ 与截止时间 $t_i$。对于连接后的事实行 $x\in J_I(D_s)$，设 $\eta(x)$ 为其映射后的实体键，$t(x)$ 为事件时间。设 $a(u_i)$ 为种子的锚列值；没有锚列时，$a(u_i)=u_i$。回看窗口为 $w$ 天时，编译聚合满足下式的行：}
