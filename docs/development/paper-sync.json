@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
-  "status": "merged_overleaf_branch",
-  "direction": "paper repo: merged Overleaf branch overleaf-2026-11-03-0815 (c9b2194, line breaks only) into main, keeping main's text",
-  "previous_head": "0855e7d33a4330374582e9e038acb1147cdec9e4",
-  "remote_commit": "bf1cd1019f7e8697383b71b7b406b0e7d3ed3750",
+  "status": "pushed",
+  "direction": "main repo overleaf/ -> paper repo (introduction rewrite)",
+  "previous_head": "bf1cd1019f7e8697383b71b7b406b0e7d3ed3750",
+  "remote_commit": "4508dab7ba33b69e668297cf0bdd16901ed5c7ba",
   "pending_payload": null,
-  "changed_paths": [],
+  "changed_paths": [
+    "sections/01-introduction.tex"
+  ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
@@ -20,11 +22,11 @@
     "undefined_references": 0,
     "identical_to_remote": "every mirrored file in overleaf/ equals the paper repo at remote_commit",
     "bilingual_pages": 22,
-    "cited_references": 56,
+    "cited_references": 54,
     "body_note": "conclusion ends about 30 lines into page 13 (limit: 12 body pages); AI statement and references on pp. 14-15"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/bf1cd1019f7e8697383b71b7b406b0e7d3ed3750",
-  "remote_tree": "d2583fb649b623e2f25bc6d239168533d0fa2b4a",
-  "source_commit": "61edb585f6446d8325a9e97c89188c37c1d5e79c",
-  "sync_authorization": "User pasted the Overleaf merge error and asked to resolve it (2026-11-03)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4508dab7ba33b69e668297cf0bdd16901ed5c7ba",
+  "remote_tree": "42ab118361aa28ee3cdfa6b0e7a6f4a028e2c506",
+  "source_commit": "5262ce005dd2cb163303b543d0f9c5597fef2398",
+  "sync_authorization": "User asked to tidy the local workspace and push everything (2026-11-04)."
 }
