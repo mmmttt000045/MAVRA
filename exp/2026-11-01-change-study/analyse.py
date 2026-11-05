@@ -190,7 +190,8 @@ def main():
     print('MAVRA fewest tokens in every group:', fewest)
     mac['CsRuns'] = str(len(full))
     mac['CsScoredPerRun'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']))
-    mac['CsScored'] = f"{sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']) * len(full):,}"
+    scored = sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']) * len(full)
+    mac['CsScored'] = f'{scored:,}'
     mac['CsQuestions'] = str(sum(banks[ds]['scored'] for ds in P['datasets']))
     if stats['cost']:
         mac['CsCostCny'] = f"{stats['cost']['charged_cny']:.1f}"
