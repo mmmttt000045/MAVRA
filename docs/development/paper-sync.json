@@ -1,15 +1,25 @@
 {
   "schema_version": 1,
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
-  "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (introduction rewrite)",
-  "previous_head": "bf1cd1019f7e8697383b71b7b406b0e7d3ed3750",
-  "remote_commit": "4508dab7ba33b69e668297cf0bdd16901ed5c7ba",
+  "status": "imported_into_main",
+  "direction": "paper repo -> main repo overleaf/ (merged Overleaf branch overleaf-2026-11-05-0457 with the advisor's hand edits 1e2b05e into paper main 39cdfc9; advisor's text wins where both sides changed it)",
+  "previous_head": "4508dab7ba33b69e668297cf0bdd16901ed5c7ba",
+  "remote_commit": "4d95007f5c91d335579d43620f62901927b69339",
   "pending_payload": null,
   "changed_paths": [
-    "sections/01-introduction.tex"
+    "figures/metric-record.tex",
+    "preamble.tex",
+    "sections/01-introduction.tex",
+    "sections/02-background.tex",
+    "sections/03-overview.tex",
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/06-related-work.tex",
+    "sections/07-conclusion.tex",
+    "sections/abstract.tex",
+    "tables/replay-policies.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
@@ -22,11 +32,11 @@
     "undefined_references": 0,
     "identical_to_remote": "every mirrored file in overleaf/ equals the paper repo at remote_commit",
     "bilingual_pages": 22,
-    "cited_references": 54,
-    "body_note": "conclusion ends about 30 lines into page 13 (limit: 12 body pages); AI statement and references on pp. 14-15"
+    "body_note": "conclusion still ends on page 13 (limit: 12 body pages); Fig. 2 on p. 5, Table III on p. 4",
+    "cited_references": 54
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4508dab7ba33b69e668297cf0bdd16901ed5c7ba",
-  "remote_tree": "42ab118361aa28ee3cdfa6b0e7a6f4a028e2c506",
-  "source_commit": "5262ce005dd2cb163303b543d0f9c5597fef2398",
-  "sync_authorization": "User asked to tidy the local workspace and push everything (2026-11-04)."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4d95007f5c91d335579d43620f62901927b69339",
+  "remote_tree": "9f1aaf0c53272344706ea27557fc33985b43a4d5",
+  "source_commit": "9ca0b49",
+  "sync_authorization": "User asked to merge the advisor's Overleaf branch, advisor's version taking precedence (2026-11-05)."
 }
