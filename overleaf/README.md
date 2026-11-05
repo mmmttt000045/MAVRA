@@ -15,11 +15,11 @@
 
 本目录还保留未进入正文的历史图表源文件；独立论文仓库只接收编译实际依赖的文件（见下文“独立论文仓库”）。
 
-根据 [ICDE 2027 Research CFP](https://icde2027.github.io/cf-research-papers)，正文最多 12 页，参考文献和 AI 生成内容声明不计入，不能附加附录。作者姓名与单位仍为占位符，投稿前需填写。最终以投稿编译环境生成的 PDF 为准。
+根据 [ICDE 2027 Research CFP](https://icde2027.github.io/cf-research-papers)，正文最多 12 页，参考文献和 AI 生成内容声明不计入，不能附加附录。研究论文采用单盲评审，首页列出 Tai Ming 和 Zhanhao Zhao，单位同为 Renmin University of China。最终以投稿编译环境生成的 PDF 为准。
 
 ## 编译与上传
 
-生成文件统一放在 `overleaf/build/`。在仓库根目录可执行 `bash overleaf/build.sh all` 或 `bash overleaf/build.sh pack`；旧 SIGMOD 上传包不再维护。
+生成的 PDF 统一放在 `overleaf/build/`，在仓库根目录执行 `bash overleaf/build.sh all`。后续修改完成并验证后直接推送到 GitHub 论文仓库，不再默认生成或整理 Overleaf 压缩包。
 
 在本目录执行：
 
@@ -27,16 +27,29 @@
 bash build.sh en    # build/main.pdf（投稿稿）
 bash build.sh bi    # build/main-bilingual.pdf
 bash build.sh all   # 两份均编译
-bash build.sh pack  # build/mavra-icde-bilingual.zip
 ```
 
 构建优先使用 latexmk，亦支持 Tectonic。TeX 环境须提供 IEEEtran 类与参考文献样式及标准宏包；双语稿还需 ctex 和 Noto Serif CJK SC、Noto Sans CJK SC、Noto Sans Mono CJK SC 字体。`build.sh` 预检直接宏包依赖，字体由 XeLaTeX 检查。
 
-上传 `build/mavra-icde-bilingual.zip` 至 Overleaf 后，英文选择 `main.tex` / pdfLaTeX（Overleaf 默认），双语选择 `main-bilingual.tex` / XeLaTeX。包内按输入与图形依赖收集源码，并包含 `references.bib`；不需要实验服务器或原始数据即可编译。
+从 GitHub 论文仓库导入或拉取至 Overleaf 后，英文选择 `main.tex` / pdfLaTeX（Overleaf 默认），双语选择 `main-bilingual.tex` / XeLaTeX。同步直接读取输入与图形依赖，包含 `references.bib`；不需要实验服务器、原始数据或 ZIP 包即可编译。
 
 `paper.tex` 末尾调用 `IEEEtran.bst` 与 BibTeX（原 `references.tex` 已并入）：只输出正文引用的条目，按首次引用排序。正文中的多篇引用统一在一组方括号内逐一列出，逗号后留空格，例如 `[7, 8, 9, 10]`，不压缩为编号区间。英文稿与中英对照稿共用这一设置。`references.bib` 保留原稿全部元数据；未引用条目不占参考文献版面。此次转换未对每条文献重新做出版信息核验。
 
-## 2026-10-31 受检执行与跨智能体多题型 Fig.6（当前）
+## 2026-11-01 投稿版排版检查（当前）
+
+按当天核对的 [ICDE 2027 Research CFP](https://icde2027.github.io/cf-research-papers) 恢复 IEEEtran 原生浮动体间距、浮动体数量限制、段间距与参考文献间距；不使用负间距或更改正文的字体、行距、页边距来压页。原生 `\textfloatsep` 与 `\dbltextfloatsep` 均为 `18.60004pt plus 2.39996pt minus 4.79993pt`。通过精简引言和背景的重复说明，以及收紧图内空白，英文正文仍在第 12 页结束；AI 声明和参考文献在第 13–15 页，中英对照阅读稿共 22 页。最终页数仍须在投稿所用编译环境中复核。
+
+Table I、II 分页放置；Table III 删除 MAVRA 行底色，保留粗体，避免底色超出栏宽。Fig.2 缩短底部组件间空隙并裁掉画布外缘空白；Fig.5 采用单栏四联图（84.6 × 74 mm），保留字号、全部数据、误差棒与坐标范围。`architecture`、`running-example`、`metric-record` 的中英文 PDF 均从生成源消除未使用的 Helvetica 字体资源，文字仍用矢量轮廓呈现。正文、图表数值宏与原始实验数据未因本次排版修改而改动。
+
+Table III 与 Fig.2 随后重新分开放置：架构图在概览讨论之后插入，并用局部 `\FloatBarrier` 排完前面的表，避免两者再次堆叠到同一页。英文分别在第 4、5 页，双语稿分别在第 5、7 页；英文正文仍为 12 页，英文与双语全文仍分别为 15、22 页。
+
+同日按所供修改建议重组中英文摘要，英文宏展开后约 210 词，围绕可执行定义、共享验证和定向维护组织方法，保留 TPC-DS 总 token、条件覆盖智能体更新实验与五截点 RelBench 的三组结果；关键词同步调整。结论中“没有答错”的范围限定到合成零售与 TPC-H 智能体实验的条件覆盖子集，与固定知识库回放分开；AI 声明同步覆盖摘要及结论修订。实验数值与正文证据保持不变。
+
+随后按阅读版面调整英文图表：Fig.3 放在第 9 页，Fig.4 放在第 11 页，第 10 页保留 Table IV、V，Fig.5 在第 11 页，Fig.6、Fig.7 在第 12 页；使用正常浮动体位置选项，模板间距不变。RelBench 表下注释采用作者给出的短版，保留记忆操作、无记忆参照、无效方案回退、质量门槛及 FeatPilot 适配说明，中文同步精简。投稿入口仍为 `main.tex`。
+
+最新本地文件为 `build/main.pdf`、`build/main-bilingual.pdf`，论文交付改为直接推送 GitHub，远端状态见主仓库 `docs/development/paper-sync.json`。本地已核对字体嵌入、图表边界、引用及分页；未进行 IEEE PDF eXpress 认证，也未上传投稿系统。`paper.tex` 已使用作者提供的正式署名和单位。投稿时须在系统中填写全部作者的 ORCID 与利益冲突信息，并由作者确认 AI 声明的实际范围。
+
+## 2026-10-31 受检执行与跨智能体多题型 Fig.6（实验来源）
 
 当前来源为 `exp/2026-10-31-diverse-scenarios/`。保留两库、每库三指标及全部十一类变化；不同计分问题从 6 道增至 12 道，题型从单期扩展到四种，共 208 次计分、48 次学习（256 个正式任务）。六个未变更基线格复用此前有效冻结运行，MAVRA 原题库两格及全部方法的新增题均重新测量。缓存恢复的 72 个源任务不重复计分。
 
@@ -46,7 +59,7 @@ bash build.sh pack  # build/mavra-icde-bilingual.zip
 
 表属过滤编译与直接指标执行已修复；TPC-H 追加误去重、日期键及单位错误如实保留。最初扩展批次因完整轨迹采集丢失而全部归为开发结果，六个基线格与两个中断原生格都不进入分数，费用仍全部保留。新增原始归档 684 文件、旧对照归档 492 文件均已逐一核验。
 
-累计全部 7,090 次官方 API 请求实际扣费 19.72 元，保守计价上界 19.74518594 元，低于累计授权 20 元；新增调用已关闭。正式比较每方法一轮、复用冻结对照，不画置信区间、不声称统计显著。英文正文 12 页（总 15 页），双语稿 23 页；未更改模板字体或页边距。最新本地 PDF 与源码包为 `build/main-en.pdf`、`build/main.pdf`、`build/mavra-icde-bilingual.zip`，论文远端未自动同步。
+累计全部 7,090 次官方 API 请求实际扣费 19.72 元，保守计价上界 19.74518594 元，低于累计授权 20 元；新增调用已关闭。正式比较每方法一轮、复用冻结对照，不画置信区间、不声称统计显著。该日排版记录为英文正文 12 页（总 15 页）、双语稿 23 页；当前文件与排版检查以上方 2026-11-01 记录为准，论文远端未自动同步。
 
 ## 2026-10-31 SQL 审查与语义保留修复后的 Fig.6（历史及当前基线来源）
 
@@ -188,6 +201,6 @@ python3 tools/sync-paper-repo.py --repo <clone>                   # 预演
 python3 tools/sync-paper-repo.py --repo <clone> --apply --push    # 写入、提交并推送
 ```
 
-脚本用 `build.sh pack` 的依赖收集结果作为文件清单：论文仓库只含编译实际依赖的源码、图形、`references.bib` 和 `build.sh`，其余文件删除；论文仓库自己的 `README.md`、`.gitignore`、`.gitattributes` 保留。文本统一为 LF。推送后在 Overleaf 的 Menu → GitHub 中拉取；Overleaf 中的修改需先推送回 GitHub，再手动合入本目录，否则下次同步会覆盖。
+脚本直接递归读取两个入口的编译依赖，同步源码、图形、`references.bib` 和 `build.sh`，不生成或读取 ZIP。论文仓库自己的 `README.md`、`.gitignore`、`.gitattributes` 及远端独有文件保留，文本统一为 LF。推送后在 Overleaf 的 Menu → GitHub 中拉取；Overleaf 中的修改需先推送回 GitHub，再合入本目录。同步前会核对远端提交与本地未提交修改，避免覆盖未合入的编辑。
 
 工作量图沿用 `exp/2026-10-29-fig45-official/build-figures.py` 已生成的原 Fig.5 PDF，数据和版式本轮不变。此前生成的质量图与官方累计图从正文移除，文件作为历史版本留档，不再参与当前编译。恢复记录与源文件保护哈希见 `exp/2026-10-29-fig3-restore/`。
