@@ -1,19 +1,28 @@
+\input{figures/architecture}
 \section{\bt{System Overview}{系统概览}}
 \label{sec:overview}
-\bi{\system{} sits between data agents and PostgreSQL. Figure~\ref{fig:architecture} follows one metric, electronics revenue, as it is learned, reused by later agents, and repaired after a data load.}
+\bi{We design \system{} as a middle layer between data agents and data systems.
+Figure~\ref{fig:architecture} shows the overview of \system{}.
+% follows one metric, electronics revenue, as it is learned, reused by later agents, and repaired after a data load.
+}
 {\system{} 位于数据智能体与 PostgreSQL 之间。图~\ref{fig:architecture} 以指标“电子品类营业额”为例，展示一个定义从学得、被后续智能体复用到数据载入后修复的过程。}
-\subsection{\bt{Components and shared state}{组件与共享状态}}
-\bi{\emph{Shared knowledge} stores one JSON entry per key: metric and feature definitions, verified joins, and check results. A metric entry records what it computes (fact, measure, time, joins, and filters), the session it was learned from, and its reuse conditions: \code{guards} names the checks that must pass, and \code{deps} records the versions of the tables it reads. Entries reference each other by key, so one join or check result serves several definitions. \emph{Publish}, \emph{Lookup}, \emph{Maintain} with \emph{Repair}, and \emph{Check and run} act on these entries; every write, including an ETL load, changes the versions of the tables it modifies.}
-{\emph{共享知识}按键保存 JSON 条目，包括指标定义、特征定义、验证过的连接和检查结果。指标条目记录计算什么（事实表、度量、时间、连接与过滤条件）、从哪个会话学来，以及复用条件：\code{guards} 列出须通过的检查，\code{deps} 记录所读各表的版本。条目之间按键引用，因此一个连接或检查结果可服务多个定义。\emph{发布}、\emph{查找}、含\emph{自动修复}的\emph{维护}以及\emph{校验并执行}组件作用于这些条目；每次写入（包括 ETL 载入）都会改变被修改表的版本。}
-\subsection{\bt{End-to-end workflow}{端到端工作流程}}
-\bi{\emph{Publication (1--2).} Agent A asks for January electronics revenue, explores the schema, and has its answer verified. Publish receives the question, SQL trace, and answer (1). The learning agent drafts the JSON entry and leaves the month out as a question parameter; checks verify fields and joins, grain-key uniqueness, read-only SQL, and that the compiled query reproduces A's answer. Publish then writes revision 0 with the join and check entries it references (2; Section~\ref{sec:publication}).}
-{\emph{发布（1--2）。}智能体 A 询问 1 月电子品类营业额，自行探索模式，答案经核对。发布组件接收其题目、SQL 轨迹与答案（1）。学习智能体起草 JSON 条目，月份作为题目参数留在定义之外；检查验证字段与连接、粒度键唯一、只读 SQL，以及编译出的查询能否重现 A 的答案。随后发布组件写入修订 0 及其引用的连接条目和检查条目（2；第~\ref{sec:publication} 节）。}
-\bi{\emph{Reuse (3--4).} Before any update, Agent B asks for Q3 revenue. Lookup finds the entry by name; its table versions are current (3), so B skips A's exploration. Check and run compiles the entry for months 7--9, then checks its guards and runs the SQL in one read-only snapshot (4; Section~\ref{sec:execution}).}
-{\emph{复用（3--4）。}在任何更新之前，智能体 B 询问 Q3 营业额。查找组件按名称找到条目，记录的表版本全部与当前一致（3），B 因而无需重复 A 的探索。校验并执行组件以 7--9 月编译条目，在同一只读快照中检查其守卫并执行 SQL（4；第~\ref{sec:execution} 节）。}
-\bi{\emph{Maintenance and repair (5--6).} An ETL job then loads item history (5). Item 17 gains a history row, so the unchanged SQL would count each of its sales twice. When Agent C asks for October revenue, Lookup sees item's new version and marks the request pending. Maintain reruns only the checks that read item and keeps the \code{date\_dim} result; the item-key check fails because key 17 repeats. Repair adds \code{i\_is\_current = 'Y'} to the join, passes the regression test against A's verified answer, and publishes revision 1 of the join and the metric, or else invalidates the metric (6). C's request then proceeds through step 4. Concurrent requests share one check and one repair (Section~\ref{sec:maintenance}).}
-{\emph{维护与修复（5--6）。}随后，ETL 作业载入 item 历史版本（5）。商品 17 新增一条历史行，未改动的 SQL 会把它的每笔销售计算两次。智能体 C 询问 10 月营业额时，查找组件发现 item 的版本已变化，将请求标为待校验。维护组件只重跑读取 item 的检查，保留 \code{date\_dim} 的检查结果；item 键唯一性检查因键 17 重复而失败。自动修复为连接加上 \code{i\_is\_current = 'Y'}，通过以 A 已核对答案为基准的回归测试，并为连接和指标发布修订 1；修复不通过则将指标置为失效（6）。C 的请求随后经第 4 步执行。并发请求共享同一次检查与修复（第~\ref{sec:maintenance} 节）。}
-\bi{\emph{Feature reuse (7).} Agent N asks whether a customer will churn. Lookup finds the feature \code{spend\_90d} valid, and Check and run ends its 90-day window at each customer's prediction cutoff (7; Section~\ref{sec:features}).}
-{\emph{特征复用（7）。}智能体 N 询问客户是否会流失。查找组件确认特征 \code{spend\_90d} 有效，校验并执行组件使其 90 天窗口截止于每个客户的预测截止时间（7；第~\ref{sec:features} 节）。}
+
+\subsection{\bt{Architecture and Shared State}{架构与共享状态}}
+\bi{\emph{Shared knowledge} stores one JSON entry per key: metric and feature definitions, verified joins, and check outcomes. A metric entry records what it computes (fact, measure, time, joins, and filters), its learning session, and its reuse requirements: \code{guards} lists the checks that must pass, and \code{deps} records the versions of the tables it reads. Entries reference one another by key so that one join or check outcome serves multiple definitions. \emph{Publish}, \emph{Lookup}, \emph{Maintain} with \emph{Repair}, and \emph{Check and run} operate on these entries as writes advance modified table versions.}
+{\emph{共享知识}按键保存 JSON 条目，包括指标与特征定义、已验证连接和检查结果。指标条目记录计算逻辑（事实表、度量、时间、连接与过滤）、学习会话及复用条件：\code{guards} 列出须通过的检查，\code{deps} 记录所读各表的版本。条目按键相互引用，使一个连接或检查结果服务多个定义。\emph{发布}、\emph{查找}、含\emph{自动修复}的\emph{维护}与\emph{校验并执行}作用于这些条目；每次写入都会递增被改表的版本。}
+
+\subsection{\bt{End-to-End Workflow}{端到端工作流程}}
+\bi{\emph{Publication (1--2).} Agent A asks for January electronics revenue, explores the schema, and has its answer verified. \emph{Publish} receives the question, SQL trace, and verified answer (1). The learning agent drafts the JSON entry with the month parameterized; gates verify fields and joins, grain-key uniqueness, read-only SQL, and that the compiled query reproduces A's answer. \emph{Publish} then writes revision 0 with its referenced join and check entries (2; Section~\ref{sec:publication}).}
+{\emph{发布（1--2）。}智能体 A 询问 1 月电子品类营业额，探查模式并得出经核验的答案。\emph{发布}接收问题、SQL 轨迹与答案（1）。学习智能体将月份参数化并起草 JSON 条目；准入检查验证字段与连接、粒度键唯一性、只读 SQL，以及编译查询能否复现 A 的答案，随后写入修订版 0 及引用的连接和检查条目（2；第~\ref{sec:publication} 节）。}
+
+\bi{\emph{Reuse (3--4).} Before any update, Agent B asks for Q3 revenue. \emph{Lookup} finds the entry by name with current table versions (3), skipping A's exploration. \emph{Check and run} compiles the entry for months 7--9 and validates its guards and SQL in one read-only snapshot (4; Section~\ref{sec:execution}).}
+{\emph{复用（3--4）。}更新前，智能体 B 询问 Q3 营业额。\emph{查找}按名称找到条目且表版本一致（3），B 遂跳过探索。\emph{校验并执行}以 7--9 月编译条目，在同一只读快照中检查守卫并执行 SQL（4；第~\ref{sec:execution} 节）。}
+
+\bi{\emph{Maintenance and repair (5--6).} An ETL job loads item history (5), adding a history row for item 17 so the unchanged SQL would double-count its sales. When Agent C asks for October revenue, \emph{Lookup} sees the new \code{item} version and marks the entry pending. \emph{Maintain} reruns only checks reading \code{item} and keeps the \code{date\_dim} outcome; the item-key check fails on duplicate key 17. \emph{Repair} adds \code{i\_is\_current = 'Y'} to the join, passes regression against A's answer, and publishes revision 1 of the join and metric, or else invalidates the metric (6). C's request then runs via step 4; concurrent requests share one check and repair (Section~\ref{sec:maintenance}).}
+{\emph{维护与修复（5--6）。}随后 ETL 载入商品历史（5），商品 17 新增历史行，原 SQL 会将其销售算两次。智能体 C 询问 10 月营业额时，\emph{查找}发现 \code{item} 版本变化并将条目标为待验证。\emph{维护}只重跑读取 \code{item} 的检查并保留 \code{date\_dim} 结果；item 键检查因键 17 重复而失败。\emph{自动修复}为连接加上 \code{i\_is\_current = 'Y'}，通过针对 A 答案的回归测试并发布连接和指标的修订版 1，否则将指标置为失效（6）。C 随后经步骤 4 执行；并发请求共享同一次检查与修复（第~\ref{sec:maintenance} 节）。}
+
+\bi{\emph{Feature reuse (7).} Agent N predicts customer churn. \emph{Lookup} finds \code{spend\_90d} valid, and \emph{Check and run} bounds its 90-day window at each customer's cutoff (7; Section~\ref{sec:features}).}
+{\emph{特征复用（7）。}智能体 N 预测客户流失。\emph{查找}确认特征 \code{spend\_90d} 有效，\emph{校验并执行}将其 90 天窗口截止于每位客户的预测截止时间（7；第~\ref{sec:features} 节）。}
 % Flush earlier tables before queuing the architecture, keeping Table III and Fig. 2 apart.
 \FloatBarrier
-\input{figures/architecture}
+

@@ -2,11 +2,11 @@
 \caption{\bt{Fixed-library replay on four schemas (\RpTotal\ instances). Cells count correct results served, incorrect results served, and instances with no definition served.}{四种模式的固定库回放（\RpTotal\ 个题次）。各格依次给出提供正确结果、提供错误结果和未提供定义的题次数。}}
 \label{tab:replay-policies}
 \footnotesize
-\setlength{\tabcolsep}{2.5pt}
+\ifbilingual\setlength{\tabcolsep}{1.7pt}\else\setlength{\tabcolsep}{2.5pt}\fi
 \ifbilingual\let\bt\bh\fi
 \begin{tabularx}{\linewidth}{@{}Lccc@{}}
 \toprule
-& \bt{Non-breaking}{正常更新} & \bt{Covered breaks}{覆盖破坏} & \bt{Premise changes}{前提变化}\\
+& \bt{Non-breaking}{常规更新} & \bt{Covered breaks}{条件破坏} & \bt{Premise changes}{前提变更}\\
 \bt{Maintenance policy}{维护方式} & (\RpBenignN) & (\RpBreakN) & (\RpOutsideN)\\
 \midrule
 \ifbilingual\bh{Invalidate on\\every write}{每次写入即失效}\else Invalidate on every write\fi & \RpRevokeBenignC\,/\,\RpRevokeBenignW\,/\,\RpRevokeBenignR & \RpRevokeBreakC\,/\,\RpRevokeBreakW\,/\,\RpRevokeBreakR & \RpRevokeOutsideC\,/\,\RpRevokeOutsideW\,/\,\RpRevokeOutsideR\\

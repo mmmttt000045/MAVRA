@@ -106,3 +106,18 @@
 \newcommand{\code}[1]{\texttt{#1}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newtheoremstyle{myexamplestyle}
+  {\topsep}   % Space above
+  {\topsep}   % Space below
+  {}          % Body font
+  {}          % Indent amount
+  {\bfseries} % Theorem head font
+  {.}         % Punctuation after theorem head
+  {.5em}      % Space after theorem head
+  {}          % Theorem head spec (can be left empty)
+% 2. 将 example 环境的样式设置为我们上面定义的样式
+\theoremstyle{myexamplestyle}
+\newtheorem{example}{Example} 
+% 我们可以把它改小一点，比如改为一行的高度
+\setlength{\textfloatsep}{1\baselineskip} 
