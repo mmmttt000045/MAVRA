@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (Fig. 1 back in the original style with the recorded steps; main dabca82)",
-  "previous_head": "61424d853debc02358b5a8dffce8e16b0b282f6c",
-  "remote_commit": "2ecfb88a34bd2cb0f05905ae1f1bb534f3e38866",
+  "direction": "main repo overleaf/ -> paper repo (full-width Fig. 1: readable steps, each agent's own steps, item-history load that makes the agents' join double-count; main a3ec764)",
+  "previous_head": "2ecfb88a34bd2cb0f05905ae1f1bb534f3e38866",
+  "remote_commit": "c0dae4ebe96b6ea9924a48299328b86990d96343",
   "pending_payload": null,
   "changed_paths": [],
   "preserve_remote_only": true,
@@ -20,11 +20,11 @@
     "undefined_references": 0,
     "identical_to_remote": "every mirrored file in overleaf/ equals the paper repo at remote_commit",
     "bilingual_pages": 22,
-    "body_note": "conclusion's last 6 lines on page 13 (limit: 12 body pages); Fig. 1 p. 1, Table III p. 4, Fig. 2 p. 5; paper repo HEAD compiled on noctis with its own build.sh all",
+    "body_note": "Fig. 1 now a figure* on p. 2; body runs further onto page 13 (limit: 12 body pages), page fitting deferred by the user; Table III p. 5, Fig. 2 p. 5",
     "cited_references": 54
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/2ecfb88a34bd2cb0f05905ae1f1bb534f3e38866",
-  "remote_tree": "46c97dc2b7214b8dbb7104e82bbedce68f804827",
-  "source_commit": "dabca82812c188913c579dec990105199d640534",
-  "sync_authorization": "User asked for Fig. 1 in the earlier style and reviews on Overleaf (2026-11-05: \"我还是希望在之前那个fig上面调整\" after \"推送吧，我上overleaf看看\")."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/c0dae4ebe96b6ea9924a48299328b86990d96343",
+  "remote_tree": "a0a2622cd0169dcb1d9550f6cc79f144b29465f2",
+  "source_commit": "a3ec764416b74ed8d316fb33377cc17c5a48911f",
+  "sync_authorization": "User asked for a higher-quality Fig. 1 regardless of size for now and reviews on Overleaf (2026-11-05: \"暂时不用管大小和页面数量，先把质量搞上去\")."
 }
