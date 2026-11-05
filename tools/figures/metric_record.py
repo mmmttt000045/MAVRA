@@ -1,6 +1,6 @@
 """Figure 1: agents repeat the same exploration, and what they find goes stale.
 
-Full text width, in the look of the earlier Figure 1 (LLM-agent glyphs,
+Single column, in the look of the earlier Figure 1 (LLM-agent glyphs,
 workbench windows, request streams into one shared database, violet palette).
 
 Top: three recorded sessions from the 10-01 workload traces
@@ -11,22 +11,19 @@ all on the metric electronics revenue (M5) and all asked by name only:
   Agent 2  s073  M5-T2  the month with the highest electronics revenue
   Agent N  s091  M5-T1  September against the same month a year earlier
 
-Steps 1-4 (list tables, then the store_sales, item and date_dim profiles) are
-the same in all 20 sessions of this metric and sit in one dashed box. Steps
-5-6 are each session's own: Agent 1 sums three candidate revenue columns for
-January, Agent 2 totals two candidates per month and ranks the months, Agent N
-totals two candidates per year and then subtracts; all three answer with
-ss_ext_sales_price. The script checks every drawn call and SQL fragment
-against the trace; the session count comes from gen/workload-example.tex
-(tools/workload-stats.py --example M5), which Example 1 also uses.
+Steps 1-4 (list tables, then read store_sales, item and date_dim) are the
+same in all 20 sessions of this metric and sit in one dashed box. Step 5 is
+each session's own SQL in a short phrase: Agent 1 sums three candidate
+revenue columns, Agent 2 ranks the months, Agent N compares the two years.
+The script checks every drawn call and SQL fragment against the trace; the
+session count comes from gen/workload-example.tex (tools/workload-stats.py
+--example M5), which Example 1 also uses. Questions drop the calendar year.
 
 Bottom: the database these sessions read. Their SQL joins item on the item
-key without a current-row filter, which is right while item holds one row per
-key (the profile the agents read: 1,000 rows, 1,000 keys, i_is_current always
-'Y'). An ETL job that loads item history (SCD Type 2) adds a second row for an
-item, the case Figure 2 continues with (key 17, as there): the same SQL then
-matches both rows and counts the item's sales twice, without an error.
-Questions drop the calendar year of the dataset.
+key without a current-row filter, right while item holds one row per key.
+An ETL job that loads item history (SCD Type 2) adds a second row for an
+item, the case Figure 2 continues with (item 17, as there), and the same SQL
+then counts the item's sales twice.
 """
 import json
 import math
@@ -39,7 +36,7 @@ import style  # noqa: E402
 from vecfig import MM, PT, measure  # noqa: E402
 
 NAME = 'metric-record'
-W, H = style.TEXTWIDTH, 77.2
+W, H = style.COLUMN, 65.1
 
 INK = '#332E40'
 MUTED = '#81798D'
@@ -61,76 +58,57 @@ AGENTS = (('1', 's094', 'M5-L1'), ('2', 's073', 'M5-T2'), ('N', 's091', 'M5-T1')
 LOOKUPS = (('list_tables', None), ('describe_table', 'store_sales'),
            ('describe_table', 'item'), ('describe_table', 'date_dim'))
 # Each session's own SQL after the lookups, as fragments that must occur in
-# its run_sql calls (lower case, table aliases removed), and the measure its
-# final answer uses.
+# its run_sql calls (lower case, table aliases removed).
 OWN_SQL = ((('sum(ss_ext_sales_price)', 'sum(ss_net_paid)', 'sum(ss_net_paid_inc_tax)', 'd_moy = 1'),),
-           (('sum(ss_ext_sales_price)', 'sum(ss_net_paid)', 'group by d_moy'),),
-           (('sum(ss_ext_sales_price)', 'sum(ss_net_paid)', 'd_moy = 9', 'group by d_year'),
-            ('case when d_year=2002 then ss_ext_sales_price', 'case when d_year=2001 then ss_ext_sales_price')))
+           (('group by d_moy', 'order by revenue desc'),),
+           (('d_moy = 9', 'group by d_year'),
+            ('case when d_year=2002 then', 'case when d_year=2001 then')))
 
 LABELS = {
     'en': {
         'agent': 'Agent', 'ask': 'ask:',
-        'q': ('Jan. electronics revenue?', 'best month for electronics revenue?',
-              'Sep. electronics revenue vs. last year?'),
+        # One list of lines per question, broken by hand to fit the box.
+        'q': (('Jan. electronics', 'revenue?'), ('best month for', 'electronics revenue?'),
+              ('Sep. electronics', 'revenue vs. last year?')),
         'repeated': 'Repeated in all {n} sessions', 'skip': 'avoidable with sharing',
-        'own_tag': 'steps 5–6 differ per agent',
-        'steps': ('list tables: find the sales, item, date tables',
-                  'inspect `store_sales`: revenue and key columns',
-                  'inspect `item`: category values, one row per item',
-                  'inspect `date_dim`: month column'),
-        'own': (('sum 3 candidate revenue columns', 'answer with `ss_ext_sales_price`'),
-                ('sum 2 candidate columns per month', 'rank months by `ss_ext_sales_price`'),
-                ('sum 2 candidate columns per year', 'subtract last year from this year')),
+        'steps': ('list tables', 'read sales table', 'read item table', 'read date table'),
+        'own': ('try 3 revenue columns', 'rank the 12 months', 'compare two years'),
         'database': 'Database',
-        'cols': {'date_dim': ('d_date_sk', 'd_moy'),
-                 'store_sales': ('ss_item_sk', 'ss_sold_date_sk', 'ss_net_paid'),
-                 'item': ('i_item_sk', 'i_category', 'i_is_current')},
-        'cat': "'Electronics'",
-        'etl': ('ETL job', 'loads item', 'history'),
-        'broken': 'no longer one row per item',
-        'stale': 'After the load, one sale of item 17 matches two item rows, so the agents’ query counts it twice, without any error.',
+        'rows': ('current', 'history'),
+        'etl': 'ETL: item history',
+        'stale': 'same SQL now counts item 17 twice',
     },
     'zh': {
         'agent': '智能体', 'ask': '问：',
-        'q': ('1 月电子品类营业额？', '哪个月电子品类营业额最高？', '9 月电子品类营业额同比增加多少？'),
+        'q': (('1 月电子品类', '营业额是多少？'), ('哪个月电子品类', '营业额最高？'),
+              ('9 月电子品类', '营业额同比增加多少？')),
         'repeated': '全部 {n} 个会话都重复', 'skip': '共享后可省去',
-        'own_tag': '第 5–6 步各不相同',
-        'steps': ('列出所有表：找到销售、商品、日期表',
-                  '查看 `store_sales`：营业额列与键列',
-                  '查看 `item`：品类取值，每个商品一行',
-                  '查看 `date_dim`：月份列'),
-        'own': (('对 3 个候选营业额列求和', '用 `ss_ext_sales_price` 作答'),
-                ('按月对 2 个候选列求和', '按 `ss_ext_sales_price` 取最高月'),
-                ('按年对 2 个候选列求和', '用今年减去去年')),
+        'steps': ('列出所有表', '读销售表', '读商品表', '读日期表'),
+        'own': ('试 3 个营业额列', '给 12 个月排序', '比较两年'),
         'database': '数据库',
-        'cols': {'date_dim': ('d_date_sk', 'd_moy'),
-                 'store_sales': ('ss_item_sk', 'ss_sold_date_sk', 'ss_net_paid'),
-                 'item': ('i_item_sk', 'i_category', 'i_is_current')},
-        'cat': "'电子'",
-        'etl': ('ETL 作业', '装载商品', '历史版本'),
-        'broken': '不再是每个商品一行',
-        'stale': '装载之后，商品 17 的一笔销售匹配两行商品记录，智能体的查询把它算了两次，且不报任何错误。',
+        'rows': ('当前', '历史'),
+        'etl': 'ETL：商品历史版本',
+        'stale': '同一 SQL 现在把商品 17 算了两次',
     },
 }
 
 # Columns: Agent 1, Agent 2, a gap with the ellipsis, Agent N.
-CW, GAP, ELL = 54.0, 3.0, 9.0
+CW, GAP, ELL = 25.6, 1.4, 4.6
 X0 = (W - 3 * CW - GAP - ELL) / 2
 COLS = (X0, X0 + CW + GAP, X0 + 2 * CW + GAP + ELL)
 CENTERS = tuple(x + CW / 2 for x in COLS)
 DOTS_X = COLS[1] + CW + ELL / 2
 
-GLYPH_Y, GLYPH_K = .6, .85
-ASK_Y, ASK_H = 8.3, 5.4
-BOX_Y = 15.7                                   # top edge of the dashed box
-WIN_Y = 17.4
-ROWS = (21.9, 25.9, 29.9, 33.9)                # steps 1-4
-BOX_BOTTOM = 36.3
-OWN = (38.7, 42.7)                             # steps 5-6
-WIN_BOTTOM = 45.1
-DB_X, DB_Y, DB_W, DB_H, RIM = 2.0, 50.2, 146.0, 26.4, 2.6
-NAME_PT, ASK_PT, HEAD_PT, STEP_PT, NOTE_PT, CELL_PT = 7.6, 7.0, 7.0, 6.9, 6.5, 6.4
+GLYPH_Y, GLYPH_K = .5, .72
+ASK_Y, ASK_H = 6.7, 7.5
+BOX_Y = 16.5                                   # top edge of the dashed box
+WIN_Y = 18.0
+ROWS = (22.3, 25.9, 29.5, 33.1)                # steps 1-4
+BOX_BOTTOM = 35.25
+ROW5 = 37.4
+WIN_BOTTOM = 39.4
+DB_Y, DB_H, RIM = 44.1, 20.6, 2.0
+NAME_PT, ASK_PT, HEAD_PT, STEP_PT, NOTE_PT, CELL_PT = 7.2, 6.4, 6.5, 6.3, 6.1, 6.2
 
 
 def plain(sql):
@@ -156,10 +134,10 @@ def check_sessions():
         sqls = [plain(c['args']['sql']) for c in cs if c['tool'] == 'run_sql']
         for sql, needles in zip(sqls, own):
             for needle in needles:
-                assert needle in sql.replace(' = ', '=') or needle in sql, (agent, needle, sql)
-        # The SQL the agent states with its answer sums gross sales only.
-        final = plain(s['run']['sql'])
-        assert 'ss_ext_sales_price' in final and 'ss_net_paid' not in final.split(' from ')[0], agent
+                assert needle in sql, (agent, needle, sql)
+        # The joins read item on the item key with no current-row filter.
+        for sql in sqls:
+            assert 'join item' in sql and 'i_is_current' not in sql, (agent, sql)
 
 
 def draw(s, lang):
@@ -173,9 +151,9 @@ def draw(s, lang):
         """Text whose capitals are centred on yc; returns its width."""
         return s.text(x, yc + .34 * size * PT, text, size, color, weight, align, width)
 
-    def dots(x, yc, color=VIOLET):
+    def dots(yc, color=VIOLET):
         for k in (-1, 0, 1):
-            s.circle(x + 1.25 * k, yc, .38, color)
+            s.circle(DOTS_X + 1.15 * k, yc, .34, color)
 
     def ellipse(x, y, w, h, fill=None, stroke=None, sw=.2):
         c = s.c
@@ -204,145 +182,129 @@ def draw(s, lang):
         s.line(hx - .2 * k, y + 6.65 * k, hx + 1.05 * k, y + 6.65 * k, WHITE, .17 * k)
 
     def step_mark(x, yc, n, edge=VIOLET):
-        s.circle(x, yc, 1.15, WHITE, edge, .22)
-        label(x, yc, str(n), 6.2, DEEP, 'bold', 'center')
+        s.circle(x, yc, .98, WHITE, edge, .2)
+        label(x, yc, str(n), 5.8, DEEP, 'bold', 'center')
 
     def tagged(x, y, text, size, color, weight, align):
         """Text on a white patch, so that it interrupts a dashed border."""
         tw = measure(text, size, weight)
         left = x if align == 'left' else x - tw
-        s.rect(left - .7, y - 1.35, tw + 1.4, 2.7, WHITE, None, r=.4)
+        s.rect(left - .6, y - 1.15, tw + 1.2, 2.3, WHITE, None)
         label(x, y, text, size, color, weight, align)
 
     # Agents and their questions -------------------------------------------
-    aw = measure(L['ask'], ASK_PT, 'bold') + (.8 if lang == 'en' else 0)
+    aw = measure(L['ask'], ASK_PT, 'bold') + (.75 if lang == 'en' else 0)
     glyph_w = 7.8 * GLYPH_K
-    for (x, cx), (n, _, _), q in zip(zip(COLS, CENTERS), AGENTS, L['q']):
+    for (x, cx), (n, _, _), lines in zip(zip(COLS, CENTERS), AGENTS, L['q']):
         name = f"{L['agent']} {n}"
         nw = measure(name, NAME_PT, 'bold')
-        x0 = cx - (glyph_w + 1.5 + nw) / 2
+        x0 = cx - (glyph_w + 1.3 + nw) / 2
         agent_glyph(x0 + glyph_w / 2, GLYPH_Y, GLYPH_K)
-        label(x0 + glyph_w + 1.5, GLYPH_Y + 3.9 * GLYPH_K, name, NAME_PT, DEEP, 'bold')
-        s.rect(x, ASK_Y, CW, ASK_H, WHITE, RULE, .22, r=.8)
-        label(x + 1.4, ASK_Y + ASK_H / 2, L['ask'], ASK_PT, DEEP, 'bold')
-        label(x + 1.4 + aw, ASK_Y + ASK_H / 2, q, ASK_PT, INK, width=CW - 2.8 - aw)
-    dots(DOTS_X, ASK_Y + ASK_H / 2, DEEP)
+        label(x0 + glyph_w + 1.3, GLYPH_Y + 3.9 * GLYPH_K, name, NAME_PT, DEEP, 'bold')
+        s.rect(x, ASK_Y, CW, ASK_H, WHITE, RULE, .2, r=.7)
+        y = ASK_Y + 2.85
+        s.text(x + 1.1, y, L['ask'], ASK_PT, DEEP, 'bold')
+        for k, line in enumerate(lines):
+            room = CW - 2.2 - (aw if k == 0 else 0)
+            s.text(x + 1.1 + (aw if k == 0 else 0), y + 2.6 * k, line, ASK_PT, INK, width=room)
+    dots(ASK_Y + ASK_H / 2, DEEP)
 
-    # Workbenches: steps 1-4 inside one dashed box, the agent's own steps below
-    s.rect(.5, BOX_Y, W - 1.0, BOX_BOTTOM - BOX_Y, LOAD_TINT, None, r=1.0)
+    # Workbenches: steps 1-4 inside one dashed box, the agent's own step below
+    s.rect(.35, BOX_Y, W - .7, BOX_BOTTOM - BOX_Y, LOAD_TINT, None, r=.9)
     for x, own in zip(COLS, L['own']):
-        s.rect(x, WIN_Y, CW, WIN_BOTTOM - WIN_Y, PALE, VIOLET, .26, r=.9)
-        for dx in (1.8, 3.0, 4.2):
-            s.circle(x + dx, WIN_Y + 1.15, .26, VIOLET)
-        s.line(x + CW - 5.0, WIN_Y + 1.15, x + CW - 1.8, WIN_Y + 1.15, VIOLET, .2)
-        s.line(x + .5, WIN_Y + 2.3, x + CW - .5, WIN_Y + 2.3, RULE, .2)
-        tx = x + 2.6
-        s.line(tx, ROWS[0], tx, OWN[-1], RULE, .26)
-        marks = ROWS + OWN
-        for a, b in zip(marks, marks[1:]):
-            s.head(tx, (a + b) / 2 + .45, math.pi / 2, VIOLET, .7)
+        s.rect(x, WIN_Y, CW, WIN_BOTTOM - WIN_Y, PALE, VIOLET, .24, r=.8)
+        for dx in (1.5, 2.5, 3.5):
+            s.circle(x + dx, WIN_Y + 1.05, .22, VIOLET)
+        s.line(x + CW - 4.0, WIN_Y + 1.05, x + CW - 1.5, WIN_Y + 1.05, VIOLET, .17)
+        s.line(x + .4, WIN_Y + 2.1, x + CW - .4, WIN_Y + 2.1, RULE, .17)
+        tx = x + 2.2
+        s.line(tx, ROWS[0], tx, ROW5, RULE, .24)
+        for a, b in zip(ROWS, ROWS[1:] + (ROW5,)):
+            s.head(tx, (a + b) / 2 + .35, math.pi / 2, VIOLET, .6)
         for k, (yc, step) in enumerate(zip(ROWS, L['steps'])):
             step_mark(tx, yc, k + 1)
-            label(x + 4.8, yc, step, STEP_PT, INK, width=CW - 5.6)
-        for k, (yc, step) in enumerate(zip(OWN, own)):
-            step_mark(tx, yc, k + 5, DEEP)
-            label(x + 4.8, yc, step, STEP_PT, DEEP, width=CW - 5.6)
-    dots(DOTS_X, (ROWS[1] + ROWS[2]) / 2)
-    dots(DOTS_X, sum(OWN) / 2)
-    s.rect(.5, BOX_Y, W - 1.0, BOX_BOTTOM - BOX_Y, None, LOAD, .34, r=1.0, dash=(1.3, .7))
-    tagged(2.6, BOX_Y, L['repeated'].format(n=n_sessions), HEAD_PT, LOAD, 'bold', 'left')
-    tagged(W - 2.6, BOX_Y, L['skip'], HEAD_PT - .3, LOAD, 'sans', 'right')
-    tagged(W - 2.6, BOX_BOTTOM, L['own_tag'], NOTE_PT, DEEP, 'sans', 'right')
+            label(x + 4.0, yc, step, STEP_PT, INK, width=CW - 4.6)
+        step_mark(tx, ROW5, 5, DEEP)
+        label(x + 4.0, ROW5, own, STEP_PT, DEEP, width=CW - 4.6)
+    dots((ROWS[1] + ROWS[2]) / 2)
+    dots(ROW5)
+    s.rect(.35, BOX_Y, W - .7, BOX_BOTTOM - BOX_Y, None, LOAD, .3, r=.9, dash=(1.1, .6))
+    tagged(2.3, BOX_Y, L['repeated'].format(n=n_sessions), HEAD_PT, LOAD, 'bold', 'left')
+    tagged(W - 2.3, BOX_Y, L['skip'], HEAD_PT - .4, LOAD, 'sans', 'right')
 
-    # The database the agents read, before and after an item-history load ---
-    x, y, w, h = DB_X, DB_Y, DB_W, DB_H
-    s.rect(x, y + RIM / 2, w, h - RIM, DB_FACE)
-    ellipse(x, y + h - RIM, w, RIM, DB_FACE, EDGE, .24)
-    s.rect(x + .12, y + RIM / 2, w - .24, h - RIM, DB_FACE)
-    s.line(x, y + RIM / 2, x, y + h - RIM / 2, EDGE, .24)
-    s.line(x + w, y + RIM / 2, x + w, y + h - RIM / 2, EDGE, .24)
-    ellipse(x, y, w, RIM, WHITE, EDGE, .24)
-    hot = (20.0, 144.0)
-    s.rect(hot[0], y + .55, hot[1] - hot[0], 1.5, LOAD_PALE, LOAD, .2, r=.6)
-    label(x + w / 2, y + 4.7, L['database'], NAME_PT, INK, 'bold', 'center')
+    # One shared database; an item-history load breaks the agents' join ----
+    x, w = 1.6, W - 3.2
+    s.rect(x, DB_Y + RIM / 2, w, DB_H - RIM, DB_FACE)
+    ellipse(x, DB_Y + DB_H - RIM, w, RIM, DB_FACE, EDGE, .22)
+    s.rect(x + .12, DB_Y + RIM / 2, w - .24, DB_H - RIM, DB_FACE)
+    s.line(x, DB_Y + RIM / 2, x, DB_Y + DB_H - RIM / 2, EDGE, .22)
+    s.line(x + w, DB_Y + RIM / 2, x + w, DB_Y + DB_H - RIM / 2, EDGE, .22)
+    ellipse(x, DB_Y, w, RIM, WHITE, EDGE, .22)
+    hot = (19.0, 66.0)
+    s.rect(hot[0], DB_Y + .4, hot[1] - hot[0], 1.2, LOAD_PALE, LOAD, .19, r=.5)
+    label(W / 2, DB_Y + 3.6, L['database'], NAME_PT, INK, 'bold', 'center')
 
-    def table(tx, ty, tw, name, cols, rows, widths):
-        """A table card: name band, column names, and data rows (list of cells)."""
-        rh, ch = 3.1, 2.9
-        th = 3.2 + ch + rh * len(rows) + .4
-        s.rect(tx, ty, tw, th, WHITE, VIOLET, .24, r=.4)
-        s.rect(tx + .15, ty + .15, tw - .3, 2.9, PALE, None, r=.3)
-        label(tx + tw / 2, ty + 1.6, f'`{name}`', 6.9, DEEP, 'sans', 'center', width=tw - 1.6)
-        xs = [tx + 1.2]
-        for wd in widths[:-1]:
-            xs.append(xs[-1] + wd)
-        for cx_, col in zip(xs, cols):
-            label(cx_, ty + 3.2 + ch / 2, f'`{col}`', 5.9, MUTED)
-        s.line(tx + .4, ty + 3.2 + ch, tx + tw - .4, ty + 3.2 + ch, RULE, .18)
-        centres = []
-        for k, (cells, fill) in enumerate(rows):
-            yc = ty + 3.2 + ch + rh * k + rh / 2
-            if fill:
-                s.rect(tx + .25, yc - rh / 2 + .15, tw - .5, rh - .3, fill, None, r=.3)
-            for cx_, cell in zip(xs, cells):
-                if cell == '~':
-                    s.rect(cx_, yc - .35, 6.0, .7, RULE, None, r=.35)
-                elif cell:
-                    label(cx_, yc, f'`{cell}`', CELL_PT, INK)
-            centres.append(yc)
-        return th, centres
+    def chip(tx, ty, tw, name):
+        s.rect(tx, ty, tw, 3.2, WHITE, VIOLET, .21, r=.35)
+        s.rect(tx + .13, ty + .13, tw - .26, 2.94, PALE, None, r=.25)
+        label(tx + tw / 2, ty + 1.6, f'`{name}`', 6.3, DEEP, 'sans', 'center', width=tw - 1.2)
 
-    ty = y + 7.2
-    dd_x, dd_w = 7.0, 27.0
-    th, _ = table(dd_x, ty, dd_w, 'date_dim', L['cols']['date_dim'],
-                  [(('~', '~'), None), (('~', '~'), None)], (14.0, 11.0))
-    ss_x, ss_w = 43.0, 46.0
-    _, ss_rows = table(ss_x, ty, ss_w, 'store_sales', L['cols']['store_sales'],
-                       [(('17', '~', '~'), LOAD_PALE), (('~', '~', '~'), None)], (13.5, 18.5, 12.0))
-    it_x, it_w = 98.0, 45.0
-    _, it_rows = table(it_x, ty, it_w, 'item', L['cols']['item'],
-                       [(('17', L['cat'], "'Y'"), None), (('17', L['cat'], "'N'"), AMBER_PALE)],
-                       (12.0, 18.5, 12.5))
-    # Star joins: store_sales in the middle.
-    for x1, x2 in ((dd_x + dd_w, ss_x), (ss_x + ss_w, it_x)):
-        yc, mx = ty + 1.6, (x1 + x2) / 2
-        s.line(x1, yc, mx - 1.4, yc, VIOLET, .26)
-        s.line(mx + 1.4, yc, x2, yc, VIOLET, .26)
-        s.poly([(mx - 1.4, yc - 1.0), (mx + 1.4, yc + 1.0), (mx + 1.4, yc - 1.0),
-                (mx - 1.4, yc + 1.0)], WHITE, DEEP, .22)
-    # The sale of item 17 now matches both item rows.
-    sx, sy = ss_x + ss_w, ss_rows[0]
-    for yc in it_rows:
-        path = [(sx, sy), (it_x, yc)] if abs(yc - sy) < .01 else \
-            [(sx, sy), (sx + 3.2, sy), (sx + 3.2, yc), (it_x, yc)]
-        s.route(path, LOAD, .3, radius=.6, length=.9)
-    label(x + w / 2, ty + th + 2.7, L['stale'], NOTE_PT, LOAD, 'sans', 'center', width=w - 8.0)
-    # What step 3 found about item no longer holds.
-    label(it_x + it_w / 2, ty - 2.0, L['broken'], NOTE_PT, LOAD, 'bold', 'center', width=it_w + 6)
-
-    # The ETL job that writes the history row.
-    ex, ey, ew, eh = 153.0, ty + 1.0, 22.5, 12.6
-    s.rect(ex + .9, ey + .9, ew, eh, '#E7E4EC', None, r=.6)
-    s.rect(ex, ey, ew, eh, WHITE, EDGE, .24, r=.6)
-    label(ex + 1.5, ey + 2.6, L['etl'][0], NAME_PT, INK, 'bold')
-    for k, line in enumerate(L['etl'][1:]):
-        label(ex + 1.5, ey + 6.2 + 2.9 * k, line, NOTE_PT, AMBER, 'bold' if lang == 'zh' else 'sans')
-    s.route([(ex, ey + eh / 2), (it_x + it_w + 3.0, ey + eh / 2), (it_x + it_w + 3.0, it_rows[1]),
-             (it_x + it_w, it_rows[1])], AMBER, .34, radius=.8, length=1.0)
+    ty = DB_Y + 5.4
+    dd = (4.4, 16.5)                           # x, width
+    ss = (26.6, 22.0)
+    it = (57.6, 23.4)
+    chip(dd[0], ty, dd[1], 'date_dim')
+    chip(ss[0], ty, ss[1], 'store_sales')
+    # The item card shows its rows for item 17: the current one and the row an
+    # ETL job added when it loaded item history.
+    rh = 3.0
+    ih = 3.2 + 2 * rh + .35
+    s.rect(it[0], ty, it[1], ih, WHITE, VIOLET, .21, r=.35)
+    s.rect(it[0] + .13, ty + .13, it[1] - .26, 2.94, PALE, None, r=.25)
+    label(it[0] + it[1] / 2, ty + 1.6, '`item`', 6.3, DEEP, 'sans', 'center')
+    rows = []
+    for k, (flag, note) in enumerate(zip(("'Y'", "'N'"), L['rows'])):
+        yc = ty + 3.2 + rh * k + rh / 2
+        if k:
+            s.rect(it[0] + .25, yc - rh / 2 + .15, it[1] - .5, rh - .3, AMBER_PALE, None, r=.3)
+        label(it[0] + 1.3, yc, '`17`', CELL_PT, INK)
+        label(it[0] + 5.2, yc, f'`{flag}`', CELL_PT, INK)
+        label(it[0] + it[1] - 1.2, yc, note, 5.9, AMBER if k else MUTED,
+              'bold' if k else 'sans', 'right')
+        rows.append(yc)
+    # date_dim joins store_sales; store_sales now matches both rows of item 17.
+    yc = ty + 1.6
+    x1, x2 = dd[0] + dd[1], ss[0]
+    mx = (x1 + x2) / 2
+    s.line(x1, yc, mx - 1.2, yc, VIOLET, .24)
+    s.line(mx + 1.2, yc, x2, yc, VIOLET, .24)
+    s.poly([(mx - 1.2, yc - .9), (mx + 1.2, yc + .9), (mx + 1.2, yc - .9),
+            (mx - 1.2, yc + .9)], WHITE, DEEP, .2)
+    sx = ss[0] + ss[1]
+    bend = sx + 3.6
+    for r_ in rows:
+        s.route([(sx, yc), (bend, yc), (bend, r_), (it[0], r_)], LOAD, .3, radius=.6, length=.85)
+    # The ETL load and its consequence.
+    base = ty + ih + 2.5
+    ex = it[0] + it[1] / 2
+    s.route([(ex, base - 1.2), (ex, ty + ih)], AMBER, .3, length=.85)
+    label(ex, base + .2, L['etl'], NOTE_PT, AMBER, 'bold', 'center', width=it[1] + 3)
+    label(dd[0], base + .2, L['stale'], NOTE_PT, LOAD, 'bold', 'left', width=it[0] - dd[0] - 2)
 
     # Request streams: every agent's four lookups land on the same tables.
     def stream(sx_, tx_):
-        p0, p1 = (sx_, WIN_BOTTOM), (sx_, WIN_BOTTOM + 2.4)
-        p2, p3 = (tx_, DB_Y - 1.8), (tx_, DB_Y + .6)
-        s.curve(p0, p1, p2, p3, LOAD, .34)
-        s.head(*p3, math.pi / 2, LOAD, 1.0)
+        p0, p1 = (sx_, WIN_BOTTOM), (sx_, WIN_BOTTOM + 2.0)
+        p2, p3 = (tx_, DB_Y - 1.5), (tx_, DB_Y + .5)
+        s.curve(p0, p1, p2, p3, LOAD, .3)
+        s.head(*p3, math.pi / 2, LOAD, .85)
 
-    targets = (32.0, 86.0, 138.0)
+    targets = (27.0, W / 2, W - 27.0)
     for cx, target in zip(CENTERS, targets):
         for k in range(4):
-            stream(cx - 3.6 + 2.4 * k, target - 3.0 + 2.0 * k)
-    dots(DOTS_X, (WIN_BOTTOM + DB_Y) / 2, LOAD)
-    assert DB_Y + DB_H <= H - .3 and ey + eh + .9 <= H
+            stream(cx - 2.4 + 1.6 * k, target - 2.1 + 1.4 * k)
+    dots((WIN_BOTTOM + DB_Y) / 2, LOAD)
+    assert DB_Y + DB_H <= H - .3, DB_Y + DB_H
+    assert base + 1.5 <= DB_Y + DB_H - RIM / 2, base
 
 
 if __name__ == '__main__':
