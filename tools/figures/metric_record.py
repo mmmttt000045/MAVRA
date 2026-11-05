@@ -33,7 +33,7 @@ import style  # noqa: E402
 from vecfig import MM, PT, measure  # noqa: E402
 
 NAME = 'metric-record'
-W, H = style.COLUMN, 66.2
+W, H = style.COLUMN, 53.6
 
 INK = '#332E40'
 MUTED = '#81798D'
@@ -70,46 +70,27 @@ LABELS = {
         'agent': 'Agent', 'ask': 'user ask:',
         'q': (('Jan. electronics', 'revenue?'), ('best month for', 'electronics revenue?'),
               ('Sep. electronics', 'revenue vs. last year?')),
-        'win_title': 'Multi-turn exploration',
-        'repeated': 'Repeated in all {n} sessions', 'skip': 'avoidable with sharing',
-        # Each step in 1-4 is (agent probe, DB observation pill).
-        'steps': ((('desc tables', '3 schemas'),
-                   ('test join', 'sales,date,item'),
-                   ('probe item', "'Electronics'"),
-                   ('probe cols', '3 rev. cols')),
-                  (('list & desc', '3 schemas'),
-                   ('check cat.', "'Electronics'"),
-                   ('test join', 'sales,item,date'),
-                   ('test sums', 'gross, net')),
-                  (('read schemas', '3 tables'),
-                   ('check cols', 'rev. cols'),
-                   ('test join', 'item, date keys'),
-                   ('test filter', "'Electronics'"))),
-        'own': ('query Jan. (`d_moy=1`)', 'rank the 12 months', 'compare two years'),
-        'database': 'Database',
-        'db_note': 'same tables, join keys & columns probed every session',
+        # Two shown steps per session + ellipsis (steps 3-4) inside the dashed box;
+        # all table and column names match the bottom database schema 1-to-1.
+        'steps': ((('desc', 'date, sales, item'),
+                   ('join', 'date_id, item_id')),
+                  (('desc', 'date, sales, item'),
+                   ('filter', "category='Elec.'")),
+                  (('desc', 'date, sales, item'),
+                   ('probe', 'net_paid, gross'))),
+        'own': ('query Jan. (`month=1`)', 'rank months (`month`)', 'compare years (`year`)'),
     },
     'zh': {
         'agent': '智能体', 'ask': '用户问：',
         'q': (('1 月电子品类', '营业额是多少？'), ('哪个月电子品类', '营业额最高？'),
               ('9 月电子品类', '营业额同比增加多少？')),
-        'win_title': '多轮交互探索',
-        'repeated': '全部 {n} 个会话都重复', 'skip': '共享后可省去',
-        'steps': ((('查表结构', '3 张表'),
-                   ('测表连接', '销/日/商'),
-                   ('采样商品', '电子品类'),
-                   ('探查度量', '3 个营收列')),
-                  (('列并读表', '3 张表'),
-                   ('查品类值', '电子品类'),
-                   ('测试连接', '销/商/日'),
-                   ('比对汇总', '毛额/净额')),
-                  (('读表结构', '3 张表'),
-                   ('探查列值', '候选营收列'),
-                   ('验证连接', '商品/日期键'),
-                   ('测试过滤', '电子品类'))),
-        'own': ('查 1 月 (`d_moy=1`)', '给 12 个月排序', '比较两年 9 月'),
-        'database': '数据库',
-        'db_note': '每个会话都在重复探查同一组表、连接键与目标列',
+        'steps': ((('查表', 'date, sales, item'),
+                   ('连接', 'date_id, item_id')),
+                  (('查表', 'date, sales, item'),
+                   ('过滤', "category='Elec.'")),
+                  (('查表', 'date, sales, item'),
+                   ('探查', 'net_paid, gross'))),
+        'own': ('查 1 月 (`month=1`)', '月份排序 (`month`)', '同比比较 (`year`)'),
     },
 }
 
@@ -122,14 +103,15 @@ DOTS_X = COLS[1] + CW + ELL / 2
 
 GLYPH_Y, GLYPH_K = .5, .72
 ASK_Y, ASK_H = 6.7, 7.5
-BOX_Y = 16.5                                   # top edge of the dashed box
-WIN_Y = 18.0
-ROWS = (22.6, 26.3, 30.0, 33.7)                # steps 1-4
-BOX_BOTTOM = 35.8
-ROW5 = 38.7
-WIN_BOTTOM = 40.7
-DB_Y, DB_H, RIM = 48.2, 17.5, 2.0
-NAME_PT, ASK_PT, HEAD_PT, STEP_PT, PILL_PT = 7.2, 6.0, 6.5, 5.5, 5.0
+BOX_Y = 15.8                                   # top edge of the dashed box
+WIN_Y = 16.6
+ROWS = (20.5, 24.5)                            # steps 1-2
+ELL_Y = 27.9                                   # ellipsis for steps 3-4
+BOX_BOTTOM = 29.8
+ROW5 = 32.5
+WIN_BOTTOM = 34.5
+DB_Y, DB_H, RIM = 39.6, 13.6, 2.0
+NAME_PT, ASK_PT, STEP_PT, PILL_PT = 7.2, 6.0, 5.5, 4.9
 
 
 def plain(sql):
@@ -211,13 +193,6 @@ def draw(s, lang):
         s.circle(x, yc, .95, WHITE, edge, .2)
         label(x, yc, str(n), 5.6, DEEP, 'bold', 'center')
 
-    def tagged(x, y, text, size, color, weight, align):
-        """Text on a white patch, so that it interrupts a dashed border."""
-        tw = measure(text, size, weight)
-        left = x if align == 'left' else x - tw
-        s.rect(left - .6, y - 1.15, tw + 1.2, 2.3, WHITE, None)
-        label(x, y, text, size, color, weight, align)
-
     # Agents and their user-ask boxes --------------------------------------
     aw = measure(L['ask'], ASK_PT, 'bold') + (.55 if lang == 'en' else 0)
     glyph_w = 7.8 * GLYPH_K
@@ -235,43 +210,45 @@ def draw(s, lang):
             s.text(x + 1.0 + (aw if k == 0 else 0), y + 2.6 * k, line, ASK_PT, INK, width=room)
     dots(ASK_Y + ASK_H / 2, DEEP)
 
-    # Workbenches: multi-turn exploration (steps 1-4) inside one dashed box,
-    # and step 5 (each agent's period query) below.
+    # Workbenches: multi-turn exploration (steps 1-2 + ellipsis for 3-4)
+    # inside one dashed box, and step 5 (each agent's period query) below.
     s.rect(.55, BOX_Y, W - 1.1, BOX_BOTTOM - BOX_Y, LOAD_TINT, None, r=.9)
     for x, steps, own in zip(COLS, L['steps'], L['own']):
         s.rect(x, WIN_Y, CW, WIN_BOTTOM - WIN_Y, PALE, VIOLET, .24, r=.8)
         for dx in (1.25, 2.05, 2.85):
-            s.circle(x + dx, WIN_Y + 1.15, .19, VIOLET)
-        label(x + 3.7, WIN_Y + 1.15, L['win_title'], 5.2, DEEP, 'bold', width=CW - 4.2)
-        s.line(x + .4, WIN_Y + 2.25, x + CW - .4, WIN_Y + 2.25, RULE, .17)
+            s.circle(x + dx, WIN_Y + .95, .19, VIOLET)
+        s.line(x + CW - 2.6, WIN_Y + .95, x + CW - 1.1, WIN_Y + .95, VIOLET, .19)
+        s.line(x + .4, WIN_Y + 1.85, x + CW - .4, WIN_Y + 1.85, RULE, .16)
         tx = x + 2.0
-        s.line(tx, ROWS[0], tx, ROW5, RULE, .24)
-        for a, b in zip(ROWS, ROWS[1:]):
-            s.head(tx, (a + b) / 2 + .35, math.pi / 2, VIOLET, .58)
-        s.head(tx, BOX_BOTTOM + 1.35, math.pi / 2, VIOLET, .58)
+        s.line(tx, ROWS[0], tx, ROWS[1] + 1.4, RULE, .24)
+        s.line(tx, ELL_Y + 1.0, tx, ROW5, RULE, .24)
+        s.head(tx, (ROWS[0] + ROWS[1]) / 2 + .35, math.pi / 2, VIOLET, .58)
+        s.head(tx, BOX_BOTTOM + 1.25, math.pi / 2, VIOLET, .58)
         for k, (yc, (act, obs)) in enumerate(zip(ROWS, steps)):
             step_mark(tx, yc, k + 1)
-            w_act = label(x + 3.45, yc, act, STEP_PT, INK)
+            w_act = label(x + 3.4, yc, act, STEP_PT, INK)
             # Small DB-observation pill on the right, connected by a turn arrow.
-            pw = measure(obs, PILL_PT, 'sans') + .95
+            pw = measure(obs, PILL_PT, 'sans') + 1.0
             px = x + CW - .5 - pw
-            ax0 = x + 3.45 + w_act + .3
+            ax0 = x + 3.4 + w_act + .3
             ax1 = px - .2
-            assert ax1 > ax0 + .45, (act, obs, ax0, ax1)
+            assert ax1 > ax0 + .35, (act, obs, ax0, ax1)
             s.line(ax0, yc, ax1, yc, VIOLET, .17)
-            s.head(ax1, yc, 0, VIOLET, .48)
+            s.head(ax1, yc, 0, VIOLET, .46)
             s.rect(px, yc - 1.08, pw, 2.16, WHITE, VIOLET, .15, r=.35)
             label(px + pw / 2, yc, obs, PILL_PT, DEEP, 'sans', 'center')
+        # Vertical ellipsis on spine + horizontal ellipsis for elided steps 3-4
+        for dy in (-.55, 0, .55):
+            s.circle(tx, ELL_Y + dy, .18, VIOLET)
+        for dx in (-1.15, 0, 1.15):
+            s.circle(x + CW / 2 + .8 + dx, ELL_Y, .28, VIOLET)
         step_mark(tx, ROW5, 5, DEEP)
-        label(x + 3.45, ROW5, own, 5.8, DEEP, 'sans', width=CW - 3.95)
-    dots((ROWS[1] + ROWS[2]) / 2)
+        label(x + 3.4, ROW5, own, 5.7, DEEP, 'sans', width=CW - 3.85)
+    dots((ROWS[0] + ROWS[1]) / 2)
     dots(ROW5)
     s.rect(.55, BOX_Y, W - 1.1, BOX_BOTTOM - BOX_Y, None, LOAD, .3, r=.9, dash=(1.1, .6))
-    tagged(2.5, BOX_Y, L['repeated'].format(n=n_sessions), HEAD_PT, LOAD, 'bold', 'left')
-    tagged(W - 2.5, BOX_Y, L['skip'], HEAD_PT - .4, LOAD, 'sans', 'right')
 
-    # One shared database: same tables, join keys, and target columns
-    # repeatedly probed by every session.
+    # One shared database: clean short table & column names matching 1-to-1
     x, w = 1.6, W - 3.2
     s.rect(x, DB_Y + RIM / 2, w, DB_H - RIM, DB_FACE)
     ellipse(x, DB_Y + DB_H - RIM, w, RIM, DB_FACE, EDGE, .22)
@@ -279,30 +256,20 @@ def draw(s, lang):
     s.line(x, DB_Y + RIM / 2, x, DB_Y + DB_H - RIM / 2, EDGE, .22)
     s.line(x + w, DB_Y + RIM / 2, x + w, DB_Y + DB_H - RIM / 2, EDGE, .22)
     ellipse(x, DB_Y, w, RIM, WHITE, EDGE, .22)
-    hot = (11.5, 73.5)
+    hot = (14.5, 70.5)
     s.rect(hot[0], DB_Y + .4, hot[1] - hot[0], 1.2, LOAD_PALE, LOAD, .19, r=.5)
 
-    # Header: "Database" + explanatory subtitle on one line
-    db_w = measure(L['database'], 6.8, 'bold')
-    note_w = measure(L['db_note'], 5.5, 'bold')
-    tot_w = db_w + 1.8 + note_w
-    hx0 = (W - tot_w) / 2
-    hy = DB_Y + 3.4
-    label(hx0, hy, L['database'], 6.8, INK, 'bold')
-    s.circle(hx0 + db_w + .9, hy, .22, LOAD)
-    label(hx0 + db_w + 1.8, hy, L['db_note'], 5.5, LOAD, 'bold')
-
-    ty, th, hh = DB_Y + 5.2, 8.2, 2.5
+    ty, th, hh = DB_Y + 2.7, 8.2, 2.5
     rh = (th - hh) / 2
     tables = (
-        (3.8, 20.8, 'date_dim', ('d_date_sk', 'd_moy, d_year')),
-        (30.2, 24.6, 'store_sales', ('ss_date_sk, ss_item_sk', 'ss_net_paid, ...')),
-        (60.4, 20.8, 'item', ('i_item_sk', 'i_category')),
+        (4.2, 20.6, 'date', ('date_id', 'month, year')),
+        (30.4, 24.2, 'sales', ('date_id, item_id', 'net_paid, gross')),
+        (60.2, 20.6, 'item', ('item_id', 'category')),
     )
     for tx, tw, name, fields in tables:
         s.rect(tx, ty, tw, th, WHITE, VIOLET, .21, r=.35)
         s.rect(tx + .13, ty + .13, tw - .26, hh - .13, PALE, None, r=.25)
-        label(tx + tw / 2, ty + hh / 2, f'`{name}`', 6.1, DEEP, 'sans', 'center', width=tw - 1.0)
+        label(tx + tw / 2, ty + hh / 2, f'`{name}`', 6.2, DEEP, 'sans', 'center', width=tw - 1.0)
         # Highlight the repeatedly probed filter/measure row
         s.rect(tx + .13, ty + hh + rh + .06, tw - .26, rh - .19, AMBER_PALE)
         for yy in (ty + hh, ty + hh + rh):
@@ -310,8 +277,7 @@ def draw(s, lang):
         s.line(tx + 2.8, ty + hh, tx + 2.8, ty + th, RULE, .13)
         for row, field in enumerate(fields):
             yc = ty + hh + (row + .5) * rh
-            f_pt = 5.0 if len(field) > 18 else 5.5
-            label(tx + 3.3, yc, f'`{field}`', f_pt, INK, 'sans', 'left', width=tw - 3.6)
+            label(tx + 3.3, yc, f'`{field}`', 5.5, INK, 'sans', 'left', width=tw - 3.6)
             if row == 0:
                 # Key icon for join-key row
                 s.circle(tx + 1.05, yc - .1, .36, WHITE, DEEP, .15)
@@ -332,24 +298,24 @@ def draw(s, lang):
                 (mx + 1.15, yc_key - .82), (mx - 1.15, yc_key + .82)],
                WHITE, DEEP, .2)
 
-    # Widely spaced, non-overlapping request/response streams
+    # Compact, non-overlapping request/response streams
     def stream(sx_, tx_, returning=False):
-        y_top = WIN_BOTTOM + (.65 if returning else 0)
-        y_bot = DB_Y + (.55 if not returning else .25)
+        y_top = WIN_BOTTOM + (.55 if returning else 0)
+        y_bot = DB_Y + (.5 if not returning else .22)
         dy = y_bot - y_top
-        p0, p1 = (sx_, y_top), (sx_, y_top + .42 * dy)
-        p2, p3 = (tx_, y_bot - .42 * dy), (tx_, y_bot)
+        p0, p1 = (sx_, y_top), (sx_, y_top + .44 * dy)
+        p2, p3 = (tx_, y_bot - .44 * dy), (tx_, y_bot)
         color = VIOLET if returning else LOAD
-        s.curve(p0, p1, p2, p3, color, .26 if returning else .32,
-                (.65, .45) if returning else None)
+        s.curve(p0, p1, p2, p3, color, .25 if returning else .31,
+                (.6, .42) if returning else None)
         if returning:
-            s.head(sx_, WIN_BOTTOM + .12, -math.pi / 2, VIOLET, .85)
+            s.head(sx_, WIN_BOTTOM + .1, -math.pi / 2, VIOLET, .8)
         else:
-            s.head(*p3, math.pi / 2, LOAD, .9)
+            s.head(*p3, math.pi / 2, LOAD, .85)
 
-    targets = (20.0, W / 2, W - 20.0)
+    targets = (21.5, W / 2, W - 21.5)
     for cx, target in zip(CENTERS, targets):
-        for dx_s, dx_t, ret in ((-3.0, -2.6, False), (0.0, 0.0, False), (3.0, 2.6, True)):
+        for dx_s, dx_t, ret in ((-1.9, -1.6, False), (0.0, 0.0, False), (1.9, 1.6, True)):
             stream(cx + dx_s, target + dx_t, returning=ret)
     dots((WIN_BOTTOM + DB_Y) / 2, LOAD)
     assert DB_Y + DB_H <= H - .3, DB_Y + DB_H

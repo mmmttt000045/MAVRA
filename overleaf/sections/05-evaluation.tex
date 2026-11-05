@@ -1,7 +1,7 @@
 \section{\bt{Evaluation}{实验评估}}
 \label{sec:evaluation}
-\bi{We first isolate the benefit of sharing across agents (Section~\ref{sec:population-eval}), then examine reliability under data updates (Section~\ref{sec:changes-eval}) and the mechanisms supporting reuse and maintenance (Section~\ref{sec:maint-cost-eval}). Finally, we evaluate predictive feature reuse through the same shared layer (Section~\ref{sec:relbench-eval}).}
-{我们首先隔离评估跨智能体共享的收益（第~\ref{sec:population-eval} 节），再考察数据更新下的可靠性（第~\ref{sec:changes-eval} 节）及支撑复用与维护的机制（第~\ref{sec:maint-cost-eval} 节），最后评估通过同一共享层进行预测特征复用的效果（第~\ref{sec:relbench-eval} 节）。}
+\bi{We evaluate cross-agent sharing (Section~\ref{sec:population-eval}), reliability under updates (Section~\ref{sec:changes-eval}), reuse and maintenance mechanisms (Section~\ref{sec:maint-cost-eval}), and predictive feature reuse (Section~\ref{sec:relbench-eval}).}
+{我们依次评估跨智能体共享（第~\ref{sec:population-eval} 节）、更新后的可靠性（第~\ref{sec:changes-eval} 节）、复用与维护机制（第~\ref{sec:maint-cost-eval} 节）及预测特征复用（第~\ref{sec:relbench-eval} 节）。}
 
 \subsection{\bt{Experimental Setup}{实验设置}}
 \label{sec:experimental-setup}
@@ -24,8 +24,8 @@
 \bi{All predictive methods share identical tools and validation feedback. Alongside \emph{No memory}, we compare three agent memories and two feature-engineering systems. ACE~\cite{zhang2026ace} updates a private 80k-token playbook per task once per session via its released label-free Reflector/Curator prompts. AWM~\cite{wang2025awm} induces workflows online per agent and database, adapting web actions to SQL with a demonstration from \code{rel-f1}. G-Memory~\cite{zhang2025gmemory} shares its hierarchical store and retrieval within each database.}
 {全部预测方法共用相同的工具与验证反馈。除无记忆外，我们比较三种智能体记忆和两种特征工程系统。ACE~\cite{zhang2026ace} 为每个任务维护一份 80k-token 私有手册，每会话通过其公开的无监督 Reflector/Curator 提示词更新一次。AWM~\cite{wang2025awm} 在每个智能体与数据库内在线归纳工作流，利用独立库 \code{rel-f1} 的示例将网页动作适配至 SQL。G-Memory~\cite{zhang2025gmemory} 在单库内共享其分层存储与检索。}
 
-\bi{DeepPrep~\cite{fan2026deepprep} restarts at each task and cutoff using its released prompts, reasoning, 31 operators, and rule executor. FeatPilot*~\cite{liang2025featpilot}, adapted to SQL, searches join paths, prunes by training-sample coverage, ranks features by the product of coverage quality and LightGBM importance, and downweights redundant features. For analytical workloads, we similarly evaluate SQL-adapted ACE and AWM alongside G-Memory (Section~\ref{sec:changes-eval}), and isolate cross-agent sharing and maintenance against single-agent memory, shared example retrieval, and alternative invalidation policies (Sections~\ref{sec:population-eval} and~\ref{sec:maint-cost-eval}).}
-{DeepPrep~\cite{fan2026deepprep} 在每个任务和截点使用其公开的提示词、推理流程、31 个算子与规则执行器重新运行。FeatPilot*~\cite{liang2025featpilot} 为 SQL 适配版，搜索连接路径、按训练样本覆盖率剪枝、以覆盖质量与 LightGBM 重要性的乘积排序并下调冗余特征权重。在分析型负载中，我们同样对比 SQL 适配的 ACE、AWM 与 G-Memory（第~\ref{sec:changes-eval} 节），并在第~\ref{sec:population-eval} 与~\ref{sec:maint-cost-eval} 节中对比单智能体记忆、共享示例检索及不同失效维护策略。}
+\bi{DeepPrep~\cite{fan2026deepprep} restarts at each task and cutoff using its released prompts, reasoning, 31 operators, and rule executor. FeatPilot*~\cite{liang2025featpilot}, adapted to SQL, searches join paths, prunes by training-sample coverage, ranks features by the product of coverage quality and LightGBM importance, and downweights redundant features. Analytical experiments also compare SQL-adapted ACE and AWM with G-Memory (Section~\ref{sec:changes-eval}) and isolate invalidation policies (Section~\ref{sec:maint-cost-eval}).}
+{DeepPrep~\cite{fan2026deepprep} 在每个任务和截点使用其公开的提示词、推理流程、31 个算子与规则执行器重新运行。FeatPilot*~\cite{liang2025featpilot} 为 SQL 适配版，搜索连接路径、按训练样本覆盖率剪枝、以覆盖质量与 LightGBM 重要性的乘积排序并下调冗余特征权重。分析型实验还比较 SQL 适配的 ACE、AWM 与 G-Memory（第~\ref{sec:changes-eval} 节），并隔离评估失效策略（第~\ref{sec:maint-cost-eval} 节）。}
 
 \subsubsection{\bt{Models and Execution Budgets}{模型配置与执行预算}}
 \bi{Analytical agents and extraction use \code{deepseek-flash} (\llmmodel{}) with high reasoning effort, 20 turns, a 60\,s SQL limit (120\,s on TPC-DS and TPC-H), and at most three memory lookups per question. In the eleven-update study (Section~\ref{sec:changes-eval}), all methods run with low effort and a 120\,s SQL limit. Predictive agents use the same model with low reasoning effort.}
@@ -56,8 +56,8 @@
 \bi{Without memory, cumulative tokens grow linearly as agents arrive (Figure~\ref{fig:population}a--c), and single-agent memory reuses definitions only within one agent. \system{} publishes \PpMavraLearns{} definitions per run from verified sessions and reuses definitions on \PpMavraReused\% of questions. Across the population, it uses \PpMavraTotalTokM\,M tokens (\PpMavraTokSaveNone\% less than \emph{No memory} and \PpMavraTokSavePrivate\% less than \emph{Single-agent memory}) at \PpMavraAcc\% accuracy (versus \PpNoneAcc\% and \PpPrivateAcc\%). For agents 9--16, \system{} uses about 10k tokens per question at \PpMavraLateAcc\% accuracy, giving a \PpMavraLateSpeedupNone$\times$ speedup in mean question time over \emph{No memory} (Table~\ref{tab:popcost}).}
 {无记忆下累计 token 随智能体到达线性增长（图~\ref{fig:population}a--c），单智能体记忆则仅限同一智能体内部复用。\system{} 每轮从核验会话中发布 \PpMavraLearns{} 个定义，在 \PpMavraReused\% 的问题上复用定义。整个群体共消耗 \PpMavraTotalTokM\,M token，较无记忆少 \PpMavraTokSaveNone\%，较单智能体记忆少 \PpMavraTokSavePrivate\%，正确率分别为 \PpMavraAcc\%、\PpNoneAcc\% 和 \PpPrivateAcc\%。对第 9--16 个智能体，\system{} 每题约用 10k token，正确率达 \PpMavraLateAcc\%，单题平均耗时较无记忆加速 \PpMavraLateSpeedupNone{} 倍（表~\ref{tab:popcost}）。}
 
-\bi{Equation~\ref{eq:sharing-benefit} explains the cumulative-token trend. A definition's first request pays exploration and publication costs, $c_e+c_\ell$; later requests increasingly pay $c_r$ as the shared definitions cover their questions. The totals include extraction, so the lower marginal token cost reflects amortization of that investment. Private memory repeats acquisition for each arriving agent, limiting this amortization to the agent's own questions.}
-{公式~\ref{eq:sharing-benefit} 解释了累计 token 的变化趋势。每个定义的首次请求支付探索与发布开销 $c_e+c_\ell$；随着共享定义覆盖后续问题，更多请求仅支付复用开销 $c_r$。总 token 已计入提取，因此后期较低的边际开销体现了初始投入的摊销。私有记忆对每个新到达的智能体重复获取知识，只能在该智能体自己的问题之间摊销成本。}
+\bi{In Equation~\ref{eq:sharing-benefit}, initial exploration and publication cost $c_e+c_\ell$; covered requests pay $c_r$. The cumulative totals include extraction, so lower marginal token use reflects amortization across agents as coverage grows. Private memory repeats acquisition for each arriving agent and amortizes it only within that agent's questions.}
+{在公式~\ref{eq:sharing-benefit} 中，初始探索与发布支付 $c_e+c_\ell$，已覆盖请求支付 $c_r$。累计 token 计入提取，故覆盖范围扩大后的较低边际开销体现了跨智能体摊销。私有记忆则对每个新到达的智能体重新获取知识，仅能在其自身问题间摊销。}
 
 \subsection{\bt{Reuse Under Data Updates}{数据更新下的复用}}
 \label{sec:changes-eval}
@@ -109,6 +109,10 @@
 \bi{After the TPC-DS restatement, repairing each shared definition once uses \PpMavraMaintS\,s of database time, versus \PpPrivateMaintS\,s for private copies, amortizing the repair component of $M$ across agents. On 1M-row retail, \OptPublished{} of \OptDefs{} definitions receive equivalent key-range rewrites that cut query time by \OptSaveMin--\OptSaveMax\%, and every published rewrite's paired 95\% confidence interval for mean query-time difference lies below zero. When date re-keying breaks contiguity, all roll back within \PbFallbackMsMax\,ms; all \PbAnswers{} subsequent answers are correct, whereas stale rewrites err by up to \PbStaleErrMax\%.}
 {TPC-DS 数据更正后，每个共享定义仅修复一次，共使用 \PpMavraMaintS\,s 数据库时间，维护私有副本则需 \PpPrivateMaintS\,s，体现了 $M$ 中修复开销的跨智能体摊销。在百万行零售数据上，\OptDefs{} 个定义中有 \OptPublished{} 个获得等价的日期键范围改写，查询耗时降低 \OptSaveMin--\OptSaveMax\%，且每项已发布改写的配对平均耗时差 95\% 置信区间均低于零。日期键重编码破坏前提后，全部改写在 \PbFallbackMsMax\,ms 内回退，随后 \PbAnswers{} 次查询均正确，而过期改写误差最高达 \PbStaleErrMax\%。}
 
+% Queue the full-width results table before the last mechanism paragraph so it
+% can appear alongside predictive reuse without an otherwise empty column.
+\input{tables/relbench}
+
 \subsubsection{\bt{Snapshot-Bound Execution}{快照绑定执行}}
 \label{sec:snapshot-eval}
 \bi{In a matched control with 30 calls and 200k rows, scheduling a breaking write between check and query causes precheck to return five condition-violating results while snapshot-bound execution returns none. Without concurrent writers, bound reads take 6.9\,ms and precheck reads 5.1\,ms (mean of run medians); at 32 writers, the version triggers retain 96.6\% of baseline write throughput.}
@@ -116,10 +120,9 @@
 
 \subsection{\bt{Predictive Feature Reuse}{预测特征复用}}
 \label{sec:relbench-eval}
-\bi{We now examine predictive workloads, where new sessions reuse task programs and entity-level features at later cutoffs (Section~\ref{sec:features}). This evaluates whether the shared layer reduces repeated feature exploration while preserving prediction quality.}
-{下面考察预测负载：新会话在后续截点复用任务程序与实体级特征（第~\ref{sec:features} 节），以评估共享层能否在保持预测质量的同时减少重复的特征探索。}
+\bi{We evaluate whether reusing task programs and entity-level features at later cutoffs (Section~\ref{sec:features}) reduces exploration while preserving predictive quality.}
+{我们评估在后续截点复用任务程序与实体级特征（第~\ref{sec:features} 节）能否减少探索并保持预测质量。}
 
-\input{tables/relbench}
 \input{figures/relbench-cumulative}
 \bi{In the five-cutoff study, all six \system{} task means meet the target quality margins (Table~\ref{tab:relbench}). Relative to \emph{No memory}, reuse-stage tokens fall by \RbStackMavraTokSave\% on \code{rel-stack} and \RbTrialMavraTokSave\% on \code{rel-trial}. Including initial learning and memory operations, total token usage drops by \RbStackMavraTokSaveAll\% and \RbTrialMavraTokSaveAll\%, respectively (Figure~\ref{fig:relbench-cumulative}).}
 {在五截点实验中，\system{} 的六项任务均值全部达到质量门槛（表~\ref{tab:relbench}）。相对无记忆，\code{rel-stack} 和 \code{rel-trial} 复用阶段的 token 分别减少 \RbStackMavraTokSave\% 和 \RbTrialMavraTokSave\%；计入初始学习与记忆操作后，总 token 消耗分别减少 \RbStackMavraTokSaveAll\% 和 \RbTrialMavraTokSaveAll\%（图~\ref{fig:relbench-cumulative}）。}
@@ -128,4 +131,3 @@
 \input{figures/reuse-work}
 \bi{The complementary three-cutoff study breaks down per-session tool calls under the tighter 24-call budget to show where these savings come from (Figure~\ref{fig:reuse-work}): reused programs and definitions replace exploration. On \code{rel-stack} and \code{rel-trial}, \system{} makes \OfStackExplore{} and \OfTrialExplore{} exploration calls per reuse session (schema inspections and SQL probes) versus \OfStackNoneExplore{} and \OfTrialNoneExplore{} without memory, cutting total tokens by \OfStackSaveAll\% and \OfTrialSaveAll\%.}
 {预算更紧凑的三截点补充实验通过拆解单次会话的工具调用，揭示了节省的来源（图~\ref{fig:reuse-work}）：复用任务程序与特征定义取代了重复探查。在 \code{rel-stack} 和 \code{rel-trial} 上，\system{} 每个复用会话平均仅发起 \OfStackExplore{} 和 \OfTrialExplore{} 次探索调用（模式检查与 SQL 探查），无记忆则达 \OfStackNoneExplore{} 和 \OfTrialNoneExplore{} 次，总 token 随之减少 \OfStackSaveAll\% 和 \OfTrialSaveAll\%。}
-\FloatBarrier

@@ -40,15 +40,15 @@
 \subsection{\bt{Problem Formulation and Cost Model}{问题形式化与代价模型}}
 \label{sec:problem-formulation}
 
-\bi{Database-wide sharing changes how acquisition and maintenance costs scale across agents. Consider a simplified analytical workload: $N$ agents each ask $q$ questions over a fixed set of $k$ metrics, each question uses one metric, and every metric is requested at least once. Private memory reuses knowledge only within an agent: if each agent learns all $k$ metrics once, the population incurs $Nk$ learning episodes. With database-wide sharing, the first verified session for each metric publishes a parameterized definition that subsequent requests instantiate with new inputs.}
-{数据库级共享改变了知识获取与维护开销在智能体间的扩展方式。考虑一个简化的分析型负载：$N$ 个智能体围绕固定的 $k$ 个指标各提出 $q$ 个问题，每题涉及一个指标且每个指标至少被请求一次。私有记忆仅在单个智能体内部复用知识：若每个智能体各学习全部 $k$ 个指标一次，整个群体需经历 $Nk$ 次学习。而在数据库级共享下，每个指标的首个核验会话发布一个参数化定义，供后续所有智能体以新参数实例化复用。}
+\bi{Consider $N$ agents each asking $q$ questions over a fixed set of $k$ metrics, with one metric per question and every metric requested at least once. If each agent learns all $k$ metrics, private memory incurs $Nk$ learning episodes. Sharing instead publishes each metric's parameterized definition from its first verified session for all subsequent requests.}
+{考虑 $N$ 个智能体围绕固定的 $k$ 个指标各提出 $q$ 个问题，每题涉及一个指标且每个指标至少被请求一次。若每个智能体均学习全部 $k$ 个指标，私有记忆需经历 $Nk$ 次学习；共享则从每个指标的首个核验会话中发布参数化定义，供全部后续请求复用。}
 
-\bi{For a given cost metric (such as tokens or latency), let $c_e$ and $c_r$ denote the per-question costs of exploration and reuse, $c_\ell$ the overhead of extracting, validating, and publishing one definition, and $M$ the cumulative maintenance overhead across data updates. Without memory, all $Nq$ questions pay the exploration cost, totaling $Nq\,c_e$. Sharing pays $k(c_e+c_\ell)$ to learn and publish the $k$ definitions on their first request, $(Nq-k)c_r$ for subsequent reuses, and $M$ for maintenance across updates, yielding a net saving of}
-{对于给定的开销度量（如 token 或处理耗时），令 $c_e$ 和 $c_r$ 分别表示单题探索与复用开销，$c_\ell$ 表示提取、验证并发布一个定义的额外开销，$M$ 表示跨数据更新产生的累计维护开销。无记忆时，全部 $Nq$ 个问题均支付探索开销，总计 $Nq\,c_e$。共享记忆下，$k$ 个指标首次被请求时支付 $k(c_e+c_\ell)$ 完成获取与发布，其余 $Nq-k$ 个问题支付 $(Nq-k)c_r$ 进行复用，并支付更新维护开销 $M$，净节省开销为：}
+\bi{For a cost measure such as tokens or latency, let $c_e$ and $c_r$ be per-question exploration and reuse costs, $c_\ell$ the extraction, validation, and publication overhead per definition, and $M$ cumulative maintenance across updates. No memory costs $Nq\,c_e$. Sharing costs $k(c_e+c_\ell)$ for initial learning and publication, $(Nq-k)c_r$ for reuse, and $M$ for maintenance, saving}
+{对于 token 或耗时等开销度量，令 $c_e$、$c_r$ 分别为单题探索与复用开销，$c_\ell$ 为每个定义的提取、验证与发布开销，$M$ 为跨更新的累计维护开销。无记忆的代价为 $Nq\,c_e$。共享支付 $k(c_e+c_\ell)$ 完成初始学习与发布、$(Nq-k)c_r$ 用于复用，以及维护开销 $M$，净节省为：}
 \begin{equation}
 \label{eq:sharing-benefit}
 \Delta=(Nq-k)(c_e-c_r)-k\,c_\ell-M.
 \end{equation}
 
-\bi{The first term accumulates the saving $c_e-c_r$ from each reuse, while extraction and publication cost $k\,c_\ell$ is paid once. For a fixed definition set and update/version sequence, shared checks and repairs make $M$ depend on affected conditions and definitions rather than on the number of consumers. With these quantities and mean request costs fixed, savings grow linearly with $N$. Section~\ref{sec:population-eval} examines acquisition and reuse as agents arrive; Section~\ref{sec:maint-cost-eval} isolates shared maintenance.}
-{第一项累积每次复用节省的 $c_e-c_r$，而提取与发布开销 $k\,c_\ell$ 仅支付一次。固定定义集合与更新及版本序列时，共享检查与修复使 $M$ 取决于受影响的条件和定义，而非调用方数量。在这些量及平均请求开销固定时，净节省随 $N$ 线性增长。第~\ref{sec:population-eval} 节考察智能体到达过程中的获取与复用开销，第~\ref{sec:maint-cost-eval} 节则隔离分析共享维护开销。}
+\bi{Each reuse saves $c_e-c_r$, whereas $k\,c_\ell$ is paid once. For fixed definitions and an update/version sequence, shared checks and repairs make $M$ depend on affected conditions and definitions, not consumer count. Holding these quantities and mean request costs fixed, savings grow linearly with $N$. Sections~\ref{sec:population-eval} and~\ref{sec:maint-cost-eval} evaluate acquisition/reuse and shared maintenance, respectively.}
+{每次复用节省 $c_e-c_r$，而 $k\,c_\ell$ 仅支付一次。固定定义与更新及版本序列时，共享检查和修复使 $M$ 取决于受影响的条件和定义，而非调用方数量。固定这些量及平均请求开销后，净节省随 $N$ 线性增长。第~\ref{sec:population-eval}、\ref{sec:maint-cost-eval} 节分别评估获取与复用，以及共享维护。}
