@@ -371,7 +371,7 @@ def app_stats(app):
 # Agent 1, Agent 2 and Agent N are named-metric sessions (the question names the
 # metric without its formula) asking for one month, the best month, and a
 # year-over-year change.
-EXAMPLE_AGENTS = (("Jan", "s094", "M5-L1"), ("Best", "s073", "M5-T2"), ("Yoy", "s064", "M5-T1"))
+EXAMPLE_AGENTS = (("Jan", "s094", "M5-L1"), ("Best", "s073", "M5-T2"), ("Yoy", "s091", "M5-T1"))
 EXAMPLE_SCHEMAS = ("*", "store_sales", "item", "date_dim")   # list tables, then three schemas
 
 

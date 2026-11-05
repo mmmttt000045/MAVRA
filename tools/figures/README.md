@@ -21,7 +21,7 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 
 | 输出名（均有英文与 `-zh` 中文 PDF） | 脚本 | 数据或来源 |
 | --- | --- | --- |
-| `metric-record` | `metric_record.py` | 图 1 动机图，沿用原版样式（LLM 智能体图标、工作台窗口、请求流、共享数据库）：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s064，虚线大框框住全部 20 个会话都重复的第 1–4 步（列表、store_sales/item/date_dim 表结构），第 5 步只显示最终 SQL 的日期条件；脚本逐条核对这三个会话的调用与 SQL，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast） |
+| `metric-record` | `metric_record.py` | 图 1 动机图（通栏，沿用原版样式：LLM 智能体图标、工作台窗口、请求流、共享数据库）。上半：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s091，虚线大框框住全部 20 个会话都重复的第 1–4 步（列表、查看 store_sales/item/date_dim 并写明查到什么），第 5–6 步为各会话自己的 SQL（候选营业额列与作答）；脚本逐条核对调用与 SQL 片段，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast）。下半：这些 SQL 连接 item 时没有当前行条件，ETL 装载商品历史版本后（与图 2 相同的商品 17），一笔销售匹配两行商品而被算两次 |
 | `running-example` | `example.py` | 优化实验的学习、使用与修复轨迹，来源见脚本文件头 |
 | `architecture` | `architecture.py` | 系统示意 |
 | `replay-outcomes` | `replay_outcomes.py` | 验证缓存、TPC-DS 和通用性回放 |
