@@ -12,14 +12,13 @@ This lack of knowledge sharing leads to redundant database exploration, increase
 % Despite serving distinct requests, many queries share underlying database-specific semantics, including metric definitions, aggregation grains, filter predicates, and join paths~\cite{floratou2024nl2sql,robinson2024relbench}.
 % Once derived and verified, such a calculation should be reusable across subsequent agents. Confining it to isolated session logs or agent-private memories instead forces other agents to redundantly probe the database and reconstruct the same logic from scratch. This redundant exploration is both pervasive and costly. 
 }
-{企业级数据库与数据仓库支撑着周期性报表、即席分析与预测建模等核心负载。近年来，基于大语言模型（LLM）的数据智能体正越来越多地在相互独立的会话中为不同用户自动执行这些任务~\cite{lei2025spider2,guo2024dsagent,liu2026agents}。尽管具体请求各异，大量查询在底层往往共享特定于数据库的语义——包括指标定义、聚合粒度（grain）、过滤谓词与连接路径~\cite{floratou2024nl2sql,robinson2024relbench}；例如，月报与季报仅在不同时间窗口上计算相同的营业额指标（图~\ref{fig:metric-record}）。这类计算一旦推导并核验无误，理应供后续智能体直接复用。相反，若将其局限于孤立的会话日志或智能体私有记忆中，其他智能体就不得不重复探查数据库并从头重构相同的计算逻辑。}
+{现代数据库与数据湖支撑着周期性报表、即席分析与预测建模等多种数据分析任务。基于大语言模型（LLM）的数据智能体正越来越多地通过理解用户请求并与底层数据系统交互来自动完成这些任务~\cite{lei2025spider2,guo2024dsagent,liu2026agents}。然而，现有数据智能体通常各自独立运行，任务执行中获得的知识局限于单个会话或智能体私有记忆。因此，不同智能体会反复重新发现相同的数据库特定知识，例如指标定义、聚合逻辑、过滤谓词与连接路径~\cite{floratou2024nl2sql,robinson2024relbench}。这种知识共享的缺失导致冗余的数据库探索、更高的执行开销，以及不一致或不准确的分析结果。}
 
 \input{figures/metric-record}
 
 \begin{example}
-Figure~\ref{fig:metric-record} shows an example of multi-agent workloads.
-For instance, monthly and quarterly reports compute the same revenue metric over different time windows . 
-
+\bi{Figure~\ref{fig:metric-record} shows three memoryless agents asking for electronics revenue in January, in the best month, and in September against a year earlier. All three need the same calculation, yet each starts from scratch: it lists the tables and reads the schemas of \code{store\_sales}, \code{item}, and \code{date\_dim}, although only the date predicate of its final SQL is new. In all \WxSessions\ such sessions in our traces, \WxRepeated\ of \WxLookups\ lookups only repeat what an earlier session found, at \WxTokensK k tokens and \WxSeconds\,s per question on average. Rediscovery is also error-prone: all \WxNamed\ agents given only the metric name summed gross sales (\code{ss\_ext\_sales\_price}) instead of the net paid amount (\code{ss\_net\_paid}) in the business definition; Agent~1 reported \WxJanAnswer\ instead of \WxJanGold.}
+{图~\ref{fig:metric-record} 中的三个无记忆智能体分别询问 1 月、营业额最高的月份以及 9 月与上年同月相比的电子品类营业额。三个问题需要同一个计算，但每个智能体都从零开始：先列出所有表，再查看 \code{store\_sales}、\code{item} 与 \code{date\_dim} 的表结构，而最终 SQL 中真正新的只有日期条件。在我们轨迹中的全部 \WxSessions\ 个此类会话里，\WxLookups\ 次查找有 \WxRepeated\ 次重复了此前会话的查找，每道题平均消耗 \WxTokensK k token、耗时 \WxSeconds\ 秒。重新发现还容易出错：只给出指标名称时，\WxNamed\ 个智能体全部对销售额（\code{ss\_ext\_sales\_price}）求和，而业务定义的营业额是净支付额（\code{ss\_net\_paid}），智能体~1 因此报出 \WxJanAnswer，正确值为 \WxJanGold。}
 \end{example}
 
 \bi{In execution traces of memoryless agents, 93\% of schema inspections, data probes, and validation queries revisit tables and columns already examined for the exact same purpose in prior sessions---each time issuing freshly synthesized SQL. Such exploratory probing dominates reasoning overhead: 57\% of LLM invocations generate intermediate SQL that does not contribute to the final answer. Agent-private memories mitigate repetition only within a single agent: $N$ agents computing the same $k$ metrics still learn them $Nk$ times, whereas a shared memory acquires each metric once.}

@@ -161,6 +161,7 @@ python3 tools/replay-safety-summary.py
 | `gen/generality.tex`、`gen/replay-safety.tex` | `tools/generality-stats.py`、`tools/replay-safety-summary.py`；通用性回放与共同题次审计 |
 | `gen/opt.tex`、`gen/premise.tex`、`gen/sharing.tex` | `tools/opt-stats.py`、`tools/premise-stats.py`、`tools/sharing-stats.py`；优化、前提失效与使用成本，具体输入范围见各脚本和实验清单 |
 | `gen/external.tex` | `tools/external-reuse-stats.py`；`exp/2026-10-14-external-motivation/` |
+| `gen/workload-example.tex` | `tools/workload-stats.py exp/2026-10-01-workload-characterization/deepseek-v4.1-flash --example M5 --tex-out overleaf/gen/workload-example.tex`（需 pglast）；引言 Example 1 与图 1：电子品类营业额的 20 个无记忆会话，图中三个会话为 s094、s073、s064 |
 | `gen/mechanism.tex` | `tools/figures/mechanism.py`；10-29 开发预实验及共享/快照对照，采用范围见上文 |
 | `gen/session-latency.tex`、`gen/lifecycle*.tex` | 补充实验宏，分别由会话耗时和生命周期统计工具生成 |
 | `figures/*.pdf` | 脚本、数据和单图入口见 [绘图说明](../tools/figures/README.md)；架构图由 `tools/figures/build.py architecture` 生成，RelBench 图由 `tools/figures/relbench_cumulative.py` 生成 |

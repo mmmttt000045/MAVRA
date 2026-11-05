@@ -21,7 +21,7 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 
 | 输出名（均有英文与 `-zh` 中文 PDF） | 脚本 | 数据或来源 |
 | --- | --- | --- |
-| `metric-record` | `metric_record.py` | 图 1 动机图：多个智能体通过不同的探针、顺序和回访路径重复发现重叠知识；成束请求与返回、共同表上的重复读取表现冗余负载。轨迹、包与路径数量均为示意 |
+| `metric-record` | `metric_record.py` | 图 1 动机图：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s064，每个都先做同样的 4 次查找（列表、store_sales/item/date_dim 表结构，大框内），只有答案 SQL 的日期条件不同；脚本逐条核对这三个会话的调用与 SQL，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast） |
 | `running-example` | `example.py` | 优化实验的学习、使用与修复轨迹，来源见脚本文件头 |
 | `architecture` | `architecture.py` | 系统示意 |
 | `replay-outcomes` | `replay_outcomes.py` | 验证缓存、TPC-DS 和通用性回放 |
