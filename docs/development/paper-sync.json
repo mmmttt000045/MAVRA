@@ -4,13 +4,11 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (Example 1 and Fig. 1 rebuilt from recorded sessions, plain style; trailing % after \\includegraphics in seven figure floats; main 896a25d + cbdff82)",
-  "previous_head": "4d95007f5c91d335579d43620f62901927b69339",
-  "remote_commit": "61424d853debc02358b5a8dffce8e16b0b282f6c",
+  "direction": "main repo overleaf/ -> paper repo (Fig. 1 back in the original style with the recorded steps; main dabca82)",
+  "previous_head": "61424d853debc02358b5a8dffce8e16b0b282f6c",
+  "remote_commit": "2ecfb88a34bd2cb0f05905ae1f1bb534f3e38866",
   "pending_payload": null,
-  "changed_paths": [
-    "gen/workload-example.tex"
-  ],
+  "changed_paths": [],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
@@ -25,8 +23,8 @@
     "body_note": "conclusion's last 6 lines on page 13 (limit: 12 body pages); Fig. 1 p. 1, Table III p. 4, Fig. 2 p. 5; paper repo HEAD compiled on noctis with its own build.sh all",
     "cited_references": 54
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/61424d853debc02358b5a8dffce8e16b0b282f6c",
-  "remote_tree": "bac4982b949b6fdca8e2d375ef13f0e1854a8335",
-  "source_commit": "cbdff82d32293720fee444f975654eac0a462bee",
-  "sync_authorization": "User asked to push to Overleaf after reviewing the change (2026-11-05: \"推送吧，我上overleaf看看\")."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/2ecfb88a34bd2cb0f05905ae1f1bb534f3e38866",
+  "remote_tree": "46c97dc2b7214b8dbb7104e82bbedce68f804827",
+  "source_commit": "dabca82812c188913c579dec990105199d640534",
+  "sync_authorization": "User asked for Fig. 1 in the earlier style and reviews on Overleaf (2026-11-05: \"我还是希望在之前那个fig上面调整\" after \"推送吧，我上overleaf看看\")."
 }
