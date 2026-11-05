@@ -1,7 +1,7 @@
 \section{\bt{Design of \system}{\system\ 的设计}}
 \label{sec:model}
-\bi{\system{} decouples the specification of a reusable computation from the version-stamped evidence that certifies its validity on a database state. Following Figure~\ref{fig:architecture}, we detail the shared representation, checked publication, derived data conditions, dependency-aware maintenance, snapshot-bound execution, query optimization, and entity-level feature definitions.}
-{\system{} 将“可复用计算的定义”与“证明该计算在特定数据库状态上有效的带版本条件证据”解耦。本节沿图~\ref{fig:architecture} 依次介绍共享表示与编译、受检发布、数据条件与充分性、依赖感知维护、快照绑定执行、共享优化及实体级特征定义。}
+\bi{\system{} decouples the specification of a reusable computation from the version-stamped evidence that certifies its validity on a database state. We use metrics to develop the shared representation, publication checks, data conditions, and maintenance mechanisms, followed by snapshot-bound metric execution and shared query optimization. Section~\ref{sec:features} specifies the entity and temporal bindings needed by predictive features within the same catalog.}
+{\system{} 将“可复用计算的定义”与“证明该计算在特定数据库状态上有效的带版本条件证据”解耦。本节以指标为例展开共享表示、发布检查、数据条件与维护机制，再介绍快照绑定的指标执行及共享查询优化。第~\ref{sec:features} 节进一步说明同一目录中的预测特征所需的实体与时间绑定。}
 
 \subsection{\bt{Shared Representation and Compilation}{共享表示与编译}}
 \label{sec:shared-object}
@@ -11,11 +11,14 @@
 \label{eq:metric-revision}
 m^r=(B,I,C,E,r),
 \end{equation}
-\bi{where $B$ states the business meaning, $I$ specifies the structured relational implementation, $C=C(m^r)$ is the set of executable conditions derived from $I$, $E$ records the learning provenance (source task, verified calculation, dependency versions, and publication checks), and $r$ is the revision number. Subscripts ($m_i^r$) distinguish different metrics, whereas advancing $r$ to $r+1$ ($m^r\to m^{r+1}$) updates one metric's implementation. A feature revision $f^r$ shares this tuple structure with added entity and temporal window fields (Section~\ref{sec:features}).}
-{其中，$B$ 描述业务含义，$I$ 规定结构化关系实现，$C=C(m^r)$ 为从 $I$ 推导的可执行数据条件集，$E$ 记录学习来源（源问题、核验计算、依赖版本及发布检查），$r$ 为修订号。下标（$m_i^r$）区分不同指标，而 $m^r\to m^{r+1}$ 表示同一指标的实现更新。特征修订版 $f^r$ 采用相同结构并扩展实体与时间字段（第~\ref{sec:features} 节）。}
+\bi{where $B$ states the business meaning, $I$ specifies the structured relational implementation, $C=C(m^r)$ is the set of executable conditions derived from $I$, $E$ records the learning provenance (source task, verified calculation, dependency versions, and publication checks), and $r$ is the revision number. Subscripts ($m_i^r$) distinguish different metrics, whereas advancing $r$ to $r+1$ ($m^r\to m^{r+1}$) updates one metric's implementation. A feature revision $f^r$ uses the same tuple, extending $I$ with entity mapping, look-back-window, and fill-value fields (Section~\ref{sec:features}); the catalog and condition-evidence indexing are shared.}
+{其中，$B$ 描述业务含义，$I$ 规定结构化关系实现，$C=C(m^r)$ 为从 $I$ 推导的可执行数据条件集，$E$ 记录学习来源（源问题、核验计算、依赖版本及发布检查），$r$ 为修订号。下标（$m_i^r$）区分不同指标，而 $m^r\to m^{r+1}$ 表示同一指标的实现更新。特征修订版 $f^r$ 采用相同元组，在 $I$ 中扩展实体映射、回看窗口与填充值字段（第~\ref{sec:features} 节），并共用目录及条件证据的索引机制。}
 
 \bi{The implementation $I$ specifies a fact table $F$, an aggregate operator $\mathrm{AGG}$ over measure expression $e$, a business-grain key $K$, a directed join tree $\mathcal J$, definition filters $\varphi$, and a time binding $\tau$. Rooted at $F$, $\mathcal J$ traverses verified many-to-one edges across star and snowflake schemas, recording the join keys, direction, join type (inner or left), and required filters on each edge. The time binding $\tau$ identifies either an event-time column on $F$ or a fact-to-date-dimension join, while $\varphi$ encodes domain selections such as the row type for one business event.}
 {实现 $I$ 指定事实表 $F$、聚合算子 $\mathrm{AGG}$ 及其度量表达式 $e$、业务粒度键 $K$、有向连接树 $\mathcal J$、定义过滤 $\varphi$ 和时间绑定 $\tau$。连接树 $\mathcal J$ 以 $F$ 为根，沿经验证的多对一边覆盖星型与雪花型模式，并记录每条连接的列、方向、内/左连接类型及必需过滤。时间绑定 $\tau$ 指定事件时间列或事实表到日期维表的连接，定义过滤 $\varphi$ 则编码指标固有的业务筛选（如代表单个业务事件的行类型）。}
+
+\bi{Figure~\ref{fig:architecture} shows the serialized form: \code{fact}, \code{measure}, \code{joins}, \code{filters}, and \code{time} encode $I$; \code{guards} records $C$; and \code{examples} and \code{evidence} contribute to $E$. The \code{deps} stamps identify the table versions against which conditions were checked. Conditions specify what must hold; separate outcome entries record the evidence shared at matching versions.}
+{图~\ref{fig:architecture} 展示了序列化形式：\code{fact}、\code{measure}、\code{joins}、\code{filters} 与 \code{time} 编码 $I$，\code{guards} 记录 $C$，\code{examples} 与 \code{evidence} 提供 $E$ 中的来源信息。\code{deps} 标记条件检查所依据的表版本。条件规定必须满足的要求，独立的结果条目则记录可在匹配版本上共享的证据。}
 
 \bi{Let $J_I(D_s)$ denote the rows obtained by applying $\mathcal J$, $\tau$, and $\varphi$ to database state $D_s$. Given a reporting period $p$, compilation emits a read-only SQL query $q=\operatorname{Compile}(I,p)$ with semantics}
 {设 $J_I(D_s)$ 为在数据库状态 $D_s$ 上应用连接树 $\mathcal J$、时间绑定 $\tau$ 与定义过滤 $\varphi$ 后得到的行。给定报告期间 $p$，编译生成只读 SQL 查询 $q=\operatorname{Compile}(I,p)$，其语义为：}
@@ -23,8 +26,8 @@ m^r=(B,I,C,E,r),
 \label{eq:compiled-metric}
 q(D_s)=\mathrm{AGG}_{e}\!\left(\sigma_{\tau\in p}\bigl(J_I(D_s)\bigr)\right),
 \end{equation}
-\bi{where $\sigma_{\tau\in p}$ retains rows whose assigned time falls in $p$. Period differences and rankings compose these aggregates without re-learning $I$, so Agents A and B in Figure~\ref{fig:architecture} share the same implementation and conditions while varying $p$.}
-{其中 $\sigma_{\tau\in p}$ 保留归属时间落在 $p$ 内的行。期间差值与排名可直接组合这些聚合结果而无需重新学习 $I$；因此，图~\ref{fig:architecture} 中的智能体 A 与 B 共享同一实现与条件，仅改变参数 $p$。}
+\bi{where $\sigma_{\tau\in p}$ retains rows whose assigned time falls in $p$. Period differences and rankings compose these aggregates without re-learning $I$: Agents 1, 2, and N in Figure~\ref{fig:architecture} reuse the same implementation and conditions across their periods and comparisons.}
+{其中 $\sigma_{\tau\in p}$ 保留归属时间落在 $p$ 内的行。期间差值与排名可直接组合这些聚合结果而无需重新学习 $I$：图~\ref{fig:architecture} 中的智能体 1、2 与 N 在不同期间及比较方式下复用同一实现与条件。}
 
 \bi{Definitions also reference shared join entries (storing validated join directions, cardinalities, and filters) alongside table descriptions discovered during exploration. Validation outcomes are stored as separate objects because multiple definitions often share the same invariant. This separation enables both forms of sharing in Figure~\ref{fig:architecture}: one definition serves many agents, and one check or join entry serves many definitions.}
 {定义还引用共享连接条目（保存已验证的连接方向、基数与过滤）以及探查所得的表结构说明。检查结果作为独立目录对象存储，因为同一数据条件常被多个不同定义依赖。这一分离支撑了图~\ref{fig:architecture} 中的双重共享：同一定义服务多个智能体，同一检查结果或连接条目服务多个定义。}
@@ -137,7 +140,7 @@ k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr).
 \bi{The contiguity premise in (a) becomes an added condition of $m^{r+1}$, whereas the uniqueness premise in (b) belonged to $m^r$ and is dropped from $m^{r+1}$. \emph{Maintain} checks added optimization assumptions last (Algorithm~\ref{alg:maintenance}); if an added assumption alone fails while all conditions shared with $m^r$ pass, $\operatorname{Recover}$ invalidates $m^{r+1}$ and restores $m^r$ immediately.}
 {（a）中的连续性前提成为优化版本 $m^{r+1}$ 的新增条件，（b）中的唯一性前提则属于前序版本 $m^r$，在新版本中不再保留。维护时将新增优化前提排在最后检查（算法~\ref{alg:maintenance}）：若仅该前提失效而与 $m^r$ 共有的条件均通过，$\operatorname{Recover}$ 分支立即使 $m^{r+1}$ 失效并恢复 $m^r$ 为当前版本。}
 
-\subsection{\bt{Entity-Level Feature Definitions}{实体级特征定义}}
+\subsection{\bt{Feature Reuse through the Shared Layer}{通过共享层复用特征}}
 \label{sec:features}
 \bi{Predictive tasks reuse the same fact tables, measures, grains, joins, and filters, but aggregate relative to per-instance prediction cutoffs rather than global reporting periods. RelBench forecasting tasks specify seed rows $(u_i,t_i)$ containing an entity key $u_i$ and a seed time $t_i$~\cite{robinson2024relbench}. A feature revision $f^r$ extends $I$ with an entity mapping, an optional look-back window $w$, and a fill value. The entity mapping records the target entity table and key, the column reached via a foreign key or verified join, and an optional anchor attribute (such as a seed post's author), allowing the \code{spend\_90d} feature in Figure~\ref{fig:architecture} to be instantiated for any compatible seed table.}
 {预测任务复用相同的事实表、度量、粒度、连接与过滤，但围绕单个预测样本的截止时间而非全局期间聚合。RelBench 预测任务使用包含实体键 $u_i$ 与种子时间 $t_i$ 的种子行 $(u_i,t_i)$~\cite{robinson2024relbench}。特征版本 $f^r$ 在 $I$ 上扩展了实体映射、可选回看窗口 $w$ 与填充值。实体映射记录目标表与主键、经外键或已验证连接到达的关联列，以及可选锚列（如种子帖子的作者），使图~\ref{fig:architecture} 中的 \code{spend\_90d} 特征可针对各任务的种子表实例化。}

@@ -18,6 +18,7 @@ import math
 import os
 import re
 import subprocess
+from pathlib import Path
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -35,6 +36,8 @@ from matplotlib.ft2font import LoadFlags
 from matplotlib.mathtext import MathTextParser
 from matplotlib.path import Path as MplPath
 from reportlab.lib.colors import HexColor
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont as ReportLabTTFont
 from reportlab.pdfgen import canvas as rl_canvas
 
 MM = 72 / 25.4          # points per millimetre
@@ -338,8 +341,14 @@ class Sheet:
 
     def __init__(self, path, width, height):
         self.W, self.H = width, height
+        # A dynamic initial font suppresses ReportLab's unused Helvetica preamble.
+        # All visible figure labels are drawn as vector paths below.
+        initial_font = 'MavraOutlineOnly'
+        if initial_font not in pdfmetrics.getRegisteredFontNames():
+            font_path = Path(mpl.get_data_path()) / 'fonts' / 'ttf' / 'DejaVuSans.ttf'
+            pdfmetrics.registerFont(ReportLabTTFont(initial_font, str(font_path)))
         self.c = rl_canvas.Canvas(str(path), pagesize=(width * MM, height * MM),
-                                  invariant=1, pageCompression=1)
+                                  invariant=1, pageCompression=1, initialFontName=initial_font)
         self.c.setAuthor('')
         self.c.setCreator('')
         self.c.setLineJoin(1)

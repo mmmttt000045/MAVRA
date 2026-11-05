@@ -1,37 +1,16 @@
-"""MAVRA architecture told with one worked example (redesign of 2026-11-02).
+"""Shared-layer architecture, with one analytical lifecycle and a predictive branch.
 
-Agents sit on top, MAVRA in the middle, the database at the bottom. One
-definition, Electronics revenue on TPC-DS, runs through every step:
+Agents 1, 2, and N continue the electronics-revenue questions in Figure 1.
+The numbered steps 1-6 cover publication, reuse, item-history loading, and
+shared maintenance. A separately labeled predictive agent P retrieves the
+spend_90d definition and uses its entity/cutoff compiler. The catalog shares
+definitions, joins, and versioned check outcomes across both workloads.
 
-  1-2  Agent A asks for January electronics revenue; the verified session is
-       extracted and passes the publication checks (revision 0).
-  3    Agent B asks for Q3; lookup matches the stored name and returns the
-       same entry, used with months 7-9.
-  4    B's guards and SQL run on one snapshot.
-  5    An ETL job loads item history (SCD Type 2): key 17 gets a second row
-       and item's ETL batch moves from 0 to 1.
-  6    Agent C asks for October; the item version no longer matches, so the
-       entry is pending. Maintain reruns the item guard, which fails; repair
-       finds i_is_current = 'Y', republishes join:item|store_sales and the
-       metric as revision 1 after the regression test.
-  7    Agent N reuses a feature on the same tables with per-seed cutoffs.
-
-Agents B, C, ..., N stand for the many agents that reuse the store; the
-ellipsis between C and N marks the agents that are not drawn.
-
-Shared knowledge shows what the store holds: one JSON entry per key
-(src/knowledge.rs Entry, Metric, JoinRef; src/checks.rs Check, Outcome).
-The large card is the metric entry with its real field names; the cards on
-its right are entries it references by key: the join entry, and check
-results keyed by the serialized check. Values come from the 10-03 TPC-DS
-fixture run (exp/2026-10-03-shared-memory, entry metric:电子品类门店营业额):
-learning task January, value 273265.4, date_dim key check over 1096 keys.
-English labels translate the fixture's Chinese names. The database label is
-exactly Database in both languages.
-
-Coordinates are millimetres at paper size. Thin arrows are calls, thick
-arrows write shared state, dashed arrows read database state; grey arrows
-inside the store are references by key.
+Values and repair follow the 10-03 TPC-DS fixture (item 17, revision 0 to 1,
+date_dim key check over 1096 keys). The analytical question bindings and
+predictive branch are schematic. Coordinates are millimetres at paper size.
+Thin arrows are calls, thick arrows publish shared state, dashed arrows
+read database state, and grey arrows denote shared object references.
 """
 import sys
 from pathlib import Path
@@ -52,34 +31,37 @@ LEARN, USE, EXEC_C = '#7A68B0', ACC, '#C97A1E'      # path colours: learning, re
 LEARN_PALE = '#EFECF7'
 KEYC = '#8A5A00'                                    # JSON field names
 REF = '#6F6B66'                                     # references by key inside the store
-OCHRE = '#9A6500'
+OCHRE = '#9A6500'                                   # changed data (item history)
+MAINT_C = '#13897B'                                 # path colour: data change and maintenance (5-6)
+MINI = .95                                          # radius of an inline step reference
 THIN, THICK = .22, .5
 ROW = 2.42                                          # JSON line pitch
 
 LABELS = {
     'en': {
-        'agent': 'Agent',
+        'agent': 'Agent', 'predictive': 'Predictive agent P', 'compile_feature': 'Feature compile', 'window_short': '90 days',
         'ask': 'ask:',
-        'q': ('Jan. electronics revenue?', 'Q3 electronics revenue?',
-              'Oct. electronics revenue?', 'will a customer churn?'),
-        'p': ('explores, answer verified', 'reuses it for months 7–9', 'reuses it after repair',
+        'q': ('Jan. electronics revenue?', 'highest-revenue month?',
+              'Sep. revenue vs. last year?', 'will a customer churn?'),
+        'p': ('explores, answer verified', 'reuses monthly aggregates', 'reuses it after repair',
               'reuses a customer feature'),
-        'when': ('first session', 'before the update', 'after the update', ''),
+        'when': ('first session', ('before', 5), ('after', 5), ''),
         'middleware': 'MAVRA',
         'publish': 'Publish', 'learner': 'Learning', 'learner2': 'agent', 'extracts': 'drafts JSON',
         'checks': 'Checks', 'check_rows': ('fields, joins', 'grain key', 'read-only SQL', 'same answer'),
-        'shared': 'Shared knowledge', 'shared_note': 'one JSON entry per key',
-        'm_key': '`metric:Electronics revenue`', 'rev1': r'revision 0 $\rightarrow$ 1 · Valid',
-        'groups': ('what it computes', 'learned from Agent A', 'reuse conditions and dependencies'),
+        'shared': 'Shared knowledge', 'shared_note': 'definitions, joins, check outcomes',
+        'm_key': '`metric:Electronics revenue`', 'rev01': ('rev 0', 2, r'$\rightarrow$ 1', 6),
+        'groups': ('Computation $I$', 'Learning provenance $E$', 'Conditions $C$ and dependencies'),
         'filter': ('`{"item": "`', '''`i_category = 'Electronics'`''', '`"}`'),
         'stub1': '`metric:Store revenue`', 'stub2': '`feature:customer:spend_90d`',
-        'meta1': 'another metric', 'meta2': 'a feature', 'more': 'more entries', 'more_agents': 'more agents', 'shared3': 'one result, used by 3 definitions', 'rev1j': r'revision 0 $\rightarrow$ 1',
-        'lookup': 'Lookup', 'lookup_note': 'by name, versions', 'l_rows': ('valid', 'item changed', 'feature valid'),
+        'meta1': 'another metric', 'meta2': 'a feature', 'more': 'more entries', 'more_agents': 'more agents', 'shared3': 'one result, used by 3 definitions',
+        'lookup': 'Lookup', 'lookup_note': 'by name, versions', 'l_rows': ('valid', ('item changed', 5), 'feature valid'),
         'maint': 'Maintain', 'maint_note': 'rerun its checks', 'item_key': 'item key unique?',
         'repeats': 'key 17 repeats', 'repair': 'Repair',
-        'regression': 'regression test', 'to_rev1': 'publish revision 1', 'else': 'else invalidate',
+        'regression': 'regression test', 'to_rev1': 'publish rev 1', 'back': 'rev 1', 'else': 'else invalidate',
         'pending': 'pending',
         'exec': 'Check and', 'exec2': 'run', 'exec_note': 'one snapshot', 'sketch': 'SQL sketch',
+        'after6': ('after', 6), 'batch': (5, r'batch 0 $\rightarrow$ 1'),
         'exec_rows': ('checks pass', 'run SQL'), 'feature': '`spend_90d`', 'cutoff': 'cutoff',
         'window': '90-day window', 'cat': 'Electronics',
         'db': 'Database', 'db_note': 'table versions', 'db_note2': 'change on writes',
@@ -87,46 +69,50 @@ LABELS = {
         'snapshot': 'snapshot', 'etl': 'ETL job', 'etl_note': 'loads item history',
     },
     'zh': {
-        'agent': '智能体',
+        'agent': '智能体', 'predictive': '预测智能体 P', 'compile_feature': '特征编译', 'window_short': '90 天',
         'ask': '问：',
-        'q': ('1 月电子品类营业额？', 'Q3 电子品类营业额？', '10 月电子品类营业额？', '客户会流失吗？'),
-        'p': ('自行探索，答案经核对', '复用该条目，取 7–9 月', '修复后复用该条目', '复用客户特征'),
-        'when': ('首次会话', '更新之前', '更新之后', ''),
+        'q': ('1 月电子品类营业额？', '电子品类营业额最高月？', '9 月营业额同比去年？', '客户会流失吗？'),
+        'p': ('自行探索，答案经核对', '复用月度聚合并排序', '修复后复用该条目', '复用客户特征'),
+        'when': ('首次会话', (5, '之前'), (5, '之后'), ''),
         'middleware': 'MAVRA',
         'publish': '发布', 'learner': '学习', 'learner2': '智能体', 'extracts': '起草 JSON',
         'checks': '发布前检查', 'check_rows': ('字段与连接', '粒度键', '只读 SQL', '答案一致'),
-        'shared': '共享知识', 'shared_note': '每个键一条 JSON 条目',
-        'm_key': '`metric:电子品类营业额`', 'rev1': r'修订 0 $\rightarrow$ 1 · 有效',
-        'groups': ('计算什么', '从智能体 A 学来', '复用条件与依赖'),
+        'shared': '共享知识', 'shared_note': '共享定义、连接与检查结果',
+        'm_key': '`metric:电子品类营业额`', 'rev01': ('修订 0', 2, r'$\rightarrow$ 1', 6),
+        'groups': ('计算 $I$', '学习来源 $E$', '条件 $C$ 与依赖版本'),
         'filter': ('`{"item": "`', '''`i_category = '电子'`''', '`"}`'),
         'stub1': '`metric:门店营业额`', 'stub2': '`feature:customer:spend_90d`',
-        'meta1': '另一个指标', 'meta2': '一个特征', 'more': '更多条目', 'more_agents': '更多智能体', 'shared3': '一个结果，三个定义共用', 'rev1j': r'修订 0 $\rightarrow$ 1',
-        'lookup': '查找', 'lookup_note': '按名称，比较版本', 'l_rows': ('有效', 'item 已变化', '特征有效'),
+        'meta1': '另一个指标', 'meta2': '一个特征', 'more': '更多条目', 'more_agents': '更多智能体', 'shared3': '一个结果，三个定义共用',
+        'lookup': '查找', 'lookup_note': '按名称，比较版本', 'l_rows': ('有效', ('item 已变', 5), '特征有效'),
         'maint': '维护', 'maint_note': '重跑它的检查', 'item_key': 'item 键唯一？',
         'repeats': '键 17 重复', 'repair': '自动修复',
-        'regression': '回归测试', 'to_rev1': '发布修订 1', 'else': '否则置为失效',
+        'regression': '回归测试', 'to_rev1': '发布修订 1', 'back': '修订 1', 'else': '否则置为失效',
         'pending': '待校验',
         'exec': '校验并', 'exec2': '执行', 'exec_note': '同一快照', 'sketch': 'SQL 示意',
+        'after6': (6, '之后'), 'batch': (5, r'batch 0 $\rightarrow$ 1'),
         'exec_rows': ('检查通过', '执行 SQL'), 'feature': '`spend_90d`', 'cutoff': '截止时间',
         'window': '90 天窗口', 'cat': '电子',
-        'db': 'Database', 'db_note': '表版本随', 'db_note2': '写入改变',
+        'db': '数据库', 'db_note': '表版本随', 'db_note2': '写入改变',
         'rows_note': ('当前行', '新增历史行'),
-        'snapshot': '快照', 'etl': 'ETL 作业', 'etl_note': 'item 历史版本',
+        'snapshot': '快照', 'etl': 'ETL 作业', 'etl_note': '载入 item 历史',
     },
 }
 
 # Boxes (x, y, w, h).
 AG_Y, AG_H = 2.4, 8.6
-AG_X = (2.5, 62.0, 96.4, 143.8)
+AG_X = (2.5, 54.0, 96.4, 143.8)
 AG_W = 32.0
-FIELD_BOX = (1.5, 13.3, 175.8, 50.3)
+FIELD_BOX = (1.5, 13.3, 176.0, 50.3)
 PUB = (2.5, 16.9, 19.6, 45.9)
-STORE = (25.0, 14.8, 105.6, 47.8)
-LOOK = (133.2, 16.0, 21.6, 15.4)
-MAINT = (133.2, 34.2, 21.6, 28.4)
-EXEC = (157.4, 16.0, 19.6, 46.6)
-SLAB = (25.0, 66.0, 151.8, 10.2)
+STORE = (25.0, 14.8, 105.2, 47.8)
+LOOK = (132.4, 16.0, 20.8, 14.8)
+MAINT = (132.4, 34.2, 20.8, 28.4)
+EXEC = (156.0, 16.0, 19.0, 34.5)
+FEAT = (156.0, 51.8, 19.0, 10.8)
+SLAB = (25.0, 66.0, 150.0, 10.2)
 ETL = (2.5, 66.4, 19.6, 9.4)
+# Step colours; an inline reference to step n uses the same colour as its badge.
+STEP_C = {1: LEARN, 2: LEARN, 3: USE, 4: EXEC_C, 5: MAINT_C, 6: MAINT_C}
 
 
 def mid(box):
@@ -173,6 +159,28 @@ def draw(s, lang):
         s.circle(x, y, 1.5, color)
         text(x, baseline(y, STEP), str(n), STEP, WHITE, 'bold', 'center')
 
+    def rich(x, yc, tokens, size, color, style='sans', align='left', width=None):
+        """A label whose integer tokens are inline references to steps: small
+        circled numbers in the colour of that step's badge. yc is the visual
+        centre of the line. Returns the width drawn."""
+        tokens = tokens if isinstance(tokens, tuple) else (tokens,)
+        gap = .4
+
+        def size_of(t):
+            return 2 * MINI if isinstance(t, int) else measure(t, size, style)
+        total = sum(size_of(t) for t in tokens) + gap * (len(tokens) - 1)
+        if width is not None:
+            assert total <= width, f'{tokens!r} is {total:.1f} mm wide; {width:.1f} mm available'
+        xx = x - total if align == 'right' else x
+        for t in tokens:
+            if isinstance(t, int):
+                s.circle(xx + MINI, yc, MINI, STEP_C[t])
+                text(xx + MINI, baseline(yc, 4.9), str(t), 4.9, WHITE, 'bold', 'center')
+            else:
+                text(xx, baseline(yc, size), t, size, color, style)
+            xx += size_of(t) + gap
+        return total
+
     def sparkle(x, y, r, c):
         k = .28 * r
         s.poly([(x, y - r), (x + k, y - k), (x + r, y), (x + k, y + k), (x, y + r),
@@ -192,7 +200,10 @@ def draw(s, lang):
         h = 3.3 + sum(group_h if f == '#' else row for f, _, _ in rows) + (.9 if rows else 0)
         rect(x, y, w, h, fill, edge, .16, r=.45)
         rect(x + .15, y + .15, w - .3, 3.0, head, None, r=.35)
-        mw = text(x + w - .9, y + 2.3, meta, 5.7, meta_c, 'sans', 'right') if meta else 0
+        if isinstance(meta, tuple):
+            mw = rich(x + w - .9, y + 2.3 - .34 * 5.7 * PT, meta, 5.7, meta_c, align='right')
+        else:
+            mw = text(x + w - .9, y + 2.3, meta, 5.7, meta_c, 'sans', 'right') if meta else 0
         text(x + .9, y + 2.3, key, fs, INK, width=w - 2.4 - mw)
         centres, yy = [], y + 3.5
         for field, value, color in rows:
@@ -224,31 +235,31 @@ def draw(s, lang):
     text(4.3, 15.65, L['middleware'], NOTE, ACC_DK, 'bold')
 
     # Agents and their questions -----------------------------------------
-    for k, (x, letter) in enumerate(zip(AG_X, 'ABCN')):
+    for k, (x, letter) in enumerate(zip(AG_X, ('1', '2', 'N', 'P'))):
         node((x, AG_Y, AG_W, AG_H))
         person(x + 2.3, AG_Y + 1.45)
-        text(x + 4.6, AG_Y + 3.0, f"{L['agent']} {letter}", BODY, LEARN if letter == 'A' else INK,
+        text(x + 4.6, AG_Y + 3.0, (L['predictive'] if letter == 'P' else f"{L['agent']} {letter}"), BODY, LEARN if letter == '1' else INK,
              'bold')
         if L['when'][k]:
-            text(x + AG_W - 1.0, AG_Y + 3.0, L['when'][k], SMALL - .6,
-                 OCHRE if k == 2 else MUTED, 'bold' if k == 2 else 'sans', align='right')
+            rich(x + AG_W - 1.0, AG_Y + 3.0 - .34 * (SMALL - .6) * PT, L['when'][k], SMALL - .6,
+                 MAINT_C if k == 2 else (USE if k == 1 else MUTED),
+                 'bold' if k in (1, 2) else 'sans', align='right')
         aw_ = text(x + 1.2, AG_Y + 5.7, L['ask'], SMALL, ACC_DK, 'bold')
         text(x + 1.2 + aw_ + (.8 if lang == 'en' else 0), AG_Y + 5.7, L['q'][k], SMALL, INK,
              width=AG_W - 2.2 - aw_)
-        text(x + 1.2, AG_Y + 7.95, L['p'][k], SMALL - .4, LEARN if letter == 'A' else ACC_DK,
+        text(x + 1.2, AG_Y + 7.95, L['p'][k], SMALL - .4,
+             LEARN if letter == '1' else (MAINT_C if letter == 'N' else ACC_DK),
              width=AG_W - 2.0)
 
-    # More agents than can be drawn: B, C, ..., N.
-    dots_x = (AG_X[2] + AG_W + 1.4 + AG_X[3]) / 2
+    # The ellipsis belongs to the analytical consumers, before Agent N.
+    dots_x = (AG_X[1] + AG_W + AG_X[2]) / 2
     for k in (-1, 0, 1):
-        s.circle(dots_x + 2.0 * k, AG_Y + AG_H / 2 - .6, .45, EDGE)
-    text(dots_x, AG_Y + AG_H / 2 + 2.6, L['more_agents'], SMALL - .6, MUTED, align='center',
-         width=AG_X[3] - AG_X[2] - AG_W - 2.2)
+        s.circle(dots_x + 1.6 * k, AG_Y + AG_H / 2, .35, EDGE)
 
     # Step 1: A's verified session enters Publish.
-    a1 = PUB[0] + PUB[2] - 4.0
+    a1 = PUB[0] + PUB[2] - 4.4
     route([(a1, AG_Y + AG_H), (a1, PUB[1])], LEARN, THIN)
-    step(a1 - 3.0, 14.4, 1, LEARN)
+    step(a1 + 2.6, 14.4, 1, LEARN)
 
     # Publish -------------------------------------------------------------
     px, py, pw, ph = PUB
@@ -289,7 +300,7 @@ def draw(s, lang):
         ('time', '`{"dim": "date_dim", ...}`', INK),
         ('joins', '`[{"key": "join:item|store_sales",`', INK),
         (None, '`"revision": 1}]`', ACC_DK),
-        ('filters', [(L['filter'][0], INK, 0), (L['filter'][1], '#2F7A70', .3),
+        ('filters', [(L['filter'][0], INK, 0), (L['filter'][1], INK, .3),
                      (L['filter'][2], INK, 0)], INK),
         ('*', '`...`', MUTED),
         ('#', g[1], LEARN),
@@ -300,13 +311,13 @@ def draw(s, lang):
         ('deps', '`{"item": {"batch": 1, ...}, ...}`', ACC_DK),
         ('*', '`...`', MUTED),
     ]
-    mc, mbottom = entry(mx0, my0, mw0, L['m_key'], L['rev1'], mrows, 10.8,
+    mc, mbottom = entry(mx0, my0, mw0, L['m_key'], L['rev01'], mrows, 10.8,
                         head=ACC_PALE, edge=ACC, meta_c=ACC_DK, fs=6.2, row=2.75)
     y_time, y_joins = mc[3], mc[4]
 
     # Entries the metric references by key.
-    rx = mx0 + mw0 + 4.0
-    rw = sx + sw_ - 1.3 - rx
+    rx = mx0 + mw0 + 3.5
+    rw = sx + sw_ - 1.8 - rx
     # Other entries (collapsed to their keys), with an ellipsis for the rest.
     other = ((L['stub1'], L['meta1']), (L['stub2'], L['meta2']), ('`...`', L['more']))
     op = 2.55
@@ -320,127 +331,159 @@ def draw(s, lang):
         text(rx + .9, baseline(yc, JS), key, JS, MUTED if k == 2 else INK, width=rw - 2.6 - mw_)
         other_y.append(yc)
     b2 = my0 + .5 + op * len(other) + .3
-    k2c, k2b = entry(rx, b2 + 1.0, rw, '`check:KeyUnique(date_dim.d_date_sk)`', None, [
+    k2c, k2b = entry(rx, b2 + .9, rw, '`check:KeyUnique(date_dim.d_date_sk)`', None, [
         ('#', L['shared3'], ACC_DK),
         ('outcome', '`{"pass": true, "n_keys": 1096}`', INK),
-    ], 10.5, row=2.3)
-    jc, jb = entry(rx, k2b + 1.0, rw, '`join:item|store_sales`', L['rev1j'], [
-        ('on', '`[["ss_item_sk", "i_item_sk"]]`', INK),
-        ('filters', [('`{"item": "`', INK, 0), ("`i_is_current = 'Y'`", ACC_DK, .3),
-                     ('`"}`', INK, 0)], ACC_DK),
-        ('*', [('`"guards"`', KEYC, 0), ('`: [{"type": "KeyUnique"}], ...`', INK, 0)], INK),
-    ], 10.5, row=2.3)
-    k1c, k1b = entry(rx, jb + 1.0, rw, '`check:KeyUnique(item.i_item_sk)`', None, [
+    ], 10.0, row=2.3)
+    # The item key check sits above the join entry, so the join entry (which
+    # repair rewrites) lines up with Maintain's "publish rev 1" row.
+    k1c, k1b = entry(rx, k2b + .9, rw, '`check:KeyUnique(item.i_item_sk)`', None, [
         ('filter', [('`"`', INK, 0), ("`i_is_current = 'Y'`", ACC_DK, .3), ('`"`', INK, 0)],
          ACC_DK),
         ('outcome', '`{"pass": true, "n_keys": ...}`', INK),
         ('*', [('`"deps"`', KEYC, 0), ('`: {"item": {"batch": 1}}, ...`', INK, 0)], INK),
-    ], 10.5, row=2.3)
+    ], 10.0, row=2.3)
+    jtop = k1b + 1.4
+    jc, jb = entry(rx, jtop, rw, '`join:item|store_sales`', L['rev01'], [
+        ('on', '`[["ss_item_sk", "i_item_sk"]]`', INK),
+        ('filters', [('`{"item": "`', INK, 0), ("`i_is_current = 'Y'`", ACC_DK, .3),
+                     ('`"}`', INK, 0)], ACC_DK),
+        ('*', [('`"guards"`', KEYC, 0), ('`: [{"type": "KeyUnique"}], ...`', INK, 0)], INK),
+    ], 10.0, row=2.3)
+    assert jb <= sy + sh - .8, jb
 
     # References by key: the metric -> join entry -> check result; the two
     # other definitions reach the same date_dim check result.
-    gap = mx0 + mw0 + 1.6
+    gap = mx0 + mw0 + 1.5
     route([(mx0 + mw0, y_time), (gap, y_time), (gap, k2c[0]), (rx, k2c[0])], REF, .2,
-          length=.8, radius=.5)
-    route([(mx0 + mw0, y_joins), (gap + 1.0, y_joins), (gap + 1.0, jc[0] - 3.0), (rx, jc[0] - 3.0)],
-          REF, .2, length=.8, radius=.5)
+          length=.75, radius=.45)
+    route([(mx0 + mw0, y_joins), (gap + .9, y_joins), (gap + .9, jtop + 1.65), (rx, jtop + 1.65)],
+          REF, .2, length=.75, radius=.45)
     for yy in other_y[:2]:
-        route([(rx + rw, yy), (rx + rw + .7, yy), (rx + rw + .7, k2c[0]), (rx + rw, k2c[0])],
-              REF, .2, length=.7, radius=.3)
+        route([(rx + rw, yy), (rx + rw + 1.15, yy), (rx + rw + 1.15, k2c[0]), (rx + rw, k2c[0])],
+              REF, .2, length=.65, radius=.35)
     gx = rx + rw - 5.0
-    route([(gx, jb - .2), (gx, jb + 1.0)], REF, .2, length=.7)
+    route([(gx, jtop), (gx, k1b)], REF, .2, length=.65)
 
     # Step 2: Publish writes the entry.
     route([(px + pw, my0 + 1.6), (sx, my0 + 1.6)], LEARN, THICK, length=1.0)
-    step((px + pw + sx) / 2, my0 + 5.0, 2, LEARN)
+    step((px + pw + sx) / 2, my0 + 4.4, 2, LEARN)
 
-    # Later agents reach Lookup and Check and run through one bus ------------
-    bus_y = 12.3
-    centres = [x + AG_W / 2 for x in AG_X[1:]]
-    look_c, exec_c = mid(LOOK)[0], mid(EXEC)[0]
-    s.line(centres[0], bus_y, centres[-1], bus_y, USE, .3)
-    for xc in centres:
-        s.line(xc, AG_Y + AG_H, xc, bus_y, USE, .3)
-    route([(look_c, bus_y), (look_c, LOOK[1])], USE, THIN, length=1.0)
-    step(look_c - 3.0, 14.2, 3, USE)
-    run_y = LOOK[1] + 3.0
+    # Consumer paths into Lookup. Agent 2 (step 3, before step 5) and Agent N
+    # (after step 5, in the maintenance colour) do not share a bus.
+    c2_x = AG_X[1] + AG_W / 2
+    cn_x = AG_X[2] + AG_W / 2
+    l2_x, ln_x, lp_x = LOOK[0] + 4.2, LOOK[0] + LOOK[2] / 2, LOOK[0] + LOOK[2] - 3.2
+    route([(c2_x, AG_Y + AG_H), (c2_x, 12.6), (l2_x, 12.6), (l2_x, LOOK[1])],
+          USE, THIN, length=.9, radius=.4)
+    step(l2_x - 2.8, 14.3, 3, USE)
+    route([(cn_x, AG_Y + AG_H), (cn_x, 11.75), (ln_x, 11.75), (ln_x, LOOK[1])],
+          MAINT_C, THIN, length=.9, radius=.4)
+    route([(lp_x, AG_Y + AG_H), (lp_x, LOOK[1])], USE, THIN, length=.9)
+    run_y = LOOK[1] + 2.4
     route([(LOOK[0] + LOOK[2], run_y), (EXEC[0], run_y)], EXEC_C, THIN, length=1.0)
     step((LOOK[0] + LOOK[2] + EXEC[0]) / 2, 14.4, 4, EXEC_C)
 
     # Lookup ----------------------------------------------------------------
+    # Rows: 2 and P are valid; N, the bottom row, goes down to Maintain and
+    # comes back up once revision 1 exists.
     lx, ly, lw, lh = LOOK
     box(LOOK)
-    text(lx + 1.3, ly + 3.4, L['lookup'], TITLE, INK, 'bold')
-    text(lx + 1.3, ly + 6.0, L['lookup_note'], SMALL - .5, MUTED, width=lw - 2.4)
-    for k, (letter, state) in enumerate((('B', 'ok'), ('C', 'wait'), ('N', 'ok'))):
-        yc = ly + 7.9 + 2.75 * k
-        pill(lx + 1.0, yc, letter, USE)
-        text(lx + 4.6, baseline(yc, SMALL - .3), L['l_rows'][k], SMALL - .3,
-             INK if state == 'ok' else OCHRE, width=lw - 5.6)
-        if state == 'ok':
+    text(lx + 1.3, ly + 3.3, L['lookup'], TITLE, INK, 'bold')
+    text(lx + 1.3, ly + 5.8, L['lookup_note'], SMALL - .5, MUTED, width=lw - 2.4)
+    row_y = {}
+    for k, letter in enumerate(('2', 'P', 'N')):
+        yc = ly + 7.6 + 2.65 * k
+        row_y[letter] = yc
+        label = L['l_rows'][{'2': 0, 'N': 1, 'P': 2}[letter]]
+        pill(lx + 1.0, yc, letter, MAINT_C if letter == 'N' else USE)
+        rich(lx + 4.6, yc, label, SMALL - .3, MAINT_C if letter == 'N' else INK,
+             width=lw - 5.6)
+        if letter != 'N':
             mark(lx + lw - 1.8, yc, 'ok')
-    route([(sx + sw_, ly + 8.0), (lx, ly + 8.0)], USE, THIN, length=1.0)
+    assert row_y['N'] + 1.15 < ly + lh
+    route([(sx + sw_, row_y['2']), (lx, row_y['2'])], USE, THIN, length=1.0)
 
-    # Maintain and repair ----------------------------------------------------
+    # Maintain and repair (step 6) -------------------------------------------
     qx, qy, qw, qh = MAINT
-    route([(lx + lw / 2, ly + lh), (lx + lw / 2, qy)], USE, THIN, length=1.0)
-    text(lx + lw / 2 + 1.0, baseline((ly + lh + qy) / 2, SMALL - .5), L['pending'], SMALL - .5,
-         OCHRE, 'bold')
+    gap_y = (ly + lh + qy) / 2
+    down_x, up_x = lx + 2.5, lx + lw - 1.8
+    route([(down_x, ly + lh), (down_x, qy)], MAINT_C, THIN, length=.9)
+    text(down_x + .9, baseline(gap_y, SMALL - .6), L['pending'], SMALL - .6, MAINT_C, 'bold')
+    route([(up_x, qy), (up_x, ly + lh)], MAINT_C, THIN, length=.9)
+    text(up_x - .9, baseline(gap_y, SMALL - .6), L['back'], SMALL - .6, MAINT_C, 'bold',
+         align='right')
     box(MAINT)
     text(qx + 1.3, qy + 3.5, L['maint'], TITLE, INK, 'bold')
-    step(qx + qw - 2.2, qy + 2.7, 6, USE)
-    text(qx + 1.3, qy + 6.4, L['maint_note'], SMALL - .3, MUTED, width=qw - 2.4)
-    text(qx + 1.3, qy + 9.3, L['item_key'], SMALL - .3, INK, width=qw - 4.4)
-    mark(qx + qw - 1.8, qy + 8.6, 'fail')
-    text(qx + 1.3, qy + 11.8, L['repeats'], SMALL - .3, RED, width=qw - 2.4)
-    s.line(qx + 1.0, qy + 13.3, qx + qw - 1.0, qy + 13.3, RULE, .16)
-    text(qx + 1.3, qy + 16.1, L['repair'], NOTE, INK, 'bold', width=qw - 2.4)
-    text(qx + 1.3, qy + 18.8, "`i_is_current='Y'`", JS, ACC_DK, width=qw - 2.4)
-    mark(qx + 2.0, qy + 20.8, 'ok')
-    text(qx + 3.4, qy + 21.5, L['regression'], SMALL - .5, ACC_DK, width=qw - 4.0)
-    text(qx + 1.3, qy + 24.2, L['to_rev1'], SMALL - .3, ACC_DK, 'bold', width=qw - 2.4)
-    text(qx + 1.3, qy + 26.7, L['else'], SMALL - .5, MUTED, width=qw - 2.4)
-    # Repair writes the join entry and the metric back at revision 1.
-    route([(qx, jc[1]), (sx + sw_, jc[1])], USE, THICK, length=1.0)
+    step(qx + qw - 2.2, qy + 2.7, 6, MAINT_C)
+    text(qx + 1.3, qy + 6.2, L['maint_note'], SMALL - .3, MUTED, width=qw - 2.4)
+    text(qx + 1.3, qy + 9.0, L['item_key'], SMALL - .3, INK, width=qw - 4.4)
+    mark(qx + qw - 1.8, qy + 8.3, 'fail')
+    text(qx + 1.3, qy + 11.4, L['repeats'], SMALL - .3, RED, width=qw - 2.4)
+    # The repair block is placed so "publish rev 1" sits on the join entry's
+    # filters row, which the thick write-back arrow reaches in a straight line.
+    y_jf = jc[1]
+    pb = baseline(y_jf, SMALL - .3)
+    rule_y = pb - 10.9
+    assert rule_y > qy + 12.4, rule_y
+    s.line(qx + 1.0, rule_y, qx + qw - 1.0, rule_y, RULE, .16)
+    text(qx + 1.3, pb - 8.1, L['repair'], NOTE, INK, 'bold', width=qw - 2.4)
+    text(qx + 1.3, pb - 5.4, "`i_is_current='Y'`", JS, ACC_DK, width=qw - 2.4)
+    mark(qx + 2.0, pb - 3.4, 'ok')
+    text(qx + 3.4, pb - 2.7, L['regression'], SMALL - .5, ACC_DK, width=qw - 4.0)
+    text(qx + 1.3, pb, L['to_rev1'], SMALL - .3, ACC_DK, 'bold', width=qw - 2.4)
+    text(qx + 1.3, pb + 2.5, L['else'], SMALL - .5, MUTED, width=qw - 2.4)
+    assert pb + 2.5 < qy + qh - .6
+    # Repair publishes revision 1: the join entry (and the metric that references it).
+    route([(qx, y_jf), (sx + sw_, y_jf)], MAINT_C, THICK, length=1.0)
 
     # Check and run ------------------------------------------------------------
     ex, ey, ew, eh = EXEC
     box(EXEC)
-    text(ex + 1.3, ey + 3.4, L['exec'], TITLE, INK, 'bold', width=ew - 2.4)
-    text(ex + 1.3, ey + 6.4, L['exec2'], TITLE, INK, 'bold', width=ew - 2.4)
-    text(ex + 1.3, ey + 9.2, L['exec_note'], SMALL - .3, EXEC_C, 'bold', width=ew - 2.4)
-    pill(ex + 1.0, ey + 11.9, 'B', USE)
-    text(ex + 4.6, baseline(ey + 11.9, SMALL - .5), L['sketch'], SMALL - .5, MUTED, width=ew - 5.6)
-    cx_, cy_, cw_ = ex + 1.0, ey + 13.6, ew - 2.0
-    code = ('SUM(ss_net_paid)', 'WHERE i_category', f"= '{L['cat']}'", 'AND d_moy IN', '(7, 8, 9) ...')
-    rect(cx_, cy_, cw_, 1.4 + 2.35 * len(code), FACE, None, r=.4)
+    text(ex + 1.2, ey + 3.1, L['exec'], TITLE, INK, 'bold', width=ew - 2.2)
+    text(ex + 1.2, ey + 5.7, L['exec2'], TITLE, INK, 'bold', width=ew - 2.2)
+    text(ex + 1.2, ey + 8.1, L['exec_note'], SMALL - .3, EXEC_C, 'bold', width=ew - 2.2)
+    pill(ex + 1.0, ey + 10.6, '2', USE)
+    text(ex + 4.5, baseline(ey + 10.6, SMALL - .5), L['sketch'], SMALL - .5, MUTED, width=ew - 5.3)
+    cx_, cy_, cw_ = ex + 1.0, ey + 12.1, ew - 2.0
+    code = ('SUM(ss_net_paid)', 'WHERE i_category', f"= '{L['cat']}'", 'GROUP BY d_moy', '... ORDER BY ...')
+    rect(cx_, cy_, cw_, 1.1 + 2.15 * len(code), FACE, None, r=.4)
     for k, line in enumerate(code):
-        text(cx_ + .6, cy_ + 2.4 + 2.35 * k, f'`{line}`', JS - .2, INK, width=cw_ - 1.0)
-    ry = cy_ + 1.4 + 2.35 * len(code) + 2.8
+        text(cx_ + .45, cy_ + 2.1 + 2.15 * k, f'`{line}`', JS - .2, INK, width=cw_ - .7)
+    yc_ag = ey + 26.2
+    pill(ex + 1.0, yc_ag, '2', USE)
+    text(ex + 4.3, baseline(yc_ag, SMALL - .6), '·', SMALL - .6, MUTED)
+    pill(ex + 5.1, yc_ag, 'N', MAINT_C)
+    rich(ex + 8.5, yc_ag, L['after6'], SMALL - .6, MAINT_C, width=ew - 9.0)
     for k, label in enumerate(L['exec_rows']):
-        yy = ry + 2.7 * k
-        mark(ex + 2.0, yy - .7, 'ok', EXEC_C)
-        text(ex + 3.3, yy, label, SMALL - .3, INK, width=ew - 4.0)
-    fy = ry + 2.7 + 3.6
-    s.line(ex + 1.0, fy - 2.0, ex + ew - 1.0, fy - 2.0, RULE, .16)
-    pill(ex + 1.0, fy, 'N', USE)
-    text(ex + 4.6, baseline(fy, JS), L['feature'], JS, INK, width=ew - 8.5)
-    step(ex + ew - 2.2, fy, 7, EXEC_C)
-    axis_y, cut = fy + 5.4, ex + 12.4
-    rect(ex + 1.6, axis_y - .9, cut - ex - 1.6, 1.8, AMBER_PALE, None, r=.3)
-    s.line(ex + 1.6, axis_y, ex + ew - 1.4, axis_y, RULE, .18)
-    s.line(cut, axis_y - 1.6, cut, axis_y + 1.1, EXEC_C, .26)
-    for dx in (3.6, 6.8, 10.0):
-        s.circle(ex + dx, axis_y, .42, EXEC_C)
-    for dx in (15.0, 17.6):
-        s.line(ex + dx - .35, axis_y - .35, ex + dx + .35, axis_y + .35, MUTED, .18)
-        s.line(ex + dx - .35, axis_y + .35, ex + dx + .35, axis_y - .35, MUTED, .18)
-    text(cut, axis_y - 2.0, L['cutoff'], SMALL - .8, EXEC_C, align='center')
-    text((ex + 1.6 + cut) / 2, axis_y + 3.0, L['window'], SMALL - .8, EXEC_C, align='center')
+        yy = ey + 29.7 + 2.55 * k
+        mark(ex + 1.9, yy - .7, 'ok', EXEC_C)
+        text(ex + 3.2, yy, label, SMALL - .3, INK, width=ew - 4.0)
+    # A separate predictive branch shares lookup, not metric snapshot execution.
+    fx, fy, fw, fh = FEAT
+    box(FEAT)
+    text(fx + 1.0, fy + 2.1, L['compile_feature'], SMALL, INK, 'bold', width=fw - 2.0)
+    pill(fx + 1.0, fy + 4.3, 'P', USE)
+    text(fx + 4.5, baseline(fy + 4.3, JS), L['feature'], JS, INK, width=fw - 5.3)
+    p_row_y = row_y['P']
+    ch_x = (lx + lw + fx) / 2
+    route([(lx + lw, p_row_y), (ch_x, p_row_y), (ch_x, fy + 4.3), (fx, fy + 4.3)],
+          USE, THIN, length=.75, radius=.4)
+    axis_y, cut = fy + 6.8, fx + 12.0
+    rect(fx + 1.5, axis_y - .6, cut - fx - 1.5, 1.2, AMBER_PALE, None, r=.3)
+    s.line(fx + 1.5, axis_y, fx + fw - 1.3, axis_y, RULE, .18)
+    s.line(cut, axis_y - 1.0, cut, axis_y + .85, EXEC_C, .26)
+    for dx in (3.5, 6.6, 9.7):
+        s.circle(fx + dx, axis_y, .35, EXEC_C)
+    for dx in (14.4, 16.8):
+        s.line(fx + dx - .3, axis_y - .3, fx + dx + .3, axis_y + .3, MUTED, .18)
+        s.line(fx + dx - .3, axis_y + .3, fx + dx + .3, axis_y - .3, MUTED, .18)
+    text(fx + 1.9, fy + 9.7, L['window_short'], SMALL - .8, EXEC_C)
+    text(cut, fy + 9.7, '$t_i$', SMALL - .8, EXEC_C, align='center')
 
     # Database -------------------------------------------------------------
     bx, by, bw, bh = SLAB
-    d = 1.4
+    d = 1.2
     soft = '#BDB9B2'
     s.poly([(bx, by), (bx + d, by - d), (bx + bw + d, by - d), (bx + bw, by)], '#F2F0EC', soft, .12)
     s.poly([(bx + bw, by), (bx + bw + d, by - d), (bx + bw + d, by + bh - d), (bx + bw, by + bh)],
@@ -455,7 +498,7 @@ def draw(s, lang):
         rect(x0, top, w_, inner, WHITE, OCHRE if hot else EDGE, .16 if hot else .12, r=.35)
         rect(x0 + .15, top + .15, w_ - .3, 2.3, AMBER_PALE if hot else TOP, None, r=.25)
         text(x0 + .9, top + 1.9, name, JS, INK)
-        text(x0 + w_ - .9, top + 1.9, version, 5.6, OCHRE if hot else MUTED,
+        rich(x0 + w_ - .9, top + 1.9 - .34 * 5.6 * PT, version, 5.6, OCHRE if hot else MUTED,
              'bold' if hot else 'sans', align='right')
 
     def bars(x0, w_, n=3):
@@ -468,7 +511,7 @@ def draw(s, lang):
         bars(x0, w_)
     # item: the ETL job added a history row for key 17.
     ix, iw = 104.0, 48.2
-    card(ix, iw, '`item`', r'batch 0 $\rightarrow$ 1', hot=True)
+    card(ix, iw, '`item`', L['batch'], hot=True)
     cols = (ix + .9, ix + 10.0, ix + 23.4)
     for c, head in zip(cols, ('`i_item_sk`', '`i_category`', '`i_is_current`')):
         text(c, top + 4.4, head, JS - .5, MUTED)
@@ -482,7 +525,7 @@ def draw(s, lang):
         text(ix + iw - 1.0, yy, L['rows_note'][k], 5.6, OCHRE if k else MUTED,
              'bold' if k else 'sans', align='right')
     # Snapshot: step 4's guards and SQL read the same state.
-    nx, nw = EXEC[0], EXEC[2]
+    nx, nw = EXEC[0], bx + bw - .8 - EXEC[0]
     rect(nx, top, nw, inner, WHITE, EXEC_C, .18, r=.35, dash=(.8, .5))
     text(nx + 1.0, top + 2.6, L['snapshot'], SMALL - .3, EXEC_C, 'bold')
     mini = (nw - 2.0 - 2 * .5) / 3
@@ -493,17 +536,20 @@ def draw(s, lang):
 
     # Database reads: the item guard and the snapshot.
     rd = qx + qw / 2 - 2.0
-    route([(rd, top), (rd, qy + qh)], SLATE, .3, dash=(.7, .45), length=1.0)
-    route([(exec_c, top), (exec_c, ey + eh)], EXEC_C, .3, dash=(.7, .45), length=1.0)
+    route([(rd, top), (rd, qy + qh)], MAINT_C, .3, dash=(.7, .45), length=1.0)
+    snap_y = top + inner / 2
+    chk_y = ey + 30.3
+    route([(nx + nw, snap_y), (176.6, snap_y), (176.6, chk_y), (ex + ew, chk_y)],
+          EXEC_C, .25, dash=(.7, .45), length=.7, radius=.4)
 
-    # ETL ------------------------------------------------------------------
+    # ETL (outside the database): step 5 writes a new item history row.
     tx, ty, tw_, th = ETL
     for off in (1.2, .6, 0):
         rect(tx + off, ty - off, tw_ - 1.2, th, WHITE, EDGE, .13, r=.4)
     text(tx + 1.4, ty + 3.5, L['etl'], TITLE, INK, 'bold', width=tw_ - 2.6)
     text(tx + 1.4, ty + 6.5, L['etl_note'], SMALL - .3, OCHRE, width=tw_ - 2.6)
-    route([(tx + tw_ - 1.2, ty + th / 2 + 1.2), (bx, ty + th / 2 + 1.2)], INK, THIN, length=1.0)
-    step(tx + tw_ + 1.45, ty + th / 2 - 2.2, 5, SLATE)
+    route([(tx + tw_ - 1.2, ty + th / 2 + 1.2), (bx, ty + th / 2 + 1.2)], MAINT_C, THIN, length=1.0)
+    step(tx + tw_ + 1.45, ty + th / 2 - 2.2, 5, MAINT_C)
 
 
 if __name__ == '__main__':

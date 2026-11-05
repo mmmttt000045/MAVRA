@@ -29,7 +29,7 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 | `scenario-changes` | `scenario_changes.py` | `exp/2026-10-10-scenarios-q5/` |
 | `two-schemas` | `two_schemas.py` | `exp/2026-10-31-diverse-scenarios/study-stats.json`；六个冻结基线对照、两格修复后原生重跑及四方法共同的跨智能体新题；三指标、四题型、十一类变化，13 情形等权，单栏 84.6 × 55 mm、32 根柱；一轮／方法，不画误差棒 |
 | `consumer-cost` | `consumer_cost.py` | 合成场景 `holdout-cost.json` 与通用性 `e2e/outcomes.json.gz` |
-| `population` | `population.py` | `exp/2026-10-12-population/population-stats.json` |
+| `population` | `population.py` | `exp/2026-10-12-population/population-stats.json`；84.6 × 74 mm 单栏、两行两列，保留四个面板及运行范围误差线 |
 | `relbench-cumulative` | `relbench_cumulative.py` | `exp/2026-10-20-relbench/paper-sessions.json` |
 | `memory-access-pilot` | `mechanism.py` | `exp/2026-10-29-mechanism-pilot/pilot-summary.json`，八格开发预实验 |
 | `fixed-sharing` | `mechanism.py` | 同批 `system-summary.json` 的 B：固定定义数的三轮共享对照，两个到达模式的数据库耗时；验证 SQL 次数在正文报告 |
