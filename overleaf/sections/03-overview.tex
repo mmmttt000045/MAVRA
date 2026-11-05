@@ -2,14 +2,12 @@
 \section{\bt{System Overview}{系统概览}}
 \label{sec:overview}
 \bi{We design \system{} as a middle layer between data agents and data systems.
-Figure~\ref{fig:architecture} shows the overview of \system{}.
-% follows one metric, electronics revenue, as it is learned, reused by later agents, and repaired after a data load.
-}
-{\system{} 位于数据智能体与 PostgreSQL 之间。图~\ref{fig:architecture} 以指标“电子品类营业额”为例，展示一个定义从学得、被后续智能体复用到数据载入后修复的过程。}
+Figure~\ref{fig:architecture} illustrates the overview of \system{} by following one metric, electronics revenue, as it is learned, reused by subsequent agents, and repaired after a data load.}
+{我们将 \system{} 设计为位于数据智能体与数据系统之间的中间层。图~\ref{fig:architecture} 以指标“电子品类营业额”为例，展示 \system{} 的整体架构及一个定义从学得、被后续智能体复用到数据载入后修复的过程。}
 
 \subsection{\bt{Architecture and Shared State}{架构与共享状态}}
-\bi{\emph{Shared knowledge} stores one JSON entry per key: metric and feature definitions, verified joins, and check outcomes. A metric entry records what it computes (fact, measure, time, joins, and filters), its learning session, and its reuse requirements: \code{guards} lists the checks that must pass, and \code{deps} records the versions of the tables it reads. Entries reference one another by key so that one join or check outcome serves multiple definitions. \emph{Publish}, \emph{Lookup}, \emph{Maintain} with \emph{Repair}, and \emph{Check and run} operate on these entries as writes advance modified table versions.}
-{\emph{共享知识}按键保存 JSON 条目，包括指标与特征定义、已验证连接和检查结果。指标条目记录计算逻辑（事实表、度量、时间、连接与过滤）、学习会话及复用条件：\code{guards} 列出须通过的检查，\code{deps} 记录所读各表的版本。条目按键相互引用，使一个连接或检查结果服务多个定义。\emph{发布}、\emph{查找}、含\emph{自动修复}的\emph{维护}与\emph{校验并执行}作用于这些条目；每次写入都会递增被改表的版本。}
+\bi{\system{} coordinates four operations---\emph{Publish}, \emph{Lookup}, \emph{Maintain} (with \emph{Repair}), and \emph{Check and run}---over a central \emph{shared knowledge} store as writes advance modified table versions. \emph{Shared knowledge} stores one JSON entry per key: metric and feature definitions, verified joins, and check outcomes. A metric entry records what it computes (fact, measure, time, joins, and filters), its learning session, and its reuse requirements: \code{guards} lists the checks that must pass, and \code{deps} records the versions of the tables it reads. Entries reference one another by key so that one join or check outcome serves multiple definitions.}
+{\system{} 围绕\emph{共享知识}库协调四项核心操作——\emph{发布}、\emph{查找}、含\emph{自动修复}的\emph{维护}与\emph{校验并执行}——并在每次写入时递增被改表的版本。\emph{共享知识}按键保存 JSON 条目，包括指标与特征定义、已验证连接和检查结果。指标条目记录计算逻辑（事实表、度量、时间、连接与过滤）、学习会话及复用条件：\code{guards} 列出须通过的检查，\code{deps} 记录所读各表的版本。条目按键相互引用，使一个连接或检查结果服务多个定义。}
 
 \subsection{\bt{End-to-End Workflow}{端到端工作流程}}
 \bi{\emph{Publication (1--2).} Agent A asks for January electronics revenue, explores the schema, and has its answer verified. \emph{Publish} receives the question, SQL trace, and verified answer (1). The learning agent drafts the JSON entry with the month parameterized; gates verify fields and joins, grain-key uniqueness, read-only SQL, and that the compiled query reproduces A's answer. \emph{Publish} then writes revision 0 with its referenced join and check entries (2; Section~\ref{sec:publication}).}
@@ -25,4 +23,3 @@ Figure~\ref{fig:architecture} shows the overview of \system{}.
 {\emph{特征复用（7）。}智能体 N 预测客户流失。\emph{查找}确认特征 \code{spend\_90d} 有效，\emph{校验并执行}将其 90 天窗口截止于每位客户的预测截止时间（7；第~\ref{sec:features} 节）。}
 % Flush earlier tables before queuing the architecture, keeping Table III and Fig. 2 apart.
 \FloatBarrier
-
