@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (full-width Fig. 1: readable steps, each agent's own steps, item-history load that makes the agents' join double-count; main a3ec764)",
-  "previous_head": "2ecfb88a34bd2cb0f05905ae1f1bb534f3e38866",
-  "remote_commit": "c0dae4ebe96b6ea9924a48299328b86990d96343",
+  "direction": "main repo overleaf/ -> paper repo (Fig. 1 back to one column with short step names; main a15b2b2). Paper main had Overleaf commits c48ea67, 581711c and merges 1f9872f, 6d499d4 after c0dae4e; their tree equals c0dae4e (Overleaf re-pushed the same content), so the sync used --force. Leftover branch overleaf-2026-11-05-0639 (2ecfb88, merged) still on the remote.",
+  "previous_head": "6d499d4f7ec1deaa1cf0ecde5dac15c5238d8314",
+  "remote_commit": "42a291f138ce4cd2c9b438d2082b63520997fca2",
   "pending_payload": null,
   "changed_paths": [],
   "preserve_remote_only": true,
@@ -20,11 +20,11 @@
     "undefined_references": 0,
     "identical_to_remote": "every mirrored file in overleaf/ equals the paper repo at remote_commit",
     "bilingual_pages": 22,
-    "body_note": "Fig. 1 now a figure* on p. 2; body runs further onto page 13 (limit: 12 body pages), page fitting deferred by the user; Table III p. 5, Fig. 2 p. 5",
+    "body_note": "Fig. 1 single column on p. 1 again; body ends with the last 6 conclusion lines on page 13 (limit: 12 body pages); Table III p. 4, Fig. 2 p. 5",
     "cited_references": 54
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/c0dae4ebe96b6ea9924a48299328b86990d96343",
-  "remote_tree": "a0a2622cd0169dcb1d9550f6cc79f144b29465f2",
-  "source_commit": "a3ec764416b74ed8d316fb33377cc17c5a48911f",
-  "sync_authorization": "User asked for a higher-quality Fig. 1 regardless of size for now and reviews on Overleaf (2026-11-05: \"暂时不用管大小和页面数量，先把质量搞上去\")."
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/42a291f138ce4cd2c9b438d2082b63520997fca2",
+  "remote_tree": "d1540f6d00f6a870b7fa6d8df9ad8a354c7f9a53",
+  "source_commit": "a15b2b212a09326d3c6a9315ba4ff49af417a43b",
+  "sync_authorization": "User: Fig. 1 back to one column in its old place with short step names (2026-11-05, answers to the three questions), reviews on Overleaf."
 }
