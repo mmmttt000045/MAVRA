@@ -60,6 +60,8 @@ def main():
     a.add_argument('--results', default=str(ROOT / P['results']))
     a.add_argument('--arm-results', action='append', default=[], metavar='ARM=DIR')
     a.add_argument('--tex', default=str(ROOT / 'overleaf/gen/change-study.tex'))
+    a.add_argument('--partial-arm', action='append', default=[], metavar='ARM',
+                   help='an added method aggregated over its own complete runs (fewer than the others; recorded in arm_runs)')
     a = a.parse_args()
     res = Path(a.results)
     override = dict(x.split('=', 1) for x in a.arm_results)
@@ -83,11 +85,15 @@ def main():
     # complete runs are decided by the protocol's methods; an added method must cover every one of them, so adding it
     # can never silently drop runs of the others
     full = [r for r in runs if all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'] for arm in P['arms'])]
+    arm_runs = {arm: full for arm in P['arms']}
     for arm in ARMS[len(P['arms']):]:
         lacking = [r for r in full if not all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'])]
-        if lacking:
-            raise SystemExit(f'{arm} lacks complete cells for runs {lacking}')
-    stats = {'complete_runs': full, 'problems': problems, 'per_cell': {}, 'groups': {}, 'per_change': {},
+        if lacking and arm not in a.partial_arm:
+            raise SystemExit(f'{arm} lacks complete cells for runs {lacking} (pass --partial-arm {arm} to report it over fewer runs)')
+        arm_runs[arm] = [r for r in full if r not in lacking]
+        if not arm_runs[arm]:
+            raise SystemExit(f'{arm} has no complete run')
+    stats = {'complete_runs': full, 'arm_runs': arm_runs, 'problems': problems, 'per_cell': {}, 'groups': {}, 'per_change': {},
              'sources': {'results': str(res), 'arm_results': override}}
     for (ds, arm, run), c in cells.items():
         stats['per_cell'][f'{ds}-r{run}-{arm}'] = {
@@ -100,12 +106,12 @@ def main():
             dss = P['datasets'] if scope == 'both' else [scope]
             stats['groups'][g][scope] = {}
             for arm in ARMS:
-                per_run = [summarize([r for ds in dss for r in cells[(ds, arm, run)]['rows'] if r['phase'] in phases]) for run in full]
+                per_run = [summarize([r for ds in dss for r in cells[(ds, arm, run)]['rows'] if r['phase'] in phases]) for run in arm_runs[arm]]
                 if not per_run:
                     continue
                 acc = [x['accuracy'] for x in per_run]
                 wrong = [x['wrong_pct'] for x in per_run]
-                pooled = [r for run in full for ds in dss for r in cells[(ds, arm, run)]['rows'] if r['phase'] in phases]
+                pooled = [r for run in arm_runs[arm] for ds in dss for r in cells[(ds, arm, run)]['rows'] if r['phase'] in phases]
                 stats['groups'][g][scope][arm] = {
                     'accuracy': mean(acc), 'min': min(acc), 'max': max(acc), 'per_run': acc,
                     'wrong_pct': mean(wrong), 'wrong_min': min(wrong), 'wrong_max': max(wrong), 'wrong_per_run': wrong,
@@ -118,7 +124,7 @@ def main():
     for ds in P['datasets']:
         for ph in ['holdout', *P['changes']]:
             stats['per_change'][f'{ds}/{ph}'] = {
-                arm: {k: sum(summarize([r for r in cells[(ds, arm, run)]['rows'] if r['phase'] == ph])[k] for run in full)
+                arm: {k: sum(summarize([r for r in cells[(ds, arm, run)]['rows'] if r['phase'] == ph])[k] for run in arm_runs[arm])
                       for k in ('correct', 'clarify', 'wrong', 'error', 'n')} for arm in ARMS if full}
     budget = res / 'budget' / 'budget-state.json'
     stats['cost'] = json.loads(budget.read_text()) if budget.exists() else None
@@ -126,7 +132,7 @@ def main():
         stats['cost'] = {k: stats['cost'][k] for k in ('charged_cny', 'calls', 'errors', 'models', 'observed_decrease_cny') if k in stats['cost']}
     (HERE / 'study-stats.json').write_text(json.dumps(stats, indent=2, ensure_ascii=False) + '\n')
 
-    lines = [f'# Change study: {len(full)} complete run(s) {full}', '']
+    lines = [f'# Change study: {len(full)} complete run(s) {full}' + ''.join(f'; {NAMES[x]} runs {arm_runs[x]}' for x in ARMS[len(P["arms"]):]), '']
     if problems:
         lines += ['**Problems:** ' + '; '.join(problems), '']
     for scope in [*P['datasets'], 'both']:
@@ -199,8 +205,10 @@ def main():
     (HERE / 'study-stats.json').write_text(json.dumps(stats, indent=2, ensure_ascii=False) + '\n')
     print('MAVRA fewest tokens in every group:', fewest)
     mac['CsRuns'] = str(len(full))
+    for x in ARMS[len(P['arms']):]:  # runs of an added method (equal to CsRuns once it has caught up)
+        mac[f'Cs{tag[x]}Runs'] = str(len(arm_runs[x]))
     mac['CsScoredPerRun'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(ARMS))
-    scored = sum(banks[ds]['scored'] for ds in P['datasets']) * len(ARMS) * len(full)
+    scored = sum(banks[ds]['scored'] for ds in P['datasets']) * sum(len(arm_runs[x]) for x in ARMS)
     mac['CsScored'] = f'{scored:,}'
     mac['CsQuestions'] = str(sum(banks[ds]['scored'] for ds in P['datasets']))
     if stats['cost']:

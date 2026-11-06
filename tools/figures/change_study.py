@@ -49,7 +49,7 @@ def load():
         for ds in SCHEMAS:
             for arm in ARMS:
                 row = data["groups"][g][ds][arm]
-                assert len(row["per_run"]) == len(data["complete_runs"])
+                assert len(row["per_run"]) == len(data.get("arm_runs", {}).get(arm, data["complete_runs"]))
                 key = f"Cs{GTAG[g]}{STAG[ds]}{TAG[arm]}"
                 style.agree(key, f"{row['accuracy']:.1f}", printed[key])
                 style.agree(key + "Wrong", f"{row['wrong_pct']:.1f}", printed[key + "Wrong"])
