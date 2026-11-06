@@ -273,6 +273,32 @@ AgentSM 离线建库每库 100 个合成会话；rel-stack 附录约 135 个会�
   (e) 第 2 个起的会话里 97% 的看结构调用在更早的会话中出现过。代价：每会话 token 中位数 19.6 万（均值 27.8 万，合计 416 万），
   会话时间中位数 412 s。**15 个提交中 4 个泄漏**（审计确认，见各会话 `audit`）：没有记忆、各自写特征时，泄漏并不少见。
 
+### 4.x 11-06/07：TeCoD 基线与 MAVRA 会话起始下发（Table III 新版）
+
+- **背景（用户 11-06）：** DeepPrep 不再作为基线；Table III 增加一项数据库会议方法。调研后选 TeCoD（SIGMOD 2026，
+  PACMMOD 3(6) Art. 357，官方代码 MIT），复现方式与偏差见 `reproduction-notes.md` 的 TeCoD 节。
+- **TeCoD 正式轮：** `results/relbench-pilot3/tecod-rel-stack-r1`（11-06 20:38–23:31）、`results/relbench-main/tecod-rel-trial-r1`
+  （23:32–03:54），run 1（与其他方法同一题序与种子），两库先后运行（TeCoD 两个 4B 模型约 35 GB，单元内存上限 48G）。
+  启动前：pyflakes、独立代码审查（必改项：内存上限、非空模板池路径的离线检验；已改：用户消息内放置、发布版平局规则、
+  文档）、smoke（`results/relbench-tecod-smoke`）与离线路径检验均通过。30 个会话审计全部 clean。
+- **MAVRA 版本更新（arm `mavra-push`，a6b087f）：** TeCoD 在 rel-stack 上的模型调用与工具调用少于旧版 MAVRA（72/115 对
+  76/128），原因是 TeCoD 的模板在会话开始时放入提示词，而 MAVRA 的智能体要先用 find_program/find_features 两次工具调用
+  查找。改动只有一处：会话开始时由记忆层执行这两次查找并把结果按工具输出格式放在任务行之后（计入会话耗时），智能体
+  保留 compose_features。功能检查只用 smoke（`results/relbench-mavra-push-smoke`，结果不用）；正式重跑一次
+  （`results/relbench-pilot3/mavra-push-rel-stack-r1`、`results/relbench-main/mavra-push-rel-trial-r1`，11-07 02:19 起，
+  两库并行，30 个会话审计全部 clean），无论结果如何都报告。旧版 `mavra-*-r1` 保留。论文从 8699d08 起按 `mavra-push`
+  报告 MAVRA（`paper-stats.py` 的 `RUN_FOLDER`），第 4 节写入会话起始下发。
+- **结果（复用阶段，截点 2–5）：** MAVRA 在两库的 token、模型调用、工具调用、耗时与费用均为最低
+  （rel-stack 1.20M/52/74/53 分钟/$0.17；rel-trial 3.55M/123/209/25 分钟/$0.20）；最便宜的基线是 TeCoD
+  （2.41M/72/115、5.18M/146/238），MAVRA 的 token 比它少 50% 和 31%。质量：新版六项任务中四项在门槛内
+  （user-badge AUC 0.8345、study-adverse MAE 42.14 未达门槛；旧版六项全达）。TeCoD 五项在门槛内（rel-stack user-badge
+  未达）。论文据此改写结果段，删去“满足全部质量目标”的说法。
+- **Fig. 4 数据来源改为本实验（cutoffs 2–5，`reuse-work-data.json`）：** 10-28 三截点队列来自另一份代码快照，没有
+  TeCoD 臂；正文删去该队列。
+- **并行与计时：** TeCoD rel-trial 的最后几个会话与 MAVRA 重跑同时运行（10-21 的正式运行同样是 5–8 个单元并行）；
+  MAVRA 重跑的后半段与变更实验同时运行。耗时列来自共享服务器。
+- **花费：** 账户 11-06 20:38 余额 37.31 元，11-07 05:18 为 28.67 元（含变更实验约 0.9 元）。
+
 ## 5. 待定
 
 - ~~APC 的小模型~~（10-21 晚：不做 APC）。
