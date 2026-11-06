@@ -292,6 +292,17 @@ class Llm:
 
 # ───────────────────────── middle layer ─────────────────────────
 
+def tecod_block(sel):
+    """TeCoD's prompt pieces for one selection, as the released method "sgc" builds them (prompts/default.py): the
+    matched template (placeholders shown as {{string}} and {{number}}) and the ICL examples, or the examples alone."""
+    parts = []
+    if sel["matched"]:
+        parts.append(TECOD_TEMPLATE_INST + sel["template"].replace("string_rule", "{{string}}").replace("number_rule", "{{number}}"))
+    if sel["icl"]:
+        parts.append(TECOD_ICL_INST + "".join(TECOD_ICL_FORMAT.format(question=q, sql=y) + "\n" for q, y in sel["icl"]).rstrip("\n"))
+    return "\n\n".join(parts)
+
+
 class TecodService:
     """tools/relbench/tecod_service.py in TeCoD's own Python 3.12 environment, one JSON line per request (no LLM calls)."""
 
@@ -922,12 +933,9 @@ Shared memory: agents on this database publish verified feature definitions and 
             sel = self.tecod.send({"op": "select", "query": text})
             if sel.get("error"):
                 raise RuntimeError(f"TeCoD selection failed: {sel['error']}")
-            block = ""
-            if sel["matched"]:  # SGC (method auto with an API model): the template in the prompt
-                block += "\n\n" + TECOD_TEMPLATE_INST + sel["template"].replace("string_rule", "{{string}}").replace("number_rule", "{{number}}")
-            if sel["icl"]:
-                block += "\n\n" + TECOD_ICL_INST + "".join(TECOD_ICL_FORMAT.format(question=q, sql=y) + "\n" for q, y in sel["icl"])
-            msgs[0]["content"] += block.rstrip("\n")
+            block = tecod_block(sel)
+            if block:  # released prompt order: schema, template, examples, question; here the system prompt stands for the schema
+                msgs[1]["content"] = block + "\n\n" + task_line
             rec["tecod"] = {"method": "sgc" if sel["matched"] else ("icl" if sel["icl"] else "zs"), "prompt_chars": len(block),
                             **{k2: sel.get(k2) for k2 in ("matched", "t_id", "nli_label", "entailment", "cosine", "icl_ids", "nli",
                                                           "pool_examples", "pool_templates", "seconds")}}
@@ -1143,6 +1151,8 @@ Shared memory: agents on this database publish verified feature definitions and 
                 rec["learning"] = self.tecod_add(t, k, rec)
             except Exception as err:
                 rec["learning"] = {"error": str(err)[:500]}
+            if rec["learning"].get("error"):
+                log(f"{t} k{k}: TeCoD could not add the verified pair: {rec['learning']['error']}")
         if self.arm.get("feature_memory") and rec["final_sql"] and not cut_short:
             try:
                 rec["learning"] = self.learn(t, k, rec, seeds, middle, agent, sid)

@@ -3,8 +3,10 @@
 for the RelBench harness.
 
 Follows the released code (SSLab-CSE-IITB/tecod @ 6739e32, MIT; its pdec submodule smitjivani/nlqtosql_common; a local
-copy in results/ext/tecod-src) in its API mode (provider openai: methods sgc, icl and zs; method auto uses SGC when a
-template matches and ICL otherwise), with the released models and the default settings of conf/config.yaml:
+copy in results/ext/tecod-src) in its API mode with method "sgc" (services/tecod.py generate_with_method: the matched
+template and the ICL examples in the prompt, the examples alone when no template matches; method "auto" with an API
+model selects a template but leaves it out of the prompt, so it would be plain ICL), with the released models and the
+default settings of conf/config.yaml:
 - pool: one per database. Each verified (question, SQL) pair is one example with its masked question (nlq_masked) and a
   template, the SQL with its literals masked (pdec/tecod_utils.py convert_sql_string_to_template, here in PostgreSQL's
   dialect); examples with the same template string share one template id (cli/commands.py _create_templates).
@@ -12,9 +14,10 @@ template matches and ICL otherwise), with the released models and the default se
   "query" prompt (services/embedding.py); cosine similarity, top 1000 (vectorsearch_top_k); the first 30 (nli_top_k)
   go to the NLI model.
 - NLI: smitxxiv/Qwen3-Re4B-SQL-TeCoD-TMM on (masked question, question) pairs (nli.py, float32). Per template the mean
-  entailment and mean cosine (nli.method mean), sorted by both; its label is the majority label of its examples; the
-  template matches when that label is entailment (services/tecod.py _template_selection_with_timing and
-  generate_with_method).
+  entailment and mean cosine (nli.method mean), sorted by both; ties go to the lowest template id, and the released
+  code numbers templates in the sorted order of their strings (groupby("template")), so a tie goes to the template string
+  that sorts first; its label is the majority label of its examples; the template matches when that label is entailment
+  (services/tecod.py _template_selection_with_timing and generate_with_method).
 - ICL: the best example per template by cosine, three of them (icl_cnt), the most similar last (pick_icl_example_indices,
   _get_icl_examples).
 Not taken over: grammar-constrained decoding (it needs the model's logits, which the API mode does not have); Milvus Lite
@@ -23,7 +26,11 @@ sqlglot normalisation of an example's SQL before it is stored (cli/commands.py p
 SQL that was validated, because a round trip through sqlglot can change PostgreSQL syntax, and only the template is
 built from the normalised SQL. Where sqlglot cannot parse or print a PostgreSQL query, its string and number literals are
 masked token by token instead (sql_template). The released code has no synthetic paraphrase step (data-preparation.md: nlq_masked is
-supplied with the data); neither does this service.
+supplied with the data); neither does this service. The released pool is built once, offline, from a file of pairs; here
+it grows online, one verified pair after each admitted session (harness tecod_add), because RelBench sessions arrive in
+order. The harness puts the template and examples into the user message before the task line, in the released order
+(schema, template, examples, question); the agent's own system prompt and tools take the place of TeCoD's one-shot
+instruction and output format, as for every arm.
 
 Protocol: one JSON request per line on stdin, one JSON reply per line on stdout.
   {"op": "select", "query"}                                -> {"matched", "t_id", "nli_label", "entailment", "cosine",
@@ -161,7 +168,7 @@ class Pool:
         for r in rows:
             by_t.setdefault(r["t_id"], []).append(r)
         considered = sorted(((sum(r["entailment"] for r in g) / len(g), sum(r["cosine"] for r in g) / len(g), t)
-                             for t, g in by_t.items()), key=lambda x: (-x[0], -x[1]))
+                             for t, g in by_t.items()), key=lambda x: (-x[0], -x[1], self.templates[x[2]]))
         ent, cosine, t_id = considered[0]
         labels = [r["nli_label"] for r in by_t[t_id]]
         label = max(dict.fromkeys(labels), key=labels.count)  # value_counts: the most frequent label
@@ -197,8 +204,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", required=True)
     a = ap.parse_args()
-    out = sys.stdout
-    sys.stdout = sys.stderr  # library output goes to the log, never into the protocol
+    out = os.fdopen(os.dup(1), "w")  # the protocol keeps the original stdout ...
+    os.dup2(2, 1)  # ... and anything else written to file descriptor 1, Python or C, goes to the log
+    sys.stdout = sys.stderr
     pool = Pool(a.models)
 
     def reply(v):
