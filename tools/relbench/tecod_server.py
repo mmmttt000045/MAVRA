@@ -36,8 +36,10 @@ def sql_names(sql):
         tree = parse_one(sql.strip().rstrip(";"), read="postgres")
     except Exception:  # noqa: BLE001 - the template then falls back to token masking anyway
         return [], []
-    return (sorted({t.name for t in tree.find_all(exp.Table) if t.name}),
-            sorted({c.name for c in tree.find_all(exp.Column) if c.name}))
+    columns = {c.name for c in tree.find_all(exp.Column) if c.name}
+    for join in tree.find_all(exp.Join):  # JOIN ... USING (col): identifiers, not Column nodes
+        columns.update(i.name for i in join.args.get("using") or [] if getattr(i, "name", None))
+    return sorted({t.name for t in tree.find_all(exp.Table) if t.name}), sorted(columns)
 
 
 class Pools:

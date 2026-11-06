@@ -49,6 +49,46 @@ def tecod(req):
     return value
 
 
+def tecod_pair_sql(transcript):
+    """The SQL that produced a correct answer, for TeCoD's pool, and how it was found. The final answer names the
+    queries it used (derivation "r2", or "r2 - r3": first cell of each result, metric.rs eval_derivation); one query
+    gives its executed SQL, several give one SQL with each query as a scalar subquery in the derivation. The
+    self-reported final_answer.sql is not used: for a derived answer it holds only one of the queries."""
+    refs = {}
+    for e in transcript:
+        if e.get("kind", "tool") != "tool" or e.get("tool") != "run_sql":
+            continue
+        try:
+            out = json.loads(e["output"])
+        except (ValueError, TypeError):
+            continue
+        if isinstance(out, dict) and out.get("ref") and isinstance(out.get("result"), dict):
+            cols = out["result"].get("columns") or []
+            refs[out["ref"]] = ((e.get("input") or {}).get("sql") or "", cols[0] if cols else None)
+    final = [e for e in transcript if e.get("tool") == "final_answer"]
+    if not final:
+        return None, "no final answer"
+    inp = final[-1].get("input") or {}
+    m = re.match(r"[\sr0-9+\-*/().]+", (inp.get("derivation") or "").strip())
+    expr = m.group(0).strip() if m else ""
+    if not expr and len(inp.get("used") or []) == 1:
+        expr = inp["used"][0]
+    names = re.findall(r"r\d+", expr)
+    if not names:
+        return None, "no derivation over executed queries"
+    if any(n not in refs or not refs[n][0].strip() for n in names):
+        return None, "the derivation names a query without an executed result"
+    if re.fullmatch(r"r\d+", expr):
+        return refs[expr][0].strip().rstrip(";"), "one query"
+    if any(refs[n][1] is None for n in names):
+        return None, "a referenced result has no columns"
+
+    def scalar(mo):
+        sql, col = refs[mo.group(0)]
+        return '(SELECT "' + col.replace('"', '""') + '" FROM (' + sql.strip().rstrip(";") + ") AS " + mo.group(0) + " LIMIT 1)"
+    return "SELECT " + re.sub(r"r\d+", scalar, expr), "derivation over queries"
+
+
 def tecod_masked(question):
     """TeCoD's masked question (nlq_masked): the question with its literal values masked; in these questions the only
     literals are the period's numbers (year, month, quarter)."""
@@ -174,12 +214,21 @@ class Actor:
             self.active = None
             return {"common_feedback_recorded":True,"feedback_records":len(self.feedback),"input_tokens":0,"output_tokens":0}
         if self.arm == "tecod":
-            # a verified pair joins the cell's pool: the answer was correct (the binary feedback every method sees)
+            # a verified pair joins the cell's pool: the answer was correct (the binary feedback every method sees); a
+            # failed addition is recorded and the cell goes on (as in the RelBench arm)
             result = {"added": False}
-            if req["correct"] and own_sql.strip() and not req.get("error"):
-                value = tecod({"op": "add", "pool": self.key, "text": req["question"], "nlq_masked": tecod_masked(req["question"]),
-                               "sql": own_sql})
-                result = {"added": True, **{k: value.get(k) for k in ("t_id", "new_template", "masking", "pool_examples", "pool_templates")}}
+            if req["correct"] and not req.get("error"):
+                sql, how = tecod_pair_sql(req["transcript"])
+                result["pair_sql"] = how
+                if sql:
+                    try:
+                        value = tecod({"op": "add", "pool": self.key, "text": req["question"],
+                                       "nlq_masked": tecod_masked(req["question"]), "sql": sql})
+                        result.update(added=True, **{k: value.get(k) for k in ("t_id", "new_template", "masking", "pool_examples",
+                                                                              "pool_templates")})
+                    except Exception as e:  # noqa: BLE001 - "error" would end the cell on the bench side
+                        result["add_error"] = f"{type(e).__name__}: {e}"[:500]
+                        traceback.print_exc()
             self.active = None
             return {**result, "input_tokens": 0, "output_tokens": 0, "seconds": time.monotonic() - t0}
         t, agent, k = req["metric"], req["agent"], self.k

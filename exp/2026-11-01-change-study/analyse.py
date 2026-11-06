@@ -80,7 +80,13 @@ def main():
             problems.append(f'{cell.name}: asked questions differ from the frozen bank')
         cells[(ds, arm, int(run))] = {'rows': scored, 'learn': [r for r in rows if r['phase'] == 'learn'], 'complete': complete}
     runs = sorted({k[2] for k, v in cells.items() if v['complete']})
-    full = [r for r in runs if all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'] for arm in ARMS)]
+    # complete runs are decided by the protocol's methods; an added method must cover every one of them, so adding it
+    # can never silently drop runs of the others
+    full = [r for r in runs if all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'] for arm in P['arms'])]
+    for arm in ARMS[len(P['arms']):]:
+        lacking = [r for r in full if not all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'])]
+        if lacking:
+            raise SystemExit(f'{arm} lacks complete cells for runs {lacking}')
     stats = {'complete_runs': full, 'problems': problems, 'per_cell': {}, 'groups': {}, 'per_change': {},
              'sources': {'results': str(res), 'arm_results': override}}
     for (ds, arm, run), c in cells.items():
