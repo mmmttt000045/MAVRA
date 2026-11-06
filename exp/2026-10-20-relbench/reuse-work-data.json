@@ -1,0 +1,117 @@
+{
+ "scope": "five-cutoff RelBench study (Table III runs), reuse sessions at cutoffs 2-5, failures included",
+ "work": {
+  "rel-stack": {
+   "none": {
+    "schema": 7.416666666666667,
+    "probe": 14.666666666666666,
+    "validate": 5.583333333333333,
+    "memory": 0.0,
+    "submit": 0.16666666666666666,
+    "llm_calls": 16.75,
+    "sessions": 12
+   },
+   "ace": {
+    "schema": 7.083333333333333,
+    "probe": 15.5,
+    "validate": 5.666666666666667,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 19.333333333333332,
+    "sessions": 12
+   },
+   "awm": {
+    "schema": 7.25,
+    "probe": 15.75,
+    "validate": 4.0,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 13.0,
+    "sessions": 12
+   },
+   "gmemory": {
+    "schema": 3.3333333333333335,
+    "probe": 8.083333333333334,
+    "validate": 3.6666666666666665,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 7.916666666666667,
+    "sessions": 12
+   },
+   "tecod": {
+    "schema": 2.8333333333333335,
+    "probe": 3.4166666666666665,
+    "validate": 3.25,
+    "memory": 0.0,
+    "submit": 0.08333333333333333,
+    "llm_calls": 6.0,
+    "sessions": 12
+   },
+   "mavra": {
+    "schema": 2.4166666666666665,
+    "probe": 1.8333333333333333,
+    "validate": 1.9166666666666667,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 4.333333333333333,
+    "sessions": 12
+   }
+  },
+  "rel-trial": {
+   "none": {
+    "schema": 11.083333333333334,
+    "probe": 27.416666666666668,
+    "validate": 3.25,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 26.583333333333332,
+    "sessions": 12
+   },
+   "ace": {
+    "schema": 8.916666666666666,
+    "probe": 23.5,
+    "validate": 4.416666666666667,
+    "memory": 0.0,
+    "submit": 0.16666666666666666,
+    "llm_calls": 24.666666666666668,
+    "sessions": 12
+   },
+   "awm": {
+    "schema": 9.833333333333334,
+    "probe": 26.5,
+    "validate": 2.9166666666666665,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 26.166666666666668,
+    "sessions": 12
+   },
+   "gmemory": {
+    "schema": 2.6666666666666665,
+    "probe": 18.666666666666668,
+    "validate": 2.8333333333333335,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 15.0,
+    "sessions": 12
+   },
+   "tecod": {
+    "schema": 4.0,
+    "probe": 13.083333333333334,
+    "validate": 2.75,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 12.166666666666666,
+    "sessions": 12
+   },
+   "mavra": {
+    "schema": 4.083333333333333,
+    "probe": 11.75,
+    "validate": 1.5833333333333333,
+    "memory": 0.0,
+    "submit": 0.0,
+    "llm_calls": 10.25,
+    "sessions": 12
+   }
+  }
+ }
+}
