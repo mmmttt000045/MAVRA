@@ -1,6 +1,6 @@
 """Cumulative RelBench tokens, with one full-column panel per database.
 
-Panels are stacked to keep six method curves readable at print size. The
+Panels are stacked to keep five method curves readable at print size. The
 initial learning cutoff is shaded; subsequent cutoffs permit memory reuse.
 Data and arrival order are unchanged from paper-sessions.json.
 """
@@ -19,7 +19,7 @@ W, H = 88.9, 69.5
 DATA = style.ROOT / 'exp/2026-10-20-relbench/paper-sessions.json'
 ARMS = [('none', 'No memory', '无记忆', 'mNoShare', '^'), ('ace', 'ACE', 'ACE', 'mACE', 'v'),
         ('gmemory', 'G-Memory', 'G-Memory', 'mGMem', 'P'), ('awm', 'AWM', 'AWM', 'mAWM', 'X'),
-        ('deepprep', 'DeepPrep', 'DeepPrep', 'mDeepPrep', 's'), ('mavra', 'MAVRA (ours)', 'MAVRA（本文）', 'mCond', 'o')]
+        ('mavra', 'MAVRA (ours)', 'MAVRA（本文）', 'mCond', 'o')]   # 11-06 (user): DeepPrep dropped
 TEXT = {'en': {'y': 'Cumulative tokens (M)', 'x': 'Session (arrival order)',
                'first': 'C1: learn', 'later': 'C2–5: reuse'},
         'zh': {'y': '累计 token（百万）', 'x': '会话（按到来顺序）',

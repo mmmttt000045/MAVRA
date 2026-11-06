@@ -70,14 +70,17 @@ LABELS = {
         'agent': 'Agent', 'ask': 'user ask:',
         'q': (('Jan. electronics', 'revenue?'), ('best month for', 'electronics revenue?'),
               ('Sep. electronics', 'revenue vs. last year?')),
-        # Two shown steps per session + ellipsis (steps 3-4) inside the dashed box;
+        # Three shown steps per session + ellipsis (step 4) inside the dashed box;
         # all table and column names match the bottom database schema 1-to-1.
         'steps': ((('desc', 'date, sales, item'),
+                   ('join', 'date_id, item_id'),
+                   ('probe', 'net_paid, gross')),
+                  (('desc', 'date, sales, item'),
+                   ('filter', "category='Elec.'"),
                    ('join', 'date_id, item_id')),
                   (('desc', 'date, sales, item'),
-                   ('filter', "category='Elec.'")),
-                  (('desc', 'date, sales, item'),
-                   ('probe', 'net_paid, gross'))),
+                   ('probe', 'net_paid, gross'),
+                   ('filter', "category='Elec.'"))),
         'own': ('query Jan. (`month=1`)', 'rank months (`month`)', 'compare years (`year`)'),
     },
     'zh': {
@@ -85,11 +88,14 @@ LABELS = {
         'q': (('1 月电子品类', '营业额是多少？'), ('哪个月电子品类', '营业额最高？'),
               ('9 月电子品类', '营业额同比增加多少？')),
         'steps': ((('查表', 'date, sales, item'),
+                   ('连接', 'date_id, item_id'),
+                   ('探查', 'net_paid, gross')),
+                  (('查表', 'date, sales, item'),
+                   ('过滤', "category='Elec.'"),
                    ('连接', 'date_id, item_id')),
                   (('查表', 'date, sales, item'),
-                   ('过滤', "category='Elec.'")),
-                  (('查表', 'date, sales, item'),
-                   ('探查', 'net_paid, gross'))),
+                   ('探查', 'net_paid, gross'),
+                   ('过滤', "category='Elec.'"))),
         'own': ('查 1 月 (`month=1`)', '月份排序 (`month`)', '同比比较 (`year`)'),
     },
 }
@@ -105,8 +111,8 @@ GLYPH_Y, GLYPH_K = .5, .72
 ASK_Y, ASK_H = 6.7, 7.5
 BOX_Y = 15.8                                   # top edge of the dashed box
 WIN_Y = 16.6
-ROWS = (20.5, 24.5)                            # steps 1-2
-ELL_Y = 27.9                                   # ellipsis for steps 3-4
+ROWS = (18.6, 22.1, 25.6)                      # steps 1-3
+ELL_Y = 28.3                                   # ellipsis for step 4
 BOX_BOTTOM = 29.8
 ROW5 = 32.5
 WIN_BOTTOM = 34.5
@@ -210,19 +216,16 @@ def draw(s, lang):
             s.text(x + 1.0 + (aw if k == 0 else 0), y + 2.6 * k, line, ASK_PT, INK, width=room)
     dots(ASK_Y + ASK_H / 2, DEEP)
 
-    # Workbenches: multi-turn exploration (steps 1-2 + ellipsis for 3-4)
+    # Workbenches: multi-turn exploration (steps 1-3 + ellipsis for 4)
     # inside one dashed box, and step 5 (each agent's period query) below.
     s.rect(.55, BOX_Y, W - 1.1, BOX_BOTTOM - BOX_Y, LOAD_TINT, None, r=.9)
     for x, steps, own in zip(COLS, L['steps'], L['own']):
         s.rect(x, WIN_Y, CW, WIN_BOTTOM - WIN_Y, PALE, VIOLET, .24, r=.8)
-        for dx in (1.25, 2.05, 2.85):
-            s.circle(x + dx, WIN_Y + .95, .19, VIOLET)
-        s.line(x + CW - 2.6, WIN_Y + .95, x + CW - 1.1, WIN_Y + .95, VIOLET, .19)
-        s.line(x + .4, WIN_Y + 1.85, x + CW - .4, WIN_Y + 1.85, RULE, .16)
         tx = x + 2.0
-        s.line(tx, ROWS[0], tx, ROWS[1] + 1.4, RULE, .24)
-        s.line(tx, ELL_Y + 1.0, tx, ROW5, RULE, .24)
-        s.head(tx, (ROWS[0] + ROWS[1]) / 2 + .35, math.pi / 2, VIOLET, .58)
+        s.line(tx, ROWS[0], tx, ROWS[-1] + 1.35, RULE, .24)
+        s.line(tx, ELL_Y + .95, tx, ROW5, RULE, .24)
+        for a, b in zip(ROWS, ROWS[1:]):
+            s.head(tx, (a + b) / 2 + .32, math.pi / 2, VIOLET, .54)
         s.head(tx, BOX_BOTTOM + 1.25, math.pi / 2, VIOLET, .58)
         for k, (yc, (act, obs)) in enumerate(zip(ROWS, steps)):
             step_mark(tx, yc, k + 1)
@@ -237,14 +240,14 @@ def draw(s, lang):
             s.head(ax1, yc, 0, VIOLET, .46)
             s.rect(px, yc - 1.08, pw, 2.16, WHITE, VIOLET, .15, r=.35)
             label(px + pw / 2, yc, obs, PILL_PT, DEEP, 'sans', 'center')
-        # Vertical ellipsis on spine + horizontal ellipsis for elided steps 3-4
-        for dy in (-.55, 0, .55):
+        # Vertical ellipsis on spine + horizontal ellipsis for elided step 4
+        for dy in (-.52, 0, .52):
             s.circle(tx, ELL_Y + dy, .18, VIOLET)
         for dx in (-1.15, 0, 1.15):
             s.circle(x + CW / 2 + .8 + dx, ELL_Y, .28, VIOLET)
         step_mark(tx, ROW5, 5, DEEP)
         label(x + 3.4, ROW5, own, 5.7, DEEP, 'sans', width=CW - 3.85)
-    dots((ROWS[0] + ROWS[1]) / 2)
+    dots(sum(ROWS) / len(ROWS))
     dots(ROW5)
     s.rect(.55, BOX_Y, W - 1.1, BOX_BOTTOM - BOX_Y, None, LOAD, .3, r=.9, dash=(1.1, .6))
 

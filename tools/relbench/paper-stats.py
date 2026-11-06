@@ -9,7 +9,8 @@ by (task, cutoff); an arm that has not finished yet is printed as "--", and so a
 zeros would otherwise read as free or infinitely cheap. A session that ends without a valid solution
 (every validation leaked or failed, or no solution) is scored as the entity-table reference, the model a team keeps
 when feature work fails, and counted in Rb<db><arm>Unsolved; the same for every arm. The table also reports valid
-solutions out of all 15 sessions and tasks meeting the prespecified quality tolerance out of all three tasks.
+solutions out of all 15 sessions and tasks meeting the prespecified quality tolerance out of all three tasks; bold marks
+each column's best value.
 
   python3 tools/relbench/paper-stats.py --out overleaf/gen
 """
@@ -33,10 +34,11 @@ RUNS = {
     "rel-stack": ("Stack", "results/relbench-pilot3/{arm}-rel-stack-r1"),
     "rel-trial": ("Trial", "results/relbench-main/{arm}-rel-trial-r1"),
 }
-# 10-21 night (user): AgentSM (preprint) replaced by two data-preparation systems of the database venues
+# 10-21 night (user): AgentSM (preprint) replaced by two data-preparation systems of the database venues;
+# 11-06 (user): DeepPrep dropped from the comparison (its runs stay in results/)
 ARMS = [("none", "None", "No memory"), ("ace", "ACE", "ACE~\\cite{zhang2026ace}"),
         ("gmemory", "GMem", "G-Memory~\\cite{zhang2025gmemory}"), ("awm", "AWM", "AWM~\\cite{wang2025awm}"),
-        ("deepprep", "DeepPrep", "DeepPrep~\\cite{fan2026deepprep}"), ("featpilot", "FeatPilot", "FeatPilot$^{*}$~\\cite{liang2025featpilot}"),
+        ("featpilot", "FeatPilot", "FeatPilot$^{*}$~\\cite{liang2025featpilot}"),
         ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}")]
 TASK_SHORT = {"post-votes": "post-votes", "user-badge": "user-badge", "user-engagement": "user-engage.",
               "study-outcome": "study-outcome", "study-adverse": "study-adverse", "site-success": "site-success"}
@@ -47,6 +49,18 @@ LETTERS = "ABC"
 
 def score_text(value):
     return "--" if value is None else (f"{value:.4f}" if value < 1 else f"{value:.2f}")
+
+
+def cost_cells(arm, r):
+    """Printed reuse-cost cells of one arm (tokens, token ratio, LLM calls, tool calls, minutes, USD); None where an arm
+    has no LLM in the loop."""
+    llm = arm not in NO_LLM
+    return [f"{r['tok'] / 1e6:.2f}" if llm else None, f"{r['tokx']:.2f}" if llm else None, str(r["llm"]) if llm else None,
+            str(r["tools"]), f"{r['min']:.0f}", f"{r['cost']:.2f}" if llm else None]
+
+
+def bold(text, best):
+    return r"\textbf{" + text + "}" if text == best else text
 
 
 def finished(path):
@@ -189,8 +203,8 @@ def main():
                 v = r["test"][t]
                 macros[f"Rb{pre}{name}Q{LETTERS[i]}"] = "--" if v is None else (f"{v:.4f}" if v < 1 else f"{v:.2f}")
         # MAVRA against the best baseline (fewest tokens among the published memories that finished)
-        # the token comparison is against the agent memories (the methods built to save repeated work); DeepPrep and FeatPilot
-        # search each task anew and are compared on quality and time
+        # the token comparison is against the agent memories (the methods built to save repeated work); FeatPilot
+        # searches each task anew and is compared on quality and time
         pub = [arm for arm in ("ace", "gmemory", "awm") if rows.get(arm)]
         if rows.get("mavra") and pub:
             best = min(pub, key=lambda x: rows[x]["tok"])
@@ -206,20 +220,22 @@ def main():
             scores = [r["test"][t] for r in rows.values() if r and r["test"][t] is not None]
             best_scores[t] = score_text((max if higher else min)(scores)) if scores else None
         table.append(r"\RbPanelHeader{" + db + "}{" + "}{".join(headings) + "}")
+        # bold marks each column's best printed value, ties included: the fewest in every cost column, the best
+        # score, and the most valid solutions and tasks within tolerance
+        cells = {arm: cost_cells(arm, r) for arm, r in rows.items() if r}
+        best_cost = [min((c[i] for c in cells.values() if c[i] is not None), key=float, default=None) for i in range(6)]
+        best_solved = max((r["solved"] for r in rows.values() if r), default=None)
+        best_not_worse = max((r["not_worse"] for r in rows.values() if r), default=None)
         for arm, name, label in ARMS:
             r = rows.get(arm)
             if r is None:
                 table.append(f"{label} & \\multicolumn{{11}}{{c}}{{(running)}}\\\\")
                 continue
-            tests = []
-            for t in tasks:
-                text = score_text(r["test"][t])
-                tests.append(r"\textbf{" + text + "}" if text == best_scores[t] else text)
-            if arm in NO_LLM:
-                head = f"{label} & -- & -- & -- & {r['tools']} & {r['min']:.0f} & -- & "
-            else:
-                head = f"{label} & {r['tok'] / 1e6:.2f} & {r['tokx']:.2f} & {r['llm']} & {r['tools']} & {r['min']:.0f} & {r['cost']:.2f} & "
-            table.append(head + " & ".join(tests) + f" & {r['solved']}/{len(keys)} & {r['not_worse']}/{len(tasks)}\\\\")
+            costs = ["--" if c is None else bold(c, b) for c, b in zip(cells[arm], best_cost)]
+            tests = [bold(score_text(r["test"][t]), best_scores[t]) for t in tasks]
+            counts = [bold(f"{r['solved']}/{len(keys)}", f"{best_solved}/{len(keys)}"),
+                      bold(f"{r['not_worse']}/{len(tasks)}", f"{best_not_worse}/{len(tasks)}")]
+            table.append(" & ".join([label] + costs + tests + counts) + "\\\\")
         table.append("\\midrule")
     if table and table[-1] == "\\midrule":
         table.pop()
