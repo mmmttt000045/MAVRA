@@ -71,9 +71,10 @@ def tecod_pair_sql(transcript):
     inp = final[-1].get("input") or {}
     m = re.match(r"[\sr0-9+\-*/().]+", (inp.get("derivation") or "").strip())
     expr = m.group(0).strip() if m else ""
-    if not expr and len(inp.get("used") or []) == 1:
-        expr = inp["used"][0]
     names = re.findall(r"r\d+", expr)
+    if not names and len(inp.get("used") or []) == 1:  # no query named (e.g. the result's numbers written out): the one used
+        expr = inp["used"][0]
+        names = re.findall(r"r\d+", expr)
     if not names:
         return None, "no derivation over executed queries"
     if any(n not in refs or not refs[n][0].strip() for n in names):
