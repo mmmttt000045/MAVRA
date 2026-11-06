@@ -18,8 +18,8 @@ This lack of knowledge sharing leads to redundant database exploration, increase
 \input{figures/metric-record}
 
 \begin{example}
-\bi{Figure~\ref{fig:metric-record} shows three independent agents on the same retail database. They ask for electronics revenue in January, for the month with the highest electronics revenue, and for September revenue against a year earlier. The three questions reuse the same revenue calculation with different periods and comparisons, yet each agent starts from scratch: it inspects the sales, item, and date schemas, joins the three tables, filters to the electronics category, and aggregates candidate revenue columns. In our traces, all \WxSessions\ sessions on this metric repeat these four operations; only the final period filter, ranking, or comparison differs across agents.}
-{图~\ref{fig:metric-record} 展示了同一零售数据库上三个相互独立的智能体。它们分别询问 1 月的电子品类营业额、电子品类营业额最高的月份，以及 9 月营业额与上年同月相比的差额。三个问题复用同一个营收计算，仅改变报告期间及比较方式，但每个智能体都从零开始：各自查看销售、商品和日期表结构，并连接三张表、过滤电子品类、汇总候选营业额列。在我们的轨迹中，这一指标的全部 \WxSessions\ 个会话都重复了这四类操作，只有最后的期间筛选、月份排序或同比比较因智能体而异。}
+\bi{Figure~\ref{fig:metric-record} shows $N$ independent agents on the same retail database. For instance, Agents~1, 2, and~$N$ ask for electronics revenue in January, for the month with the highest electronics revenue, and for September revenue against a year earlier. Their questions reuse the same revenue calculation with different periods and comparisons, yet each agent starts from scratch: it inspects the sales, item, and date schemas, joins the three tables, filters to the electronics category, and aggregates candidate revenue columns. In our traces, all \WxSessions\ sessions on this metric repeat these four operations; only the final period filter, ranking, or comparison differs across agents.}
+{图~\ref{fig:metric-record} 展示了同一零售数据库上 $N$ 个相互独立的智能体。例如，智能体 1、2 与 $N$ 分别询问 1 月的电子品类营业额、电子品类营业额最高的月份，以及 9 月营业额与上年同月相比的差额。这些问题复用同一个营收计算，仅改变报告期间及比较方式，但每个智能体都从零开始：各自查看销售、商品和日期表结构，并连接三张表、过滤电子品类、汇总候选营业额列。在我们的轨迹中，这一指标的全部 \WxSessions\ 个会话都重复了这四类操作，只有最后的期间筛选、月份排序或同比比较因智能体而异。}
 \end{example}
 
 \bi{This redundant exploration is both pervasive and costly. In execution traces of memoryless agents, 93\% of schema inspections, data probes, and validation queries revisit tables and columns already examined for the same purpose in prior sessions, each time issuing freshly synthesized SQL. Such exploratory probing dominates reasoning overhead: 57\% of LLM calls issue no SQL used in the final answer. Agent-private memories mitigate repetition only within a single agent: $N$ agents computing the same $k$ metrics still learn them $Nk$ times, whereas a shared memory acquires each metric once.}
@@ -65,6 +65,6 @@ This lack of knowledge sharing leads to redundant database exploration, increase
 \item \bi{We introduce snapshot-bound execution, coupling condition validation and query execution within one MVCC snapshot while reusing validation outcomes across snapshots via transactional table versions.}
 {提出快照绑定执行机制，在同一 MVCC 快照内耦合条件验证与查询执行，并借助事务性表版本跨快照复用验证结果。}
 
-\item \bi{We evaluate \system\ on five analytical schemas and RelBench, measuring cross-agent sharing, reliability under eleven data updates, maintenance policies, shared validation, concurrent writes, and predictive reuse.}
-{在五种分析模式与 RelBench 上开展系统实验，评估跨智能体共享、十一类数据更新下的可靠性、维护策略、共享验证、并发写入与预测任务复用。}
+\item \bi{We evaluate \system\ on five analytical schemas and RelBench against eight baselines, showing 2.0--\PpMavraLateTokXNone$\times$ lower token usage, 2.0--\PpMavraLateSpeedupNone$\times$ session speedups, and \CsBreakMavra\% accuracy with zero wrong answers under condition-breaking updates.}
+{在五种分析模式与 RelBench 上与八种基线开展对比实验，\system{} 将 token 消耗降低 2.0--\PpMavraLateTokXNone{} 倍，实现 2.0--\PpMavraLateSpeedupNone{} 倍的会话加速，并在条件破坏更新下以零错答率达到 \CsBreakMavra\% 的准确率。}
 \end{itemize}

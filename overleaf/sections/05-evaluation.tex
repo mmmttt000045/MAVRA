@@ -124,10 +124,10 @@
 {我们评估在后续截点复用任务程序与实体级特征（第~\ref{sec:features} 节）能否减少探索并保持预测质量。}
 
 \input{figures/relbench-cumulative}
-\bi{In the five-cutoff study, all six \system{} task means meet the target quality margins (Table~\ref{tab:relbench}). Relative to \emph{No memory}, reuse-stage tokens fall by \RbStackMavraTokSave\% on \code{rel-stack} and \RbTrialMavraTokSave\% on \code{rel-trial}. Including initial learning and memory operations, total token usage drops by \RbStackMavraTokSaveAll\% and \RbTrialMavraTokSaveAll\%, respectively (Figure~\ref{fig:relbench-cumulative}).}
+\input{figures/reuse-work}
+\bi{In the five-cutoff study, all six \system{} task means meet the target quality margins (Table~\ref{tab:relbench}). Relative to \emph{No memory}, reuse-stage tokens fall by \RbStackMavraTokSave\% on \code{rel-stack} and \RbTrialMavraTokSave\% on \code{rel-trial}. Including initial learning and memory operations, total tokens drop by \RbStackMavraTokSaveAll\% and \RbTrialMavraTokSaveAll\% (Figure~\ref{fig:relbench-cumulative}).}
 {在五截点实验中，\system{} 的六项任务均值全部达到质量门槛（表~\ref{tab:relbench}）。相对无记忆，\code{rel-stack} 和 \code{rel-trial} 复用阶段的 token 分别减少 \RbStackMavraTokSave\% 和 \RbTrialMavraTokSave\%；计入初始学习与记忆操作后，总 token 消耗分别减少 \RbStackMavraTokSaveAll\% 和 \RbTrialMavraTokSaveAll\%（图~\ref{fig:relbench-cumulative}）。}
 
 \label{sec:sharing-eval}
-\input{figures/reuse-work}
 \bi{The complementary three-cutoff study breaks down per-session tool calls under the tighter 24-call budget to show where these savings come from (Figure~\ref{fig:reuse-work}): reused programs and definitions replace exploration. On \code{rel-stack} and \code{rel-trial}, \system{} makes \OfStackExplore{} and \OfTrialExplore{} exploration calls per reuse session (schema inspections and SQL probes) versus \OfStackNoneExplore{} and \OfTrialNoneExplore{} without memory, cutting total tokens by \OfStackSaveAll\% and \OfTrialSaveAll\%.}
 {预算更紧凑的三截点补充实验通过拆解单次会话的工具调用，揭示了节省的来源（图~\ref{fig:reuse-work}）：复用任务程序与特征定义取代了重复探查。在 \code{rel-stack} 和 \code{rel-trial} 上，\system{} 每个复用会话平均仅发起 \OfStackExplore{} 和 \OfTrialExplore{} 次探索调用（模式检查与 SQL 探查），无记忆则达 \OfStackNoneExplore{} 和 \OfTrialNoneExplore{} 次，总 token 随之减少 \OfStackSaveAll\% 和 \OfTrialSaveAll\%。}

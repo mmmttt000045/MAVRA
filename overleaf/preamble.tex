@@ -22,16 +22,20 @@
 \usepackage[nocompress]{cite}
 \renewcommand{\citepunct}{,\penalty\citepunctpenalty\ }
 \usepackage{url}
-\usepackage[hidelinks]{hyperref}
 \providecommand{\Description}[1]{}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\algnewcommand{\IfThen}[2]{\State \algorithmicif\ #1\ \algorithmicthen\ #2}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{xcolor}
 \usepackage{colortbl}
 \usepackage{graphicx}
 \usepackage{placeins}
+\usepackage[hidelinks]{hyperref}
+\makeatletter
+\providecommand*{\toclevel@algorithm}{0}
+\makeatother
 % Preserve IEEEtran's native float spacing, paragraph spacing, and float limits.
 % Method colors, fixed across every figure and table; the figures (tools/figures/) read these
 % definitions, so a method has the same color in a figure and in a table swatch. Six slots in the
@@ -108,8 +112,8 @@
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \newtheoremstyle{myexamplestyle}
-  {\topsep}   % Space above
-  {\topsep}   % Space below
+  {0.5\baselineskip plus 0.25\baselineskip minus 0.1\baselineskip} % Space above
+  {0.5\baselineskip plus 0.25\baselineskip minus 0.1\baselineskip} % Space below
   {}          % Body font
   {}          % Indent amount
   {\bfseries} % Theorem head font
@@ -118,6 +122,7 @@
   {}          % Theorem head spec (can be left empty)
 % 2. 将 example 环境的样式设置为我们上面定义的样式
 \theoremstyle{myexamplestyle}
-\newtheorem{example}{Example} 
+\newtheorem{example}{Example}
 % 我们可以把它改小一点，比如改为一行的高度
-\setlength{\textfloatsep}{1\baselineskip} 
+\setlength{\floatsep}{0.85\baselineskip plus 0.35\baselineskip minus 0.2\baselineskip}
+\setlength{\textfloatsep}{1.35\baselineskip plus 0.35\baselineskip minus 0.2\baselineskip}

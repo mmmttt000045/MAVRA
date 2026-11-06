@@ -1,27 +1,24 @@
 \begin{algorithm}[t]
 \caption{\bt{Lookup with shared maintenance}{带共享维护的查找}}
 \label{alg:maintenance}
-\normalsize
+\small
 \begin{algorithmic}[1]
-\Require Requested revision $x$; shared result store $\mathcal H$
-\Ensure Available revision with refreshed evidence, or $\bot$
-\State Await ongoing maintenance; reread $x$
-\State \textbf{if} $x$ is missing or invalid \textbf{then return} $\bot$
-\State $V\gets$ current dependency versions
-\State \textbf{if} stamps and joins match \textbf{then return} $x$
-\State Join or start maintenance of $x$
-\State \textbf{if} not owner \textbf{then return} owner's result
-\State Reread $x$; if superseded, return usable revision or $\bot$
-\State Refresh affected shared joins
-\For{each affected $c\in C(x)$, added assumptions last}
-  \State \textbf{if} required join unavailable \textbf{then}
-  \State \hspace{\algorithmicindent} Invalidate $x$; \Return $\operatorname{Recover}(x,c)$
-  \State $k\gets\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr)$
-  \State $o\gets\mathcal H[k]$; on miss, run/join $Q_c$ at $V$ and cache $o$
-  \If{$\neg\operatorname{Accept}(c,o)$}
-    \State Invalidate $x$; \Return $\operatorname{Recover}(x,c)$
-  \EndIf
-\EndFor
-\State Record refreshed stamps and joins; \Return $x$
+\Require Revision $x$; state $D$; version stamps $V$; outcome store $\mathcal H$
+\Ensure Available revision $x'$ with current evidence, or $\bot$
+\Function{EvalCond}{$c, D, V, \mathcal H$}
+  \IfThen{$k(c, V) \notin \mathcal H$}{$\mathcal H[k(c, V)] \gets Q_c(D)$}
+  \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
+\EndFunction
+\Function{Lookup}{$x, D, V, \mathcal H$}
+  \IfThen{$x$ is invalid}{\Return $\bot$} \Comment{invalid}
+  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{valid (step 3)}
+  \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
+  \For{each $c \in \Delta C(x)$ (base conditions first)} \Comment{pending}
+    \If{$\neg\Call{EvalCond}{c, D, V, \mathcal H}$}
+      \State Invalidate $x$; \Return $\operatorname{Recover}(x, c)$
+    \EndIf
+  \EndFor
+  \State $V_x(\operatorname{dep}(x)) \gets V(\operatorname{dep}(x))$; \Return $x$
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
