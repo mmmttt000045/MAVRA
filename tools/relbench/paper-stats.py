@@ -40,6 +40,9 @@ ARMS = [("none", "None", "No memory"), ("ace", "ACE", "ACE~\\cite{zhang2026ace}"
         ("gmemory", "GMem", "G-Memory~\\cite{zhang2025gmemory}"), ("awm", "AWM", "AWM~\\cite{wang2025awm}"),
         ("tecod", "Tecod", "TeCoD~\\cite{jivani2025tecod}"), ("featpilot", "FeatPilot", "FeatPilot$^{*}$~\\cite{liang2025featpilot}"),
         ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}")]
+# run folder of an arm when it differs from its name: MAVRA is reported from its 11-07 version, which hands each session
+# its task program and definitions (arm mavra-push); the earlier mavra runs stay in results/
+RUN_FOLDER = {"mavra": "mavra-push"}
 TASK_SHORT = {"post-votes": "post-votes", "user-badge": "user-badge", "user-engagement": "user-engage.",
               "study-outcome": "study-outcome", "study-adverse": "study-adverse", "site-success": "site-success"}
 # arms with no LLM in the loop: their LLM-side cost metrics do not apply and print as "--", not 0
@@ -111,7 +114,7 @@ def main():
     for m in ("RbNoneMedLlm", "RbNoneMedTok", "RbSchemaProbe", "RbSchemaRepeat"):
         macros[m] = "--"
     for db, (pre, pattern) in RUNS.items():
-        paths = {arm: pattern.format(arm=arm) for arm, _, _ in ARMS}
+        paths = {arm: pattern.format(arm=RUN_FOLDER.get(arm, arm)) for arm, _, _ in ARMS}
         done = {arm: p for arm, p in paths.items() if finished(p)}
         data = {arm: cs.load(p, prices=cs.USD_PRICES) for arm, p in done.items()}
         for arm, p in done.items():

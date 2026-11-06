@@ -15,6 +15,7 @@ import os
 RUNS = {"rel-stack": "results/relbench-pilot3/{arm}-rel-stack-r1", "rel-trial": "results/relbench-main/{arm}-rel-trial-r1"}
 ARMS = ("none", "ace", "awm", "gmemory", "tecod", "mavra")
 KINDS = ("schema", "probe", "validate", "memory", "submit")
+RUN_FOLDER = {"mavra": "mavra-push"}  # as in paper-stats.py: MAVRA's 11-07 version
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
     work = {}
     for db, pattern in RUNS.items():
         for arm in ARMS:
-            folder = pattern.format(arm=arm)
+            folder = pattern.format(arm=RUN_FOLDER.get(arm, arm))
             run = json.load(open(os.path.join(folder, "run.json")))
             if not run.get("finished") or run.get("error"):
                 raise SystemExit(f"{folder}: run not finished")
