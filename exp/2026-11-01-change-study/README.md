@@ -128,3 +128,29 @@ python3 tools/figures/build.py change-study
 
 `analyse.py` writes `study-stats.json`, `summary.md` and `overleaf/gen/change-study.tex`;
 the figure script checks every plotted accuracy against the macros.
+
+## TeCoD as a fifth method (2026-11-06/07)
+
+User 2026-11-06: TeCoD (SIGMOD 2026) joins the RelBench comparison, so it also joins this study. Protocol addition
+`addition_20261106`: same banks, planner prompt, feedback, model and budget relay as the other methods; selection by
+`tools/relbench/tecod_server.py` (released TeCoD template selection, one pool per cell, models loaded once); the memory
+service's TeCoD actor puts the matched template and three examples before a repeated question (released order) and adds a
+pair after a correct answer, using the SQL that produced the answer (`tecod_pair_sql`: the executed query named by the
+derivation, or the derivation over several queries as scalar subqueries; 664 of 665 correct baseline answers of the
+first study resolve this way). The pool is snapshotted after held-out and restored before every change.
+
+- Binary: rebuilt for mode `paper-tecod` at 9deec9e (sha256 `ac454316…`). Since the baseline cells' binary the Rust changes
+  touch only MAVRA's definition maintenance (8db523b, de69b83, fe961b7); the agent side (`metricbench.rs` planner, tools,
+  bridge) is unchanged apart from the mode name.
+- Review before the paid run (independent, read-only): must-fix items fixed (rebuild; pool SQL from the derivation instead
+  of `final_answer.sql`; launch only after the RelBench TeCoD round had freed memory); a failed pool addition no longer ends
+  a cell; analyse.py decides complete runs by the protocol's methods.
+- Smoke (`results/change-study-20261106-tecod-smoke`, both schemas, smoke banks): both cells complete, 0 API errors,
+  CNY 0.13.
+- Formal (`results/change-study-20261106-tecod`, cap CNY 12): runs 1-3 started together at 04:15 with six cells sharing one
+  selection server. Selection is CPU-bound (two 4B models in float32) and was the bottleneck (160-230 s wait per question
+  for the agent's 5-30 s), so at 05:15 the run-2 and run-3 cells were stopped (before any result was looked at; their
+  partial cells stay in the results directory, marked incomplete) and run 1 continued alone. Runs 2-3 are rerun afterwards.
+- Aggregation while TeCoD has fewer runs: `analyse.py --results results/change-study-20261101 --arm-results
+  mavra=results/change-study-20261101-final --arm-results tecod=results/change-study-20261106-tecod --partial-arm tecod`
+  (the four methods keep their three runs; `arm_runs` and the macro `CsTecodRuns` record TeCoD's).

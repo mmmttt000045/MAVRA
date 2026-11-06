@@ -193,7 +193,10 @@ def main():
             if rows:
                 mac[f'Cs{ph.capitalize()}{tag[arm]}C'] = str(sum(x['correct'] for x in rows))
                 mac[f'Cs{ph.capitalize()}{tag[arm]}W'] = str(sum(x['wrong'] for x in rows))
-                mac[f'Cs{ph.capitalize()}N'] = str(sum(x['n'] for x in rows))
+                if arm in P['arms']:  # questions per method over its runs (the protocol's methods share the runs)
+                    mac[f'Cs{ph.capitalize()}N'] = str(sum(x['n'] for x in rows))
+                else:
+                    mac[f'Cs{ph.capitalize()}{tag[arm]}N'] = str(sum(x['n'] for x in rows))
     lk = stats['per_change'].get('tpch/latekey', {}).get('mavra')
     if lk:
         mac['CsTpchLatekeyClarify'] = str(lk['clarify'])
