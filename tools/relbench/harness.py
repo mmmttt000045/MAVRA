@@ -103,10 +103,19 @@ ARMS = {
     "agentsm": {"middle_mode": "middle-alone", "parallel_ok": True, "agentsm": True},
     # AWM (ICML 2025) as published (online WebArena pipeline): one workflow memory per agent, re-induced after every task
     "awm": {"middle_mode": "middle-alone", "parallel_ok": True, "awm": True},
+    # TeCoD (SIGMOD 2026) as released, API mode: one template pool per database from verified (question, SQL) pairs;
+    # a matched template and three examples, or the examples alone, go into the prompt (tools/relbench/tecod_service.py)
+    "tecod": {"middle_mode": "middle-alone", "parallel_ok": False, "tecod": True},
 }
 GMEMORY_REPO = "results/ext/GMemory"
 GMEMORY_PYTHON = "results/ext/venv-gmem/bin/python"
 GMEMORY_OBS_CHARS = 2000
+TECOD_PYTHON = "results/ext/venv-tecod/bin/python"
+TECOD_MODELS = "results/ext/tecod-models"
+# prompts/default.py Default: the pieces of TeCoD's prompt around the question
+TECOD_TEMPLATE_INST = "Here is the SQL template for the question. Follow this template to generate the SQL query.\n"
+TECOD_ICL_INST = "Here are some examples of user questions and their corresponding SQL queries:\n"
+TECOD_ICL_FORMAT = "Question: {question}\nAnswer: {sql}\n"
 FEATURE_TOOLS = ("find_features", "compose_features", "find_program")
 
 LOCK = threading.Lock()
@@ -282,6 +291,36 @@ class Llm:
 
 
 # ───────────────────────── middle layer ─────────────────────────
+
+class TecodService:
+    """tools/relbench/tecod_service.py in TeCoD's own Python 3.12 environment, one JSON line per request (no LLM calls)."""
+
+    def __init__(self, out):
+        self.err = open(os.path.join(out, "tecod.log"), "w")
+        e = {k: v for k, v in os.environ.items() if "proxy" not in k.lower() and k != "PYTHONPATH"}
+        e.update(TOKENIZERS_PARALLELISM="false", HF_HUB_OFFLINE="1")
+        here = os.path.dirname(os.path.abspath(__file__))
+        self.proc = subprocess.Popen([TECOD_PYTHON, os.path.join(here, "tecod_service.py"), "--models", TECOD_MODELS],
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.err, env=e, text=True, bufsize=1)
+        first = json.loads(self.proc.stdout.readline() or "{}")
+        if not first.get("ready") or "entailment" not in first.get("nli_labels", []):
+            raise RuntimeError(f"TeCoD service did not start ({first}); see tecod.log")
+
+    def send(self, req):
+        self.proc.stdin.write(json.dumps(req, ensure_ascii=False) + "\n")
+        self.proc.stdin.flush()
+        line = self.proc.stdout.readline()
+        if not line:
+            raise RuntimeError("TeCoD service exited; see tecod.log")
+        return json.loads(line)
+
+    def close(self):
+        self.proc.stdin.close()
+        try:
+            self.proc.wait(60)
+        except subprocess.TimeoutExpired:
+            self.proc.kill()
+
 
 class GMemoryService:
     """tools/relbench/gmemory_service.py in G-Memory's own Python 3.12 environment, one JSON line per request."""
@@ -561,6 +600,8 @@ class Run:
                 self.restore_awm(a.targets_from, first)
         self.gmem = None
         self.asm = None
+        self.tecod = None
+        self.tecod_names = None  # tables and columns of the database, for TeCoD's literal masking
         os.makedirs(os.path.join(a.out, "sessions"), exist_ok=True)
 
     # data changes and seed tables
@@ -830,6 +871,31 @@ Shared memory: agents on this database publish verified feature definitions and 
                                 "metric": rec["metric"], "val_score": best, "sql": rec["final_sql"]}
         return {"saved": True, "source_cutoff": k, "sql_sha256": hashlib.sha256(rec["final_sql"].encode()).hexdigest()}
 
+    def tecod_question(self, t, k):
+        """TeCoD's question for a session and its masked form (the cutoff date is the question's one literal)."""
+        date = self.tasks[t]["cutoffs"][k - 1]["test_timestamp"][:10]
+        text = f"{self.task_desc[t]['description']} Build features for {t} at cutoff {date}."
+        return text, text.replace(date, "_")
+
+    def tecod_add(self, t, k, rec):
+        """A verified pair joins the pool: the session beat the reference and its final SQL passed the audit (the
+        admission rule of the SQL-only arm and MAVRA's success threshold)."""
+        ref = (self.refs.get((t, k)) or {}).get("val")
+        best = rec.get("best_val")
+        beats = best is not None and ref is not None and (best > ref if rec["higher_is_better"] else best < ref)
+        if not rec.get("final_sql") or not beats or (rec.get("audit") or {}).get("result") != "clean":
+            return {"added": False, "reason": "not a verified pair", "seconds": 0}
+        if self.tecod_names is None:
+            rows, _ = read_sql(self.url, "select table_name, column_name from information_schema.columns "
+                                      "where table_schema in ('public', 'task')")
+            self.tecod_names = (sorted(set(rows["table_name"])), sorted(set(rows["column_name"])))
+        text, masked = self.tecod_question(t, k)
+        v = self.tecod.send({"op": "add", "text": text, "nlq_masked": masked, "sql": rec["final_sql"],
+                             "tables": self.tecod_names[0], "columns": self.tecod_names[1]})
+        if v.get("error"):
+            return {"added": False, "error": v["error"], "seconds": v.get("seconds", 0)}
+        return {"added": True, **{k2: v.get(k2) for k2 in ("t_id", "new_template", "pool_examples", "pool_templates", "seconds")}}
+
     def session(self, t, k, seeds, middle):
         e = self.tasks[t]
         agent = f"{tname(t)}-agent"
@@ -851,6 +917,20 @@ Shared memory: agents on this database publish verified feature definitions and 
             if g.get("prompt"):
                 msgs[1]["content"] = g["prompt"]
             rec["gmemory_begin"] = {k2: g.get(k2) for k2 in ("n_success", "n_insights", "error")}
+        if self.tecod:
+            text, _ = self.tecod_question(t, k)
+            sel = self.tecod.send({"op": "select", "query": text})
+            if sel.get("error"):
+                raise RuntimeError(f"TeCoD selection failed: {sel['error']}")
+            block = ""
+            if sel["matched"]:  # SGC (method auto with an API model): the template in the prompt
+                block += "\n\n" + TECOD_TEMPLATE_INST + sel["template"].replace("string_rule", "{{string}}").replace("number_rule", "{{number}}")
+            if sel["icl"]:
+                block += "\n\n" + TECOD_ICL_INST + "".join(TECOD_ICL_FORMAT.format(question=q, sql=y) + "\n" for q, y in sel["icl"])
+            msgs[0]["content"] += block.rstrip("\n")
+            rec["tecod"] = {"method": "sgc" if sel["matched"] else ("icl" if sel["icl"] else "zs"), "prompt_chars": len(block),
+                            **{k2: sel.get(k2) for k2 in ("matched", "t_id", "nli_label", "entailment", "cosine", "icl_ids", "nli",
+                                                          "pool_examples", "pool_templates", "seconds")}}
         best, best_sql, streak, idle, submitted = None, None, 0, 0, None
         goal_hit = None  # model calls made when a validation first reached the goal
         t_start = time.time()
@@ -961,6 +1041,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                             streak += 1
                         rec["validations"].append({"tool_i": entry["i"], "val": val, "improved": improved, "sql_seconds": s1 + s2,
                                                    "train_seconds": tt, "audit_seconds": audit_s, "leak": leaking,
+                                                   "audit_result": leak.get("result"),
                                                    "leaking_columns": leak.get("columns_differing"), "n_features": xtr.shape[1],
                                                    "sql": sql, "importance": [c for c, _ in imp[:30]]})
                         out = {f"validation_{metric}": round(val, 5), "improved": improved,
@@ -1057,6 +1138,11 @@ Shared memory: agents on this database publish verified feature definitions and 
             t0 = time.time()
             rec["sql_memory"] = self.save_sql_program(t, k, rec)
             rec["sql_memory"]["seconds"] = time.time() - t0
+        if self.tecod and not cut_short:
+            try:
+                rec["learning"] = self.tecod_add(t, k, rec)
+            except Exception as err:
+                rec["learning"] = {"error": str(err)[:500]}
         if self.arm.get("feature_memory") and rec["final_sql"] and not cut_short:
             try:
                 rec["learning"] = self.learn(t, k, rec, seeds, middle, agent, sid)
@@ -1389,6 +1475,8 @@ Shared memory: agents on this database publish verified feature definitions and 
             middle = Middle(self.url, arm["middle_mode"], a.out, a.port or free_port(), a.llm if arm.get("extractor") else None, self.llm.effort, self.llm.prefix)
             if arm.get("gmemory"):
                 self.gmem = GMemoryService(self.env, a.out, self.llm)
+            if arm.get("tecod"):
+                self.tecod = TecodService(a.out)
             if arm.get("agentsm"):
                 import agentsm
 
@@ -1447,6 +1535,13 @@ Shared memory: agents on this database publish verified feature definitions and 
                 self.gmem.close()
             if self.asm:
                 self.asm.close()
+            if self.tecod:
+                try:
+                    with open(os.path.join(a.out, "tecod-pool.json"), "w") as f:
+                        json.dump(self.tecod.send({"op": "dump"}), f, ensure_ascii=False, indent=1)
+                except Exception as err:
+                    log(f"could not export the TeCoD pool: {err}")
+                self.tecod.close()
             if middle:
                 if arm.get("sql_memory"):
                     with open(os.path.join(a.out, "sql-programs.json"), "w") as f:
@@ -1484,8 +1579,8 @@ def main():
     ap.add_argument("--eval-now", action="store_true", help="score each session on the test seeds right after it (default: after the run)")
     ap.add_argument("--smoke", action="store_true", help="pipeline check only: 8 LLM calls, 2 validations; results are not used")
     a = ap.parse_args()
-    if a.arm == "sql-only" and a.targets_from:
-        ap.error("sql-only must start from an empty memory; --targets-from does not restore SQL memory")
+    if a.arm in ("sql-only", "tecod") and a.targets_from:
+        ap.error(f"{a.arm} must start from an empty memory; --targets-from does not restore it")
     if a.smoke:
         global MAX_LLM_CALLS, MAX_VALIDATIONS
         MAX_LLM_CALLS, MAX_VALIDATIONS = 8, 2
