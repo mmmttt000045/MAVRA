@@ -4,7 +4,7 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "paper repo -> main repo overleaf/ (pulled 8 paper-repo commits 11476b7..0d841af of 2026-11-06: zzh's Overleaf intro rewrite (example, update hazard, prior work) and direct GitHub pushes 'Sync manuscript from agent4db-adapter 4fd0666' made outside the main repo: DeepPrep dropped from the RelBench comparison (Table III, cumulative-token figure, abstract/intro 'seven baselines', setup, related work, bib, color), RelBench section moved first in Evaluation, Fig. 1 with three steps per agent, best cost/count cells bolded; local overleaf/ equalled 11476b7 for every changed file, so no conflicts. Generator and figure scripts updated in main 3651505 to reproduce the imported gen/ and figure files)",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main f8e5204: TeCoD baseline across the evaluation and MAVRA's 11-07 RelBench runs)",
   "previous_head": "0d841afd3bd27b019e9a49b7b7e572f36007ed74",
   "remote_commit": "cc2601f398742c6228986b96010abac2944d9734",
   "pending_payload": null,
