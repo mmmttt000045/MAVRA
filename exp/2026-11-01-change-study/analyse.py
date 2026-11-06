@@ -9,7 +9,8 @@ the range over runs. Tokens per scored question include the agent session (memor
 lookups included) and the method's online memory update after the answer.
 Usage: analyse.py [--results DIR] [--arm-results ARM=DIR ...] [--tex PATH]
 --arm-results takes one method's cells from another results directory (the final-binary
-MAVRA rerun); the other methods' cells come from --results.
+MAVRA rerun; TeCoD, which is not in the protocol's original method list); the other
+methods' cells come from --results.
 """
 import argparse
 import glob
@@ -20,7 +21,9 @@ from statistics import mean, median
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 P = json.loads((HERE / 'protocol.json').read_text())
-NAMES = {'ace': 'ACE', 'awm': 'AWM', 'gmemory': 'G-Memory', 'mavra': 'MAVRA'}
+NAMES = {'ace': 'ACE', 'awm': 'AWM', 'gmemory': 'G-Memory', 'mavra': 'MAVRA', 'tecod': 'TeCoD'}
+# the protocol's methods, plus any method that only --arm-results supplies (TeCoD, added 2026-11-06)
+ARMS = list(P['arms'])
 GROUPS = {**P['groups'], 'all': ['holdout', *P['changes']]}
 
 
@@ -60,6 +63,7 @@ def main():
     a = a.parse_args()
     res = Path(a.results)
     override = dict(x.split('=', 1) for x in a.arm_results)
+    ARMS.extend(arm for arm in override if arm not in ARMS)
     banks = {ds: json.loads((HERE / f'bank-{ds}.json').read_text()) for ds in P['datasets']}
     cells, problems = {}, []
     folders = [c for c in sorted((res / 'cells').glob('*')) if c.name.split('-r', 1)[1].split('-', 1)[1] not in override]
@@ -76,7 +80,7 @@ def main():
             problems.append(f'{cell.name}: asked questions differ from the frozen bank')
         cells[(ds, arm, int(run))] = {'rows': scored, 'learn': [r for r in rows if r['phase'] == 'learn'], 'complete': complete}
     runs = sorted({k[2] for k, v in cells.items() if v['complete']})
-    full = [r for r in runs if all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'] for arm in P['arms'])]
+    full = [r for r in runs if all(cells.get((ds, arm, r), {}).get('complete') for ds in P['datasets'] for arm in ARMS)]
     stats = {'complete_runs': full, 'problems': problems, 'per_cell': {}, 'groups': {}, 'per_change': {},
              'sources': {'results': str(res), 'arm_results': override}}
     for (ds, arm, run), c in cells.items():
@@ -89,7 +93,7 @@ def main():
         for scope in [*P['datasets'], 'both']:
             dss = P['datasets'] if scope == 'both' else [scope]
             stats['groups'][g][scope] = {}
-            for arm in P['arms']:
+            for arm in ARMS:
                 per_run = [summarize([r for ds in dss for r in cells[(ds, arm, run)]['rows'] if r['phase'] in phases]) for run in full]
                 if not per_run:
                     continue
@@ -109,7 +113,7 @@ def main():
         for ph in ['holdout', *P['changes']]:
             stats['per_change'][f'{ds}/{ph}'] = {
                 arm: {k: sum(summarize([r for r in cells[(ds, arm, run)]['rows'] if r['phase'] == ph])[k] for run in full)
-                      for k in ('correct', 'clarify', 'wrong', 'error', 'n')} for arm in P['arms'] if full}
+                      for k in ('correct', 'clarify', 'wrong', 'error', 'n')} for arm in ARMS if full}
     budget = res / 'budget' / 'budget-state.json'
     stats['cost'] = json.loads(budget.read_text()) if budget.exists() else None
     if stats['cost']:
@@ -120,17 +124,17 @@ def main():
     if problems:
         lines += ['**Problems:** ' + '; '.join(problems), '']
     for scope in [*P['datasets'], 'both']:
-        lines += [f'## {scope}', '', '| Group | ' + ' | '.join(NAMES[a] for a in P['arms']) + ' |', '|---' * (len(P['arms']) + 1) + '|']
+        lines += [f'## {scope}', '', '| Group | ' + ' | '.join(NAMES[a] for a in ARMS) + ' |', '|---' * (len(ARMS) + 1) + '|']
         for g in GROUPS:
             row = stats['groups'][g][scope]
             lines.append(f'| {g} | ' + ' | '.join(
                 f"{row[a]['accuracy']:.1f}% [{row[a]['min']:.0f}–{row[a]['max']:.0f}] · {row[a]['tokens']/1000:.1f}k tok · {row[a]['seconds']:.0f}s"
-                if a in row else '–' for a in P['arms']) + ' |')
+                if a in row else '–' for a in ARMS) + ' |')
         lines.append('')
-    lines += ['## Per change (correct / clarify / wrong over complete runs)', '', '| Schema/change | ' + ' | '.join(NAMES[a] for a in P['arms']) + ' |',
-              '|---' * (len(P['arms']) + 1) + '|']
+    lines += ['## Per change (correct / clarify / wrong over complete runs)', '', '| Schema/change | ' + ' | '.join(NAMES[a] for a in ARMS) + ' |',
+              '|---' * (len(ARMS) + 1) + '|']
     for k, v in stats['per_change'].items():
-        lines.append(f'| {k} | ' + ' | '.join(f"{v[a]['correct']}/{v[a]['clarify']}/{v[a]['wrong']} of {v[a]['n']}" for a in P['arms'] if a in v) + ' |')
+        lines.append(f'| {k} | ' + ' | '.join(f"{v[a]['correct']}/{v[a]['clarify']}/{v[a]['wrong']} of {v[a]['n']}" for a in ARMS if a in v) + ' |')
     if stats['cost']:
         lines += ['', f"Cost: CNY {stats['cost']['charged_cny']:.2f} charged over {stats['cost']['calls']} calls ({stats['cost']['errors']} errors)."]
     (HERE / 'summary.md').write_text('\n'.join(lines) + '\n')
@@ -140,12 +144,12 @@ def main():
         return
     g = stats['groups']
     mac = {}
-    tag = {'ace': 'Ace', 'awm': 'Awm', 'gmemory': 'Gmem', 'mavra': 'Mavra'}
+    tag = {'ace': 'Ace', 'awm': 'Awm', 'gmemory': 'Gmem', 'mavra': 'Mavra', 'tecod': 'Tecod'}
     gt = {'holdout': 'Hold', 'non_breaking': 'Benign', 'covered_breaks': 'Break', 'outside_conditions': 'Outside', 'all': 'All'}
     st = {'synthetic': 'Syn', 'tpch': 'Tpch', 'both': ''}
     for gname, gtag in gt.items():
         for scope, stag in st.items():
-            for arm in P['arms']:
+            for arm in ARMS:
                 x = g[gname][scope].get(arm)
                 if x:
                     mac[f'Cs{gtag}{stag}{tag[arm]}'] = f"{x['accuracy']:.1f}"
@@ -155,7 +159,7 @@ def main():
                     mac[f'Cs{gtag}{stag}{tag[arm]}TokK'] = f"{x['tokens']/1000:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}S'] = f"{x['seconds']:.0f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}MedS'] = f"{x['median_seconds']:.0f}"
-            base = {arm: g[gname][scope][arm] for arm in P['arms'] if arm != 'mavra' and arm in g[gname][scope]}
+            base = {arm: g[gname][scope][arm] for arm in ARMS if arm != 'mavra' and arm in g[gname][scope]}
             if base and 'mavra' in g[gname][scope]:
                 m = g[gname][scope]['mavra']
                 best = max(base.values(), key=lambda x: x['accuracy'])
@@ -172,7 +176,7 @@ def main():
                 mac[f'Cs{gtag}{stag}TokSave'] = f"{100 * (1 - m['tokens'] / cheap['tokens']):.0f}"
     # per-change counts over both schemas and all runs (correct, wrong, total)
     for ph in ['holdout', *P['changes']]:
-        for arm in P['arms']:
+        for arm in ARMS:
             rows = [stats['per_change'][f'{ds}/{ph}'][arm] for ds in P['datasets'] if f'{ds}/{ph}' in stats['per_change']]
             if rows:
                 mac[f'Cs{ph.capitalize()}{tag[arm]}C'] = str(sum(x['correct'] for x in rows))
@@ -183,14 +187,14 @@ def main():
         mac['CsTpchLatekeyClarify'] = str(lk['clarify'])
         mac['CsTpchLatekeyN'] = str(lk['n'])
     # the text claims MAVRA uses the fewest tokens in every group of every schema: check it
-    fewest = all(g[gn][sc]['mavra']['tokens'] <= min(g[gn][sc][a]['tokens'] for a in P['arms'] if a != 'mavra')
+    fewest = all(g[gn][sc]['mavra']['tokens'] <= min(g[gn][sc][a]['tokens'] for a in ARMS if a != 'mavra')
                  for gn in GROUPS for sc in [*P['datasets'], 'both'])
     stats['mavra_fewest_tokens_every_group'] = fewest
     (HERE / 'study-stats.json').write_text(json.dumps(stats, indent=2, ensure_ascii=False) + '\n')
     print('MAVRA fewest tokens in every group:', fewest)
     mac['CsRuns'] = str(len(full))
-    mac['CsScoredPerRun'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']))
-    scored = sum(banks[ds]['scored'] for ds in P['datasets']) * len(P['arms']) * len(full)
+    mac['CsScoredPerRun'] = str(sum(banks[ds]['scored'] for ds in P['datasets']) * len(ARMS))
+    scored = sum(banks[ds]['scored'] for ds in P['datasets']) * len(ARMS) * len(full)
     mac['CsScored'] = f'{scored:,}'
     mac['CsQuestions'] = str(sum(banks[ds]['scored'] for ds in P['datasets']))
     if stats['cost']:

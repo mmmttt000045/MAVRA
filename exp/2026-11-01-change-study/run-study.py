@@ -54,8 +54,8 @@ def command(ds, arm, run, out, smoke, pool=8):
     return cmd
 
 
-def wait_health(port, proc):
-    until = time.monotonic() + 60
+def wait_health(port, proc, seconds=60):
+    until = time.monotonic() + seconds
     while time.monotonic() < until:
         if proc.poll() is not None:
             raise RuntimeError(f'service on {port} exited')
@@ -108,6 +108,16 @@ def main():
                       for ds in a.datasets.split(','))
     services, logs = [], []
     try:
+        if 'tecod' in a.arms.split(','):  # TeCoD's selection server: its own Python environment, models loaded once (~35 GB)
+            log = (out / 'tecod-server.log').open('a')
+            logs.append(log)
+            tenv = {k: v for k, v in env.items() if k != 'PYTHONPATH'}
+            tenv.update(HF_HUB_OFFLINE='1', TOKENIZERS_PARALLELISM='false', TECOD_THREADS='24')
+            proc = subprocess.Popen([str(ROOT / 'results/ext/venv-tecod/bin/python'), '-u', str(ROOT / 'tools/relbench/tecod_server.py'),
+                                     '--models', str(ROOT / 'results/ext/tecod-models'), '--port', '19532'],
+                                    cwd=ROOT, env=tenv, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+            services.append(proc)
+            wait_health(19532, proc, 600)
         cap = [] if a.cap is None else ['--cap', str(a.cap)]
         for name, port, extra in [('budget-proxy', 19530, ['--key-file', a.key_file, '--out', str(out / 'budget'), *cap]),
                                   ('memory-service', 19531, ['--out', str(out / 'memory'), '--total-tasks', totals])]:

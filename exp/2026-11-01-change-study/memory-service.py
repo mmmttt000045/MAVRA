@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Published ACE/AWM adapters and the unchanged G-Memory core for SQL tasks (change study, 2026-11-01).
+"""Published ACE/AWM adapters and the unchanged G-Memory core for SQL tasks (change study, 2026-11-01); TeCoD
+(SIGMOD 2026) added on 2026-11-06 through tools/relbench/tecod_server.py.
 
 Only the agent's question, own transcript, and binary correctness cross this
 boundary. Gold SQL/answers and change labels never appear in memory prompts.
@@ -13,6 +14,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import threading
 import time
@@ -27,6 +29,30 @@ spec.loader.exec_module(h)
 # Domain wording only. All published online sampling/induction settings remain.
 h.AWM_OVERRIDES[0] = ("Given a list of web navigation tasks", "Given a list of analytical SQL tasks")
 STATE_FIELDS = ("playbooks", "ace_steps", "awm_pool", "awm_workflows", "refs", "tasks", "task_desc")
+TECOD_URL = "http://127.0.0.1:19532/tecod"
+
+
+def tecod(req):
+    """One request to the TeCoD selection server (one pool per cell); raises on its errors."""
+    import urllib.error
+    import urllib.request
+
+    data = json.dumps(req, ensure_ascii=False).encode()
+    try:
+        with urllib.request.urlopen(urllib.request.Request(TECOD_URL, data=data, headers={"Content-Type": "application/json"}),
+                                    timeout=900) as r:
+            value = json.loads(r.read())
+    except urllib.error.HTTPError as err:
+        value = json.loads(err.read() or b"{}")
+    if value.get("error"):
+        raise RuntimeError(f"TeCoD: {value['error']}")
+    return value
+
+
+def tecod_masked(question):
+    """TeCoD's masked question (nlq_masked): the question with its literal values masked; in these questions the only
+    literals are the period's numbers (year, month, quarter)."""
+    return re.sub(r"\d+", "_", question)
 
 
 def messages(req):
@@ -106,6 +132,16 @@ class Actor:
             block = (Path(h.ACE_DIR) / "appworld_playbook_block.txt").read_text().replace("{{ playbook }}", book)
             return {"system_prompt": common + "\n\n" + block + "\nReport any used playbook bullet IDs in final_answer.bullet_ids.",
                     "user_prompt": "", "playbook_bullets": h.ace_pb.get_playbook_stats(book)["total_bullets"]}
+        if self.arm == "tecod":
+            sel = tecod({"op": "select", "pool": self.key, "query": req["question"]})
+            block = h.tecod_block(sel)
+            # released prompt order: template, examples, question; the bench appends user_prompt to the question, so
+            # the question is repeated after the TeCoD pieces
+            return {"system_prompt": common, "user_prompt": f"\n\n{block}\n\nQuestion: {req['question']}" if block else "",
+                    "tecod": {"method": "sgc" if sel["matched"] else ("icl" if sel["icl"] else "zs"), "prompt_chars": len(block),
+                              **{k: sel.get(k) for k in ("matched", "t_id", "nli_label", "entailment", "cosine", "icl_ids",
+                                                         "pool_examples", "pool_templates", "seconds")}},
+                    "input_tokens": 0, "output_tokens": 0}
         if self.arm == "awm":
             workflows = self.actor.awm_workflows.get(req["agent"], "")
             return {"system_prompt": common + ("\n\n" + workflows if workflows else ""), "user_prompt": "",
@@ -137,6 +173,15 @@ class Actor:
         if self.arm == "mavra":
             self.active = None
             return {"common_feedback_recorded":True,"feedback_records":len(self.feedback),"input_tokens":0,"output_tokens":0}
+        if self.arm == "tecod":
+            # a verified pair joins the cell's pool: the answer was correct (the binary feedback every method sees)
+            result = {"added": False}
+            if req["correct"] and own_sql.strip() and not req.get("error"):
+                value = tecod({"op": "add", "pool": self.key, "text": req["question"], "nlq_masked": tecod_masked(req["question"]),
+                               "sql": own_sql})
+                result = {"added": True, **{k: value.get(k) for k in ("t_id", "new_template", "masking", "pool_examples", "pool_templates")}}
+            self.active = None
+            return {**result, "input_tokens": 0, "output_tokens": 0, "seconds": time.monotonic() - t0}
         t, agent, k = req["metric"], req["agent"], self.k
         ask = req["ask"]
         # The predictive harness uses one timestamp as task-file metadata. SQL
@@ -184,6 +229,8 @@ class Actor:
         if self.arm == "gmemory":
             self.close()
             shutil.copytree(self.branch / "gmemory", self.root / "post-heldout-gmemory")
+        if self.arm == "tecod":
+            tecod({"op": "snapshot", "pool": self.key, "name": "post-heldout"})
         return {"ok": True, "k": self.k, "boundary": "post-heldout"}
 
     def restore(self):
@@ -200,6 +247,8 @@ class Actor:
         self.actor.a.out = str(self.branch)
         if self.arm == "gmemory":
             shutil.copytree(self.root / "post-heldout-gmemory", self.branch / "gmemory")
+        if self.arm == "tecod":
+            tecod({"op": "restore", "pool": self.key, "name": "post-heldout"})
         return {"ok": True, "k": self.k, "branch": self.branch_index}
 
     def dispatch(self, req):
@@ -256,7 +305,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("Request size outside limit")
             req = json.loads(self.rfile.read(n))
             key, arm = req["key"], req["arm"]
-            if not key.replace("-", "").isalnum() or arm not in ("ace", "awm", "gmemory", "mavra"):
+            if not key.replace("-", "").isalnum() or arm not in ("ace", "awm", "gmemory", "mavra", "tecod"):
                 raise ValueError("Invalid actor")
             with self.server.registry_lock:
                 if key not in self.server.actors:
@@ -281,7 +330,9 @@ if __name__ == "__main__":
     p.add_argument("--model", default=PROTOCOL["model"])
     p.add_argument("--out", required=True)
     p.add_argument("--total-tasks", required=True, help="dataset=count,...")
+    p.add_argument("--tecod-url", default=TECOD_URL)
     a = p.parse_args()
+    TECOD_URL = a.tecod_url
     server = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
     server.actors, server.registry_lock, server.args = {}, threading.Lock(), a
     server.total_tasks = {k: int(v) for k, v in (x.split("=") for x in a.total_tasks.split(","))}

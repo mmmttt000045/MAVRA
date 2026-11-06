@@ -44,7 +44,7 @@ pub struct Options {
                           "reforce", "reforce-traj", "reforce-static", "reforce-mavra",
                           "mem-awm", "mem-ace", "mem-mem0", "mem-agentsm", "mem-ace-shared", "mem-agentsm-shared",
                           "mem-reasoningbank", "mem-apc", "mem-reasoningbank-shared", "mem-apc-shared",
-                          "paper-ace", "paper-awm", "paper-gmemory"])]
+                          "paper-ace", "paper-awm", "paper-gmemory", "paper-tecod"])]
     modes: Vec<String>,
     #[arg(long, value_delimiter = ',', default_value = "defined,named", value_parser = ["defined", "named"])]
     phrasings: Vec<String>,
@@ -839,8 +839,8 @@ pub(crate) fn config(mode: &str) -> (MiddleConfig, bool, bool) {
             false,
             false,
         ),
-        // 已发表的记忆方法（ACE、AWM、G-Memory）：工具同 middle，记忆由外部服务按各自发布的算法维护（`paper_memory`）
-        "middle" | "reforce" | "paper-ace" | "paper-awm" | "paper-gmemory" => (base, true, false),
+        // 已发表的方法（ACE、AWM、G-Memory、TeCoD）：工具同 middle，记忆由外部服务按各自发布的算法维护（`paper_memory`）
+        "middle" | "reforce" | "paper-ace" | "paper-awm" | "paper-gmemory" | "paper-tecod" => (base, true, false),
         // 无记忆：同 middle 的工具，但表结构知识（表描述、关联路径与守卫依据）只在一道题内有效，每题从零开始
         "middle-alone" => (MiddleConfig { scope: Scope::Task, metric_scope: Scope::Task, ..base }, true, false),
         "metric-local" => {

@@ -24,7 +24,8 @@
     "ace": "paper-ace",
     "awm": "paper-awm",
     "gmemory": "paper-gmemory",
-    "mavra": "metric-global-full"
+    "mavra": "metric-global-full",
+    "tecod": "paper-tecod"
   },
   "metrics": [
     "M1",
@@ -81,5 +82,6 @@
   "aggregation": "Primary: answers pooled per group (micro accuracy), per schema and over both schemas, mean over runs with the range over runs. Per-change and per-run tables are kept in full. Tokens per question include online memory updates and MAVRA's learning-time extraction and optimization charged to the run.",
   "pilot": "Run 1 is the pilot. If a defect is found in any method's harness, the run is stopped, the defect fixed, and the affected cells rerun; the earlier cells stay in the development record with their cost.",
   "reporting": "All completed runs are reported; no run is selected by outcome.",
-  "budget_note": "Total authorization about CNY 40; the smoke test spent CNY 0.52 under its own ledger (results/change-study-20261101-smoke/budget), so the formal cap is 39.4."
+  "budget_note": "Total authorization about CNY 40; the smoke test spent CNY 0.52 under its own ledger (results/change-study-20261101-smoke/budget), so the formal cap is 39.4.",
+  "addition_20261106": "User 2026-11-06: add TeCoD (SIGMOD 2026) as a fifth method after adding it to the RelBench comparison. Same banks, planner prompt, feedback, model and budget relay as the other methods; selection by tools/relbench/tecod_server.py (released TeCoD, one pool per cell; a pair joins the pool when its answer was correct); cells run with --arms tecod into results/change-study-20261106-tecod. The default arm list is unchanged, so earlier cells are never rerun."
 }
