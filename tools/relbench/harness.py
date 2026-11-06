@@ -894,7 +894,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                              "tables": self.tecod_names[0], "columns": self.tecod_names[1]})
         if v.get("error"):
             return {"added": False, "error": v["error"], "seconds": v.get("seconds", 0)}
-        return {"added": True, **{k2: v.get(k2) for k2 in ("t_id", "new_template", "pool_examples", "pool_templates", "seconds")}}
+        return {"added": True, **{k2: v.get(k2) for k2 in ("t_id", "masking", "new_template", "pool_examples", "pool_templates", "seconds")}}
 
     def session(self, t, k, seeds, middle):
         e = self.tasks[t]

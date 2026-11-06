@@ -21,7 +21,8 @@ Not taken over: grammar-constrained decoding (it needs the model's logits, which
 (an exact cosine search over the small pool ranks the same way; ties keep the order in which examples were added); the
 sqlglot normalisation of an example's SQL before it is stored (cli/commands.py process_data_command): examples keep the
 SQL that was validated, because a round trip through sqlglot can change PostgreSQL syntax, and only the template is
-built from the normalised SQL. The released code has no synthetic paraphrase step (data-preparation.md: nlq_masked is
+built from the normalised SQL. Where sqlglot cannot parse or print a PostgreSQL query, its string and number literals are
+masked token by token instead (sql_template). The released code has no synthetic paraphrase step (data-preparation.md: nlq_masked is
 supplied with the data); neither does this service.
 
 Protocol: one JSON request per line on stdin, one JSON reply per line on stdout.
@@ -46,9 +47,32 @@ EMB_PROMPTS = {  # services/embedding.py _create_embedding_function
     "skeleton": "{query}",
 }
 SEEDS_TOKEN = "relbench_seeds_placeholder"  # {seeds} while sqlglot parses the SQL; a table name, so it is not masked
+# a masked number is printed as this number, then replaced: sqlglot's PostgreSQL printer reads number literals as numbers
+NUMBER_SENTINEL = "918273645019"
 
 
 def sql_template(sql, tables, columns):
+    """The template of one SQL and how its literals were masked ("parse", or "tokens" where sqlglot cannot parse or
+    print the PostgreSQL, e.g. a CTE named glob, a keyword in sqlglot's tokenizer)."""
+    try:
+        return parsed_template(sql, tables, columns), "parse"
+    except Exception:  # noqa: BLE001
+        return token_template(sql), "tokens"
+
+
+def token_template(sql):
+    """String and number literals masked token by token (no identifier masking, no normalisation)."""
+    import sqlglot
+    from sqlglot.tokens import TokenType
+
+    src = sql.strip().rstrip(";").replace("{seeds}", SEEDS_TOKEN)
+    for tok in sorted(sqlglot.tokenize(src, read="postgres"), key=lambda x: -x.start):
+        if tok.token_type in (TokenType.STRING, TokenType.NUMBER):
+            src = src[:tok.start] + ("string_rule" if tok.token_type == TokenType.STRING else "number_rule") + src[tok.end + 1:]
+    return src.replace(SEEDS_TOKEN, "{seeds}")
+
+
+def parsed_template(sql, tables, columns):
     """pdec/tecod_utils.py convert_sql_string_to_template and extract_sqlite_aliases, read and written as PostgreSQL;
     the SQL is first normalised as cli/commands.py process_data_command does (optimize_joins)."""
     from sqlglot import exp, parse_one
@@ -76,11 +100,11 @@ def sql_template(sql, tables, columns):
             if node.name.lower() not in tables and node.name.lower() not in columns and node.name.lower() not in aliases:
                 return exp.Literal.string("string_rule")
         if isinstance(node, exp.Literal):
-            return exp.Literal.string("string_rule") if node.is_string else exp.Literal.number("number_rule")
+            return exp.Literal.string("string_rule") if node.is_string else exp.Literal.number(NUMBER_SENTINEL)
         return node
 
     out = tree.transform(mask).sql(dialect="postgres").replace("'string_rule'", "string_rule")
-    return out.replace(SEEDS_TOKEN, "{seeds}")
+    return out.replace(NUMBER_SENTINEL, "number_rule").replace(SEEDS_TOKEN, "{seeds}")
 
 
 class Pool:
@@ -158,14 +182,14 @@ class Pool:
                 "pool_examples": len(self.examples), "pool_templates": len(self.templates)}
 
     def add(self, text, nlq_masked, sql, tables, columns):
-        template = sql_template(sql, tables, columns)
+        template, masking = sql_template(sql, tables, columns)
         new = template not in self.templates
         if new:
             self.templates.append(template)
         t_id = self.templates.index(template)
         self.examples.append({"text": text, "nlq_masked": nlq_masked, "sql": sql, "t_id": t_id})
         self.vectors.append(self.embed([nlq_masked], "skeleton")[0])
-        return {"t_id": t_id, "template": template, "new_template": new, "pool_examples": len(self.examples),
+        return {"t_id": t_id, "template": template, "masking": masking, "new_template": new, "pool_examples": len(self.examples),
                 "pool_templates": len(self.templates)}
 
 
@@ -195,7 +219,7 @@ def main():
             elif req["op"] == "dump":
                 v = {"examples": pool.examples, "templates": pool.templates}
             elif req["op"] == "template":  # smoke tests: the template of one SQL, no model
-                v = {"template": sql_template(req["sql"], req["tables"], req["columns"])}
+                v = dict(zip(("template", "masking"), sql_template(req["sql"], req["tables"], req["columns"])))
             else:
                 v = {"error": f"unknown op {req['op']}"}
         except Exception as err:  # noqa: BLE001 - every failure goes back to the harness as a reply
