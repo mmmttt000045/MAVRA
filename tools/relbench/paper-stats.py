@@ -35,10 +35,10 @@ RUNS = {
     "rel-trial": ("Trial", "results/relbench-main/{arm}-rel-trial-r1"),
 }
 # 10-21 night (user): AgentSM (preprint) replaced by two data-preparation systems of the database venues;
-# 11-06 (user): DeepPrep dropped from the comparison (its runs stay in results/)
+# 11-06 (user): DeepPrep dropped from the comparison (its runs stay in results/); TeCoD (SIGMOD 2026) added the same day
 ARMS = [("none", "None", "No memory"), ("ace", "ACE", "ACE~\\cite{zhang2026ace}"),
         ("gmemory", "GMem", "G-Memory~\\cite{zhang2025gmemory}"), ("awm", "AWM", "AWM~\\cite{wang2025awm}"),
-        ("featpilot", "FeatPilot", "FeatPilot$^{*}$~\\cite{liang2025featpilot}"),
+        ("tecod", "Tecod", "TeCoD~\\cite{jivani2025tecod}"), ("featpilot", "FeatPilot", "FeatPilot$^{*}$~\\cite{liang2025featpilot}"),
         ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}")]
 TASK_SHORT = {"post-votes": "post-votes", "user-badge": "user-badge", "user-engagement": "user-engage.",
               "study-outcome": "study-outcome", "study-adverse": "study-adverse", "site-success": "site-success"}
@@ -202,10 +202,10 @@ def main():
             for i, t in enumerate(tasks):
                 v = r["test"][t]
                 macros[f"Rb{pre}{name}Q{LETTERS[i]}"] = "--" if v is None else (f"{v:.4f}" if v < 1 else f"{v:.2f}")
-        # MAVRA against the best baseline (fewest tokens among the published memories that finished)
+        # MAVRA against the best baseline (fewest tokens among the published memories and TeCoD's shared templates)
         # the token comparison is against the agent memories (the methods built to save repeated work); FeatPilot
         # searches each task anew and is compared on quality and time
-        pub = [arm for arm in ("ace", "gmemory", "awm") if rows.get(arm)]
+        pub = [arm for arm in ("ace", "gmemory", "awm", "tecod") if rows.get(arm)]
         if rows.get("mavra") and pub:
             best = min(pub, key=lambda x: rows[x]["tok"])
             macros[f"Rb{pre}BestBaseline"] = dict((x, n) for x, n, _ in ARMS)[best]

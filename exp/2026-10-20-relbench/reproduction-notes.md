@@ -98,6 +98,44 @@ the paper's reproduction appendix.
      and most induced workflows were empty, so the first AWM runs were discarded and rerun. The agents themselves use
      the study's setting (thinking, low), as with G-Memory.
 
+## TeCoD (Jivani, Maheshwari, Sarawagi; PACMMOD 3(6), SIGMOD 2026)
+
+Added 2026-11-06, when DeepPrep was dropped (user), as the database-venue method that reuses verified SQL.
+
+- **Code:** the official repository SSLab-CSE-IITB/tecod @ 6739e32 (MIT) with its pdec submodule
+  smitjivani/nlqtosql_common, a local copy in `results/ext/tecod-src`; the released models Qwen/Qwen3-Embedding-4B and
+  smitxxiv/Qwen3-Re4B-SQL-TeCoD-TMM (`results/ext/tecod-models`), in TeCoD's own Python 3.12 environment. Run by
+  `tools/relbench/tecod_service.py` (RelBench, one service per run) and `tools/relbench/tecod_server.py` (change study,
+  one process with one pool per cell).
+- **Verbatim:** template construction (`convert_sql_string_to_template`, here in PostgreSQL's dialect), the embedding
+  prompts, vector search top 1000 and NLI top 30, per-template mean entailment and cosine with the released tie rule
+  (lowest template id, ids in sorted template order), the majority label, a match only on entailment, three ICL examples
+  (best per template by cosine, most similar last), and the prompt strings of `prompts/default.py` with the template's
+  `{{string}}`/`{{number}}` placeholders.
+- **Scope:** one template pool per database, shared by all agents (TeCoD builds one pool per database workload).
+- **Changes and why:**
+  1. The released pool is built offline from a file of expert-verified pairs. Sessions here arrive in order, so a pair
+     joins the pool online: in RelBench a session's (question, final SQL) after it beats the reference with a clean
+     audit (MAVRA's and the SQL-only arm's admission rule); in the change study a question's SQL after a correct answer
+     (the binary feedback every method sees).
+  2. The question: in RelBench the task description plus the task line "Build features for <task> at cutoff <date>",
+     masked by replacing the date (TeCoD's `nlq_masked` is supplied with its data); in the change study the question with
+     its numbers (the period) masked.
+  3. API mode: grammar-constrained decoding needs the model's logits, which an API model does not expose. The released
+     method "auto" with an API model selects a template but leaves it out of the prompt, so the arm uses method "sgc":
+     the matched template and the examples, or the examples alone when no template matches (the paper's prompt-based
+     variant).
+  4. The template and examples go into the user message before the task line (RelBench) or before the repeated question
+     (change study), in the released order (schema, template, examples, question); the agent's own system prompt, tools
+     and turn budget replace TeCoD's one-shot instruction and output format, as for every method.
+  5. Exact cosine search over the small pool instead of Milvus Lite (same ranking; ties keep insertion order); both
+     models on CPU in float32, the released defaults (the server has no GPU).
+  6. An example keeps the SQL that was validated (a sqlglot round trip can change PostgreSQL syntax); only the template
+     is built from the normalised SQL, and where sqlglot cannot parse a query its literals are masked token by token.
+     In the change study the table and column names that template construction keeps are read from the SQL itself.
+  7. Selection takes about 10 s per session on CPU and, like G-Memory's retrieval, is outside the measured agent time;
+     each session records it (`tecod.seconds`).
+
 ## DeepPrep (Fan et al., PVLDB 19(11), 2026)
 
 - **Code:** the official repository ruc-datalab/DeepPrep @ b4e64b0 (no license file; ask the authors before the

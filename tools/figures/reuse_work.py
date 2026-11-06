@@ -1,8 +1,9 @@
-"""Fig. 4: agent tool calls per reuse session (RelBench official-API cohort, cutoffs 2-3).
+"""Agent tool calls per reuse session in the five-cutoff RelBench study (the runs of Table III, cutoffs 2-5).
 
-Same data, categories, colours and hatching as exp/2026-10-29-fig45-official/build-figures.py
-(figure-data.json, six reuse sessions per method and database, failures included); the two
-databases are drawn side by side to fit one column at a lower height.
+Data: exp/2026-10-20-relbench/reuse-work-data.json (tools/relbench/reuse-work-data.py; twelve reuse sessions per
+method and database, failures included). Categories, colours and hatching as before (until 2026-11-06 the figure
+used the separate three-cutoff cohort exp/2026-10-29-fig45-official, which has no TeCoD arm); the two databases are
+drawn side by side to fit one column.
 """
 import json
 from pathlib import Path
@@ -17,7 +18,7 @@ import style
 NAME = "reuse-work"
 W, H = style.COLUMN, 35.5
 METHODS = [("none", "No memory", "无记忆"), ("ace", "ACE", "ACE"), ("awm", "AWM", "AWM"),
-           ("gmemory", "G-Memory", "G-Memory"), ("mavra", "MAVRA", "MAVRA")]
+           ("gmemory", "G-Memory", "G-Memory"), ("tecod", "TeCoD", "TeCoD"), ("mavra", "MAVRA", "MAVRA")]
 KINDS = [("schema", "Schema", "结构检查", "#B8CDE5", ""),
          ("probe", "SQL probes", "SQL 探查", "#E1B78D", "//"),
          ("validate", "Validation", "验证", "#8FBCA0", ".."),
@@ -28,7 +29,7 @@ TEXT = {"en": {"y": "Agent tool calls per session", "panels": ["(a) rel-stack", 
 
 
 def figure(lang):
-    work = json.loads((ROOT / "exp/2026-10-29-fig45-official/figure-data.json").read_text(encoding="utf-8"))["work"]
+    work = json.loads((ROOT / "exp/2026-10-20-relbench/reuse-work-data.json").read_text(encoding="utf-8"))["work"]
     fig = mplstyle.figure(W, H)
     axes = fig.subplots(1, 2, gridspec_kw=dict(left=.11, right=.99, top=.769, bottom=.245, wspace=.22))
     for ax, ds, title in zip(axes, ["rel-stack", "rel-trial"], TEXT[lang]["panels"]):

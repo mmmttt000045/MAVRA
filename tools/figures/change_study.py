@@ -1,4 +1,5 @@
-"""Fig. 6: answers after data changes, four memory methods on two schemas (exp/2026-11-01-change-study).
+"""Fig. 6: answers after data changes, five methods on two schemas (exp/2026-11-01-change-study; TeCoD from
+results/change-study-20261106-tecod, added 2026-11-06).
 
 (a, b) correct answers above zero and wrong answers below it, per change group and schema; requests for
 clarification are outlined segments on top of the correct answers. (c, d) cost per question, pooled over
@@ -18,14 +19,14 @@ import style
 
 NAME = "change-study"
 W, H = style.TEXTWIDTH, 39.0
-ARMS = ["ace", "awm", "gmemory", "mavra"]
+ARMS = ["ace", "awm", "gmemory", "tecod", "mavra"]
 GROUPS = ["holdout", "non_breaking", "covered_breaks", "outside_conditions"]
 SCHEMAS = ["synthetic", "tpch"]
-HATCHES = dict(zip(ARMS, ["////", r"\\", "xx", "...."]))
-LABEL = {"ace": "ACE", "awm": "AWM", "gmemory": "G-Memory", "mavra": "MAVRA"}
-for key, color in zip(ARMS, ["mACE", "mAWM", "mGMem", "mCond"]):
+HATCHES = dict(zip(ARMS, ["////", r"\\", "xx", "++", "...."]))
+LABEL = {"ace": "ACE", "awm": "AWM", "gmemory": "G-Memory", "tecod": "TeCoD", "mavra": "MAVRA"}
+for key, color in zip(ARMS, ["mACE", "mAWM", "mGMem", "mTeCoD", "mCond"]):
     style.METHODS[key] = (LABEL[key], LABEL[key], color)
-TAG = {"ace": "Ace", "awm": "Awm", "gmemory": "Gmem", "mavra": "Mavra"}
+TAG = {"ace": "Ace", "awm": "Awm", "gmemory": "Gmem", "tecod": "Tecod", "mavra": "Mavra"}
 GTAG = {"holdout": "Hold", "non_breaking": "Benign", "covered_breaks": "Break", "outside_conditions": "Outside"}
 STAG = {"synthetic": "Syn", "tpch": "Tpch"}
 TEXT = {
@@ -117,7 +118,7 @@ def figure(lang):
     axes = fig.subplots(1, 4, gridspec_kw=dict(left=.05, right=.995, top=.862, bottom=.24, wspace=.26))
     handles = [Patch(**mplstyle.bar_style(arm, HATCHES[arm]), label=LABEL[arm]) for arm in ARMS]
     handles.append(Patch(facecolor="white", edgecolor="black", lw=.4, ls=(0, (1.5, 1)), label=t["flag"]))
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(.52, 1.0), ncol=5, handlelength=1.4,
+    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(.52, 1.0), ncol=6, handlelength=1.4,
                columnspacing=1.2, fontsize=7)
     for k, ax in enumerate(axes):
         if k < 2:
