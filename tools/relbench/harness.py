@@ -92,6 +92,10 @@ ARMS = {
     "none": {"middle_mode": "middle-alone", "parallel_ok": True},
     # README §1.6: feature definitions shared by all agents; sessions of one cutoff run one after another
     "mavra": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True},
+    # 11-07: MAVRA hands each session its task's verified program and the entity's verified definitions at the start
+    # (as the other memories put theirs into the prompt) instead of the agent looking them up with two tool calls
+    "mavra-push": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                   "push_memory": True},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -774,7 +778,9 @@ Budget: at most {MAX_VALIDATIONS} validations and {MAX_LLM_CALLS} model calls; t
             f"reaches validation {metric} {self.target(t, k):.5f}. Once your features reach that score you may make one more attempt to improve them: "
             f"one more validation within the next {POST_GOAL_LLM_CALLS} model calls, after which the session ends with your best validated features." if self.target(t, k) is not None else "") + ("""
 
-Shared memory: agents on this database publish verified feature definitions and feature programs. Start with find_program (this task's verified program from an earlier cutoff: its complete feature SQL when it still runs, and a feature SQL of its definitions) and find_features (definitions for the entity table, with a feature SQL of them for these seed tables). If they return a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("feature_memory") else "") + (
+Shared memory: agents on this database publish verified feature definitions and feature programs. Start with find_program (this task's verified program from an earlier cutoff: its complete feature SQL when it still runs, and a feature SQL of its definitions) and find_features (definitions for the entity table, with a feature SQL of them for these seed tables). If they return a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("feature_memory") and not self.arm.get("push_memory") else "") + ("""
+
+Shared memory: agents on this database publish verified feature definitions and feature programs. This task's verified program from an earlier cutoff (its complete feature SQL when it still runs, and a feature SQL of its definitions) and the verified definitions for the entity table (with a feature SQL of them for these seed tables) are looked up for you and follow the task line. If they include a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("push_memory") else "") + (
             "\n\nSQL memory: successful sessions save their complete audited feature SQL for this task. Start with find_program "
             "(this task's verified program from an earlier cutoff: its complete feature SQL when it still runs). If it returns "
             "a feature SQL, validate it first; explore the tables and extend the SQL only to improve on it."
@@ -849,7 +855,10 @@ Shared memory: agents on this database publish verified feature definitions and 
                {"keys": {"type": "array", "items": s}}, ["keys"]),
             fn("find_program", "The latest verified feature program for this task (from an earlier cutoff): its validation score and its still-valid definitions compiled into one feature SQL, ready for validate_features.",
                {}, []),
-        ] if self.arm.get("feature_memory") else []) + ([
+        ] if self.arm.get("feature_memory") and not self.arm.get("push_memory") else []) + ([
+            fn("compose_features", "Compile verified feature definitions (keys from find_features or find_program) into one feature SQL that uses {seeds}.",
+               {"keys": {"type": "array", "items": s}}, ["keys"]),
+        ] if self.arm.get("push_memory") else []) + ([
             fn("find_program", "The latest successful, audited feature program for this task from an earlier cutoff: "
                "its validation score and complete feature SQL when it still runs, ready for validate_features.", {}, []),
         ] if self.arm.get("sql_memory") else []) + (self.asm.tool_specs() if self.asm else [])
@@ -942,6 +951,19 @@ Shared memory: agents on this database publish verified feature definitions and 
         best, best_sql, streak, idle, submitted = None, None, 0, 0, None
         goal_hit = None  # model calls made when a validation first reached the goal
         t_start = time.time()
+        if self.arm.get("push_memory"):
+            # the two lookups the agent used to start with, done by the memory at the session start (inside the
+            # measured session time) and put after the task line in the form of their tool outputs
+            t0, pushed = time.time(), []
+            for name, args in (("find_program", {"task": t}), ("find_features", {"entity": e["entity_table"].lower(), "seed_key": ec})):
+                try:
+                    out = middle.call(name, agent, sid, sid, args)
+                except Exception as err:
+                    out = {"error": f"{err}"}
+                pushed.append(f"{name}: " + json.dumps(out, ensure_ascii=False, default=str)[:TOOL_OUTPUT_CHARS])
+            msgs[1]["content"] = task_line + "\n\nLooked up for you in shared memory:\n" + "\n".join(pushed)
+            rec["memory_push"] = {"seconds": time.time() - t0, "chars": sum(len(x) for x in pushed),
+                                  "program": '"sql"' in pushed[0], "error": any('"error"' in x[:40] for x in pushed)}
 
         def better(x):
             return best is None or (x > best if higher else x < best)
