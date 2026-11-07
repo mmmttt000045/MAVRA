@@ -4,12 +4,11 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 326c2c0: three single-column figures for Section IV-B/D/E in Fig. 2's style)",
-  "previous_head": "8a726ab79f288a59c4c4682ed31db7ec312105cf",
-  "remote_commit": "54da2ffd15e856d631ba9f7c716a964134d2f06d",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 08050a3: Section IV Figs. 3-5 redrawn after SIGMOD/VLDB practice, user-approved layouts)",
+  "previous_head": "54da2ffd15e856d631ba9f7c716a964134d2f06d",
+  "remote_commit": "d4141d0b8da16e17cac64124c47da45f92ce05cd",
   "pending_payload": null,
   "changed_paths": [
-    "sections/04-design.tex",
     "figures/extraction-zh.pdf",
     "figures/extraction.pdf",
     "figures/extraction.tex",
@@ -23,14 +22,14 @@
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, copy of overleaf/ at main 326c2c0 (git-ignored overleaf/build/check1107)",
-    "status": "bash build.sh all: main.pdf 15 pages (body now runs about 33 lines onto p. 13; the AI statement and references follow), main-bilingual.pdf 22 pages; no undefined references or citations",
-    "identical_to_remote": "paper repo origin/main was 8a726ab (= the previous record); tools/sync-paper-repo.py dry run: 1 changed, 9 added; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "New Fig. 3 extraction and checked publication (p. 5), Fig. 4 dependency-aware maintenance and repair (p. 6), Fig. 5 snapshot-bound execution (p. 7); later figures renumber; IV-B, IV-D, IV-E cite them; body page fitting pending"
+    "built_on": "noctis, copy of overleaf/ at main 08050a3 (git-ignored overleaf/build/check1107)",
+    "status": "bash build.sh all: main.pdf 15 pages (body runs about 20 lines onto p. 13), main-bilingual.pdf 22 pages; no undefined references or citations",
+    "identical_to_remote": "paper repo origin/main was 54da2ff (= the previous record); tools/sync-paper-repo.py dry run: 9 changed, 0 added; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "Fig. 3 two drafts of Agent 1's session (real G7 rejection 13,532,799.00 vs 2,754,299.60), Fig. 4 stored check outcomes after the item load, Fig. 5 (a) check-then-run vs (b) one snapshot; flat, black/grey plus red/blue; new captions; body page fitting pending"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/54da2ffd15e856d631ba9f7c716a964134d2f06d",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/d4141d0b8da16e17cac64124c47da45f92ce05cd",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-07: pull, merge locally, push).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "326c2c042854469c08155019423f5ad8365d5b68"
+  "source_commit": "08050a3c33d864318ef75ff6bea6e85afe5f3f73"
 }
