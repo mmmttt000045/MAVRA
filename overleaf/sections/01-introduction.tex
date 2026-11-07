@@ -25,11 +25,19 @@ When different agents receive similar requests, they may repeat the same databas
 
 \begin{example}
 \bi{
-Figure~\ref{fig:metric-record} illustrates a typical e-commerce scenario in which $N$ independent data agents query the same retail database. Agent~1 is asked to calculate electronics revenue in January. It first inspects the schemas of the \code{date}, \code{sales}, and \code{item} tables (\code{desc}), identifies the join keys (\code{date\_id} and \code{item\_id}), examines the revenue columns (\code{net\_paid} and \code{gross}), and applies the required filters. Agent~2 is asked to identify the month with the highest electronics revenue. It independently repeats the same database exploration before grouping revenue by month and identifying the highest. Similarly, Agent~$N$ repeats this process to compare September revenue across years. As highlighted in the dashed box, these agents repeat the same knowledge discovery steps (Steps~1--4), while only the final queries differ (Step~5). 
+Figure~\ref{fig:metric-record} illustrates a typical e-commerce scenario in which $N$ independent data agents query the same retail database.
+Agent~1 asks for revenue in January.
+% It inspects the schemas of the \code{date}, \code{sales}, and \code{item} tables, identifies the join keys (\code{date\_id} and \code{item\_id}), examines the revenue columns (\code{net\_paid} and \code{gross}), and applies the required filters. 
+It first explores the database to check the schemas of the \code{date}, \code{sales}, and \code{item} tables. 
+It then finds that a join is needed, joins the tables on \code{date\_id} and \code{item\_id} (\code{join}), probes the revenue columns (\code{net\_paid} and \code{gross}), and queries January revenue (\code{month=1}).
+Suppose another independent Agent~2 asks for the month with the highest electronics revenue. 
+% Agent~2 is asked to identify the month with the highest electronics revenue. 
+It starts by inspecting the same tables as Agent 1, then applies the electronics filter (\code{category='Elec.'}), joins the tables, and ranks the months.
+% It independently repeats the similar database exploration before grouping revenue by month and identifying the highest. Similarly, Agent~$N$ repeats this process to compare September revenue across years. 
+As highlighted in the dashed box, while the final steps differ (Step~5), these agents share a similar knowledge discovery process in Steps~1--4. 
 % Figure~\ref{fig:metric-record} shows a typical multi-agent use case in e-commerce senario, where $N$ independent agents on the same retail database. 
 % Agent~1 asks for electronics revenue in January.
-% It first explores the database (\code{desc}) to check the \code{date}, \code{sales}, and \code{item} tables. 
-% It then finds that a join is needed, joins the tables on \code{date\_id} and \code{item\_id} (\code{join}), probes the revenue columns (\code{net\_paid} and \code{gross}), and queries January (\code{month=1}).
+
 % Suppose another independent Agent~2 asks for the best month for electronics revenue.
 % It also starts by inspecting the same \code{date}, \code{sales}, and \code{item} tables, then applies the electronics filter (\code{category='Elec.'}), joins the tables, and ranks the months.
 % As the dashed box shows, Steps~1--4 are repeated across agents, and only Step~5 differs (all \WxSessions\ sessions on this metric repeat Steps~1--4; overall, 93\% of database probes revisit earlier targets and 57\% of LLM calls issue no final SQL). 
