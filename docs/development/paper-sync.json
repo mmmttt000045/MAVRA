@@ -4,30 +4,24 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main c5f0372: Section IV Figs. 3-5 polished with Fig. 2's visual vocabulary and overlaps fixed; Fig. 4 caption steps 5-6)",
-  "previous_head": "d72d695456802061ad63bdfc2f95ea1a5bec794f",
-  "remote_commit": "fd1d70a2a7ae3e4c000285099cd39bbd72a7c8bb",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 8f9de16: Table I on page 2, Table II on page 3, user request)",
+  "previous_head": "fd1d70a2a7ae3e4c000285099cd39bbd72a7c8bb",
+  "remote_commit": "3ac03482ecbdb5d96892eb6609aabe269ea8c38b",
   "pending_payload": null,
   "changed_paths": [
-    "figures/extraction-zh.pdf",
-    "figures/extraction.pdf",
-    "figures/maintenance-zh.pdf",
-    "figures/maintenance.pdf",
-    "figures/maintenance.tex",
-    "figures/snapshot-zh.pdf",
-    "figures/snapshot.pdf"
+    "sections/02-background.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, copy of overleaf/ at main c5f0372 (git-ignored overleaf/build/check1107)",
-    "status": "bash build.sh all: main.pdf 15 pages (body runs about 27 lines onto p. 13), main-bilingual.pdf 22 pages; no undefined references or citations",
-    "identical_to_remote": "paper repo had moved to d72d695 (user Overleaf edit 1b3fabb, Section I example paragraph only); merged into overleaf/ unchanged as main c5f0372, then synced with --force; dry run: 7 changed, 0 added; sections/01-introduction.tex and sections/abstract.tex identical to remote and untouched (user: intro is not to be changed by a single word from e6ff925 on); remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Figs. 3-5 keep the approved layouts; add step badges in Fig. 2 colours, person/LLM marks, tinted title bands, ochre JSON keys, filled verdict badges; fix touching boxes and converging links (Fig. 4), commit dot on box edge and commit line through the snapshot box (Fig. 5), crowded notes (Fig. 3); page fitting pending"
+    "built_on": "noctis, copy of overleaf/ at main 8f9de16 (git-ignored overleaf/build/check1107)",
+    "status": "bash build.sh all: main.pdf 15 pages, Table I top of p. 2 right column, Table II top of p. 3, Fig. 2 top of p. 5, Figs. 3-5 on pp. 5-7; body runs about 31 lines onto p. 13; main-bilingual.pdf 22 pages, table placement unchanged; no undefined references or citations",
+    "identical_to_remote": "paper repo origin/main was fd1d70a (= the previous record); dry run: 1 changed (sections/02-background.tex), 0 added; sections/01-introduction.tex and sections/abstract.tex identical to remote and untouched; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "English build inputs Tables I and II at the start of Section II-A; bilingual build keeps the old input points; page fitting pending"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/fd1d70a2a7ae3e4c000285099cd39bbd72a7c8bb",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/3ac03482ecbdb5d96892eb6609aabe269ea8c38b",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-07: pull, merge locally, push).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "c5f0372ca1aa0b9a578e90f08615bf675f9edf3e"
+  "source_commit": "8f9de16ff975cd307277ed1a2173010978b47a7e"
 }
