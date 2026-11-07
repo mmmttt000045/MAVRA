@@ -3,26 +3,29 @@
   "date": "2026-11-07",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
-  "status": "imported_into_main",
-  "direction": "paper repo -> main repo overleaf/ (pulled cc2601f..9baca54 of 2026-11-07: co-author's manual edits e6ff925 to the introduction (new opening, example and related-work paragraphs; system paragraph after the challenges; 'MVCC' dropped from the third contribution) and three abstract keywords; local overleaf/ equalled cc2601f for both files, so no conflicts)",
-  "previous_head": "cc2601f398742c6228986b96010abac2944d9734",
-  "remote_commit": "9baca549dac0438c7450a978e0e6c23121b0f885",
+  "status": "pushed",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main dbfa80b: Fig. 6 with TeCoD over three runs; includes the co-author's 9baca54 intro edits already merged into main 58dadef)",
+  "previous_head": "9baca549dac0438c7450a978e0e6c23121b0f885",
+  "remote_commit": "8a726ab79f288a59c4c4682ed31db7ec312105cf",
   "pending_payload": null,
   "changed_paths": [
-    "sections/01-introduction.tex",
-    "sections/abstract.tex"
+    "figures/change-study-zh.pdf",
+    "figures/change-study.pdf",
+    "figures/two-schemas.tex",
+    "gen/change-study.tex",
+    "sections/05-evaluation.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, copy of overleaf/ at main 58dadef (git-ignored overleaf/build/check)",
+    "built_on": "noctis, copy of overleaf/ at main dbfa80b (git-ignored overleaf/build/check)",
     "status": "bash build.sh all: main.pdf 14 pages (body ends on p. 12, AI statement and references from p. 13), main-bilingual.pdf 21 pages; no undefined references or citations",
-    "identical_to_remote": "tools/sync-paper-repo.py dry run against a fresh clone of 9baca54 after the import: 0 changed, 0 added (nothing to push); remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "English intro text changed by the co-author; the Chinese text of these paragraphs is unchanged"
+    "identical_to_remote": "tools/sync-paper-repo.py dry run against a fresh clone of 9baca54: 5 changed, 0 added; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "Change study (Fig. 6) with TeCoD over runs 1-3 like the other methods; run-count notes removed; backup-copy sentence: MAVRA ties TeCoD (11 of 12) for the highest share"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/9baca549dac0438c7450a978e0e6c23121b0f885",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-06/07: add TeCoD, update the experiment section).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/8a726ab79f288a59c4c4682ed31db7ec312105cf",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-07: pull, merge locally, push).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "58dadeff1a9198b430df50c16e06782b33874660"
+  "source_commit": "dbfa80b885cd5fa49203f4b5ab17a2125b995432"
 }
