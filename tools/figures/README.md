@@ -24,9 +24,9 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 | `metric-record` | `metric_record.py` | 图 1 动机图（单栏，沿用原版样式：LLM 智能体图标、工作台窗口、请求流、共享数据库）。上半：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s091；虚线大框框住全部 20 个会话都重复的第 1–4 步（list tables / read sales / item / date table），第 5 步是各会话自己的做法（试 3 个营业额列 / 给 12 个月排序 / 比较两年）；脚本逐条核对调用与 SQL 片段，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast）。下半：这些 SQL 连接 item 时没有当前行条件，ETL 装载商品历史版本后（与图 2 相同的商品 17）同一 SQL 把它算两次 |
 | `running-example` | `example.py` | 优化实验的学习、使用与修复轨迹，来源见脚本文件头 |
 | `architecture` | `architecture.py` | 系统示意 |
-| `extraction` | `extraction.py` | 第 IV-B 节单栏小图：同一会话的两份草稿对照（(a) 缺品类过滤，按 1 月编译得 13,532,799.00，不予发布；(b) 复现核验答案 2,754,299.60，发布）。核验答案取自 10-01 轨迹的 M5-L1 会话，被 G7 拒绝的值见 `exp/2026-10-31-diverse-scenarios/case-evidence.json`；JSON 只保留两份草稿不同的字段 |
-| `maintenance` | `maintenance.py` | 第 IV-D 节单栏小图：item 载入后存储的检查结果（按检查与表版本存放），三个定义连到同一条 date_dim 结果，电子品类营业额连到新的 item 版本 1 结果（红色虚框，只跑一次）；哪些定义共用哪条结果为示意（同图 2）；修复只在图 2 与正文中 |
-| `snapshot` | `snapshot.py` | 第 IV-E 节单栏小图：(a) 先检查后执行分属两个事务，ETL 提交落在中间，商品 17 被算两次；(b) MAVRA 同一只读快照内读版本、复用结果、执行 SQL，看不到提交 |
+| `extraction` | `extraction.py` | 第 IV-B 节单栏小图：同一会话的两份草稿对照（(a) 缺品类过滤，按 1 月编译得 13,532,799.00，不予发布；(b) 复现核验答案 2,754,299.60，发布）。核验答案取自 10-01 轨迹的 M5-L1 会话，被 G7 拒绝的值见 `exp/2026-10-31-diverse-scenarios/case-evidence.json`；JSON 只保留两份草稿不同的字段；步骤圆标 1、2 对应图 2 |
+| `maintenance` | `maintenance.py` | 第 IV-D 节单栏小图：item 载入后存储的检查结果（按检查与表版本存放），三个定义连到同一条 date_dim 结果，电子品类营业额连到新的 item 版本 1 结果（红色虚框，只跑一次）；哪些定义共用哪条结果为示意（同图 2）；修复只在图 2 与正文中；步骤圆标 5（ETL）、6（重跑）对应图 2 |
+| `snapshot` | `snapshot.py` | 第 IV-E 节单栏小图：(a) 先检查后执行分属两个事务，ETL 提交落在中间，商品 17 被算两次；(b) MAVRA 同一只读快照内读版本、复用结果、执行 SQL，看不到提交；步骤圆标 5（ETL）、4（执行）对应图 2 |
 | `replay-outcomes` | `replay_outcomes.py` | 验证缓存、TPC-DS 和通用性回放 |
 | `maintenance-cost` | `maintenance_cost.py` | `exp/2026-10-02-cache-baseline-tpcds/cb-1m-share-stats.json` |
 | `scenario-changes` | `scenario_changes.py` | `exp/2026-10-10-scenarios-q5/` |
@@ -54,7 +54,7 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 
 **底层函数**（`vecfig.py` 的 `Sheet`）：坐标单位是毫米，原点在图的左上角，按印刷尺寸画（单栏 84.6 mm，通栏 178 mm）。
 
-第 IV 节的三幅单栏小图（`extraction`、`maintenance`、`snapshot`）共用 `smallparts.py`，按 SIGMOD/VLDB 技术图的通行做法画（2026-11-07 参照 DocETL、Weever、PolySI、ACIDRain、TeCoD 等）：一图一事，用运行示例的真实数值；(a)/(b) 对照或写入后的存储状态；平面方框、细灰线、等宽字体写 SQL 与数据；只用黑灰两色加红（错误或过期）、蓝（MAVRA 的结果）；不画立体、标签胶囊和步骤圆标，图 2 的步骤号写在图注里；叙述放在图注。
+第 IV 节的三幅单栏小图（`extraction`、`maintenance`、`snapshot`）共用 `smallparts.py`。版式按 SIGMOD/VLDB 技术图的通行做法（2026-11-07 参照 DocETL、Weever、PolySI、ACIDRain、TeCoD 等）：一图一事，用运行示例的真实数值；(a)/(b) 对照或写入后的存储状态；一个阅读方向；SQL 与数据用等宽字体。视觉元素沿用图 2，方便初次接触的读者对回总览（用户 11-07 要求“适当花里胡哨没问题，核心是讲清楚”）：图 2 配色的步骤圆标（学习 1–2 紫、执行 4 橙、数据变化与维护 5–6 青）、人像与 LLM 星标、带浅色标题条的卡片、橙褐色 JSON 字段名；结果只用红（错误或过期）、蓝（MAVRA 的结果）两色，最终结论用实心圆标。图中不得有文字或线条互相压住，宽度由 `text(..., width=)` 断言把关。
 
 ```python
 rect(x, y, w, h, fill, stroke, sw, r, dash)   # 矩形，r 为圆角

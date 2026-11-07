@@ -1,25 +1,31 @@
 """Shared look of the single-column technique figures in Section IV
 (extraction, maintenance, snapshot).
 
-They follow the common practice of SIGMOD/VLDB technique figures: one point
-per figure, told with the running example's real values; flat boxes with thin
-grey lines; monospace for SQL and stored data; black and grey text plus two
-colours that only carry meaning (red: a wrong or stale result, blue: MAVRA's
-result). Fonts and line weights are those of Fig. 2; the captions name the
-matching steps of Fig. 2 instead of drawing step badges.
+Each figure makes one point with the running example's real values, as
+SIGMOD/VLDB technique figures do, and borrows Fig. 2's visual vocabulary so a
+reader can map it back to the overview: step badges in Fig. 2's path colours
+(learning 1-2 purple, execution 4 orange, data change and maintenance 5-6
+teal), the person and LLM marks, cards with a tinted title band, JSON field
+names in ochre. Outcomes carry two colours: red for a wrong or stale result,
+blue for MAVRA's result, with a filled badge for the final verdict.
 """
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from vecfig import PT  # noqa: E402
-from style import ACC, ACC_DK, EDGE, MUTED, RED, WHITE  # noqa: E402
+from style import ACC, ACC_DK, ACC_PALE, EDGE, FIELD, MUTED, RED, WHITE  # noqa: E402
 
 # Drawn 84.6 mm wide and scaled to the 88.8 mm IEEEtran column (x1.05).
 LABEL, BODY, CODE, SMALL = 6.4, 6.0, 5.75, 5.7      # printed 6.7, 6.3, 6.0, 6.0 pt
 LINE = .18
-BLUE, BLUE_TXT = ACC, ACC_DK
-LIGHT = '#E9E6E0'                                    # highlight behind a literal
+BLUE, BLUE_TXT, BLUE_PALE, BLUE_FIELD = ACC, ACC_DK, ACC_PALE, FIELD
+RED_PALE = '#FBE9E5'
+LEARN, LEARN_PALE = '#7A68B0', '#EFECF7'             # Fig. 2 path colours
+EXEC_C, MAINT_C = '#C97A1E', '#13897B'
+KEYC = '#8A5A00'                                     # JSON field names, as in Fig. 2
+BAND = '#ECEAE5'
+STEP_C = {1: LEARN, 2: LEARN, 3: ACC, 4: EXEC_C, 5: MAINT_C, 6: MAINT_C}
 
 
 def baseline(y_center, size):
@@ -31,15 +37,62 @@ def box(s, x, y, w, h, edge=EDGE, fill=WHITE, dash=None, sw=LINE):
     s.rect(x, y, w, h, fill, edge, sw, r=.5, dash=dash)
 
 
+def card(s, x, y, w, h, band_h, band=BAND, edge=EDGE, fill=WHITE, sw=LINE):
+    """A box with a tinted title band across its top."""
+    s.rect(x, y, w, h, fill, edge, sw, r=.5)
+    i = sw / 2 + .05
+    s.rect(x + i, y + i, w - 2 * i, band_h, band, None, r=.4)
+    s.rect(x + i, y + i + band_h / 2, w - 2 * i, band_h / 2, band, None)
+
+
 def arrow(s, points, color=MUTED, sw=LINE):
     s.route(points, color, sw, length=.9, radius=.6)
 
 
 def mark(s, x, yc, ok, k=.9):
-    """A check (blue) or a cross (red) centred on (x, yc)."""
+    """A thin check (blue) or cross (red) centred on (x, yc), for an intermediate result."""
     if ok:
         s.poly([(x - .62 * k, yc), (x - .15 * k, yc + .5 * k), (x + .65 * k, yc - .55 * k)], None,
                BLUE, .26, closed=False)
     else:
         s.line(x - .5 * k, yc - .5 * k, x + .5 * k, yc + .5 * k, RED, .26)
         s.line(x - .5 * k, yc + .5 * k, x + .5 * k, yc - .5 * k, RED, .26)
+
+
+def verdict(s, x, yc, ok, r=1.05):
+    """The final verdict: a white check on a blue disc or a white cross on a red one."""
+    s.circle(x, yc, r, BLUE if ok else RED)
+    k = .5 * r
+    if ok:
+        s.poly([(x - 1.05 * k, yc + .05 * k), (x - .25 * k, yc + .8 * k), (x + 1.05 * k, yc - .8 * k)],
+               None, WHITE, .3, closed=False)
+    else:
+        s.line(x - .75 * k, yc - .75 * k, x + .75 * k, yc + .75 * k, WHITE, .3)
+        s.line(x - .75 * k, yc + .75 * k, x + .75 * k, yc - .75 * k, WHITE, .3)
+
+
+def step(s, x, yc, n, r=1.25):
+    """A step badge of Fig. 2, in the colour of that step's path."""
+    s.circle(x, yc, r, STEP_C[n])
+    s.text(x, baseline(yc, 5.6), str(n), 5.6, WHITE, 'bold', 'center')
+
+
+def person(s, x, yc, color=EDGE):
+    """Head and shoulders, about 2.2 x 2.9 mm, centred on (x, yc)."""
+    s.circle(x, yc - .7, .72, color)
+    s.rect(x - 1.1, yc + .18, 2.2, 1.25, color, None, r=.62)
+
+
+def sparkle(s, x, y, r, color):
+    """Four-pointed star, the usual mark for an LLM."""
+    k = .28 * r
+    s.poly([(x, y - r), (x + k, y - k), (x + r, y), (x + k, y + k), (x, y + r),
+            (x - k, y + k), (x - r, y), (x - k, y - k)], color, None)
+
+
+def parts(s, x, y, items, size):
+    """Draw (text, colour) pieces one after another on a baseline; returns the end x."""
+    for item in items:
+        label, color = item[:2]
+        x += s.text(x, y, label, size, color, item[2] if len(item) > 2 else 'sans')
+    return x

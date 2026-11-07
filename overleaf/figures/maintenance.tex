@@ -6,7 +6,7 @@
 \else
 \includegraphics[width=\columnwidth]{figures/maintenance}%
 \fi
-\caption{\bt{Stored check outcomes after the item load (step 6). Outcomes are keyed by check and table version: three definitions reuse the unchanged \code{date\_dim} outcome, and only the item check runs again, once, at \code{item} version 1.}{item 载入后存储的检查结果（步骤 6）。检查结果按检查与表版本存放：三个定义复用未变的 \code{date\_dim} 结果，只有 item 检查在 \code{item} 版本 1 上重跑一次。}}
+\caption{\bt{Stored check outcomes after the item load (steps 5--6). Outcomes are keyed by check and table version: three definitions reuse the unchanged \code{date\_dim} outcome, and only the item check runs again, once, at \code{item} version 1.}{item 载入后存储的检查结果（步骤 5--6）。检查结果按检查与表版本存放：三个定义复用未变的 \code{date\_dim} 结果，只有 item 检查在 \code{item} 版本 1 上重跑一次。}}
 \label{fig:maintenance}
 \Description{After an ETL load moves item from version 0 to 1, the store holds check outcomes keyed by check and table version. Store revenue, spend_90d, and Electronics revenue all link to the outcome 'date key unique' at date_dim version 0, which passes and is reused. The outcome 'item key unique' at item version 0 passed earlier and is shown in grey as old. Electronics revenue, outlined in red, links to a new outcome 'item key unique' at item version 1, outlined with a dashed red border, which fails and is computed once.}
 \end{figure}
