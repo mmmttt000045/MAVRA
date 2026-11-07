@@ -150,7 +150,14 @@ first study resolve this way). The pool is snapshotted after held-out and restor
 - Formal (`results/change-study-20261106-tecod`, cap CNY 12): runs 1-3 started together at 04:15 with six cells sharing one
   selection server. Selection is CPU-bound (two 4B models in float32) and was the bottleneck (160-230 s wait per question
   for the agent's 5-30 s), so at 05:15 the run-2 and run-3 cells were stopped (before any result was looked at; their
-  partial cells stay in the results directory, marked incomplete) and run 1 continued alone. Runs 2-3 are rerun afterwards.
-- Aggregation while TeCoD has fewer runs: `analyse.py --results results/change-study-20261101 --arm-results
-  mavra=results/change-study-20261101-final --arm-results tecod=results/change-study-20261106-tecod --partial-arm tecod`
-  (the four methods keep their three runs; `arm_runs` and the macro `CsTecodRuns` record TeCoD's).
+  partial cells were moved to `aborted-0515/` in the results directory, not analysed) and run 1 continued alone.
+- Runs 2-3 relaunched at 2026-11-06 22:57 UTC after run 1 had finished (four cells, `--concurrent-runs --parallel 4
+  --pool 4`); all four complete by 2026-11-07 02:20 UTC (synthetic 58 and TPC-H 46 tasks per cell, no task error).
+  TeCoD formal total (runs 1-3 and the stopped attempt): CNY 3.66 over 1361 calls; two upstream HTTP 503 responses at
+  20:53-20:54 UTC (synthetic-r1 and a stopped synthetic-r3 cell), retried, no task affected.
+- Aggregation (all five methods over runs 1-3): `analyse.py --results results/change-study-20261101 --arm-results
+  mavra=results/change-study-20261101-final --arm-results tecod=results/change-study-20261106-tecod`. Before runs 2-3
+  the paper reported TeCoD from run 1 with `--partial-arm tecod` (`arm_runs` and `CsTecodRuns` record a method's runs).
+- Result (pooled, both schemas): TeCoD 78.6% correct, 21.0k tokens, 18 s per question (MAVRA 84.4%, 14.6k, 8 s);
+  condition-breaking 69.3% correct, 30.7% wrong (MAVRA 89.5%, none wrong); every TPC-H late-batch question wrong; on
+  unchanged data fewer tokens than MAVRA (6.9k versus 11.8k); backup copy 11 of 12 correct, as MAVRA.
