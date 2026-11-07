@@ -37,18 +37,24 @@
 \bi{Once such a data condition fails after an update, every consumer of the definition is exposed to silent errors. Maintaining shared database knowledge therefore requires rechecking affected definitions, repairing or invalidating failed ones while retaining unaffected knowledge, and ensuring that validation results hold on the query's execution snapshot. As Table~\ref{tab:capabilities} summarizes, only \system\ combines definition extraction with derived data checks, shared validation results, and snapshot alignment.}
 {一旦这类数据条件在更新后失效，定义的所有调用方都会面临静默错误。因此，维护共享数据库知识需要按需重查受影响的定义，修复或停用失效定义并保留未受影响的知识，同时保证验证结果在查询的执行快照上成立。如表~\ref{tab:capabilities} 所示，只有 \system\ 同时具备定义提取、派生数据检查、验证结果共享与快照对齐能力。}
 
-\subsection{\bt{Problem Formulation and Cost Model}{问题形式化与代价模型}}
+\subsection{\bt{Problem Formulation}{问题形式化}}
 \label{sec:problem-formulation}
 
-\bi{Consider $N$ agents each asking $q$ questions over a fixed set of $k$ metrics, with one metric per question and every metric requested at least once. If each agent learns all $k$ metrics, private memory incurs $Nk$ learning episodes. Sharing instead publishes each metric's parameterized definition from its first verified session for all subsequent requests.}
-{考虑 $N$ 个智能体围绕固定的 $k$ 个指标各提出 $q$ 个问题，每题涉及一个指标且每个指标至少被请求一次。若每个智能体均学习全部 $k$ 个指标，私有记忆需经历 $Nk$ 次学习；共享则从每个指标的首个核验会话中发布参数化定义，供全部后续请求复用。}
+\bi{We formalize knowledge sharing as constrained cost minimization. Consider $N$ agents issuing $n$ requests to a database that changes through writes. Request $j$ needs one of $k$ distinct computations (metrics or features) with parameters $p_j$ (a period, or an entity and cutoff) and reads snapshot $s_j$, on which its correct answer is $a^*_j$. An agent either explores the database from scratch (Steps~1--4 in Example~1) or reuses a shared definition extracted from a verified session, compiling it with $p_j$ into an answer $\hat a_j$. For tokens or time as the cost measure, let $c_e$ and $c_r$ be the mean costs of exploration and reuse, $c_\ell$ the cost of publishing a definition, and $M$ the cost of checks and repairs after writes. A sharing policy $\pi$ decides which definitions to publish ($\mathcal P$), whether request $j$ reuses one ($y_j=1$) or explores ($y_j=0$), and how to maintain them.}
+{我们将知识共享形式化为带约束的代价最小化问题。考虑 $N$ 个智能体向一个随写入变化的数据库发出 $n$ 个请求。请求 $j$ 需要 $k$ 个不同计算（指标或特征）之一，带有参数 $p_j$（期间，或实体与截止时间），并读取快照 $s_j$，其在该快照上的正确答案为 $a^*_j$。智能体要么从头探索数据库（示例~1 中的步骤 1--4），要么复用从核验会话中提取的共享定义，代入 $p_j$ 编译得到答案 $\hat a_j$。以 token 或耗时为开销度量，令 $c_e$、$c_r$ 分别为探索与复用的平均开销，$c_\ell$ 为发布一个定义的开销，$M$ 为写入后的检查与修复开销。共享策略 $\pi$ 决定发布哪些定义（$\mathcal P$）、请求 $j$ 复用定义（$y_j=1$）还是探索（$y_j=0$），以及如何维护这些定义。}
 
-\bi{For a cost measure such as tokens or latency, let $c_e$ and $c_r$ be per-question exploration and reuse costs, $c_\ell$ the extraction, validation, and publication overhead per definition, and $M$ cumulative maintenance across updates. No memory costs $Nq\,c_e$. Sharing costs $k(c_e+c_\ell)$ for initial learning and publication, $(Nq-k)c_r$ for reuse, and $M$ for maintenance, saving}
-{对于 token 或耗时等开销度量，令 $c_e$、$c_r$ 分别为单题探索与复用开销，$c_\ell$ 为每个定义的提取、验证与发布开销，$M$ 为跨更新的累计维护开销。无记忆的代价为 $Nq\,c_e$。共享支付 $k(c_e+c_\ell)$ 完成初始学习与发布、$(Nq-k)c_r$ 用于复用，以及维护开销 $M$，净节省为：}
-\begin{equation}
-\label{eq:sharing-benefit}
-\Delta=(Nq-k)(c_e-c_r)-k\,c_\ell-M.
-\end{equation}
+\begin{problem}[\bt{Shared reuse under data updates}{数据更新下的共享复用}]
+\label{prob:shared-reuse}
+\bid{Given the requests and interleaved writes, find a sharing policy $\pi$ that solves}
+{给定请求序列及其间穿插的写入，求解共享策略 $\pi$：}
+\begin{align}
+\min_{\pi}\;\; & \textstyle\sum_{j=1}^{n}\bigl[(1-y_j)\,c_e+y_j\,c_r\bigr]+c_\ell\,|\mathcal P|+M \label{eq:objective}\\
+\text{s.t.}\;\; & y_j=1\;\Rightarrow\;\hat a_j=a^*_j,\qquad j=1,\dots,n. \label{eq:correctness}
+\end{align}
+\end{problem}
 
-\bi{Each reuse saves $c_e-c_r$, whereas $k\,c_\ell$ is paid once. For fixed definitions and an update/version sequence, shared checks and repairs make $M$ depend on affected conditions and definitions, not consumer count. Holding these quantities and mean request costs fixed, savings grow linearly with $N$. Sections~\ref{sec:population-eval} and~\ref{sec:maint-cost-eval} evaluate acquisition/reuse and shared maintenance, respectively.}
-{每次复用节省 $c_e-c_r$，而 $k\,c_\ell$ 仅支付一次。固定定义与更新及版本序列时，共享检查和修复使 $M$ 取决于受影响的条件和定义，而非调用方数量。固定这些量及平均请求开销后，净节省随 $N$ 线性增长。第~\ref{sec:population-eval}、\ref{sec:maint-cost-eval} 节分别评估获取与复用，以及共享维护。}
+\bi{No memory ($y_j=0$ for all $j$) is feasible at cost $n\,c_e$. Since definitions come only from verified sessions, every policy explores each computation at least once ($\sum_j(1-y_j)\ge k$), whereas private memory explores up to $Nk$ times. Reaching this bound requires definitions that serve all later requests on their computation (C1); keeping $M$ low requires rechecks limited to changed tables and shared by all definitions and agents, and repairs that restore failed definitions (C2). Constraint~\eqref{eq:correctness} cannot be checked directly, as $a^*_j$ is unknown at reuse time. \system{} enforces a sufficient condition under the domain premises of Proposition~\ref{prop:sufficiency}: a definition reproduces its verified answer before publication, and its data conditions hold on the snapshot that executes the query (C3).}
+{无记忆（对所有 $j$ 有 $y_j=0$）是开销为 $n\,c_e$ 的可行解。由于定义只能来自核验会话，任何策略都至少要对每个计算探索一次（$\sum_j(1-y_j)\ge k$），而私有记忆最多探索 $Nk$ 次。要达到这一下界，定义必须服务其计算的全部后续请求（C1）；要降低 $M$，重验须限于发生变化的表并由全部定义与智能体共享，并通过修复恢复失效定义（C2）。约束~\eqref{eq:correctness} 无法直接检验，因为复用时 $a^*_j$ 未知。\system{} 在命题~\ref{prop:sufficiency} 的领域前提下保证一个充分条件：定义在发布前复现其核验答案，且其数据条件在实际执行查询的快照上成立（C3）。}
+
+\bi{If each computation is published once and serves all later requests, \eqref{eq:objective} gives the saving over no memory, ${\Delta=(n-k)(c_e-c_r)-k\,c_\ell-M}$. Since shared maintenance keeps $M$ from growing with $N$, $\Delta$ grows linearly with $n$ (evaluated in Sections~\ref{sec:population-eval} and~\ref{sec:maint-cost-eval}).}
+{若每个计算只发布一次并服务其后的全部请求，由式~\eqref{eq:objective} 可得相对于无记忆的节省 $\Delta=(n-k)(c_e-c_r)-k\,c_\ell-M$。共享维护使 $M$ 不随 $N$ 增长，因此 $\Delta$ 随 $n$ 线性增长（第~\ref{sec:population-eval}、\ref{sec:maint-cost-eval} 节对此进行评估）。}

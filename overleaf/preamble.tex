@@ -103,6 +103,8 @@
 \newcommand{\system}{MAVRA}
 \newcommand{\llmmodel}{DeepSeek-V4.1-Flash-1017}
 \newcommand{\bi}[2]{#1\par\ifbilingual #2\par\fi}
+% Like \bi, but the paragraph stays open so that a display can follow without an empty line.
+\newcommand{\bid}[2]{#1\ifbilingual\par #2\fi}
 \newcommand{\bt}[2]{#1\ifbilingual\space / #2\fi}
 \newcommand{\bh}[2]{\begin{tabular}[b]{@{}c@{}}#1\ifbilingual\\#2\fi\end{tabular}}
 % Top-aligned so that a two-line method name starts on the row's baseline, next to its swatch.
@@ -123,6 +125,7 @@
 % 2. 将 example 环境的样式设置为我们上面定义的样式
 \theoremstyle{myexamplestyle}
 \newtheorem{example}{Example}
+\newtheorem{problem}{Problem}
 % 我们可以把它改小一点，比如改为一行的高度
 \setlength{\floatsep}{0.85\baselineskip plus 0.35\baselineskip minus 0.2\baselineskip}
 \setlength{\textfloatsep}{1.35\baselineskip plus 0.35\baselineskip minus 0.2\baselineskip}
