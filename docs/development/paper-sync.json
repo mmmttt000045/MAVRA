@@ -4,24 +4,26 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 8f9de16: Table I on page 2, Table II on page 3, user request)",
-  "previous_head": "fd1d70a2a7ae3e4c000285099cd39bbd72a7c8bb",
-  "remote_commit": "3ac03482ecbdb5d96892eb6609aabe269ea8c38b",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 133c05a: Section II-C rewritten as a formal cost-minimization problem, user request after advisor feedback)",
+  "previous_head": "3ac03482ecbdb5d96892eb6609aabe269ea8c38b",
+  "remote_commit": "398871b51adf414553b5db37cc11a71514780480",
   "pending_payload": null,
   "changed_paths": [
-    "sections/02-background.tex"
+    "preamble.tex",
+    "sections/02-background.tex",
+    "sections/05-evaluation.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, copy of overleaf/ at main 8f9de16 (git-ignored overleaf/build/check1107)",
-    "status": "bash build.sh all: main.pdf 15 pages, Table I top of p. 2 right column, Table II top of p. 3, Fig. 2 top of p. 5, Figs. 3-5 on pp. 5-7; body runs about 31 lines onto p. 13; main-bilingual.pdf 22 pages, table placement unchanged; no undefined references or citations",
-    "identical_to_remote": "paper repo origin/main was fd1d70a (= the previous record); dry run: 1 changed (sections/02-background.tex), 0 added; sections/01-introduction.tex and sections/abstract.tex identical to remote and untouched; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "English build inputs Tables I and II at the start of Section II-A; bilingual build keeps the old input points; page fitting pending"
+    "built_on": "noctis, copy of overleaf/ at main 133c05a (git-ignored overleaf/build/pf-final)",
+    "status": "bash build.sh all: main.pdf 15 pages, 0 overfull boxes, all fonts embedded, no undefined references or citations; Problem 1 and Eqs. (1)-(2) on p. 4, Fig. 2 top of p. 5 with Section IV starting below it, Figs. 3-4 on p. 6; body runs about 43 lines onto p. 13 (was about 30); main-bilingual.pdf 22 pages",
+    "identical_to_remote": "paper repo origin/main was 3ac0348 (= the previous record); dry run: 3 changed (preamble.tex, sections/02-background.tex, sections/05-evaluation.tex), 0 added; sections/01-introduction.tex and sections/abstract.tex identical to remote and untouched; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "II-C 'Problem Formulation': request workload, exploration vs. reuse decision y_j, Problem 1 (min total exploration/reuse/publication/maintenance cost s.t. every reused answer is correct), analysis tied to C1-C3, saving Delta inline; preamble adds a problem environment and \\bid; evaluation references point to Eq. (1); page fitting pending"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/3ac03482ecbdb5d96892eb6609aabe269ea8c38b",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/398871b51adf414553b5db37cc11a71514780480",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-07: pull, merge locally, push).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "8f9de16ff975cd307277ed1a2173010978b47a7e"
+  "source_commit": "133c05ac2f5c28158807f81c4928d1910fc87ed8"
 }
