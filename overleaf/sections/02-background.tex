@@ -3,6 +3,8 @@
 
 \subsection{\bt{Characteristics of Agent Workloads}{智能体工作负载特征}}
 \label{sec:workload-characterization}
+% English: input both tables here so Table I lands on page 2 and Table II (two-column) on page 3.
+\ifbilingual\else\input{tables/workload}\input{tables/capabilities}\fi
 
 \bi{Across independent sessions on the same database, data agents answer different questions that rely on overlapping calculations, joins, and domain rules. We compare application queries with memoryless analytical sessions to characterize this repeated work, before considering predictive feature computation.}
 {在同一数据库上的不同会话中，数据智能体回答的问题各不相同，但背后往往依赖相互重叠的计算、连接与领域规则。我们首先对比传统应用查询与无记忆分析型会话，分析这些重复工作，再讨论预测特征计算中的共享机会。}
@@ -21,12 +23,10 @@
 \bi{Predictive agents also discover entity relationships, aggregation logic, and temporal windows before constructing model inputs. A feature such as a customer's spending over the preceding 90 days can be reused across compatible tasks or later retraining sessions by binding a new entity and prediction cutoff. Both workloads therefore benefit from sharing the computation and its data conditions, with task-specific inputs bound at use time. Section~\ref{sec:features} develops feature compilation, and Section~\ref{sec:relbench-eval} evaluates predictive reuse.}
 {预测智能体在构造模型输入前，同样需要探索实体关联、聚合逻辑与时间窗口。例如，“客户过去 90 天的消费额”可通过绑定新的实体与预测截止时间，在兼容的任务或后续重训会话中复用。因此，两类负载都能受益于计算定义及其数据条件的共享，而任务特定输入在使用时绑定。第~\ref{sec:features} 节介绍特征编译，第~\ref{sec:relbench-eval} 节评估预测任务中的复用。}
 
-\ifbilingual\else\input{tables/workload}\fi
-
 \subsection{\bt{Knowledge Reuse and Maintenance}{知识复用与维护}}
 \label{sec:alternatives}
 
-\input{tables/capabilities}
+\ifbilingual\input{tables/capabilities}\fi
 
 \bi{Existing systems support reuse at different layers (Table~\ref{tab:capabilities}). Agent memories retain facts and workflows within an agent~\cite{packer2023memgpt,chhikara2025mem0,xu2025amem,zhao2024expel,wang2025awm,zhang2025apc,zhang2026ace} or share experience across agents~\cite{zhang2025gmemory,fioresi2026learning}. For database tasks, AgentSM retrieves structured trajectories and composes recurring tool sequences into composite tools~\cite{biswal2026agentsm}, while MemCurrent consolidates session traces and lessons from data workspaces~\cite{databricks2026memcurrent}. Recent mechanisms also maintain stored information as facts change: invalidation contracts attach version tags to cached recovery suggestions~\cite{wu2026invalidation}, MemTX validates evidence-bearing records inside transactions and repairs dependent records when a belief is retracted~\cite{li2026memtx}, and PACMI propagates validity updates through a provenance graph~\cite{wang2026pacmi}. However, these mechanisms manage textual notes, trajectories, or tool sequences rather than relational calculations, and do not derive or check data-level invariants on database tables.}
 {现有系统在不同层级支持知识或计算复用（表~\ref{tab:capabilities}）。智能体记忆通过保留事实与工作流~\cite{packer2023memgpt,chhikara2025mem0,xu2025amem,zhao2024expel,wang2025awm,zhang2025apc,zhang2026ace}或在智能体间共享经验~\cite{zhang2025gmemory,fioresi2026learning}来减少重复工作。面向数据库任务，AgentSM 检索结构化轨迹并将高频工具序列组合为复合工具~\cite{biswal2026agentsm}，MemCurrent 则汇总数据工作区任务中的会话记录与经验~\cite{databricks2026memcurrent}。近期研究进一步支持动态环境下的记忆维护：失效契约为缓存的恢复建议附加版本标记~\cite{wu2026invalidation}，MemTX 在事务内验证带证据的记录并在信念撤回后修复依赖记录~\cite{li2026memtx}，PACMI 通过血缘图传播有效性变化~\cite{wang2026pacmi}。然而，这些机制管理的是文本经验、轨迹或工具序列，并不針對底层关系表推导并检验数据级约束。}
