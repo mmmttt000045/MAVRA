@@ -24,6 +24,9 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 | `metric-record` | `metric_record.py` | 图 1 动机图（单栏，沿用原版样式：LLM 智能体图标、工作台窗口、请求流、共享数据库）。上半：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s091；虚线大框框住全部 20 个会话都重复的第 1–4 步（list tables / read sales / item / date table），第 5 步是各会话自己的做法（试 3 个营业额列 / 给 12 个月排序 / 比较两年）；脚本逐条核对调用与 SQL 片段，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast）。下半：这些 SQL 连接 item 时没有当前行条件，ETL 装载商品历史版本后（与图 2 相同的商品 17）同一 SQL 把它算两次 |
 | `running-example` | `example.py` | 优化实验的学习、使用与修复轨迹，来源见脚本文件头 |
 | `architecture` | `architecture.py` | 系统示意 |
+| `extraction` | `extraction.py` | 第 IV-B 节单栏小图（定义提取与受检发布，图 2 步骤 1–2 的紫色）。核验答案 2,754,299.60 取自 10-01 轨迹的 M5-L1 会话；被 G7 拒绝的草稿编译 SQL 返回 13,532,799.00（1 月全品类营业额，缺电子品类过滤），见 `exp/2026-10-31-diverse-scenarios/case-evidence.json` |
+| `maintenance` | `maintenance.py` | 第 IV-D 节单栏小图（依赖感知维护与修复，步骤 5–6 的青色）。按检查与表版本存放的检查结果表、使用者字母；修复候选与图 2 的商品 17 夹具一致；哪些定义共用哪条结果为示意（同图 2：三个定义共用 date_dim 键检查） |
+| `snapshot` | `snapshot.py` | 第 IV-E 节单栏小图（快照绑定执行，步骤 4 的琥珀色）。时间线：ETL 提交落在“先检查后执行”两事务之间；MAVRA 同一只读快照内读版本、复用结果、执行 SQL |
 | `replay-outcomes` | `replay_outcomes.py` | 验证缓存、TPC-DS 和通用性回放 |
 | `maintenance-cost` | `maintenance_cost.py` | `exp/2026-10-02-cache-baseline-tpcds/cb-1m-share-stats.json` |
 | `scenario-changes` | `scenario_changes.py` | `exp/2026-10-10-scenarios-q5/` |
@@ -50,6 +53,8 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 ## 怎么画出来的
 
 **底层函数**（`vecfig.py` 的 `Sheet`）：坐标单位是毫米，原点在图的左上角，按印刷尺寸画（单栏 84.6 mm，通栏 178 mm）。
+
+第 IV 节的三幅单栏小图（`extraction`、`maintenance`、`snapshot`）共用 `smallparts.py`：路径颜色直接取自 `architecture.py`（发布紫、复用蓝、执行琥珀、数据变化与维护青），立体节点、对勾叉号、步骤圆标与图 2 相同；字号按单栏缩放到与图 2 印刷后一致，最小 5.6 pt（印刷约 5.9 pt）。
 
 ```python
 rect(x, y, w, h, fill, stroke, sw, r, dash)   # 矩形，r 为圆角
