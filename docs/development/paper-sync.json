@@ -4,28 +4,33 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main dbfa80b: Fig. 6 with TeCoD over three runs; includes the co-author's 9baca54 intro edits already merged into main 58dadef)",
-  "previous_head": "9baca549dac0438c7450a978e0e6c23121b0f885",
-  "remote_commit": "8a726ab79f288a59c4c4682ed31db7ec312105cf",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 326c2c0: three single-column figures for Section IV-B/D/E in Fig. 2's style)",
+  "previous_head": "8a726ab79f288a59c4c4682ed31db7ec312105cf",
+  "remote_commit": "54da2ffd15e856d631ba9f7c716a964134d2f06d",
   "pending_payload": null,
   "changed_paths": [
-    "figures/change-study-zh.pdf",
-    "figures/change-study.pdf",
-    "figures/two-schemas.tex",
-    "gen/change-study.tex",
-    "sections/05-evaluation.tex"
+    "sections/04-design.tex",
+    "figures/extraction-zh.pdf",
+    "figures/extraction.pdf",
+    "figures/extraction.tex",
+    "figures/maintenance-zh.pdf",
+    "figures/maintenance.pdf",
+    "figures/maintenance.tex",
+    "figures/snapshot-zh.pdf",
+    "figures/snapshot.pdf",
+    "figures/snapshot.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, copy of overleaf/ at main dbfa80b (git-ignored overleaf/build/check)",
-    "status": "bash build.sh all: main.pdf 14 pages (body ends on p. 12, AI statement and references from p. 13), main-bilingual.pdf 21 pages; no undefined references or citations",
-    "identical_to_remote": "tools/sync-paper-repo.py dry run against a fresh clone of 9baca54: 5 changed, 0 added; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Change study (Fig. 6) with TeCoD over runs 1-3 like the other methods; run-count notes removed; backup-copy sentence: MAVRA ties TeCoD (11 of 12) for the highest share"
+    "built_on": "noctis, copy of overleaf/ at main 326c2c0 (git-ignored overleaf/build/check1107)",
+    "status": "bash build.sh all: main.pdf 15 pages (body now runs about 33 lines onto p. 13; the AI statement and references follow), main-bilingual.pdf 22 pages; no undefined references or citations",
+    "identical_to_remote": "paper repo origin/main was 8a726ab (= the previous record); tools/sync-paper-repo.py dry run: 1 changed, 9 added; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "New Fig. 3 extraction and checked publication (p. 5), Fig. 4 dependency-aware maintenance and repair (p. 6), Fig. 5 snapshot-bound execution (p. 7); later figures renumber; IV-B, IV-D, IV-E cite them; body page fitting pending"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/8a726ab79f288a59c4c4682ed31db7ec312105cf",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/54da2ffd15e856d631ba9f7c716a964134d2f06d",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-07: pull, merge locally, push).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "dbfa80b885cd5fa49203f4b5ab17a2125b995432"
+  "source_commit": "326c2c042854469c08155019423f5ad8365d5b68"
 }
