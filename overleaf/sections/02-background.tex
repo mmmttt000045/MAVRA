@@ -36,21 +36,30 @@
 \subsection{\bt{Problem Formulation}{问题形式化}}
 \label{sec:problem-formulation}
 
-\bi{We formalize knowledge sharing as constrained cost minimization. Consider $N$ agents issuing $n$ requests to a database that changes through writes. Request $j$ needs one of $k$ distinct computations (metrics or features) with parameters $p_j$ (a period, or an entity and cutoff) and reads snapshot $s_j$, on which its correct answer is $a^*_j$. An agent either explores the database from scratch (Steps~1--4 in Example~1) or reuses a shared definition extracted from a verified session, compiling it with $p_j$ into an answer $\hat a_j$. For tokens or time as the cost measure, let $c_e$ and $c_r$ be the mean costs of exploration and reuse, $c_\ell$ the cost of publishing a definition, and $M$ the cost of checks and repairs after writes. A sharing policy $\pi$ decides which definitions to publish ($\mathcal P$), whether request $j$ reuses one ($y_j=1$) or explores ($y_j=0$), and how to maintain them.}
-{我们将知识共享形式化为带约束的代价最小化问题。考虑 $N$ 个智能体向一个随写入变化的数据库发出 $n$ 个请求。请求 $j$ 需要 $k$ 个不同计算（指标或特征）之一，带有参数 $p_j$（期间，或实体与截止时间），并读取快照 $s_j$，其在该快照上的正确答案为 $a^*_j$。智能体要么从头探索数据库（示例~1 中的步骤 1--4），要么复用从核验会话中提取的共享定义，代入 $p_j$ 编译得到答案 $\hat a_j$。以 token 或耗时为开销度量，令 $c_e$、$c_r$ 分别为探索与复用的平均开销，$c_\ell$ 为发布一个定义的开销，$M$ 为写入后的检查与修复开销。共享策略 $\pi$ 决定发布哪些定义（$\mathcal P$）、请求 $j$ 复用定义（$y_j=1$）还是探索（$y_j=0$），以及如何维护这些定义。}
+\bi{We formalize \system{}'s design objective as constrained cost minimization. Starting from empty memories, $N$ agents collectively issue $n$ requests to a database that changes through writes. Request $j$ needs one of $k$ distinct computations (a metric, or a predictive task's features) with parameters $p_j$ (a period, or seed entities and cutoffs) and reads snapshot $s_j$, on which the intended computation outputs $a^*_j$. An agent either explores the database from scratch (Steps~1--4 in Example~1) or reuses a definition published from a verified session, compiling it with $p_j$ into a query whose result on $s_j$ is $\hat a_j$. For an additive cost such as tokens or cumulative processing time, let $c_e$ and $c_r$ be the mean costs of exploration and of reuse with its checks, $c_\ell$ the cost of extracting, verifying, and publishing a definition, and $M(\pi)$ the cost of rechecks, repairs, and revisions after writes. A sharing policy $\pi$ decides which definitions to publish ($\mathcal P$), whether request $j$ reuses one (${y_j=1}$) or explores (${y_j=0}$), and how to maintain them; admissible policies (${\pi\in\Pi}$) reuse only published definitions.}
+{我们将 \system{} 的设计目标形式化为带约束的代价最小化问题。从空记忆开始，$N$ 个智能体共向一个随写入变化的数据库发出 $n$ 个请求。请求 $j$ 需要 $k$ 个不同计算（一个指标，或一个预测任务的特征）之一，带有参数 $p_j$（期间，或种子实体与截止时间），并读取快照 $s_j$，预期计算在该快照上的输出为 $a^*_j$。智能体要么从头探索数据库（示例~1 中的步骤 1--4），要么复用由核验会话发布的定义：代入 $p_j$ 将其编译为查询，该查询在 $s_j$ 上的结果即为 $\hat a_j$。在 token 数或累计处理时间等可累加的开销度量下，令 $c_e$、$c_r$ 分别为探索与复用（含其检查）的平均开销，$c_\ell$ 为提取、核验并发布一个定义的开销，$M(\pi)$ 为写入后的重验、修复与修订开销。共享策略 $\pi$ 决定发布哪些定义（$\mathcal P$）、请求 $j$ 复用定义（$y_j=1$）还是探索（$y_j=0$），以及如何维护这些定义；可行策略（$\pi\in\Pi$）只复用已发布的定义。}
 
 \begin{problem}[\bt{Shared reuse under data updates}{数据更新下的共享复用}]
 \label{prob:shared-reuse}
-\bid{Given the requests and interleaved writes, find a sharing policy $\pi$ that solves}
-{给定请求序列及其间穿插的写入，求解共享策略 $\pi$：}
+\bid{Given requests and interleaved writes, find a sharing policy that solves}
+{给定请求序列及其间穿插的写入，求解共享策略：}
 \begin{align}
-\min_{\pi}\;\; & \textstyle\sum_{j=1}^{n}\bigl[(1-y_j)\,c_e+y_j\,c_r\bigr]+c_\ell\,|\mathcal P|+M \label{eq:objective}\\
-\text{s.t.}\;\; & y_j=1\;\Rightarrow\;\hat a_j=a^*_j,\qquad j=1,\dots,n. \label{eq:correctness}
+\min_{\pi\in\Pi}\quad & \sum_{j=1}^{n}\bigl[(1-y_j)\,c_e+y_j\,c_r\bigr]+c_\ell\,\lvert\mathcal P\rvert+M(\pi) \label{eq:objective}\\
+\textnormal{s.t.}\quad & y_j=1\;\Rightarrow\;\hat a_j=a^*_j,\qquad j=1,\dots,n. \label{eq:correctness}
 \end{align}
 \end{problem}
 
-\bi{No memory ($y_j=0$ for all $j$) is feasible at cost $n\,c_e$. Since definitions come only from verified sessions, every policy explores each computation at least once ($\sum_j(1-y_j)\ge k$), whereas private memory explores up to $Nk$ times. Reaching this bound requires definitions that serve all later requests on their computation (C1); keeping $M$ low requires rechecks limited to changed tables and shared by all definitions and agents, and repairs that restore failed definitions (C2). Constraint~\eqref{eq:correctness} cannot be checked directly, as $a^*_j$ is unknown at reuse time. \system{} enforces a sufficient condition under the domain premises of Proposition~\ref{prop:sufficiency}: a definition reproduces its verified answer before publication, and its data conditions hold on the snapshot that executes the query (C3).}
-{无记忆（对所有 $j$ 有 $y_j=0$）是开销为 $n\,c_e$ 的可行解。由于定义只能来自核验会话，任何策略都至少要对每个计算探索一次（$\sum_j(1-y_j)\ge k$），而私有记忆最多探索 $Nk$ 次。要达到这一下界，定义必须服务其计算的全部后续请求（C1）；要降低 $M$，重验须限于发生变化的表并由全部定义与智能体共享，并通过修复恢复失效定义（C2）。约束~\eqref{eq:correctness} 无法直接检验，因为复用时 $a^*_j$ 未知。\system{} 在命题~\ref{prop:sufficiency} 的领域前提下保证一个充分条件：定义在发布前复现其核验答案，且其数据条件在实际执行查询的快照上成立（C3）。}
+\bi{No memory, which explores every request and publishes nothing, is feasible at cost $n\,c_e$. As definitions come only from verified sessions that explored their computations, every policy explores each computation at least once (${\sum_j(1-y_j)\ge k}$); without cross-agent sharing, each agent explores every computation it requests, giving $Nk$ initial explorations when every agent requests all $k$ computations. Reaching the lower bound requires definitions that serve all later requests on their computation (C1); keeping them reusable with low $M(\pi)$ requires rechecking only conditions affected by writes, without duplicate checks across definitions and agents, and repairing failed definitions (C2).}
+{无记忆对每个请求都进行探索且不发布任何定义，是开销为 $n\,c_e$ 的可行解。由于定义只能来自探索过相应计算的核验会话，任何策略都至少要对每个计算探索一次（${\sum_j(1-y_j)\ge k}$）；缺少跨智能体共享时，每个智能体都要探索其请求的每个计算，当所有智能体都请求全部 $k$ 个计算时共需 $Nk$ 次首次探索。要达到这一下界，定义必须服务其计算的全部后续请求（C1）；要在较低的 $M(\pi)$ 下保持定义可复用，须仅重验受写入影响的条件，避免在定义与智能体之间重复检查，并修复失效定义（C2）。}
 
-\bi{If each computation is published once and serves all later requests, \eqref{eq:objective} gives the saving over no memory, ${\Delta=(n-k)(c_e-c_r)-k\,c_\ell-M}$. Since shared maintenance keeps $M$ from growing with $N$, $\Delta$ grows linearly with $n$ (evaluated in Sections~\ref{sec:population-eval} and~\ref{sec:maint-cost-eval}).}
-{若每个计算只发布一次并服务其后的全部请求，由式~\eqref{eq:objective} 可得相对于无记忆的节省 $\Delta=(n-k)(c_e-c_r)-k\,c_\ell-M$。共享维护使 $M$ 不随 $N$ 增长，因此 $\Delta$ 随 $n$ 线性增长（第~\ref{sec:population-eval}、\ref{sec:maint-cost-eval} 节对此进行评估）。}
+\bi{Constraint~\eqref{eq:correctness} concerns reused outputs rather than predictive quality (evaluated in Section~\ref{sec:relbench-eval}) and cannot be checked directly, as $a^*_j$ is unknown at reuse time. \system{} instead gates publication on reproducing the verified answer, guarding against incomplete extraction, and reuse on data conditions holding on the execution snapshot (C3); under the domain premises of Proposition~\ref{prop:sufficiency}, these conditions establish a reused metric's correctness.}
+{约束~\eqref{eq:correctness} 只针对复用的输出而非预测质量（后者见第~\ref{sec:relbench-eval} 节的评估）；由于复用时 $a^*_j$ 未知，该约束无法直接检验。\system{} 转而以复现核验答案作为发布门槛以防提取遗漏，并要求复用时数据条件在执行快照上成立（C3）；在命题~\ref{prop:sufficiency} 的领域前提下，这些条件保证复用指标的正确性。}
+
+\bid{In the ideal case where each computation is explored and published once and serves all later requests, the saving over no memory is}
+{在理想情形下，每个计算只探索并发布一次且服务其后的全部请求，此时相对于无记忆的节省为}
+\begin{equation}
+\Delta=(n-k)(c_e-c_r)-k\,c_\ell-M(\pi).
+\label{eq:sharing-saving}
+\end{equation}
+\bi{Sharing pays off once reuse saves more than publication and maintenance cost. When ${c_r<c_e}$ and the computation set and maintenance workload are fixed, $\Delta$ grows linearly with $n$; shared maintenance avoids duplicating checks and repairs across agents (evaluated in Sections~\ref{sec:population-eval} and~\ref{sec:maint-cost-eval}).}
+{复用节省的开销一旦超过发布与维护开销，共享即产生净收益。在计算集合与维护工作量固定时，若 $c_r<c_e$，则 $\Delta$ 随 $n$ 线性增长；共享维护则避免在智能体之间重复执行检查与修复（第~\ref{sec:population-eval}、\ref{sec:maint-cost-eval} 节对此进行评估）。}
