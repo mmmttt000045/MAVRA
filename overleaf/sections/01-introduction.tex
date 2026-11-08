@@ -6,8 +6,8 @@
 % Increasingly, 
 % Recent 
 Data agents have emerged to automate complex data analytics tasks, such as business reporting and predictive modeling~\cite{lei2025spider2,guo2024dsagent,liu2026agents}.
-Given natural language requests, these agents typically issue multiple queries against underlying databases to discover the knowledge needed for task execution~\cite{floratou2024nl2sql,robinson2024relbench}. 
-When different agents receive similar requests, they may repeat the same database exploration process.
+To understand and answer natural language requests, these agents typically explore underlying databases through multiple queries~\cite{floratou2024nl2sql,robinson2024relbench}.
+When different agents receive similar requests, they may independently issue queries with similar structures or patterns.
 % discover the required knowledge by
 % different requests typically rely on the same database-specific knowledge
 % However, existing data agents operate independently, with acquired knowledge confined to individual agents, leading to redundant database exploration and potentially inconsistent analytical results.
@@ -28,8 +28,10 @@ When different agents receive similar requests, they may repeat the same databas
 Figure~\ref{fig:metric-record} illustrates a typical e-commerce scenario in which $N$ independent data agents query the same retail database.
 Agent~1 asks for revenue in January.
 % It inspects the schemas of the \code{date}, \code{sales}, and \code{item} tables, identifies the join keys (\code{date\_id} and \code{item\_id}), examines the revenue columns (\code{net\_paid} and \code{gross}), and applies the required filters. 
-It first explores the database to check the schemas of the \code{date}, \code{sales}, and \code{item} tables. 
-It then finds that a join is needed, joins the tables on \code{date\_id} and \code{item\_id} (\code{join}), probes the revenue columns (\code{net\_paid} and \code{gross}), and queries January revenue (\code{month=1}).
+It first explores the database to check the schemas of the \code{date}, \code{sales}, and \code{item} tables,
+% It then finds that a join is needed, and thus joins the tables on \code{date\_id} and \code{item\_id} (\code{join}).
+It then identifies the join keys and joins the tables on \code{date\_id} and \code{item\_id}.
+Next, it probes the revenue columns (\code{net\_paid} and \code{gross}), and queries January revenue (\code{month=1}).
 Suppose another independent Agent~2 asks for the month with the highest electronics revenue. 
 % Agent~2 is asked to identify the month with the highest electronics revenue. 
 It starts by inspecting the same tables as Agent 1, then applies the electronics filter (\code{category='Elec.'}), joins the tables, and ranks the months.
@@ -51,20 +53,11 @@ As highlighted in the dashed box, while the final steps differ (Step~5), these a
 % {然而，仅靠简单共享计算在数据更新时会带来静默错误。在图~\ref{fig:metric-record} 中，营业额查询按 \code{item\_id} 连接 \code{sales} 与 \code{item} 表，假设每个 \code{item\_id} 只匹配一行商品记录。向 \code{sales} 表追加新记录虽会改变结果，但计算逻辑仍然有效；反之，向 \code{item} 表装载商品历史版本会使一个 \code{item\_id} 匹配多行记录。此时共享的 SQL 仍能正常执行，但连接操作会复制销售记录并虚增营业额。因此，共享记忆在数据更新后必须检查计算的数据条件是否依然成立，否则所有复用该计算的智能体都会得到同一个错误答案。}
 
 \bi{
-Recent studies on  agent memory try to epitize the knowledage discovery process of agents by sharing and caching required knowledge, such as past execution trajectories or learned insights.
-Among them, most agent memory systems are designed for individual agents~\cite{zhao2024expel,wang2025awm,zhang2026ace}.
-They store the knowledge in agent-private memories, preventing knowledge reuse across agents.
-As a result, $N$ agents independently analyzing $k$ metrics may repeat the same knowledge discovery process up to $Nk$ times. 
-To enable knowledge sharing, multi-agent memory systems, such as G-Memory and AgentSM~\cite{zhang2025gmemory,biswal2026agentsm},and enterprise semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} share the knowledge across agents.
-However, they are not well suited for data agents.
-First, they may rely on manual specification rather than automatically extracting knowledge from agent executions.
-SQL often contains request-specific filters that limit reuse, while textual insights may still require additional database exploration.
-Second, they cannot reusing calculations requires maintaining their validity as underlying data evolve.
-For example, in Figure~\ref{fig:metric-record}, the revenue calculation joins \code{sales} and \code{item} on \code{item\_id}, assuming that each \code{item\_id} matches a single item record.
-Appending new sales records changes the query result without invalidating the calculation. 
-In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and inflate revenue without execution errors. 
-Existing knowledge-sharing approaches do not explicitly track and validate such data-dependent assumptions. 
-Simple invalidation strategies are also insufficient: schema-based invalidation misses changes in join cardinality, while invalidating knowledge on every data update unnecessarily discards valid calculations. 
+Recent studies on agent memory aim to reduce redundant knowledge discovery by storing and reusing knowledge acquired during task execution, such as execution trajectories and learned insights. However, most agent memory systems are designed for individual agents~\cite{zhao2024expel,wang2025awm,zhang2026ace}, with knowledge confined to agent-private memories. As a result, $N$ agents independently analyzing $k$ metrics may repeat the same knowledge discovery process up to $Nk$ times. To enable knowledge sharing, multi-agent memory systems, such as G-Memory and AgentSM~\cite{zhang2025gmemory,biswal2026agentsm}, allow agents to share execution trajectories, textual insights, and tools. However, these methods are not designed for database-specific knowledge and face two key limitations. First, they lack mechanisms to extract reusable calculations from database queries. Raw SQL often contains request-specific filters that limit reuse, while textual insights still require additional database exploration to reconstruct executable queries. Enterprise semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} support reusable metric definitions but rely on manual specification rather than automatic extraction from agent executions. Second, existing approaches lack mechanisms to maintain the validity of shared calculations as database schemas and data evolve. For example, in Figure~\ref{fig:metric-record}, the revenue calculation joins \code{sales} and \code{item} on \code{item\_id}, assuming that each \code{item\_id} matches a single item record. Appending new sales records changes the query result without invalidating the calculation. In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and produce incorrect revenue results. Thus, effective knowledge sharing among data agents requires both extracting reusable calculations from database queries and maintaining their validity under database updates.
+% In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and inflate revenue without execution errors. 
+% Existing knowledge-sharing approaches do not explicitly track and validate such data-dependent assumptions. 
+% Simple invalidation strategies are also insufficient: schema-based invalidation misses changes in join cardinality, while invalidating knowledge on every data update unnecessarily discards valid calculations. 
+
 % These limitations motivate a mechanism that automatically extracts reusable calculations across agents and maintains their validity as underlying data evolve.
 % Research on agent memories has become popular in recent years. 
 % First, most agent memories are designed for a single agent~\cite{zhao2024expel,wang2025awm,zhang2026ace}.
