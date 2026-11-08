@@ -1,32 +1,37 @@
 {
   "schema_version": 1,
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "paper repo -> main repo for the Overleaf edit 990f546 (merged as 3f6d471: abstract, introduction C1-C3 paragraph, evaluation opening sentence, Fig. 1 caption), merged in main 5d94b75; then main repo overleaf/ -> paper repo (forward sync of main 5d94b75: Figs. 3-5 third redraw, fewer words and meaningful glyphs)",
-  "previous_head": "3f6d471e8dcd3032fd7d2b5dd14d97d75ccb0809",
-  "remote_commit": "17cff56cfd99d63d0eeaa24d60f93ad34329e9f5",
+  "direction": "paper repo -> main repo for e5e2e63 (a sync from another checkout, agent4db-adapter 6aef317, not in this repository: Sections III-VI tightened so the body ends on page 12), merged three-way against 17cff56 as main 450c786; then main repo overleaf/ -> paper repo (forward sync of main 450c786: RelBench with MAVRA's validated starts, Fig. 6 redrawn, Fig. 7 and Table III regenerated, two-run comparison, Section IV-G mechanism, introduction ranges)",
+  "previous_head": "e5e2e6364be9ac6a69de598c8b3df2eb6ba05da0",
+  "remote_commit": "fc9e211d5deaa57eabbf0d0a223cf9c972aaafa4",
   "pending_payload": null,
   "changed_paths": [
-    "figures/extraction.pdf",
-    "figures/extraction.tex",
-    "figures/maintenance.pdf",
-    "figures/maintenance.tex",
-    "figures/snapshot.pdf",
-    "figures/snapshot.tex"
+    "figures/relbench-cumulative.pdf",
+    "figures/relbench-cumulative.tex",
+    "figures/reuse-work.pdf",
+    "gen/relbench-table.tex",
+    "gen/relbench.tex",
+    "preamble.tex",
+    "sections/01-introduction.tex",
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/abstract.tex",
+    "gen/relbench-runs.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; figures drawn with tools/figures/build.py (venv in the session scratchpad), rebuilt byte-identical",
-    "status": "bash build.sh en: main.pdf 15 pages, 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "paper repo origin/main had moved to 3f6d471 (Overleaf edit 990f546) after the recorded df75494; the four edited files were merged into overleaf/ first (the main repo copies were unchanged since df75494), so --force only skipped the stale-record check; applied to a copy of the clone first: after the fast-forward only the six Fig. 3-5 files differed from origin/main, and the pushed commit touches only those; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Same mechanisms as the second redraw, drawn with glyphs instead of sentences. Fig. 3: I as a column-level join tree (key icons, crow's-foot N:1 links, phi tag, dashed parameter slot p) with arrows from the session literals, Unmatched baselines as gauges with the +0.1-point band, gate tags G1-G7 where each gate acts, answers as bars (draft without phi about 5x). Fig. 4: Fig. 3's markers with KeyUnique/Unmatched icons, joined dots for shared outcomes, bolts and rerun arrows, unit squares 2/5 and 3/12, the repair search as row counts per value against the key-count line. Fig. 5: item's 16 counter rows as cells inside the ETL transaction, the before/after counter read of checks outside snapshots, admission request chips, one-line H_tx keys with versions in teal. Heights 49.0/50.2/47.0 mm (12.4 mm less), captions 3/3/4 lines and rewritten alt text; text of Section IV unchanged. With the figures alone page 13 was identical (38 lines); after merging the Overleaf edits the body ends 35 lines into page 13 and Figs. 3-5 keep their pages"
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; Fig. 6 by tools/figures/relbench_cumulative.py and Fig. 7 by tools/figures/build.py (scratchpad venv, Liberation Serif installed in ~/.local/share/fonts); RelBench numbers by tools/relbench/paper-stats.py, reuse-work-data.py and runs-stats.py run on noctis over the finished runs",
+    "status": "bash build.sh en: main.pdf 14 pages, 0 overfull boxes, no undefined references or citations; the body ends on page 12 (right column), as in the remote e5e2e63 build",
+    "identical_to_remote": "paper repo origin/main had moved to e5e2e63 after the recorded 17cff56; 17cff56's copies equalled main 018429e, so Sections III and VI were taken from e5e2e63 and IV-V merged three-way (one conflict in IV, two in V, resolved by keeping the remote's combined paragraphs and writing the new content into them); --force only skipped the stale-record check; applied to a copy of the clone first: only the 11 listed files differed from origin/main; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "MAVRA reported from arm mavra-select (validated starts: the task program and its extension by other agents' definitions validated before each later-cutoff session; tried columns kept; below-baseline sessions still record their program). Table III r1: reuse tokens 0.91M/2.48M (-79%/-69% vs No memory, -62%/-52% vs TeCoD), lowest calls, tool calls and cost on both databases, lowest time on rel-stack only; quality 5/6 (user-badge misses). mavra-push (no selection) compared in the text: -72%/-56%, 4/6. Two paired runs with No memory (gen/relbench-runs.tex): 5/6, study-outcome misses; reuse tokens -74% to -90%. Fig. 6: learning bars plus cumulative reuse from zero with brackets. Introduction ranges 3.2-5.6x tokens, 1.3-7.1x speedups (lower bounds from RelBench rel-trial). Chinese reading text updated alongside."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/17cff56cfd99d63d0eeaa24d60f93ad34329e9f5",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: fewer words in Figs. 3-5 and a richer but meaningful visual design).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/fc9e211d5deaa57eabbf0d0a223cf9c972aaafa4",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08/09: improve the method and rerun instead of only rewording; Fig. 6 not significant; Table III quality not full).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "5d94b7542297e73dee32fc1c4e2a9e5430620ecd"
+  "source_commit": "450c78651e16c4c5bd4f865fd71659b38a37ac5d"
 }
