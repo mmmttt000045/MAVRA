@@ -14,7 +14,8 @@
 \bi{The TPC-DS SF1~\cite{tpcds2026benchmark} population study uses 24 tables (2.9M \code{store\_sales} rows) across five metrics, each with two learning questions and five evaluation forms covering new periods, differences, and monthly comparisons. The eleven-update study uses three metrics per schema on synthetic retail (1M sales, 396k returns, 500k catalog sales) and TPC-H SF1~\cite{tpch2026benchmark}. Fixed-library replay also covers SSB~\cite{oneil2009ssb} and BIRD \code{financial}~\cite{li2023bird}.}
 {TPC-DS SF1~\cite{tpcds2026benchmark} 群体实验使用 24 张表（门店销售表 290 万行）和五个指标，每个指标含两道学习题与五种题型（新期间、期间差值与月度比较）。十一类数据更新实验在合成零售库（100 万行销售、39.6 万行退货、50 万行目录销售）和 TPC-H SF1~\cite{tpch2026benchmark} 上各评测三个指标。固定定义库回放还涵盖 SSB~\cite{oneil2009ssb} 与 BIRD \code{financial}~\cite{li2023bird}。}
 
-\bi{RelBench v1~\cite{robinson2024relbench} supplies six classification and regression tasks on \code{rel-stack} and \code{rel-trial}. The five-cutoff study compares seven methods across five cutoffs (210 sessions), 91 days apart on \code{rel-stack} and 365 on \code{rel-trial}; each cutoff appends data and starts a fresh session, with the fifth matching the official split.}
+\bi{RelBench~\cite{robinson2024relbench} supplies six classification and regression tasks on \code{rel-stack} and \code{rel-trial}.
+The five-cutoff study compares seven methods across five cutoffs (210 sessions), 91 days apart on \code{rel-stack} and 365 on \code{rel-trial}; each cutoff appends data and starts a fresh session, with the fifth matching the official split.}
 {RelBench v1~\cite{robinson2024relbench} 提供 \code{rel-stack} 与 \code{rel-trial} 上的六项分类与回归任务。五截点实验比较七种方法（210 个会话），两库截点间隔分别为 91 天和 365 天；每个截点追加数据并开启新会话，第五个截点与官方划分一致。}
 
 \subsubsection{\bt{Baselines}{对比基线}}

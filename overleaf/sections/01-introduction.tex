@@ -51,11 +51,21 @@ As highlighted in the dashed box, while the final steps differ (Step~5), these a
 % {然而，仅靠简单共享计算在数据更新时会带来静默错误。在图~\ref{fig:metric-record} 中，营业额查询按 \code{item\_id} 连接 \code{sales} 与 \code{item} 表，假设每个 \code{item\_id} 只匹配一行商品记录。向 \code{sales} 表追加新记录虽会改变结果，但计算逻辑仍然有效；反之，向 \code{item} 表装载商品历史版本会使一个 \code{item\_id} 匹配多行记录。此时共享的 SQL 仍能正常执行，但连接操作会复制销售记录并虚增营业额。因此，共享记忆在数据更新后必须检查计算的数据条件是否依然成立，否则所有复用该计算的智能体都会得到同一个错误答案。}
 
 \bi{
-Recent studies have explored memory mechanisms for LLM-based agents.
-Most agent memory systems are designed for individual agents~\cite{zhao2024expel,wang2025awm,zhang2026ace}. They store past execution trajectories or learned insights in agent-private memories, preventing knowledge reuse across agents. As a result, $N$ agents independently analyzing $k$ metrics may repeat the same knowledge discovery process up to $Nk$ times. To enable knowledge sharing, multi-agent memory systems, such as G-Memory and AgentSM~\cite{zhang2025gmemory,biswal2026agentsm}, share execution trajectories, textual insights, or tools across agents.
-However, raw SQL often contains request-specific filters that limit reuse, while textual insights may still require additional database exploration. Similarly, enterprise semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} enable the reuse of metric definitions but rely on manual specification rather than automatically extracting knowledge from agent executions.
-More importantly, reusing calculations requires maintaining their validity as underlying data evolve.
-For example, in Figure~\ref{fig:metric-record}, the revenue calculation joins \code{sales} and \code{item} on \code{item\_id}, assuming that each \code{item\_id} matches a single item record. Appending new sales records changes the query result without invalidating the calculation. In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and inflate revenue without execution errors. Existing knowledge-sharing approaches do not explicitly track and validate such data-dependent assumptions. Simple invalidation strategies are also insufficient: schema-based invalidation misses changes in join cardinality, while invalidating knowledge on every data update unnecessarily discards valid calculations. These limitations motivate a mechanism that automatically extracts reusable calculations across agents and maintains their validity as underlying data evolve.
+Recent studies on  agent memory try to epitize the knowledage discovery process of agents by sharing and caching required knowledge, such as past execution trajectories or learned insights.
+Among them, most agent memory systems are designed for individual agents~\cite{zhao2024expel,wang2025awm,zhang2026ace}.
+They store the knowledge in agent-private memories, preventing knowledge reuse across agents.
+As a result, $N$ agents independently analyzing $k$ metrics may repeat the same knowledge discovery process up to $Nk$ times. 
+To enable knowledge sharing, multi-agent memory systems, such as G-Memory and AgentSM~\cite{zhang2025gmemory,biswal2026agentsm},and enterprise semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} share the knowledge across agents.
+However, they are not well suited for data agents.
+First, they may rely on manual specification rather than automatically extracting knowledge from agent executions.
+SQL often contains request-specific filters that limit reuse, while textual insights may still require additional database exploration.
+Second, they cannot reusing calculations requires maintaining their validity as underlying data evolve.
+For example, in Figure~\ref{fig:metric-record}, the revenue calculation joins \code{sales} and \code{item} on \code{item\_id}, assuming that each \code{item\_id} matches a single item record.
+Appending new sales records changes the query result without invalidating the calculation. 
+In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and inflate revenue without execution errors. 
+Existing knowledge-sharing approaches do not explicitly track and validate such data-dependent assumptions. 
+Simple invalidation strategies are also insufficient: schema-based invalidation misses changes in join cardinality, while invalidating knowledge on every data update unnecessarily discards valid calculations. 
+% These limitations motivate a mechanism that automatically extracts reusable calculations across agents and maintains their validity as underlying data evolve.
 % Research on agent memories has become popular in recent years. 
 % First, most agent memories are designed for a single agent~\cite{zhao2024expel,wang2025awm,zhang2026ace}.
 % They store past trajectories or insights in private memory for one agent and do not share knowledge across agents; thus, $N$ agents computing $k$ metrics still learn them $Nk$ times.
