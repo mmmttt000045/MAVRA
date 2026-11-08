@@ -1,10 +1,6 @@
 \begin{figure}[tb]
 \centering
-\ifbilingual
-\includegraphics[width=\linewidth]{figures/shared-validation-zh}%
-\else
 \includegraphics[width=\linewidth]{figures/shared-validation}%
-\fi
 \caption{\bt{Validation database time after one incremental load as 1--\SvAgentsMax\ agents use 16 definitions (log--log; medians of three blocks, bars span them).}{一次增量装载后，1--\SvAgentsMax\ 个智能体使用 16 个定义时的验证数据库耗时（双对数坐标；三轮中位数，误差线覆盖三轮）。}}
 \label{fig:fixed-sharing}
 \Description{Two log-log line charts, staggered and simultaneous arrivals, plot validation database time in seconds against the number of agents, 1 to 32. Per-agent validation rises in proportion to the number of agents; shared full recheck stays flat at a higher level; MAVRA stays flat at the lowest level. Error bars span three randomized blocks.}

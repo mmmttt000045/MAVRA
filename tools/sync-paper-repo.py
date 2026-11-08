@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mirror the manuscript (overleaf/ of the main repo) into the paper repo icde-2027-paper.
 
-overleaf/ is the single source. Read both entries and their \\input / \\includegraphics
+overleaf/ is the single source. Read the entry main.tex and its \\input / \\includegraphics
 dependencies directly, along with references.bib and build.sh. No ZIP is generated or read.
 The paper repo's own README.md, .gitignore, .gitattributes, and remote-only files are retained.
 Text files are written with LF.
@@ -62,8 +62,7 @@ def manuscript_files() -> dict[str, bytes]:
         for name in re.findall(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}", source):
             files.add(checked(name, ".pdf"))
 
-    for entry in ("main.tex", "main-bilingual.tex"):
-        collect(checked(entry, ".tex"))
+    collect(checked("main.tex", ".tex"))
     return {path.as_posix(): lf(path.as_posix(), (SRC / path).read_bytes())
             for path in sorted(files) if path.as_posix() not in KEEP}
 

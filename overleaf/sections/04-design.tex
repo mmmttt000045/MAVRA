@@ -60,7 +60,7 @@ q(D_s)=\mathrm{AGG}_{e}\!\left(\sigma_{\tau\in p}\bigl(J_I(D_s)\bigr)\right),
 {若 B1--B3 及每个 $c\in C(m^r)$ 在 $D_s$ 上成立，则对任意期间 $p$，每个保留的合格事件在 $\mathrm{AGG}_{e}$ 的输入中恰好出现一次，且各受检表或路径的未匹配比例不超过发布基线加 0.1 个百分点。若全部必需日期连接和内连接完整匹配，则 $q(D_s)$ 对期间 $p$ 精确。}
 \end{proposition}
 \begin{proof}[\bt{Proof sketch}{证明概要}]
-\bi{B1 and filtered key uniqueness give at most one fact row per event. Many-to-one join cardinality prevents duplication, while date and inner joins only drop unmatched rows. B2 and B3 assign each retained row its measurement and period. Complete matching retains all qualifying events, while completeness predicates bound the unmatched fraction on each table and path.\ifbilingual\else\qedhere\fi}
+\bi{B1 and filtered key uniqueness give at most one fact row per event. Many-to-one join cardinality prevents duplication, while date and inner joins only drop unmatched rows. B2 and B3 assign each retained row its measurement and period. Complete matching retains all qualifying events, while completeness predicates bound the unmatched fraction on each table and path.\qedhere}
 {B1 与过滤后键唯一性保证每个事件至多对应一条事实行。多对一连接基数防止行被复制，日期连接与内连接仅可能滤除未匹配行。B2、B3 为每条保留行赋予正确的度量值与归属期间。完全匹配保留全部合格事件，完整性谓词则约束各受检表和路径的未匹配比例。\qedhere}
 \end{proof}
 \bi{Because uniqueness and completeness are checked over whole tables and join paths rather than per period, one check outcome serves every period query. Step 4 in Figure~\ref{fig:architecture} verifies $\forall c\in C(m^r):c(D_s)$ on the query's execution snapshot.}
@@ -118,7 +118,7 @@ k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr).
 {若写入 $\operatorname{dep}(c)$ 中任一表 $T$ 的事务都在同一事务内递增 $T$ 的事务性版本，则对任意只读快照 $s_1,s_2$，只要对所有 $T\in\operatorname{dep}(c)$ 都有 $v_{s_1}(T)=v_{s_2}(T)$，就有 $c(D_{s_1})=c(D_{s_2})$。}
 \end{lemma}
 \begin{proof}
-\bi{In snapshot acquisition order, visible committed-trans\-action sets are nested, say $s_1\subseteq s_2$. Because any transaction modifying $T$ increments $T$'s counter in the same transaction, $v_{s_1}(T)=v_{s_2}(T)$ leaves no transaction in $s_2\setminus s_1$ that modifies $T$. Both snapshots therefore observe identical states of every table read by $Q_c$.\ifbilingual\else\qedhere\fi}
+\bi{In snapshot acquisition order, visible committed-trans\-action sets are nested, say $s_1\subseteq s_2$. Because any transaction modifying $T$ increments $T$'s counter in the same transaction, $v_{s_1}(T)=v_{s_2}(T)$ leaves no transaction in $s_2\setminus s_1$ that modifies $T$. Both snapshots therefore observe identical states of every table read by $Q_c$.\qedhere}
 {按快照获取顺序，可见的已提交事务集满足包含关系，不妨设 $s_1\subseteq s_2$。写表 $T$ 的事务在同一事务内递增 $T$ 的计数器，因此版本相等意味着 $s_2\setminus s_1$ 中不存在修改 $T$ 的已提交事务，两个快照看到 $Q_c$ 所读各表的同一状态。\qedhere}
 \end{proof}
 \bi{Meanwhile, any write committed after snapshot acquisition is invisible to both $Q_c(D_s)$ and $q(D_s)$, closing the validation-to-execution gap in step 4.}
@@ -137,7 +137,7 @@ k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr).
 {设日期维表的主键在状态 $D$ 上唯一。（a）若日期键连续性在 $D$ 上成立，即每个月的键构成紧接上月最大键加一的连续整数区间，则日期键范围版本与前一版本对任意连续月份期间返回相同结果。（b）若被移除左连接的右表在状态 $D$ 上满足连接键唯一，则移除该左连接不改变查询结果。}
 \end{proposition}
 \begin{proof}[\bt{Proof sketch}{证明概要}]
-\bi{(a) Contiguity makes a consecutive-month period's date keys the exact integer interval between its bounds, so a fact key falls in that interval if and only if it joins with a date row in the period. (b) A left join with at most one match retains each left row once and projects no read column.\ifbilingual\else\qedhere\fi}
+\bi{(a) Contiguity makes a consecutive-month period's date keys the exact integer interval between its bounds, so a fact key falls in that interval if and only if it joins with a date row in the period. (b) A left join with at most one match retains each left row once and projects no read column.\qedhere}
 {（a）连续性使连续月份期间的日期键恰好构成边界之间的闭整数区间，事实键落在该区间当且仅当它连接到该期间的一行日期维表记录。（b）至多一个匹配的左连接使每条左侧行保留一次，且不提供任何被读取的列。\qedhere}
 \end{proof}
 \bi{The contiguity premise in (a) becomes an added condition of $m^{r+1}$, whereas the uniqueness premise in (b) belonged to $m^r$ and is dropped from $m^{r+1}$. $\textsc{Lookup}$ checks base conditions before added optimization assumptions during maintenance (Algorithm~\ref{alg:maintenance}, line 9); if an added assumption alone fails while all conditions shared with $m^r$ pass, $\operatorname{Recover}$ invalidates $m^{r+1}$ and restores $m^r$ immediately.}

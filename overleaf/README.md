@@ -1,15 +1,15 @@
 # MAVRA：ICDE 稿件
 
-`main.tex` 是英文投稿入口（IEEEtran conference，pdfLaTeX）；`main-bilingual.tex` 是共用源码的中英对照阅读稿（XeLaTeX），不用于投稿。两者都只 `\input{paper}`，正文、图表与数值宏共用。
+`main.tex` 是唯一编译入口（英文投稿稿，IEEEtran conference，pdfLaTeX），只 `\input{paper}`。中文译文与英文并列写在源码中：`\bi{英文}{中文}`、`\bt`、`\bh`、`\bhl`、`\bid` 只排版第一个参数，第二个参数供作者阅读，从不编译。2026-11-08 起删除双语入口 `main-bilingual.tex` 及全部 `\ifbilingual` 分支。
 
 2026-10-31 起目录按投稿规范整理：原 `main-en.tex` 改名为 `main.tex`，原双语 `main.tex` 改名为 `main-bilingual.tex`；`latex/preamble.tex` 移到根目录 `preamble.tex`；章节文件连续编号为 `01-introduction` … `07-conclusion`（原 `04-sharing`、`07-evaluation`、`08-related-work`、`10-conclusion`）；原 `sections/evaluation/` 下各小节按原顺序并入 `05-evaluation.tex`（展开后正文逐字相同），未使用的 `memory-pilot.tex`、`quality.tex` 删除；`references.tex` 并入 `paper.tex`；删除不再使用的 SIGMOD `acmart` 文件。下方历史记录保留当时的文件名。
 
 | 目录／文件 | 内容 |
 | --- | --- |
-| `main.tex`、`main-bilingual.tex` | 两个编译入口 |
+| `main.tex` | 编译入口 |
 | `paper.tex`、`preamble.tex` | 标题、作者、章节顺序；宏包与共用宏 |
 | `sections/` | 摘要、六个章节（每章一个文件）、AI 声明 |
-| `figures/`、`tables/`、`algorithms/` | 图（`.tex` 图环境 + 矢量 PDF，`-zh` 为中文版）、表、算法 |
+| `figures/`、`tables/`、`algorithms/` | 图（`.tex` 图环境 + 矢量 PDF；`-zh` 中文版 PDF 仍由绘图脚本生成，但不再被正文引用）、表、算法 |
 | `gen/` | 由 `tools/` 生成的数值宏，勿手改 |
 | `references.bib` | 参考文献库（IEEEtran 样式，在 `paper.tex` 末尾调用） |
 
@@ -19,29 +19,31 @@
 
 ## 编译与上传
 
-生成的 PDF 统一放在 `overleaf/build/`，在仓库根目录执行 `bash overleaf/build.sh all`。后续修改完成并验证后直接推送到 GitHub 论文仓库，不再默认生成或整理 Overleaf 压缩包。
+生成的 PDF 统一放在 `overleaf/build/`，在仓库根目录执行 `bash overleaf/build.sh`（或 `make paper`），只编译英文稿。后续修改完成并验证后直接推送到 GitHub 论文仓库，不再默认生成或整理 Overleaf 压缩包。
 
 在本目录执行：
 
 ```bash
-bash build.sh en    # build/main.pdf（投稿稿）
-bash build.sh bi    # build/main-bilingual.pdf
-bash build.sh all   # 两份均编译
+bash build.sh       # build/main.pdf（投稿稿，等同 bash build.sh en）
 ```
 
-构建优先使用 latexmk，亦支持 Tectonic。TeX 环境须提供 IEEEtran 类与参考文献样式及标准宏包；双语稿还需 ctex 和 Noto Serif CJK SC、Noto Sans CJK SC、Noto Sans Mono CJK SC 字体。`build.sh` 预检直接宏包依赖，字体由 XeLaTeX 检查。
+构建优先使用 latexmk，亦支持 Tectonic。TeX 环境须提供 IEEEtran 类与参考文献样式及标准宏包，`build.sh` 会预检这些依赖。
 
-从 GitHub 论文仓库导入或拉取至 Overleaf 后，英文选择 `main.tex` / pdfLaTeX（Overleaf 默认），双语选择 `main-bilingual.tex` / XeLaTeX。同步直接读取输入与图形依赖，包含 `references.bib`；不需要实验服务器、原始数据或 ZIP 包即可编译。
+从 GitHub 论文仓库导入或拉取至 Overleaf 后，选择 `main.tex` / pdfLaTeX（Overleaf 默认）。同步直接读取输入与图形依赖，包含 `references.bib`；不需要实验服务器、原始数据或 ZIP 包即可编译。
 
-`paper.tex` 末尾调用 `IEEEtran.bst` 与 BibTeX（原 `references.tex` 已并入）：只输出正文引用的条目，按首次引用排序。正文中的多篇引用统一在一组方括号内逐一列出，逗号后留空格，例如 `[7, 8, 9, 10]`，不压缩为编号区间。英文稿与中英对照稿共用这一设置。`references.bib` 保留原稿全部元数据；未引用条目不占参考文献版面。此次转换未对每条文献重新做出版信息核验。
+`paper.tex` 末尾调用 `IEEEtran.bst` 与 BibTeX（原 `references.tex` 已并入）：只输出正文引用的条目，按首次引用排序。正文中的多篇引用统一在一组方括号内逐一列出，逗号后留空格，例如 `[7, 8, 9, 10]`，不压缩为编号区间。`references.bib` 保留原稿全部元数据；未引用条目不占参考文献版面。此次转换未对每条文献重新做出版信息核验。
 
-## 2026-11-05 当前版面验证
+## 2026-11-08 删除双语入口
+
+按作者要求只编译英文稿：删除 `main-bilingual.tex`，正文所用文件中的 `\ifbilingual` 分支全部改为英文分支（中文图 PDF 不再被引用），`preamble.tex` 去掉 ctex 与中文字体设置，`build.sh` 只保留 `en` 与 `pack`。中文文本仍保留在 `\bi`/`\bt` 等宏的第二个参数中；`tables/replay-policies.tex` 首行原只在双语分支里的中文“每次写入即失效”改写为 `\bt` 参数保留。未被正文引用的历史图表文件未改动。修改前后 `build/main.pdf` 均为 15 页，文本逐字相同，15 页渲染图逐像素相同。
+
+## 2026-11-05 版面验证
 
 英文正文为第 1–12 页，AI 声明与参考文献为第 13–14 页；中英文对照稿共 21 页。两入口均通过本地缓存 Tectonic/XeTeX 编译，未发现溢出框、未解析引用或缺失字符。最终投稿仍需核对投稿环境生成的 PDF。
 
 本轮提前声明 RelBench 跨栏表，并移除系统概览与实验末尾阻断正文流动的浮动屏障，消除空栏；同时精简引言、代价模型、实验设置和相关工作中的重复说明。导师修改的引言第一段中英文均逐字保留，贡献列表、实验数字、引用、公式、命题、证明及全部图形不变；未调整字号、页边距、图形尺寸或模板参数。英文 Table V 位于第 12 页，结论在同页结束。
 
-最新文件为 `build/main.pdf`、`build/main-bilingual.pdf`；源码直接同步至论文仓库 `main`，记录见 `docs/development/paper-sync.json`。以下按日期保留历史来源和版面记录，其中旧页数与 ZIP 包说明不代表当前交付方式。
+最新文件为 `build/main.pdf`；源码直接同步至论文仓库 `main`，记录见 `docs/development/paper-sync.json`。以下按日期保留历史来源和版面记录，其中旧页数与 ZIP 包说明不代表当前交付方式。
 
 ## 2026-11-01 投稿版排版检查（历史记录）
 

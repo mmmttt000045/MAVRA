@@ -2,14 +2,13 @@
 \caption{\bt{Fixed-library replay on four schemas (\RpTotal\ instances). Cells count correct results served, incorrect results served, and instances with no definition served.}{四种模式的固定库回放（\RpTotal\ 个题次）。各格依次给出提供正确结果、提供错误结果和未提供定义的题次数。}}
 \label{tab:replay-policies}
 \footnotesize
-\ifbilingual\setlength{\tabcolsep}{1.7pt}\else\setlength{\tabcolsep}{2.5pt}\fi
-\ifbilingual\let\bt\bh\fi
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabularx}{\linewidth}{@{}Lccc@{}}
 \toprule
 & \bt{Non-breaking}{常规更新} & \bt{Covered breaks}{条件破坏} & \bt{Premise changes}{前提变更}\\
 \bt{Maintenance policy}{维护方式} & (\RpBenignN) & (\RpBreakN) & (\RpOutsideN)\\
 \midrule
-\ifbilingual\bh{Invalidate on\\every write}{每次写入即失效}\else Invalidate on every write\fi & \RpRevokeBenignC\,/\,\RpRevokeBenignW\,/\,\RpRevokeBenignR & \RpRevokeBreakC\,/\,\RpRevokeBreakW\,/\,\RpRevokeBreakR & \RpRevokeOutsideC\,/\,\RpRevokeOutsideW\,/\,\RpRevokeOutsideR\\
+\bt{Invalidate on every write}{每次写入即失效} & \RpRevokeBenignC\,/\,\RpRevokeBenignW\,/\,\RpRevokeBenignR & \RpRevokeBreakC\,/\,\RpRevokeBreakW\,/\,\RpRevokeBreakR & \RpRevokeOutsideC\,/\,\RpRevokeOutsideW\,/\,\RpRevokeOutsideR\\
 \bt{Schema check only}{只检查模式} & \RpSchemaBenignC\,/\,\RpSchemaBenignW\,/\,\RpSchemaBenignR & \RpSchemaBreakC\,/\,\RpSchemaBreakW\,/\,\RpSchemaBreakR & \RpSchemaOutsideC\,/\,\RpSchemaOutsideW\,/\,\RpSchemaOutsideR\\
 \bt{dbt-style table tests}{dbt 式表级测试} & \RpTestsBenignC\,/\,\RpTestsBenignW\,/\,\RpTestsBenignR & \RpTestsBreakC\,/\,\RpTestsBreakW\,/\,\RpTestsBreakR & \RpTestsOutsideC\,/\,\RpTestsOutsideW\,/\,\RpTestsOutsideR\\
 \bt{\textbf{\system\ (ours)}}{\textbf{\system（本文）}} & \textbf{\RpMavraBenignC}\,/\,\RpMavraBenignW\,/\,\RpMavraBenignR & \textbf{\RpMavraBreakC}\,/\,\RpMavraBreakW\,/\,\RpMavraBreakR & \RpMavraOutsideC\,/\,\RpMavraOutsideW\,/\,\RpMavraOutsideR\\

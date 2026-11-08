@@ -4,7 +4,7 @@
 
 ## 当前稿件
 
-当前论文使用 ICDE 模板，英文投稿入口是 [main.tex](../../overleaf/main.tex)，双语阅读入口是 [main-bilingual.tex](../../overleaf/main-bilingual.tex)。构建、投稿包和独立论文仓库的同步方式见 [论文说明](../../overleaf/README.md)。
+当前论文使用 ICDE 模板，唯一编译入口是英文投稿 [main.tex](../../overleaf/main.tex)；中文译文与英文并列保存在源码中（`\bi`、`\bt` 等宏的第二个参数），只供阅读，不编译。构建、投稿包和独立论文仓库的同步方式见 [论文说明](../../overleaf/README.md)。
 
 研究围绕跨智能体共享经过检查的数据库知识，以及数据变化后的维护与使用。当前评估以 RelBench 为主，TPC-DS 群体实验与指标维护实验提供受控证据。实现入口见 [源码导览](../development/source-map.md)。
 

@@ -1,10 +1,6 @@
 \begin{figure}[tb]
 \centering
-\ifbilingual
-\includegraphics[width=\linewidth]{figures/population-zh}%
-\else
 \includegraphics[width=\linewidth]{figures/population}%
-\fi
 \caption{\bt{\PpAgents\ sequential TPC-DS agents: (a) cumulative tokens, including learning; (b) cumulative session time; (c) tokens per question per agent; (d) after the restatement, accuracy against tokens per question, with example retrieval (shared SQL, no maintenance). Means over \PpRuns\ runs; bars span the runs.}{TPC-DS 上 \PpAgents\ 个智能体依次到达：(a) 累计 token，含学习；(b) 累计智能体会话时间；(c) 各智能体每题 token（对数坐标）；(d) 数据更正之后的正确率与每题 token，含示例检索（共享 SQL、不维护）。\PpRuns\ 次运行的均值，误差线覆盖各次运行。}}
 \label{fig:population}
 \Description{Four panels. Three line charts with capped minimum--maximum error bars compare no memory, single-agent memory, and MAVRA over five runs: cumulative tokens in millions and cumulative agent time in minutes versus the number of agents that have arrived, 1 to 16, and tokens per question of each agent on a log scale. The fourth panel plots accuracy after the restatement against tokens per question on a log scale for the same three methods and example retrieval, with run ranges on both axes.}

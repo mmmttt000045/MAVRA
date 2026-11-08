@@ -1,16 +1,5 @@
-\ifbilingual
-  % Noto CJK instead of Fandol: Fandol subsets embedded by xdvipdfmx render as blank pages in
-  % browser and macOS PDF viewers. The bilingual entry is the writing version only.
-  \usepackage[UTF8,scheme=plain,fontset=none]{ctex}
-  \setCJKmainfont{Noto Serif CJK SC}
-  \setCJKsansfont{Noto Sans CJK SC}
-  \setCJKmonofont{Noto Sans Mono CJK SC}
-  % Bilingual draft only: stretch interword space rather than overflow the margin.
-  \setlength{\emergencystretch}{1.5em}
-\else
-  % Preserve IEEE's Times fonts with pdfLaTeX and the XeTeX-based fallback compiler.
-  \usepackage[T1]{fontenc}
-\fi
+% Preserve IEEE's Times fonts with pdfLaTeX.
+\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{pifont}
@@ -102,13 +91,15 @@
 \providecommand{\TrSameCondDef}{--}\providecommand{\TrCondUnneeded}{--}\providecommand{\TrCondNeeded}{--}\providecommand{\TrCondDuploadDB}{--}
 \newcommand{\system}{MAVRA}
 \newcommand{\llmmodel}{DeepSeek-V4.1-Flash-1017}
-\newcommand{\bi}[2]{#1\par\ifbilingual #2\par\fi}
+% Bilingual source: the first argument is the English text that is typeset; the second keeps
+% the Chinese version in the source for reading only and is never compiled.
+\newcommand{\bi}[2]{#1\par}
 % Like \bi, but the paragraph stays open so that a display can follow without an empty line.
-\newcommand{\bid}[2]{#1\ifbilingual\par #2\fi}
-\newcommand{\bt}[2]{#1\ifbilingual\space / #2\fi}
-\newcommand{\bh}[2]{\begin{tabular}[b]{@{}c@{}}#1\ifbilingual\\#2\fi\end{tabular}}
+\newcommand{\bid}[2]{#1}
+\newcommand{\bt}[2]{#1}
+\newcommand{\bh}[2]{\begin{tabular}[b]{@{}c@{}}#1\end{tabular}}
 % Top-aligned so that a two-line method name starts on the row's baseline, next to its swatch.
-\newcommand{\bhl}[2]{\begin{tabular}[t]{@{}l@{}}#1\ifbilingual\\#2\fi\end{tabular}}
+\newcommand{\bhl}[2]{\begin{tabular}[t]{@{}l@{}}#1\end{tabular}}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}

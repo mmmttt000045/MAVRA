@@ -8,7 +8,7 @@ MAVRA 是面向数据智能体的共享记忆系统原型：在智能体与 Post
 | --- | --- |
 | 系统开发、运行与测试 | [开发指南](docs/development/README.md)、[源码导览](docs/development/source-map.md) |
 | 查看实验依据与复现入口 | [全部实验索引](exp/README.md)、[实验清单](exp/catalog.json) |
-| 编辑论文 | [ICDE 稿件说明](overleaf/README.md)；英文投稿 `overleaf/main.tex`，双语 `overleaf/main-bilingual.tex` |
+| 编辑论文 | [ICDE 稿件说明](overleaf/README.md)；唯一编译入口为英文投稿 `overleaf/main.tex`，中文只作为源码中的对照文本 |
 | 修改与生成汇报 PPT | [汇报说明](slides/README.md)、[现有版本](slides/versions/README.md) |
 | 了解当前研究状态 | [研究状态与证据](docs/research/README.md) |
 | 查阅阶段性方案与历史记录 | [历史文档](docs/history/README.md) |
@@ -27,8 +27,7 @@ make check            # Rust 格式、单元测试与 Clippy
 | --- | --- |
 | `make index-check` | 检查实验清单、文件引用与索引是否同步；只用 Python 标准库 |
 | `make paper` | 编译两种语言，输出到 `overleaf/build/` |
-| `make paper-en` / `make paper-bi` | 单独编译英文 / 双语稿 |
-| `make paper-pack` | 生成 `overleaf/build/mavra-icde-bilingual.zip`，无需 TeX 或原始实验数据 |
+| `make paper-pack` | 生成 `overleaf/build/mavra-icde.zip`，无需 TeX 或原始实验数据 |
 | `make figures` | 重画论文图，更新受版本管理的 `overleaf/figures/*.pdf` |
 | `make slides-deps` | 按锁文件安装 PPT 依赖 |
 | `make slides` | 用已有图片生成 `slides/build/mavra-system.pptx` |

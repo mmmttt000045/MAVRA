@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Compile the shared manuscript or package its sources for Overleaf.
-# Usage: ./build.sh [en|bi|all|pack]   (default: all)
-#   en   main.tex            -> build/main.pdf            (submission, pdfLaTeX)
-#   bi   main-bilingual.tex  -> build/main-bilingual.pdf  (reading copy, XeLaTeX)
+# Compile the manuscript or package its sources for Overleaf.
+# Usage: ./build.sh [en|pack]   (default: en)
+#   en   main.tex -> build/main.pdf (submission, pdfLaTeX)
+# The Chinese text in the sources is for reading only and is never compiled.
 set -euo pipefail
 cd "$(dirname "$0")"
-target="${1:-all}"
+target="${1:-en}"
 
 case "$target" in
-  en|bi|all|pack) ;;
-  *) echo "usage: $0 [en|bi|all|pack]" >&2; exit 2 ;;
+  en|pack) ;;
+  *) echo "usage: $0 [en|pack]" >&2; exit 2 ;;
 esac
 
 if [ "$target" = pack ]; then
@@ -45,10 +45,9 @@ def collect(path, stack=()):
             raise SystemExit(f'Missing graphic: {graphic}')
         files.add(graphic)
 
-for entry in ('main.tex', 'main-bilingual.tex'):
-    collect(Path(entry))
+collect(Path('main.tex'))
 
-archive = Path('build/mavra-icde-bilingual.zip')
+archive = Path('build/mavra-icde.zip')
 archive.parent.mkdir(parents=True, exist_ok=True)
 with ZipFile(archive, 'w', compression=ZIP_DEFLATED) as bundle:
     for path in sorted(files):
@@ -66,7 +65,7 @@ if command -v latexmk >/dev/null 2>&1; then
 elif command -v tectonic >/dev/null 2>&1; then
   engine=tectonic
 else
-  echo 'Install latexmk with pdfLaTeX/XeLaTeX, or Tectonic, to compile the paper.' >&2
+  echo 'Install latexmk with pdfLaTeX, or Tectonic, to compile the paper.' >&2
   exit 1
 fi
 
@@ -78,9 +77,6 @@ check_dependencies() {
     colortbl.sty algorithm.sty algpseudocode.sty placeins.sty
   )
   local -a missing_files=()
-  if [ "$target" != en ]; then
-    required_files+=(ctex.sty xeCJK.sty fontspec.sty)
-  fi
   for dependency in "${required_files[@]}"; do
     if [ ! -f "$dependency" ] && ! kpsewhich "$dependency" >/dev/null 2>&1; then
       missing_files+=("$dependency")
@@ -98,10 +94,10 @@ if [ "$engine" = latexmk ] && command -v kpsewhich >/dev/null 2>&1; then
   check_dependencies
 fi
 
-compile() {  # $1 = source, $2 = latexmk engine flag
-  local source="$1" flag="$2" log="build/${1%.tex}.build.log"
+compile() {  # $1 = source
+  local source="$1" log="build/${1%.tex}.build.log"
   if [ "$engine" = latexmk ]; then
-    latexmk "$flag" -interaction=nonstopmode -halt-on-error -outdir=build "$source" > "$log" 2>&1 \
+    latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=build "$source" > "$log" 2>&1 \
       || { tail -40 "$log"; echo "FAILED: $source" >&2; return 1; }
   else
     tectonic --keep-logs --keep-intermediates --outdir build "$source" > "$log" 2>&1 \
@@ -114,8 +110,4 @@ compile() {  # $1 = source, $2 = latexmk engine flag
 }
 
 mkdir -p build
-case "$target" in
-  en)  compile main.tex -pdf ;;
-  bi)  compile main-bilingual.tex -xelatex ;;
-  all) compile main.tex -pdf; compile main-bilingual.tex -xelatex ;;
-esac
+compile main.tex

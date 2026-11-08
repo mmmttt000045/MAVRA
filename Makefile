@@ -2,16 +2,14 @@
 PYTHON ?= python3
 NPM ?= npm
 
-.PHONY: help check index index-check paper paper-en paper-bi paper-pack figures deck-figures slides-deps slides
+.PHONY: help check index index-check paper paper-en paper-pack figures deck-figures slides-deps slides
 
 help:
 	@printf '%s\n' \
 	  'check         Rust format, tests, Clippy, and experiment index' \
 	  'index         Regenerate exp/README.md from exp/catalog.json' \
 	  'index-check   Check experiment coverage and local references' \
-	  'paper         Build English and bilingual PDFs' \
-	  'paper-en      Build the English PDF' \
-	  'paper-bi      Build the bilingual PDF' \
+	  'paper         Build the English PDF (paper-en is an alias)' \
 	  'paper-pack    Package Overleaf sources (no TeX required)' \
 	  'figures       Regenerate paper PDFs (drawing dependencies required)' \
 	  'deck-figures  Regenerate deck PDFs and PNGs (also requires pdftoppm)' \
@@ -29,14 +27,8 @@ index:
 index-check:
 	$(PYTHON) tools/experiment-index.py --check
 
-paper:
-	bash overleaf/build.sh all
-
-paper-en:
+paper paper-en:
 	bash overleaf/build.sh en
-
-paper-bi:
-	bash overleaf/build.sh bi
 
 paper-pack:
 	bash overleaf/build.sh pack

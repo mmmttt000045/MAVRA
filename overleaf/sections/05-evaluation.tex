@@ -2,7 +2,7 @@
 \label{sec:evaluation}
 \bi{We evaluate predictive feature reuse (Section~\ref{sec:relbench-eval}), cross-agent sharing (Section~\ref{sec:population-eval}), reliability under updates (Section~\ref{sec:changes-eval}), and reuse and maintenance mechanisms (Section~\ref{sec:maint-cost-eval}).}
 {我们依次评估预测特征复用（第~\ref{sec:relbench-eval} 节）、跨智能体共享（第~\ref{sec:population-eval} 节）、更新后的可靠性（第~\ref{sec:changes-eval} 节）及复用与维护机制（第~\ref{sec:maint-cost-eval} 节）。}
-\ifbilingual\else\input{tables/relbench}\fi
+\input{tables/relbench}
 
 \subsection{\bt{Experimental Setup}{实验设置}}
 \label{sec:experimental-setup}
@@ -49,7 +49,6 @@ The five-cutoff study compares seven methods across five cutoffs (210 sessions),
 
 \subsection{\bt{Predictive Feature Reuse}{预测特征复用}}
 \label{sec:relbench-eval}
-\ifbilingual\input{tables/relbench}\fi
 \input{figures/relbench-cumulative}
 \input{figures/reuse-work}
 \bi{We evaluate whether reusing task programs and entity-level features at later cutoffs (Section~\ref{sec:features}) reduces exploration while preserving predictive quality.}
@@ -67,7 +66,7 @@ The five-cutoff study compares seven methods across five cutoffs (210 sessions),
 \label{sec:population-eval}
 \input{figures/population}
 \input{tables/population-cost}
-\ifbilingual\else\input{figures/two-schemas}\fi
+\input{figures/two-schemas}
 \bi{We measure whether later agents can reuse computations learned by earlier agents, with the private-memory control holding learning and maintenance fixed. Across five paired runs from empty memory, \PpAgents{} sequential agents each draw seven of 35 TPC-DS questions in matched order (2,240 sessions).}
 {我们考察后续智能体能否复用此前智能体学到的计算，并通过私有记忆对照固定提取与维护机制。五轮配对运行均从空记忆开始，\PpAgents{} 个智能体依次到达并按一致题序从 35 道 TPC-DS 题中各抽 7 题作答（2,240 个会话）。}
 
@@ -86,7 +85,6 @@ The five-cutoff study compares seven methods across five cutoffs (210 sessions),
 {在 16 个智能体的 TPC-DS 实验之后，我们施加一次替代历史销售行的数据更正更新以检验底层记录变化后共享知识的可靠性，每个智能体返回回答四道受影响问题（每种方法 320 个会话）。\system{} 以每题 \PpMavraChangeTokK\,k token 答对 \PpMavraChangeAcc\%。示例检索开销相近，但保存的旧 SQL 仍读取已被替代的行，正确率降至 \PpTrajChangeAcc\%（图~\ref{fig:population}d）。}
 
 \subsubsection{\bt{Comparison with Agent Memories}{与智能体记忆方法的对比}}
-\ifbilingual\input{figures/two-schemas}\fi
 \bi{We apply eleven updates independently to the initial data and learned memory on synthetic retail and TPC-H SF1. Figure~\ref{fig:twoschemas} compares SQL-adapted ACE and AWM, official G-Memory, TeCoD, and \system{} over \CsRuns{} runs: an agent learns each metric from two questions giving its definition, then answers by metric name alone. Four \emph{non-breaking updates} preserve recorded conditions. Five \emph{condition-breaking updates} violate them: status rows, versioned corrections, and duplicate loads violate key uniqueness; dimension history changes join cardinality; and date re-keying breaks the date join. Two \emph{domain-premise changes} affect Proposition~\ref{prop:sufficiency}: changing units alters measurement (B2), and a backup copy adds a source (B1). Each update tests single-month and period-difference questions for metrics referencing a modified table; with held-out questions, each method answers \CsQuestions{} scored questions per run and sees binary correctness feedback on its last three results.}
 {我们在合成零售库与 TPC-H SF1 上针对初始数据与已学记忆独立施加十一类数据变化。图~\ref{fig:twoschemas} 比较 SQL 适配的 ACE 与 AWM、官方 G-Memory、TeCoD 及 \system{} 在 \CsRuns{} 轮运行中的表现：智能体先从两道给出定义的问题学习每个指标，随后仅凭指标名作答。四类\emph{常规更新}保留已记录条件；五类\emph{条件破坏更新}违反数据条件：状态流水、版本化更正与重复加载破坏键唯一性，维表历史改变连接基数，日期键重编码破坏日期关联；两类\emph{前提变更}改变命题~\ref{prop:sufficiency} 的前提：单位变更改变度量（B2），备份副本改变来源（B1）。每次更新测试引用被改表指标的单月与期间差值题，加上留出题每方法每轮共 \CsQuestions{} 道计分题，各方法仅获知自身最近三题的二值正确性反馈。}
 
