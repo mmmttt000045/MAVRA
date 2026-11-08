@@ -4,25 +4,30 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 616115d: Section II-C problem formulation revised per review, with M(pi) notation aligned in Section V)",
-  "previous_head": "9881a4436e0e15782e52d566e0e2a19eef04315c",
-  "remote_commit": "70879ef0b2c5634fa00038093e465d5d6d339743",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main e4c27f9: Figs. 3-5 redrawn as storage-layout figures per the advisor's review, with the Section IV sentences that describe them)",
+  "previous_head": "70879ef0b2c5634fa00038093e465d5d6d339743",
+  "remote_commit": "460c16360ce66cf2438951d18c1f8b993dc11683",
   "pending_payload": null,
   "changed_paths": [
-    "sections/02-background.tex",
-    "sections/05-evaluation.tex"
+    "figures/extraction.pdf",
+    "figures/extraction.tex",
+    "figures/maintenance.pdf",
+    "figures/maintenance.tex",
+    "figures/snapshot.pdf",
+    "figures/snapshot.tex",
+    "sections/04-design.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; figures drawn with tools/figures/build.py (venv in the session scratchpad)",
     "status": "bash build.sh en: main.pdf 15 pages, 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "paper repo origin/main was the recorded 9881a44; a standalone build of the synced paper checkout gives the same main.pdf text; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Section II-C rewritten (cold start and counting unit, Nk as initial explorations, additive cost with non-overlapping c_l and M(pi), admissible policies Pi, reuse-correctness scope, guarantee via Proposition 1's premises, saving Delta as displayed Eq. 3 with stated linear-growth conditions); no two displays adjacent; body now runs about 31 lines onto page 13 (12 before this change)"
+    "identical_to_remote": "paper repo origin/main was the recorded 70879ef; a standalone build of the synced paper checkout gives the same main.pdf text; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "Fig. 3: publish path plus the stored layout of revision 0 (B, I, C, V_x, E), its join entry and one H outcome keyed by (id(c), V(dep(c))) with Accept against the definition's bound; Fig. 4: Algorithm 1 after the item load (stamp comparison L7, affected conditions L8, outcome store with the item check run once at its new key L2, repair step 6); Fig. 5: Algorithm 2 while the load commits (trigger-maintained mavra_versions shard rows, snapshot steps L4/L5/L7/L11, verdicts keyed by transactional versions). Section IV-A now cites Fig. 3 for the stored form, IV-D describes the new Fig. 4, IV-E notes 16 counter rows per table. Figure heights 104.0 -> 129.6 mm, captions 3-4 lines; body on page 13 grows from 31 to 35 lines (already past 12 pages before this change)"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/70879ef0b2c5634fa00038093e465d5d6d339743",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: revise Section II-C per the pasted review).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/460c16360ce66cf2438951d18c1f8b993dc11683",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: redo Figs. 3-5 after the advisor said they lacked technical content, with TVA's storage figures as the model).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "616115dbbc92438905c1f78a6c8a1279f8d5a3d4"
+  "source_commit": "e4c27f96c78077a281d1bed706cb140f1f51d6de"
 }
