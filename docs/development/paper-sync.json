@@ -4,25 +4,27 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 616115d: Section II-C problem formulation revised per review, with M(pi) notation aligned in Section V)",
-  "previous_head": "9881a4436e0e15782e52d566e0e2a19eef04315c",
-  "remote_commit": "70879ef0b2c5634fa00038093e465d5d6d339743",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 6aef317: polish language, transitions, and logic across Sections III-VI, align prose with updated Figures 3-5, and fit body within 12 pages)",
+  "previous_head": "17cff56cfd99d63d0eeaa24d60f93ad34329e9f5",
+  "remote_commit": "e5e2e6364be9ac6a69de598c8b3df2eb6ba05da0",
   "pending_payload": null,
   "changed_paths": [
-    "sections/02-background.tex",
-    "sections/05-evaluation.tex"
+    "sections/03-overview.tex",
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/06-conclusion.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh en: main.pdf 15 pages, 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "paper repo origin/main was the recorded 9881a44; a standalone build of the synced paper checkout gives the same main.pdf text; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Section II-C rewritten (cold start and counting unit, Nk as initial explorations, additive cost with non-overlapping c_l and M(pi), admissible policies Pi, reuse-correctness scope, guarantee via Proposition 1's premises, saving Delta as displayed Eq. 3 with stated linear-growth conditions); no two displays adjacent; body now runs about 31 lines onto page 13 (12 before this change)"
+    "built_on": "this workstation, Tectonic engine",
+    "status": "main.pdf 14 pages (body fits cleanly on pages 1-12, AI Acknowledgment + References on pages 13-14), 0 overfull boxes, no undefined references or citations",
+    "identical_to_remote": "remote commits up to 17cff56 (zzh edits to abstract/intro and updated extraction/maintenance/snapshot figures) verified identical to overleaf/ before applying Sections III-VI polish; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "Polished language, cross-section transitions, and logical flow across Sections III, IV, V, and VI; removed duplicate paragraph at end of Section IV-A; tightly integrated updated Figures 3-5 (G1-G7 gates, phi vs. p separation, markers 1-5, baseline b, 7 outcomes/15 references, 2/5 and 3/12 recheck ratios, low-cardinality <=20 repair pruning, Admissible(q, R) chips, 16-shard mavra_versions counters, and outside-snapshot counter checks); resolved page overflow so Section VI ends on page 12"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/70879ef0b2c5634fa00038093e465d5d6d339743",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: revise Section II-C per the pasted review).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e5e2e6364be9ac6a69de598c8b3df2eb6ba05da0",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: polish language, transitions, and logic of last chapters, integrate new figures, and resolve page overflow).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "616115dbbc92438905c1f78a6c8a1279f8d5a3d4"
+  "source_commit": "6aef3170a001e4a8f7eddf53ea187f1d071db221"
 }
