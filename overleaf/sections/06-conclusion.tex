@@ -1,4 +1,4 @@
 \section{\bt{Conclusion}{结论}}
 \label{sec:limitations}
-\bi{\system{} shares parameterized metric and feature definitions extracted from verified sessions, guarded by explicit data conditions. Condition- and version-indexed validation enables selective rechecking, shared checks and repairs, and metric execution on snapshots where its conditions hold. Future work will extend maintenance to source authority and unit semantics, many-to-many joins, and incremental feature repair.}
-{\system{} 共享从核验会话中提取、受显式数据条件保护的参数化指标与特征定义。按条件及表版本索引验证结果，实现选择性重查、共享检查与修复，以及在条件成立的快照上执行指标。未来工作将把维护扩展至权威数据源与量纲语义、多对多连接及特征增量修复。}
+\bi{\system{} is a shared memory layer for data agents that extracts parameterized metric and feature definitions from verified sessions, derives explicit data conditions, and gates publication on answer reproduction. By indexing validation outcomes by condition signatures and table versions, \system{} selectively rechecks and repairs affected definitions once across agents and binds metric execution to validated MVCC snapshots. Future work will extend maintenance to source authority, unit semantics, many-to-many joins, and incremental feature repair.}
+{\system{} 是面向数据智能体的共享记忆层，从核验会话中提取参数化指标与特征定义，推导显式数据条件，并以答案复现作为发布准入。通过按条件签名与表版本索引验证结果，\system{} 在数据更新后跨智能体按需重验与修复受影响定义，并将指标执行绑定至经验证的 MVCC 快照。未来工作将把维护扩展至权威数据源、量纲语义、多对多连接及特征增量修复。}
