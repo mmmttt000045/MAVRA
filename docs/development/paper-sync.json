@@ -1,29 +1,34 @@
 {
   "schema_version": 1,
-  "date": "2026-11-07",
+  "date": "2026-11-08",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 133c05a: Section II-C rewritten as a formal cost-minimization problem, user request after advisor feedback)",
-  "previous_head": "3ac03482ecbdb5d96892eb6609aabe269ea8c38b",
-  "remote_commit": "398871b51adf414553b5db37cc11a71514780480",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main b533515: Related Work section removed at the user's request (29db1c1); includes the advisor's Overleaf commit ab7008d '11.8中午zzh修改', imported verbatim into main as b533515, so --force was used)",
+  "previous_head": "ab7008d08f6e3af1e553e5c442df73e579383f26",
+  "remote_commit": "5169b2abebe27f08a7b6d0d34320c2498bff636f",
   "pending_payload": null,
   "changed_paths": [
-    "preamble.tex",
-    "sections/02-background.tex",
-    "sections/05-evaluation.tex"
+    "paper.tex",
+    "references.bib",
+    "sections/05-evaluation.tex",
+    "sections/06-conclusion.tex",
+    "README.md"
   ],
   "preserve_remote_only": true,
-  "deletions": [],
+  "deletions": [
+    "sections/06-related-work.tex",
+    "sections/07-conclusion.tex"
+  ],
   "validation": {
-    "built_on": "noctis, copy of overleaf/ at main 133c05a (git-ignored overleaf/build/pf-final)",
-    "status": "bash build.sh all: main.pdf 15 pages, 0 overfull boxes, all fonts embedded, no undefined references or citations; Problem 1 and Eqs. (1)-(2) on p. 4, Fig. 2 top of p. 5 with Section IV starting below it, Figs. 3-4 on p. 6; body runs about 43 lines onto p. 13 (was about 30); main-bilingual.pdf 22 pages",
-    "identical_to_remote": "paper repo origin/main was 3ac0348 (= the previous record); dry run: 3 changed (preamble.tex, sections/02-background.tex, sections/05-evaluation.tex), 0 added; sections/01-introduction.tex and sections/abstract.tex identical to remote and untouched; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "II-C 'Problem Formulation': request workload, exploration vs. reuse decision y_j, Problem 1 (min total exploration/reuse/publication/maintenance cost s.t. every reused answer is correct), analysis tied to C1-C3, saving Delta inline; preamble adds a problem environment and \\bid; evaluation references point to Eq. (1); page fitting pending"
+    "built_on": "noctis, copy of overleaf/ at main b533515 (git-ignored overleaf/build/rw-del)",
+    "status": "bash build.sh all: main.pdf 15 pages, 0 overfull boxes, all fonts embedded, no undefined references or citations; sections I-VI (no Related Work); body runs 13 lines onto p. 13 (was about 43); Table I p. 2, Table II p. 3, Problem 1 p. 4; 39 references, last page balanced 15/15 lines with \\IEEEtriggeratref{37}; main-bilingual.pdf 21 pages (was 22)",
+    "identical_to_remote": "paper repo origin/main was ab7008d (advisor, after the recorded 398871b): its three files (intro, Fig. 1 caption, evaluation setup) imported verbatim into main; sync deleted sections/06-related-work.tex and sections/07-conclusion.tex in the paper repo and updated its README file list; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "Related Work removed: section file and \\input deleted, conclusion renamed 06-conclusion, 13 references cited only there deleted from references.bib, dbt data-tests reference kept and cited at its use in Section V-C, reference column break re-tuned 42 -> 37"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/398871b51adf414553b5db37cc11a71514780480",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/5169b2abebe27f08a7b6d0d34320c2498bff636f",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-07: pull, merge locally, push).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "133c05ac2f5c28158807f81c4928d1910fc87ed8"
+  "source_commit": "b5335150d9b133eb2cc1032c24573967cb1ebeb8"
 }
