@@ -8,7 +8,7 @@
 | --- | --- |
 | `main.tex`、`main-bilingual.tex` | 两个编译入口 |
 | `paper.tex`、`preamble.tex` | 标题、作者、章节顺序；宏包与共用宏 |
-| `sections/` | 摘要、七个章节（每章一个文件）、AI 声明 |
+| `sections/` | 摘要、六个章节（每章一个文件）、AI 声明 |
 | `figures/`、`tables/`、`algorithms/` | 图（`.tex` 图环境 + 矢量 PDF，`-zh` 为中文版）、表、算法 |
 | `gen/` | 由 `tools/` 生成的数值宏，勿手改 |
 | `references.bib` | 参考文献库（IEEEtran 样式，在 `paper.tex` 末尾调用） |
