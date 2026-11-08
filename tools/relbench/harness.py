@@ -85,6 +85,9 @@ AUDIT_LEAK_SEEDS = 5000  # seeds of the leak audit (latest training seed time); 
 IDLE_RECONNECT_S = 30  # a new connection to the gateway after this long without a request
 LLM_RETRIES = 12  # failed requests per call before the run stops (backoff up to 60 s: about 8 minutes)
 POST_GOAL_LLM_CALLS = 5  # after the goal: one more validation within this many model calls (README §1.2, rule B)
+SELECT_MAX_DEFS = 40  # mavra-select: verified definitions of the entity tried as an extension of the task's program
+SELECT_MIN_ROOM = 10  # mavra-select: program columns the joint fit never splits on make room for this many definitions
+SELECT_CHECK_SEEDS = 2000  # mavra-select: validation seeds on which the extended SQL must reproduce the scored columns
 LGB_PARAMS = dict(n_estimators=300, learning_rate=0.05, num_leaves=63, min_child_samples=20, colsample_bytree=0.8,
                   subsample=0.8, subsample_freq=1, random_state=42, deterministic=True, force_row_wise=True,
                   n_jobs=8, verbose=-1)
@@ -96,6 +99,12 @@ ARMS = {
     # (as the other memories put theirs into the prompt) instead of the agent looking them up with two tool calls
     "mavra-push": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
                    "push_memory": True},
+    # 11-08: from the second cutoff the memory validates, without model calls, the task's program and the program
+    # extended with verified definitions other agents published for the same entity, and the better one starts the
+    # session as its best features (Run.select_start); the program keeps the columns its sessions tried without
+    # keeping them, and a session below the single-table reference still records its audited SQL as the task's program
+    "mavra-select": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                     "push_memory": True, "select_start": True},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -561,6 +570,27 @@ def features(url, sql, seeds_table, seeds, ec, search_path=None):
         raise FeatureError(f"feature columns are not numeric: {str(err)[:200]}")
 
 
+def quote_ident(c):
+    return '"' + str(c).replace('"', '""') + '"'
+
+
+def select_columns_sql(sql, keys, cols):
+    """A feature SQL restricted to some of its columns (keys: its own names for the entity and seed_time columns)."""
+    body = sql.strip().rstrip(";")
+    return (f"SELECT q.{quote_ident(keys[0])}, q.{quote_ident(keys[1])}, " + ", ".join(f"q.{quote_ident(c)}" for c in cols)
+            + f" FROM (\n{body}\n) AS q")
+
+
+def union_sql(psql, pkeys, pcols, dsql, dkeys, dcols):
+    """One feature SQL with the program's columns pcols and the definitions' columns dcols, matched per seed row."""
+    p, d = psql.strip().rstrip(";"), dsql.strip().rstrip(";")
+    sel = [f"p.{quote_ident(pkeys[0])}", f"p.{quote_ident(pkeys[1])}"] + [f"p.{quote_ident(c)}" for c in pcols] \
+        + [f"d.{quote_ident(c)}" for c in dcols]
+    return (f"WITH mem_program AS (\n{p}\n),\nmem_definitions AS (\n{d}\n)\nSELECT " + ", ".join(sel)
+            + f"\nFROM mem_program p LEFT JOIN mem_definitions d ON d.{quote_ident(dkeys[0])} = p.{quote_ident(pkeys[0])} "
+            f"AND d.{quote_ident(dkeys[1])} = p.{quote_ident(pkeys[1])}")
+
+
 # ───────────────────────── one run ─────────────────────────
 
 class Run:
@@ -780,7 +810,9 @@ Budget: at most {MAX_VALIDATIONS} validations and {MAX_LLM_CALLS} model calls; t
 
 Shared memory: agents on this database publish verified feature definitions and feature programs. Start with find_program (this task's verified program from an earlier cutoff: its complete feature SQL when it still runs, and a feature SQL of its definitions) and find_features (definitions for the entity table, with a feature SQL of them for these seed tables). If they return a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("feature_memory") and not self.arm.get("push_memory") else "") + ("""
 
-Shared memory: agents on this database publish verified feature definitions and feature programs. This task's verified program from an earlier cutoff (its complete feature SQL when it still runs, and a feature SQL of its definitions) and the verified definitions for the entity table (with a feature SQL of them for these seed tables) are looked up for you and follow the task line. If they include a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("push_memory") else "") + (
+Shared memory: agents on this database publish verified feature definitions and feature programs. This task's verified program from an earlier cutoff (its complete feature SQL when it still runs, and a feature SQL of its definitions) and the verified definitions for the entity table (with a feature SQL of them for these seed tables) are looked up for you and follow the task line. If they include a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("push_memory") and not self.arm.get("select_start") else "") + ("""
+
+Shared memory: agents on this database publish verified feature definitions and feature programs. When this task has a verified program from an earlier cutoff, the memory validates it on this cutoff's data, together with the program extended by verified definitions that other agents published for the entity; the better one becomes your current best features and follows the task line with its SQL and validation score. Explore the tables and extend that SQL only to improve on it. Otherwise the memory's lookups follow the task line: if they include a feature SQL, validate it first. compose_features compiles verified definitions (by key) into a feature SQL.""" if self.arm.get("select_start") else "") + (
             "\n\nSQL memory: successful sessions save their complete audited feature SQL for this task. Start with find_program "
             "(this task's verified program from an earlier cutoff: its complete feature SQL when it still runs). If it returns "
             "a feature SQL, validate it first; explore the tables and extend the SQL only to improve on it."
@@ -830,6 +862,199 @@ Shared memory: agents on this database publish verified feature definitions and 
             return {"val": score(e["task_type"], seeds["val"][yc], p), "from_cutoff": prev[0], "dropped_leaking": sorted(bad),
                     "seconds": time.time() - t0}
         return {"val": val, "from_cutoff": prev[0], "seconds": time.time() - t0}
+
+    def select_start(self, t, k, seeds, prog, feats, middle, agent, sid):
+        """MAVRA's start selection (arm mavra-select, 11-08). On this cutoff's data, without model calls, validate (P) the
+        task's program -- its complete SQL when it still runs, else its definitions; columns that read rows after
+        seed_time here are dropped, as for the goal -- and (U) P extended with the verified definitions other agents
+        published for the same entity (the definitions' columns ranked by gain in one fit together with P's, P's
+        never-split columns making room under the column cap). The better validation score starts the session.
+        Returns None when there is no program; otherwise a record with the candidates and the chosen SQL."""
+        e = self.tasks[t]
+        ec, yc = e["entity_col"].lower(), e["target_col"].lower()
+        higher = metric_of(e["task_type"])[1]
+        psql = prog.get("program_sql") or prog.get("sql")
+        if not psql:
+            return None
+        rec = {"candidates": [], "audit_seconds": 0.0, "sql_seconds": 0.0, "train_seconds": 0.0, "chosen": None}
+        t0 = time.time()
+        val_table = f"task.{tname(t)}_val"
+
+        def run(sql):  # features on the training sample and the validation seeds
+            xtr, s1 = features(self.url, sql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
+            xva, s2 = features(self.url, sql, val_table, seeds["val"], ec)
+            rec["sql_seconds"] += s1 + s2
+            return xtr, xva
+
+        def audit(sql):
+            ta = time.time()
+            r = self.audit(t, k, sql, seeds)
+            rec["audit_seconds"] += time.time() - ta
+            return r
+
+        def fit(xtr, xev):
+            p, imp, tt = train_predict(e["task_type"], xtr, seeds["train_sample"][yc], xev)
+            rec["train_seconds"] += tt
+            return p, imp
+
+        def heads(sql):  # the SQL's own names for its two key columns
+            df, _ = read_sql(self.url, f"SELECT * FROM ({sql.strip().rstrip(';').replace('{seeds}', val_table)}) q LIMIT 0")
+            return list(df.columns[:2])
+
+        def better(a, b):
+            return a > b if higher else a < b
+
+        try:
+            pxtr, pxva = run(psql)
+            pkeys = heads(psql)
+        except Exception as err:  # noqa: BLE001 - a program that no longer runs gives no start; the session explores
+            rec["error"] = f"program: {str(err)[:300]}"
+            rec["seconds"] = time.time() - t0
+            return rec
+        leak = audit(psql)
+        if leak.get("result") not in ("clean", "leak"):
+            rec["error"] = f"program audit: {leak.get('why')}"
+            rec["seconds"] = time.time() - t0
+            return rec
+        bad = set(leak.get("all_columns_differing") or []) if leak["result"] == "leak" else set()
+        pcols = [c for c in pxtr.columns if c not in bad]
+        if not pcols:
+            rec["error"] = "every column of the program reads rows after seed_time on this cutoff"
+            rec["seconds"] = time.time() - t0
+            return rec
+        p_sql = psql if not bad else select_columns_sql(psql, pkeys, pcols)
+        pv, pimp = fit(pxtr[pcols], pxva[pcols])
+        pval = score(e["task_type"], seeds["val"][yc], pv)
+        cands = [{"name": "program", "sql": p_sql, "val": pval, "columns": pcols, "importance": pimp,
+                  "dropped_leaking": sorted(bad), "from_cutoff": (prog.get("program") or {}).get("cutoff")}]
+        # U: the verified definitions of the entity that the program does not already use
+        in_prog = {c.get("key") for c in prog.get("columns") or []}
+        keys = [f["key"] for f in feats.get("features") or [] if f.get("key") and f["key"] not in in_prog][:SELECT_MAX_DEFS]
+        rec["definitions_offered"] = len(keys)
+        if keys:
+            try:
+                comp = middle.call("compose_features", agent, sid, sid, {"keys": keys, "seed_key": ec})
+                dsql = comp.get("sql")
+                if not dsql:
+                    raise FeatureError(f"compose_features: {comp.get('error')}")
+                dxtr, dxva = run(dsql)
+                dkeys = heads(dsql)
+                dleak = audit(dsql)
+                if dleak.get("result") not in ("clean", "leak"):
+                    raise FeatureError(f"definitions audit: {dleak.get('why')}")
+                dbad = set(dleak.get("all_columns_differing") or []) if dleak["result"] == "leak" else set()
+                dcols = [c for c in dxtr.columns if c not in dbad and c not in pcols and c not in pkeys]
+                if not dcols:
+                    raise FeatureError("no definition column beyond the program's")
+                _, jimp = fit(pd.concat([pxtr[pcols], dxtr[dcols]], axis=1), pxva[pcols].head(1).join(dxva[dcols].head(1)))
+                keep = pcols
+                if MAX_FEATURES - len(keep) < SELECT_MIN_ROOM:
+                    never = [c for c, g in reversed(jimp) if g == 0 and c in pcols]
+                    drop = set(never[:SELECT_MIN_ROOM - (MAX_FEATURES - len(keep))])
+                    keep = [c for c in pcols if c not in drop]
+                add = [c for c, g in jimp if c in dcols and g > 0][:MAX_FEATURES - len(keep)]
+                if not add:
+                    raise FeatureError("no definition column with gain in the joint fit")
+                uxtr = pd.concat([pxtr[keep], dxtr[add]], axis=1)
+                uxva = pd.concat([pxva[keep], dxva[add]], axis=1)
+                uv, uimp = fit(uxtr, uxva)
+                uval = score(e["task_type"], seeds["val"][yc], uv)
+                u_sql = union_sql(psql, pkeys, keep, dsql, dkeys, add)
+                cand = {"name": "extended", "sql": u_sql, "val": uval, "columns": keep + add, "importance": uimp,
+                        "added": add, "added_keys": [c.get("key") for c in comp.get("columns") or [] if c.get("column") in add],
+                        "dropped_never_split": [c for c in pcols if c not in keep], "dropped_leaking": sorted(bad | dbad)}
+                if better(uval, pval):
+                    # the extended SQL must reproduce the columns that were scored, and pass the leak audit as one SQL
+                    self.check_columns(t, k, u_sql, seeds, uxva, rec)
+                    ua = audit(u_sql)
+                    if ua.get("result") != "clean":
+                        raise FeatureError(f"extended SQL audit: {ua.get('result')} {ua.get('columns_differing') or ua.get('why')}")
+                cands.append(cand)
+            except Exception as err:  # noqa: BLE001 - the program alone still starts the session
+                rec["extension_error"] = str(err)[:300]
+        if bad:  # the program without its leaking columns is a new SQL: audit it as one before it starts the session
+            pa = audit(p_sql)
+            if pa.get("result") != "clean":
+                cands = [c for c in cands if c["name"] != "program"]
+                rec["program_error"] = f"program without leaking columns: {pa.get('result')}"
+        best = None
+        for c in cands:
+            if best is None or better(c["val"], best["val"]):
+                best = c
+        rec["candidates"] = [{k2: v for k2, v in c.items() if k2 not in ("sql", "importance")} | {"n_features": len(c["columns"])}
+                             for c in cands]
+        for c in rec["candidates"]:
+            c.pop("columns", None)
+        if best is not None:
+            rec["chosen"] = {"name": best["name"], "val": best["val"], "sql": best["sql"], "columns": best["columns"],
+                             "importance": [c for c, _ in best["importance"][:30]], "top": best["importance"][:10],
+                             "never_split": sum(1 for _, g in best["importance"] if g == 0)}
+        rec["seconds"] = time.time() - t0
+        return rec
+
+    def select_message(self, t, k, sel, looked, goal):
+        """The session's first message after the task line when the memory chose its start (arm mavra-select)."""
+        e = self.tasks[t]
+        metric = metric_of(e["task_type"])[0]
+        entity = e["entity_table"].lower()
+        ch = sel["chosen"]
+        lines = ["Prepared for you by the shared memory (validated on this cutoff's data; none of your validations were used):"]
+        for c in sel["candidates"]:
+            if c["name"] == "program":
+                s = (f"- this task's verified program from cutoff {str(c.get('from_cutoff'))[:10]}: validation {metric} {c['val']:.5f} "
+                     f"({c['n_features']} features)")
+                if c.get("dropped_leaking"):
+                    s += f"; columns dropped because they read rows after seed_time on this cutoff: {', '.join(c['dropped_leaking'][:10])}"
+            else:
+                s = (f"- the program extended with {len(c['added'])} verified definitions that other agents published for {entity}: "
+                     f"validation {metric} {c['val']:.5f} ({c['n_features']} features)")
+            lines.append(s)
+        lines.append(f"Your current best features are the {'extended program' if ch['name'] == 'extended' else 'program'} "
+                     f"(validation {metric} {ch['val']:.5f}{', which reaches the retraining goal' if goal else ''}):")
+        lines.append(ch["sql"])
+        lines.append("Its top features by gain: " + ", ".join(f"{c} ({g:g})" for c, g in ch["top"]))
+        if ch.get("never_split"):
+            lines.append(f"{ch['never_split']} of its columns are never split on by the model.")
+        tried = looked["find_program"].get("tried") or []
+        if tried:
+            lines.append("Columns that earlier sessions of this task tried without keeping them: " + ", ".join(map(str, tried)))
+        used = set(ch["columns"])
+        other = [f["key"] for f in looked["find_features"].get("features") or [] if f.get("key") and f["key"].split(":")[-1] not in used]
+        if other:
+            lines.append(f"Verified definitions for {entity} not in these features (compose_features compiles them by key): "
+                         + ", ".join(other[:30]))
+        if goal:
+            lines.append(f"You may make one more attempt to improve them: one validate_features within the next {POST_GOAL_LLM_CALLS} "
+                         "model calls, after which the session ends with your best validated features. Call submit without sql to finish now.")
+        else:
+            lines.append("Improve on them with validate_features; submit without sql keeps your best validated features.")
+        return "\n".join(lines)
+
+    def check_columns(self, t, k, sql, seeds, xva, rec):
+        """The extended SQL, run as one statement on the first validation seeds, gives the columns that were scored."""
+        e = self.tasks[t]
+        ec = e["entity_col"].lower()
+        sub = seeds["val"].head(SELECT_CHECK_SEEDS).reset_index(drop=True)
+        schema = f"select_{tname(t)}_k{k}"
+        with psycopg.connect(self.url, autocommit=True) as con:
+            con.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+            con.execute(f"CREATE SCHEMA {schema}")
+            con.execute(f"CREATE TABLE {schema}.seeds AS SELECT * FROM task.{tname(t)}_val WHERE false")
+            copy_rows(con, f"{schema}.seeds", sub)
+            con.execute(f"ANALYZE {schema}.seeds")
+        try:
+            got, secs = features(self.url, sql, f"{schema}.seeds", sub, ec)
+        finally:
+            with psycopg.connect(self.url, autocommit=True) as con:
+                con.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+        rec["sql_seconds"] += secs
+        want = xva.head(SELECT_CHECK_SEEDS).reset_index(drop=True)
+        if list(got.columns) != list(want.columns):
+            raise FeatureError(f"extended SQL columns differ: {list(got.columns)[:5]} vs {list(want.columns)[:5]}")
+        diff = ~np.isclose(got.to_numpy(), want.to_numpy(), rtol=1e-6, atol=1e-9, equal_nan=True)
+        if diff.any():
+            raise FeatureError(f"extended SQL differs from the scored columns in {int(diff.sum())} cells "
+                               f"({[c for c, d in zip(got.columns, diff.any(axis=0)) if d][:5]})")
 
     def tool_specs(self):
         def fn(name, desc, props, req):
@@ -950,19 +1175,45 @@ Shared memory: agents on this database publish verified feature definitions and 
                                                           "pool_examples", "pool_templates", "seconds")}}
         best, best_sql, streak, idle, submitted = None, None, 0, 0, None
         goal_hit = None  # model calls made when a validation first reached the goal
+        chosen = None  # mavra-select: the start the memory validated
         t_start = time.time()
         if self.arm.get("push_memory"):
             # the two lookups the agent used to start with, done by the memory at the session start (inside the
             # measured session time) and put after the task line in the form of their tool outputs
-            t0, pushed = time.time(), []
+            t0, pushed, looked = time.time(), [], {}
             for name, args in (("find_program", {"task": t}), ("find_features", {"entity": e["entity_table"].lower(), "seed_key": ec})):
                 try:
                     out = middle.call(name, agent, sid, sid, args)
                 except Exception as err:
                     out = {"error": f"{err}"}
+                looked[name] = out if isinstance(out, dict) else {}
                 pushed.append(f"{name}: " + json.dumps(out, ensure_ascii=False, default=str)[:TOOL_OUTPUT_CHARS])
-            msgs[1]["content"] = task_line + "\n\nLooked up for you in shared memory:\n" + "\n".join(pushed)
-            rec["memory_push"] = {"seconds": time.time() - t0, "chars": sum(len(x) for x in pushed),
+            sel, text = None, None
+            if self.arm.get("select_start"):
+                rec["tried_before"] = looked["find_program"].get("tried") or []
+                try:
+                    sel = self.select_start(t, k, seeds, looked["find_program"], looked["find_features"], middle, agent, sid)
+                    if sel is not None and sel.get("chosen"):
+                        goal = self.target(t, k)
+                        v = sel["chosen"]["val"]
+                        reached = goal is not None and (v >= goal if higher else v <= goal)
+                        text = self.select_message(t, k, sel, looked, reached)
+                except Exception as err:  # noqa: BLE001 - the session then starts from the plain lookups and the error is kept
+                    sel = {"error": f"select_start: {type(err).__name__}: {str(err)[:300]}"}
+                    log(f"{t} k{k}: {sel['error']}")
+                if sel is not None:
+                    rec["memory_select"] = {k2: v for k2, v in sel.items() if k2 != "chosen"}
+                    rec["memory_select"]["chosen"] = {k2: v for k2, v in (sel.get("chosen") or {}).items() if k2 != "sql"} or None
+            if text:
+                chosen = sel["chosen"]
+                best, best_sql = chosen["val"], chosen["sql"]
+                if reached:
+                    goal_hit = 0
+                    rec["goal_reached"] = {"validation": 0, "llm_calls": 0, "by": "memory"}
+                msgs[1]["content"] = task_line + "\n\n" + text
+            else:
+                msgs[1]["content"] = task_line + "\n\nLooked up for you in shared memory:\n" + "\n".join(pushed)
+            rec["memory_push"] = {"seconds": time.time() - t0, "chars": len(msgs[1]["content"]) - len(task_line),
                                   "program": '"sql"' in pushed[0], "error": any('"error"' in x[:40] for x in pushed)}
 
         def better(x):
@@ -1073,7 +1324,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                                                    "train_seconds": tt, "audit_seconds": audit_s, "leak": leaking,
                                                    "audit_result": leak.get("result"),
                                                    "leaking_columns": leak.get("columns_differing"), "n_features": xtr.shape[1],
-                                                   "sql": sql, "importance": [c for c, _ in imp[:30]]})
+                                                   "sql": sql, "importance": [c for c, _ in imp[:30]], "columns": list(xtr.columns)})
                         out = {f"validation_{metric}": round(val, 5), "improved": improved,
                                "n_features": xtr.shape[1], "train_rows": len(xtr), "val_rows": len(xva),
                                "top_features_by_gain": imp[:15],
@@ -1138,7 +1389,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                 rec["stop"] = stop
                 break
         # leak audits (at every validation and at submit) are the harness's checks, not the agent's work
-        rec["audit_seconds"] = sum(x.get("audit_seconds", 0) for x in rec["tools"])
+        rec["audit_seconds"] = sum(x.get("audit_seconds", 0) for x in rec["tools"]) + (rec.get("memory_select") or {}).get("audit_seconds", 0)
         rec["agent_seconds"] = time.time() - t_start - rec["audit_seconds"]
         rec["final_sql"] = submitted or best_sql
         rec["final_source"] = "submitted" if submitted else ("best_validated" if best_sql else None)
@@ -1156,6 +1407,8 @@ Shared memory: agents on this database publish verified feature definitions and 
             seen = next((v for v in reversed(rec["validations"]) if v.get("sql") == rec["final_sql"] and "val" in v and v.get("leak") is False), None)
             if seen is not None:
                 rec["audit"] = {"result": "clean", "from_validation": seen["tool_i"]}
+            elif chosen and rec["final_sql"] == chosen["sql"]:
+                rec["audit"] = {"result": "clean", "from_memory_select": chosen["name"]}
             else:
                 try:
                     rec["audit"] = self.audit(t, k, rec["final_sql"], seeds)
@@ -1177,7 +1430,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                 log(f"{t} k{k}: TeCoD could not add the verified pair: {rec['learning']['error']}")
         if self.arm.get("feature_memory") and rec["final_sql"] and not cut_short:
             try:
-                rec["learning"] = self.learn(t, k, rec, seeds, middle, agent, sid)
+                rec["learning"] = self.learn(t, k, rec, seeds, middle, agent, sid, chosen)
             except LlmUnavailable:
                 raise
             except Exception as err:
@@ -1282,7 +1535,25 @@ Shared memory: agents on this database publish verified feature definitions and 
                     con.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
         log(f"test scores after the run: {time.time() - t0:.0f}s")
 
-    def learn(self, t, k, rec, seeds, middle, agent, sid):
+    def tried_columns(self, t, rec, chosen):
+        """Columns of this session's validations that are not in its final SQL (no gain, or leaking), after the ones
+        earlier sessions of the task recorded and the final SQL does not use; at most 40 (arm mavra-select)."""
+        final = next((v.get("columns") for v in reversed(rec["validations"]) if v.get("sql") == rec["final_sql"] and v.get("columns")), None)
+        if final is None and chosen and chosen["sql"] == rec["final_sql"]:
+            final = chosen["columns"]
+        final = set(final or [])
+        out = []
+        for v in rec["validations"]:
+            for c in v.get("columns") or []:
+                tag = f"{c} (leaked)" if v.get("leak") and c in set(v.get("leaking_columns") or []) else c
+                if c not in final and tag not in out and c not in out:
+                    out.append(tag)
+        for c in rec.get("tried_before") or []:  # what the task's program recorded (find_program at the session start)
+            if str(c).split(" ")[0] not in final and c not in out:
+                out.append(c)
+        return out[:40]
+
+    def learn(self, t, k, rec, seeds, middle, agent, sid, chosen=None):
         """Learning after a session (README §1.6, amended before any P2 result): when the submission beats the reference.
         Columns the audit found leaking are left out of the extractor's input; every definition still has to pass F1-F4,
         and a leaking column cannot pass F3 (the compiled SQL is bounded by seed_time) or F4."""
@@ -1292,10 +1563,13 @@ Shared memory: agents on this database publish verified feature definitions and 
         best, higher = rec["best_val"], rec["higher_is_better"]
         beats = best is not None and ref.get("val") is not None and (best > ref["val"] if higher else best < ref["val"])
         audit = rec.get("audit") or {}
-        if not beats:
+        select = self.arm.get("select_start")
+        if not beats and not (select and audit.get("result") == "clean"):
             return {"skipped": "validation score not better than the reference"}
         leaking = {c.lower() for c in audit.get("columns_differing") or []}
         imp = next((v.get("importance") for v in reversed(rec["validations"]) if v.get("sql") == rec["final_sql"] and v.get("importance")), [])
+        if not imp and chosen and chosen["sql"] == rec["final_sql"]:
+            imp = chosen.get("importance") or []
         imp = [c for c in imp if c.lower() not in leaking]
         tstar = seeds["train_sample"]["seed_time"].max()
         sub = seeds["train_sample"][seeds["train_sample"]["seed_time"] == tstar].sort_values(ec).head(AUDIT_SEEDS)
@@ -1315,6 +1589,11 @@ Shared memory: agents on this database publish verified feature definitions and 
                 "seeds": f"(select * from task.{tname(t)}_train_sample order by {ec}, seed_time limit {AUDIT_SEEDS})",
                 "audit_schema": schema, "audit_seeds": f"(select * from {schema}.seeds)", "val_score": best, "metric": rec["metric"],
                 "audit_clean": audit.get("result") == "clean", "val_table": f"task.{tname(t)}_val"}
+        if select:
+            # below the single-table reference the session still leaves its audited SQL as the task's program, without
+            # extraction or published definitions; the program keeps the columns the task's sessions tried without keeping
+            body["program_only"] = not beats
+            body["tried"] = self.tried_columns(t, rec, chosen)
         t0 = time.time()
         try:
             r = middle.post("/v1/learn_features", body)

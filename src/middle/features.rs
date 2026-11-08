@@ -46,6 +46,13 @@ pub struct LearnReq {
     /// 该任务的验证种子表（如 task.user_badge_val），复用前核对整份 SQL 能否在当前快照上执行
     #[serde(default)]
     pub val_table: Option<String>,
+    /// 只记任务方案（会话的验证分数没有超过单表参照）：不提炼、不发布定义，审计为 clean 时照样存下整份 SQL，
+    /// 供本任务下一截点重训时作起点（arm mavra-select，11-08）
+    #[serde(default)]
+    pub program_only: bool,
+    /// 会话里试过却没留在最终 SQL 中的列（没有提升或泄漏），随方案存下，复用会话据此避开重复尝试
+    #[serde(default)]
+    pub tried: Vec<String>,
 }
 
 /// 结果行按（实体键, seed_time）取某一列的值。
@@ -135,10 +142,17 @@ impl Middle {
     pub async fn learn_features(&self, ctx: &Ctx, p: &Provider, req: &LearnReq) -> Result<Value> {
         let t0 = Instant::now();
         let before = self.db.meter.snap();
-        let input = self.feature_extract_input(ctx, req);
-        let ex = metric::extract_features(p, &input, 2).await;
+        let ex = if req.program_only {
+            metric::FeatureExtraction::default()
+        } else {
+            metric::extract_features(p, &self.feature_extract_input(ctx, req), 2).await
+        };
         let n_drafts = ex.drafts.len();
-        let agent = self.vquery(QKind::Metric, &req.sql.trim().trim_end_matches(';').replace("{seeds}", &req.seeds)).await;
+        let agent = if req.program_only {
+            Err(anyhow::anyhow!("program only"))
+        } else {
+            self.vquery(QKind::Metric, &req.sql.trim().trim_end_matches(';').replace("{seeds}", &req.seeds)).await
+        };
         let mut results = vec![];
         let mut members = vec![];
         for d in &ex.drafts {
@@ -158,7 +172,8 @@ impl Middle {
         } else {
             let prog = json!({"task": req.task, "cutoff": req.cutoff, "metric": req.metric, "val_score": req.val_score,
                               "seed_key": req.seed_key, "features": members,
-                              "sql_full": if req.audit_clean { json!(req.sql) } else { Value::Null }, "val_table": req.val_table});
+                              "sql_full": if req.audit_clean { json!(req.sql) } else { Value::Null }, "val_table": req.val_table,
+                              "tried": req.tried.iter().take(40).collect::<Vec<_>>()});
             let key = format!("program:{}", req.task);
             let e = self.new_entry(ctx, &key, Content::Result(prog.clone()), Default::default(), vec![]);
             self.store.put(&self.mfk(ctx, &key), e);
@@ -440,6 +455,9 @@ impl Middle {
         let seed_key = prog["seed_key"].as_str().unwrap_or_default().to_string();
         let mut v =
             json!({"program": {"task": prog["task"], "cutoff": prog["cutoff"], "metric": prog["metric"], "val_score": prog["val_score"]}});
+        if prog["tried"].as_array().is_some_and(|a| !a.is_empty()) {
+            v["tried"] = prog["tried"].clone();
+        }
         if !keys.is_empty() {
             let composed = self.compose_feature_sql(ctx, &keys, &seed_key).await?;
             v["sql"] = composed["sql"].clone();
