@@ -1,16 +1,22 @@
-"""Checked publication (Section IV-B), single column: two drafts of one session.
+"""Checked publication and the stored layout of one revision (Sections IV-A, IV-B), single column.
 
-Agent 1's verified session (January electronics revenue, learning task M5-L1)
-is drafted into a definition whose month becomes the period input. Compiled
-for January, draft A, which lacks the category filter, returns January
-revenue over all categories and is rejected; draft B reproduces the verified
-answer and is published.
+Top: Publish turns Agent 1's verified session into a revision: the LLM drafts
+B and I, the server derives the conditions C, the version map V_x and the
+provenance E, and gates G1-G7 decide (step 2 writes the result). Middle: the
+definition entry metric:Electronics revenue, rev 0, field group by field
+group with the running example's stored values. Bottom: the two kinds of
+shared entries it points to. The join entry is referenced by key and
+revision; a condition is referenced by its signature id(c), and its outcome
+lives in H under (id(c), V(dep(c))) with raw statistics, so Accept compares
+the measured loss (1.03%) with this definition's own bound (1.13%).
 
-Values come from the recorded runs on the TPC-DS fixture: the verified answer
-2,754,299.60 (exp/2026-10-01-workload-characterization, M5-L1 sessions) and a
-rejected draft whose compiled SQL returned 13,532,799.00
-(exp/2026-10-31-diverse-scenarios/case-evidence.json, M5-L1, failed gate G7).
-The JSON lines are abridged to the fields that differ.
+Values: definition, filters, grain, join and time binding of the M5-L1
+revision on the 1M-row retail fixture (exp/2026-10-08-lifecycle/cell-mavra.json:
+metric, evidence.versions, time.loss_ratio 0.010305, join orphan_ratio 0);
+10,305 of the 1,000,000 sales rows have no sale date, so 989,695 join;
+bounds add the 0.1-point tolerance of Section IV-C. The verified answer
+2,754,299.60 is that task's (exp/2026-10-01-workload-characterization).
+Names are shown in English as in Fig. 2.
 """
 import sys
 from pathlib import Path
@@ -18,27 +24,50 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import style  # noqa: E402
 from vecfig import measure  # noqa: E402
-from style import INK, MUTED, RED, WHITE  # noqa: E402
-from smallparts import (BLUE, BLUE_PALE, BLUE_TXT, BODY, CODE, KEYC, LABEL, LEARN, LEARN_PALE,  # noqa: E402
-                        LINE, RED_PALE, SMALL, arrow, baseline, card, parts, person, sparkle, step,
-                        verdict)
+from style import EDGE, INK, MUTED, RULE  # noqa: E402
+from smallparts import (BAND, BLUE, BLUE_PALE, BLUE_TXT, CODE_T, KEYC, LEARN, LEARN_PALE, LINE,  # noqa: E402
+                        SMALL, arrow, baseline, mark, parts, sparkle, stamp, step, structure)
 
 NAME = 'extraction'
-W, H = style.COLUMN, 39.4
-VERIFIED, WRONG_VALUE = '2,754,299.60', '13,532,799.00'
+W, H = style.COLUMN, 45.6
+
+V_X = (('`date_dim`', stamp('1d5b', '1096', '0')), ('`item`', stamp('9662', '1000', '0')),
+       ('`store_sales`', stamp('5a15', '$10^6$', '0')))
 
 LABELS = {
     'en': {
-        'session': "Agent 1's verified session", 'answer': 'verified answer', 'cat': 'Electronics',
-        'period': r'$\leftarrow$ becomes the period', 'llm': 'LLM drafts a definition',
-        'drafts': ('(a) Draft A', '(b) Draft B'), 'missing': 'no category filter',
-        'gate': 'run for January: same answer?', 'verdict': ('rejected', 'published'),
+        'flow': ('verified session', ('LLM drafts $B$, $I$',), r'derive $C$, $V_x$, $E$', 'gates G1–G7'),
+        'entry': (('Definition entry ', 'bold'), ('`metric:Electronics revenue`', 'sans')),
+        'entry_note': 'rev 0, valid, by Agent 1',
+        'fields': ('$B$', '$I$', '$C$', '$V_x$', '$E$'),
+        'B': "net paid of store sales whose item category is `Electronics`, by sale date",
+        'cat': 'Electronics',
+        'keys': '`KeyUnique`:',
+        'unmatched': '`Unmatched`:',
+        'E': ('task `M5-L1`, verified answer `2,754,299.60`, example SQL, G1–G7 passed',),
+        'join': (('`join:item|store_sales`', 'sans'),), 'join_note': 'rev 0',
+        'join_rows': ('`store_sales`$\\rightarrow$`item`, N:1, inner', '`on ss_item_sk = i_item_sk`',
+                      'guard `KeyUnique(item.i_item_sk)`'),
+        'outcome': (('Outcome entry in $H$', 'bold'),), 'out_key': r'key $(\mathrm{id}(c),V(\mathrm{dep}(c)))$',
+        'out_rows': (r'$\mathrm{id}(c)$', r'$V(\mathrm{dep}(c))$', 'stats'),
+        'accept': r'Accept: loss 1.03% $\leq$ 1.13%',
     },
     'zh': {
-        'session': '智能体 1 经核验的会话', 'answer': '核验答案', 'cat': '电子',
-        'period': r'$\leftarrow$ 变为期间参数', 'llm': 'LLM 起草定义',
-        'drafts': ('(a) 草稿 A', '(b) 草稿 B'), 'missing': '缺少品类过滤',
-        'gate': '按 1 月执行：答案一致？', 'verdict': ('不予发布', '发布'),
+        'flow': ('经核验的会话', ('LLM 起草 $B$、$I$',), r'推导 $C$、$V_x$、$E$', '门槛 G1–G7'),
+        'entry': (('定义条目 ', 'bold'), ('`metric:Electronics revenue`', 'sans')),
+        'entry_note': '修订版 0，有效，智能体 1',
+        'fields': ('$B$', '$I$', '$C$', '$V_x$', '$E$'),
+        'B': '品类为 `Electronics` 的商品的门店销售净支付额，按销售日期归属期间',
+        'cat': 'Electronics',
+        'keys': '`KeyUnique`：',
+        'unmatched': '`Unmatched`：',
+        'E': ('源问题 `M5-L1`，核验答案 `2,754,299.60`，示例 SQL，G1–G7 通过',),
+        'join': (('`join:item|store_sales`', 'sans'),), 'join_note': 'rev 0',
+        'join_rows': ('`store_sales`$\\rightarrow$`item`，N:1，内连接', '`on ss_item_sk = i_item_sk`',
+                      '守卫 `KeyUnique(item.i_item_sk)`'),
+        'outcome': (('$H$ 中的检查结果', 'bold'),), 'out_key': r'键 $(\mathrm{id}(c),V(\mathrm{dep}(c)))$',
+        'out_rows': (r'$\mathrm{id}(c)$', r'$V(\mathrm{dep}(c))$', '统计'),
+        'accept': r'Accept：未匹配 1.03% $\leq$ 1.13%',
     },
 }
 
@@ -46,90 +75,101 @@ LABELS = {
 def draw(s, lang):
     L = LABELS[lang]
     text = s.text
+    x0, x1 = 1.0, 83.6
+    pitch = 2.42
 
-    # The verified session (step 1 of Fig. 2 hands it to Publish).
-    sx, sy, sw, sh, band = 1.0, 1.0, 82.6, 10.4, 3.5
-    card(s, sx, sy, sw, sh, band, LEARN_PALE)
-    yb = sy + .15 + band / 2
-    step(s, sx + 2.2, yb, 1)
-    person(s, sx + 5.1, yb, LEARN)
-    text(sx + 7.0, baseline(yb, LABEL), L['session'], LABEL, INK, 'bold')
-    vw = text(sx + sw - 1.2, baseline(yb, CODE), f'`{VERIFIED}`', CODE, INK, align='right')
-    text(sx + sw - 2.2 - vw, baseline(yb, SMALL), L['answer'], SMALL, MUTED, align='right')
-    y1, y2 = sy + band + 3.1, sy + band + 5.65
-    text(sx + 1.2, y1, '`SELECT SUM(ss_net_paid) FROM store_sales JOIN item ... JOIN date_dim ...`',
-         CODE, INK, width=sw - 2.4)
-    head = f"`WHERE i_category = '{L['cat']}' AND `"
-    hw, lit = measure(head, CODE), '`d_moy = 1`'
-    lw = measure(lit, CODE)
-    s.rect(sx + 1.2 + hw - .35, y2 - 1.75, lw + .7, 2.3, LEARN_PALE, LEARN, .14, r=.35)
-    end = parts(s, sx + 1.2, y2, [(head, INK), (lit, INK), ('` AND ...`', INK)], CODE)
-    text(end + 1.6, y2, L['period'], SMALL, LEARN, width=sx + sw - 1.2 - end - 1.6)
+    # Publish (steps 1-2): session -> LLM draft -> server derivation -> gates -> write.
+    fy, fh = 1.0, 3.6
+    fyc = fy + fh / 2
+    step(s, 2.2, fyc, 1)
+    x = 4.3
+    chips = L['flow']
+    for k, label in enumerate(chips):
+        llm = isinstance(label, tuple)
+        label = label[0] if llm else label
+        w = measure(label, SMALL, 'bold') + (4.4 if llm else 2.4)
+        s.rect(x, fy, w, fh, LEARN_PALE, LEARN, LINE, r=fh / 2)
+        tx = x + 1.2
+        if llm:
+            sparkle(s, x + 1.9, fyc, .95, LEARN)
+            tx = x + 3.3
+        text(tx, baseline(fyc, SMALL), label, SMALL, INK, 'bold')
+        x += w
+        arrow(s, [(x, fyc), (x + 2.2, fyc)], LEARN)
+        x += 2.2
+    step(s, x + 1.3, fyc, 2)
+    assert x + 2.6 < x1, x
 
-    # The learning agent drafts a definition; two possible drafts.
-    dw = 39.8
-    dxs = (sx, sx + sw - dw)
-    centres = [x + dw / 2 for x in dxs]
-    mid = (centres[0] + centres[1]) / 2
-    cy, ch = sy + sh + 2.4, 2.9
-    cw = measure(L['llm'], SMALL, 'bold') + 5.2
-    s.line(mid, sy + sh, mid, cy - ch / 2, LEARN, LINE)
-    s.rect(mid - cw / 2, cy - ch / 2, cw, ch, LEARN_PALE, LEARN, LINE, r=1.45)
-    sparkle(s, mid - cw / 2 + 1.9, cy, .95, LEARN)
-    text(mid - cw / 2 + 3.4, baseline(cy, SMALL), L['llm'], SMALL, INK, 'bold')
-    dy = cy + ch / 2 + 2.6
-    for k, cx in enumerate(centres):
-        x_from = mid - cw / 2 if k == 0 else mid + cw / 2
-        arrow(s, [(x_from, cy), (cx, cy), (cx, dy)], LEARN)
+    # The definition entry, one field group per row block.
+    ey, band = fy + fh + 2.0, 2.9
+    rows = {'B': 1, 'I': 3, 'C': 2, 'V': 1, 'E': 1}
+    eh = band + .5 + pitch * sum(rows.values()) + .5
+    yb = structure(s, x0, ey, x1 - x0, eh, band, L['entry'], L['entry_note'], BLUE_PALE, INK)
+    fx0, fx1, vx = x0 + .25, x0 + 6.4, x0 + 7.4          # field column; values start at vx
+    y = yb + .5
+    blocks = []
+    for k, n in rows.items():
+        blocks.append((k, y, y + n * pitch))
+        y += n * pitch
+    for i, (k, a, b) in enumerate(blocks):
+        s.rect(fx0, a + .12, fx1 - fx0, b - a - .24, BAND, None, r=.3)
+        text((fx0 + fx1) / 2, baseline((a + b) / 2, SMALL), L['fields'][i], SMALL, INK, 'bold', 'center')
+        if i:
+            s.line(fx0, a, x1 - .25, a, RULE, .12)
 
-    band_d, pitch = 3.2, 2.45
-    dh = band_d + 1.6 + 3 * pitch
-    keyw = measure('`  `', CODE)                 # continuation indent
-    for i, x in enumerate(dxs):
-        ok = i == 1
-        card(s, x, dy, dw, dh, band_d, BLUE_PALE if ok else RED_PALE, BLUE if ok else RED)
-        text(x + 1.2, baseline(dy + .1 + band_d / 2, BODY), L['drafts'][i], BODY, INK, 'bold')
-        y = dy + band_d + 2.5
-        parts(s, x + 1.2, y, [('`"measure"`', KEYC), ('`: "sum(ss_net_paid)"`', INK)], CODE)
-        fx = parts(s, x + 1.2, y + pitch, [('`"filters"`', KEYC), ('`: `', INK)], CODE)
-        if not ok:
-            ew = measure('`{}`', CODE)
-            s.rect(fx - .35, y + pitch - 1.75, ew + .7, 2.3, RED_PALE, RED, .14, r=.35)
-            text(fx, y + pitch, '`{}`', CODE, INK)
-            nx = fx + ew + 1.6
-            text(nx, y + pitch, L['missing'], SMALL, RED, 'bold', width=x + dw - 1.2 - nx)
-        else:
-            parts(s, fx, y + pitch, [('`{`', INK), ('`"item"`', KEYC), ('`:`', INK)], CODE)
-            value = f"`\"i_category = '{L['cat']}'\"`"
-            vw2 = measure(value, CODE)
-            vx = x + 1.2 + keyw
-            s.rect(vx - .35, y + 2 * pitch - 1.75, vw2 + .7, 2.3, BLUE_PALE, BLUE, .14, r=.35)
-            end = text(vx + vw2 + .55, y + 2 * pitch, '`}`', CODE, INK) + vx + vw2 + .55
-            text(vx, y + 2 * pitch, value, CODE, INK)
-            assert end < x + dw - 1.0, end
+    def line(n, block, items):
+        a = dict((k, a) for k, a, _ in blocks)[block]
+        yc = a + pitch * (n + .5)
+        end = parts(s, vx, baseline(yc, CODE_T), items, CODE_T)
+        assert end < x1 - .8, (block, n, end)
+        return yc, end
 
-    # One check for both: compile for January and compare with the verified answer.
-    ry, rh = dy + dh + 4.6, 4.4
-    for cx in centres:
-        arrow(s, [(cx, dy + dh), (cx, ry)])
-    gy = dy + dh + 2.3
-    gw = measure(L['gate'], SMALL, 'bold') + 3.2
-    s.rect(mid - gw / 2, gy - 1.4, gw, 2.8, WHITE, LEARN, LINE, r=1.4)
-    text(mid, baseline(gy, SMALL), L['gate'], SMALL, INK, 'bold', 'center')
-    assert mid - gw / 2 > centres[0] + 1.0, gw
+    line(0, 'B', [(L['B'], INK, 'sans')])
+    line(0, 'I', [('`fact` ', KEYC), ('`store_sales`  ', INK), ('`measure` ', KEYC), ('`sum(ss_net_paid)`', INK)])
+    line(1, 'I', [('`grain` ', KEYC), ('`(ss_item_sk, ss_ticket_number)`  ', INK), ('`time` ', KEYC),
+                  ('`ss_sold_date_sk`$\\rightarrow$`date_dim`', INK)])
+    y_join, _ = line(2, 'I', [('`joins` ', KEYC), ('`join:item|store_sales`@`0`  ', INK), ('`filters` ', KEYC),
+                              (f"`item: i_category = '{L['cat']}'`", INK)])
+    line(0, 'C', [(L['keys'] + ' ', MUTED, 'sans'), ('`store_sales.`$K$`, item.i_item_sk, date_dim.d_date_sk`', INK)])
+    y_c, c_end = line(1, 'C', [(L['unmatched'] + ' ', MUTED, 'sans'), ('`store_sales`$\\rightarrow$`item` ', INK),
+                               (r'$\leq$0.10%, ', INK, 'sans'), ('`store_sales`$\\rightarrow$`date_dim` ', INK),
+                               (r'$\leq$1.13%', BLUE_TXT, 'bold')])
+    items = []
+    for name, st in V_X:
+        items += [(name + ' ', INK), (st + '   ', INK)]
+    line(0, 'V', items)
+    line(0, 'E', [(L['E'][0], INK, 'sans')])
 
-    for i, (value, ok) in enumerate(((WRONG_VALUE, False), (VERIFIED, True))):
-        x, c = dxs[i], (BLUE_TXT if ok else RED)
-        s.rect(x, ry, dw, rh, BLUE_PALE if ok else RED_PALE, None, r=.5)
-        yc = ry + rh / 2
-        vw2 = measure(f'`{value}`', CODE + .3)
-        tw = measure(L['verdict'][i], BODY, 'bold')
-        total = 2.1 + 1.2 + vw2 + 1.6 + tw + (3.4 if ok else 0)
-        xx = centres[i] - total / 2
-        verdict(s, xx + 1.05, yc, ok)
-        xx += 3.3
-        xx += text(xx, baseline(yc, CODE + .3), f'`{value}`', CODE + .3, c) + 1.6
-        xx += text(xx, baseline(yc, BODY), L['verdict'][i], BODY, c, 'bold')
-        if ok:
-            step(s, xx + 2.2, yc, 2)
-    assert ry + rh < H - .3, ry
+    # Shared entries it points to: the join entry (by key and revision), an outcome entry (by id(c) and versions).
+    by = ey + eh + 3.2
+    jx1 = 33.6
+    bh = band + .4 + 3 * pitch + .4
+    yb = structure(s, x0, by, jx1 - x0, bh, band, L['join'], L['join_note'], BLUE_PALE, INK)
+    for j, label in enumerate(L['join_rows']):
+        text(x0 + 1.0, baseline(yb + .4 + pitch * (j + .5), CODE_T), label, CODE_T if j == 1 else SMALL, INK,
+             width=jx1 - x0 - 1.6)
+    ox0 = jx1 + 1.6
+    yb = structure(s, ox0, by, x1 - ox0, bh, band, L['outcome'], L['out_key'])
+    lab_w = max(measure(t, SMALL) for t in L['out_rows']) + 1.4
+    vals = ('`Unmatched(store_sales`$\\rightarrow$`date_dim)`',
+            f"{V_X[2][1]} {V_X[0][1]}",
+            '`n_left 1,000,000  n_join 989,695`')
+    for j, (label, value) in enumerate(zip(L['out_rows'], vals)):
+        yc = yb + .4 + pitch * (j + .5)
+        text(ox0 + 1.0, baseline(yc, SMALL), label, SMALL, MUTED)
+        text(ox0 + 1.0 + lab_w, baseline(yc, CODE_T), value, CODE_T, INK, width=x1 - ox0 - 2.0 - lab_w)
+
+    # References: joins -> join entry, down the gap between the field column and the values; the coverage
+    # condition -> its outcome, down the record's right margin; Accept uses this definition's own bound.
+    gxj = fx1 + .5
+    s.circle(gxj, y_join, .36, EDGE)
+    s.route([(gxj, y_join), (gxj, by)], EDGE, LINE + .02, length=.8)
+    gxc = x1 - 1.0
+    s.circle(c_end + .9, y_c, .36, BLUE)
+    s.route([(c_end + .9, y_c), (gxc, y_c), (gxc, by)], BLUE, LINE + .02, length=.8, radius=.5)
+    aw = measure(L['accept'], SMALL, 'bold')
+    ay = (ey + eh + by) / 2
+    mark(s, gxc - aw - 2.4, ay, True, k=.75)
+    text(gxc - 1.2, baseline(ay, SMALL), L['accept'], SMALL, BLUE_TXT, 'bold', align='right')
+    assert c_end + 1.4 < gxc, c_end
+    assert by + bh < H - .3, by + bh

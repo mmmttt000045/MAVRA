@@ -1,11 +1,20 @@
-"""Snapshot-bound execution (Section IV-E), single column: (a) vs. (b) timeline.
+"""Snapshot-bound execution with transactional versions (Section IV-E), single column.
 
-The ETL transaction of Fig. 2 adds a history row for item 17 and advances
-item's version in one commit. (a) A check and a query in separate transactions
-let that commit fall between them: the check saw one row per item, the query
-sees the new row and counts item 17 twice. (b) MAVRA reads the version, reuses
-the stored outcome for it, and runs the query in one read-only snapshot, which
-does not see the commit.
+Algorithm 2 run while the item-history load of Fig. 2 commits. Top: the ETL
+transaction inserts item 17's history row; the statement trigger mavra_bump
+adds one to item's counter row (shard pid % 16, here 5) in the same
+transaction, so the row and the bump commit together. Middle: run_metric's
+read-only REPEATABLE READ transaction s. Its first statement reads the
+counters (PostgreSQL takes the snapshot there), so v_s(item) = 0 matches the
+item rows s can see. The verdict store H_tx, keyed by id(c) @ v_s(dep(c)),
+already holds the item key check at item = 0, so s reuses it and runs the
+query in the same snapshot: the commit is invisible and item 17 counts once.
+A later snapshot reads item = 1, finds no verdict, runs the check inside
+itself, fails (1001 rows over 1000 keys), aborts, and invalidates V(item).
+
+Values follow the running example: counters start at 0 when the triggers are
+installed after loading; one ETL statement bumps one shard. Key counts as in
+Fig. 4 (1000 items, 1096 dates, one history row for item 17).
 """
 import sys
 from pathlib import Path
@@ -13,104 +22,158 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import style  # noqa: E402
 from vecfig import measure  # noqa: E402
-from style import EDGE, FACE, INK, MUTED, RED  # noqa: E402
-from smallparts import (BLUE, BLUE_FIELD, BLUE_PALE, BLUE_TXT, BODY, LABEL, LINE, RED_PALE, SMALL,  # noqa: E402
-                        arrow, baseline, box, mark, parts, step, verdict)
+from style import EDGE, FACE, INK, MUTED, RED, RULE, WHITE  # noqa: E402
+from smallparts import (BAND, BLUE, BLUE_FIELD, BLUE_PALE, BLUE_TXT, CODE_T, EXEC_C, HEAD_T, LINE,  # noqa: E402
+                        MAINT_C, MAINT_PALE, RED_PALE, SMALL, arrow, baseline, box, mark, parts, step,
+                        structure, tag, verdict)
 
 NAME = 'snapshot'
-W, H = style.COLUMN, 38.4
-XC = 46.0                     # the ETL commit
+W, H = style.COLUMN, 42.8
+XC = 48.6                     # the ETL commit
 FAINT = '#A9C3E3'             # the commit, as seen from inside the snapshot
 
 LABELS = {
     'en': {
-        'etl': ((('ETL: ', 'bold'), ('add a history row for item 17', 'sans')),
-                (('`item`', 'sans'), (r' version 0 $\rightarrow$ 1', 'sans'))),
-        'commit': 'commit',
-        'a': '(a) Check, then run, in two transactions', 'b': '(b) MAVRA: one read-only snapshot',
-        'check': ('check item key unique', 'one row per item'), 'run_a': ('run SQL, sees new row', 'counts item 17 twice'),
-        'read': ('read version', '`item 0`'), 'reuse': ('reuse outcome', 'for `item 0`'),
-        'run_b': ('run SQL at `item 0`', 'counts each item once'), 'hidden': 'not visible', 'time': 'time',
+        'etl': ((('ETL: ', 'bold'), ('`INSERT`', 'sans'), (" history row `(17, ..., 'N')`", 'sans')),
+                (('trigger `mavra_bump`: `v+1` on (`item`, `pid%16=5`)', 'sans'),)),
+        'commit': 'COMMIT',
+        'snap': r'snapshot $s$: repeatable read, read only', 'hidden': 'not visible',
+        'boxes': ((('`BEGIN`',), ('read only',)), ((r'read $v_s$',), ('`item=0`',)),
+                  ((r'probe $H_\mathrm{tx}$',), ('hit: pass',)), ((r'run $q$ in $s$, `COMMIT`',), ('item 17 counted once',))),
+        'time': 'time',
+        'versions': (('`mavra_versions`', 'sans'),),
+        'cols_v': ('`table_name`', '`shard`', '`v`'),
+        'sum': r'in $s$: $v_s($`item`$)=\sum v=0$',
+        'verdicts': ((r'Verdicts $H_\mathrm{tx}$', 'bold'),),
+        'key': r'key $\mathrm{id}(c)$ @ $v_s(\mathrm{dep}(c))$',
+        'cols_h': (r'$\mathrm{id}(c)$', r'$v_s(\mathrm{dep}(c))$', '`n_rows/n_keys`'),
+        'later': r'from a later snapshot: abort it, invalidate $V($`item`$)$',
     },
     'zh': {
-        'etl': ((('ETL：', 'bold'), ('为商品 17 写入一条历史行', 'sans')),
-                (('`item`', 'sans'), (r' 版本 0 $\rightarrow$ 1', 'sans'))),
+        'etl': ((('ETL：', 'bold'), ('`INSERT`', 'sans'), (" 历史行 `(17, ..., 'N')`", 'sans')),
+                (('触发器 `mavra_bump`：(`item`, `pid%16=5`) 行 `v+1`', 'sans'),)),
         'commit': '提交',
-        'a': '(a) 先检查后执行，分属两个事务', 'b': '(b) MAVRA：同一只读快照',
-        'check': ('检查 item 键唯一', '每个商品一行'), 'run_a': ('执行 SQL，看到新行', '商品 17 被算两次'),
-        'read': ('读取表版本', '`item 0`'), 'reuse': ('复用检查结果', '版本 `item 0`'),
-        'run_b': ('在 `item 0` 上执行 SQL', '每个商品只算一次'), 'hidden': '看不到', 'time': '时间',
+        'snap': r'快照 $s$：可重复读、只读', 'hidden': '看不到',
+        'boxes': ((('`BEGIN`',), ('只读',)), ((r'读 $v_s$',), ('`item=0`',)),
+                  ((r'查 $H_\mathrm{tx}$',), ('命中',)), ((r'在 $s$ 中执行 $q$ 并 `COMMIT`',), ('商品 17 只算一次',))),
+        'time': '时间',
+        'versions': (('`mavra_versions`', 'sans'),),
+        'cols_v': ('`table_name`', '`shard`', '`v`'),
+        'sum': r'$s$ 中：$v_s($`item`$)=\sum v=0$',
+        'verdicts': ((r'结论存储 $H_\mathrm{tx}$', 'bold'),),
+        'key': r'键 $\mathrm{id}(c)$ @ $v_s(\mathrm{dep}(c))$',
+        'cols_h': (r'$\mathrm{id}(c)$', r'$v_s(\mathrm{dep}(c))$', '`n_rows/n_keys`'),
+        'later': r'由之后的快照写入：该快照中止，作废 $V($`item`$)$',
     },
 }
+
+COUNTERS = (('`date_dim`', '`0`', '`0`'), ('`item`', '`0`', '`0`'), ('`item`', '`5`', r'`0`$\rightarrow$`1`'),
+            ('`store_sales`', '`0`', '`0`'))
+VERDICTS = (('`KeyUnique(item.i_item_sk)`', '`item=0`', '`1000/1000`', True),
+            ('`KeyUnique(date_dim.d_date_sk)`', '`date_dim=0`', '`1096/1096`', True),
+            ('`KeyUnique(item.i_item_sk)`', '`item=1`', '`1001/1000`', False))
 
 
 def draw(s, lang):
     L = LABELS[lang]
     text = s.text
+    gx, x0, x1 = 2.15, 4.4, 83.6
 
-    def two(x, y, w, lines, colors, right=0.0):
-        """Two lines in a box whose top is y, leaving room for a mark at the right."""
-        for j, line in enumerate(lines):
-            text(x + 1.2, y + 2.55 + 2.45 * j, line, SMALL, colors[j], width=w - 2.4 - right)
-
-    # Step 5: the ETL transaction and its commit.
-    ex0, ey, eh = 7.0, 1.0, 6.0
+    # Step 5: the ETL transaction; the trigger bumps item's counter row in the same transaction.
+    ey, eh = 1.0, 6.0
     eyc = ey + eh / 2
-    step(s, 3.6, eyc, 5)
-    box(s, ex0, ey, XC - 1.8 - ex0, eh, EDGE, FACE)
+    step(s, gx, eyc, 5, r=1.15)
+    box(s, x0, ey, XC - 1.7 - x0, eh, EDGE, FACE)
     for j, line in enumerate(L['etl']):
-        end = parts(s, ex0 + 1.2, ey + 2.55 + 2.45 * j, [(t, INK, st) for t, st in line], SMALL)
-        assert end < XC - 2.6, end
-    s.line(XC - 1.8, eyc, XC, eyc, INK, LINE)
+        end = parts(s, x0 + 1.0, ey + 2.5 + 2.4 * j, [(t, MAINT_C if j else INK, st) for t, st in line], SMALL)
+        assert end < XC - 2.4, end
+    s.line(XC - 1.7, eyc, XC, eyc, INK, LINE)
     s.circle(XC, eyc, .75, INK)
-    text(XC + 1.5, baseline(eyc, BODY), L['commit'], BODY, INK, 'bold')
+    text(XC + 1.5, baseline(eyc, SMALL), L['commit'], SMALL, INK, 'bold')
 
-    # (a) Check and query in separate transactions; the commit falls in between.
-    ay = 11.6
-    aw = text(1.2, ay, L['a'], LABEL, INK, 'bold')
-    assert 1.2 + aw < XC - 1.0, aw
-    by, bh = ay + 1.5, 6.2
-    c0, c1 = 3.0, 27.0
-    q0, q1 = XC + 6.0, 78.4
-    box(s, c0, by, c1 - c0, bh)
-    two(c0, by, c1 - c0, L['check'], (INK, MUTED), right=2.2)
-    mark(s, c1 - 1.6, by + bh - 1.7, True)
-    box(s, q0, by, q1 - q0, bh, RED, RED_PALE)
-    two(q0, by, q1 - q0, L['run_a'], (INK, RED))
-    arrow(s, [(c1, by + bh / 2), (q0, by + bh / 2)])
-    verdict(s, q1 + 2.6, by + bh / 2, False)
-
-    # (b) MAVRA: version read, outcome reuse and query in one snapshot.
-    yb = by + bh + 4.4
-    bw = text(1.2, yb, L['b'], LABEL, INK, 'bold')
-    step(s, 1.2 + bw + 2.0, yb - .8, 4)
-    sy, sh = yb + 1.5, 9.0
+    # Step 4: run_metric in one read-only snapshot; the commit falls inside it but is not visible.
+    sy, sh = ey + eh + 2.0, 10.4
+    syc = sy + sh / 2
+    step(s, gx, syc, 4, r=1.15)
     s.line(XC, eyc + .75, XC, sy, MUTED, LINE, dash=(.7, .45))
-    s.rect(2.0, sy, q1 + 1.0 - 2.0, sh, BLUE_FIELD, BLUE, LINE + .04, r=.7)
+    s.rect(x0, sy, x1 - x0, sh, BLUE_FIELD, BLUE, LINE + .04, r=.7)
     s.line(XC, sy + .3, XC, sy + sh - .3, FAINT, LINE, dash=(.7, .45))
-    iy, ih = sy + 1.4, sh - 2.8
-    r0, r1 = 3.0, 17.4
-    u0, u1 = 20.0, 37.0
-    box(s, r0, iy, r1 - r0, ih)
-    two(r0, iy, r1 - r0, L['read'], (INK, INK))
-    box(s, u0, iy, u1 - u0, ih)
-    two(u0, iy, u1 - u0, L['reuse'], (INK, INK), right=2.2)
-    mark(s, u1 - 1.6, iy + ih - 1.7, True)
-    box(s, q0, iy, q1 - q0, ih, BLUE, BLUE_PALE)
-    two(q0, iy, q1 - q0, L['run_b'], (INK, BLUE_TXT))
-    arrow(s, [(r1, iy + ih / 2), (u0, iy + ih / 2)])
-    arrow(s, [(u1, iy + ih - 1.6), (q0, iy + ih - 1.6)])
-    verdict(s, q1 + 2.6, iy + ih / 2, True)
-
+    ty = sy + 2.25
+    tw = text(x0 + 1.0, ty, L['snap'], SMALL, BLUE_TXT, 'bold')
     hw = measure(L['hidden'], SMALL, 'bold')
-    hy = iy + 2.0
-    s.rect(XC - hw / 2 - .4, hy - 1.6, hw + .8, 2.2, BLUE_FIELD, None)
-    text(XC, hy, L['hidden'], SMALL, BLUE_TXT, 'bold', 'center')
-    assert u1 + .6 < XC - hw / 2 - .4 and XC + hw / 2 + .4 < q0 - .6, hw
+    s.rect(XC - hw / 2 - .4, ty - 1.6, hw + .8, 2.2, BLUE_FIELD, None)
+    text(XC, ty, L['hidden'], SMALL, BLUE_TXT, 'bold', 'center')
+    assert x0 + 1.0 + tw < XC - hw / 2 - .6, tw
+    by, bh = sy + 3.4, 5.9
+    spans = ((x0 + 1.0, 16.4), (18.0, 31.4), (33.0, XC - 3.0), (XC + 3.4, x1 - 1.0))
+    tags = ('L4', 'L5', 'L7', 'L11')
+    for k, ((a, b), lines, label) in enumerate(zip(spans, L['boxes'], tags)):
+        last = k == 3
+        box(s, a, by, b - a, bh, BLUE if last else EDGE, BLUE_PALE if last else WHITE)
+        y1, y2 = by + 2.35, by + 4.75
+        tw = tag(s, a + .6, y1 - .8, label, EXEC_C)
+        text(a + .6 + tw + .6, y1, lines[0][0], SMALL, INK, width=b - a - tw - 1.8)
+        right = 2.6 if k in (2, 3) else 0
+        text(a + .9, y2, lines[1][0], SMALL if not lines[1][0].startswith('`') else CODE_T,
+             BLUE_TXT if last else INK, width=b - a - 1.6 - right)
+        if k == 2:
+            mark(s, b - 1.3, y2 - .8, True, k=.8)
+        if k < 3:
+            nxt = spans[k + 1][0]
+            arrow(s, [(b, by + bh / 2), (nxt, by + bh / 2)])
+    verdict(s, x1 - 2.3, by + 4.75 - .8, True, r=.95)
 
-    # Time axis; the commit is marked on it.
-    ty = H - 1.6
-    s.line(XC, sy + sh, XC, ty, MUTED, LINE, dash=(.7, .45))
-    arrow(s, [(2.0, ty), (83.4, ty)])
-    text(83.4, ty - 1.0, L['time'], SMALL, MUTED, align='right')
-    assert sy + sh < ty - 1.2
+    # Time axis.
+    ay = sy + sh + 2.5
+    s.line(XC, sy + sh, XC, ay, MUTED, LINE, dash=(.7, .45))
+    arrow(s, [(x0, ay), (x1, ay)])
+    text(x1 - 1.2, ay - .8, L['time'], SMALL, MUTED, align='right')
+
+    # The counter table in the database and MAVRA's verdict store, keyed by transactional versions.
+    band, head, pitch = 2.9, 2.75, 2.45
+    ty0 = ay + 1.4
+    vx0, vx1 = x0, 29.6
+    top_v = ty0 + band + head
+    hgt = band + head + 4 * pitch + 2.7 + .3
+    yb = structure(s, vx0, ty0, vx1 - vx0, hgt, band, L['versions'], None, BAND, INK)
+    cv = (vx0 + 1.0, vx0 + 12.4, vx0 + 18.6)
+    for c, label in zip(cv, L['cols_v']):
+        text(c, yb + 2.0, label, HEAD_T, MUTED)
+    s.line(vx0, top_v, vx1, top_v, RULE, .14)
+    for i, row in enumerate(COUNTERS):
+        yc = top_v + pitch * (i + .5)
+        if i == 2:
+            s.rect(vx0 + .3, yc - pitch / 2 + .15, vx1 - vx0 - .6, pitch - .3, MAINT_PALE, None, r=.4)
+        for j, (c, v) in enumerate(zip(cv, row)):
+            text(c, baseline(yc, CODE_T), v, CODE_T, MAINT_C if (i == 2 and j == 2) else INK,
+                 width=(cv[j + 1] if j < 2 else vx1 - .4) - c - .3)
+    s.line(vx0, top_v + 4 * pitch, vx1, top_v + 4 * pitch, RULE, .14)
+    text(cv[0], baseline(top_v + 4 * pitch + 1.45, SMALL), L['sum'], SMALL, INK, width=vx1 - vx0 - 1.4)
+
+    hx0, hx1 = vx1 + 1.6, x1
+    yb = structure(s, hx0, ty0, hx1 - hx0, hgt, band, L['verdicts'], L['key'])
+    chh = (hx0 + 1.0, hx0 + 29.4, hx0 + 39.6, hx1 - 1.6)
+    for c, label in zip(chh, L['cols_h']):
+        text(c, yb + 2.0, label, HEAD_T, MUTED)
+    s.line(hx0, top_v, hx1, top_v, RULE, .14)
+    heights = (3.15, 3.15, 5.3)
+    y0 = top_v
+    for i, ((cid, vs, stats, ok), h) in enumerate(zip(VERDICTS, heights)):
+        if i == 0:
+            s.rect(hx0 + .3, y0 + .2, hx1 - hx0 - .6, h - .4, BLUE_PALE, None, r=.4)
+        elif i == 2:
+            s.rect(hx0 + .3, y0 + .2, hx1 - hx0 - .6, h - .4, RED_PALE, RED, LINE, r=.4, dash=(.7, .45))
+        yc = y0 + (h / 2 if i < 2 else 1.4)
+        bc = baseline(yc, CODE_T)
+        ink = RED if not ok else INK
+        text(chh[0], bc, cid, CODE_T, INK, width=chh[1] - chh[0] - .3)
+        text(chh[1], bc, vs, CODE_T, MAINT_C if i == 2 else INK, width=chh[2] - chh[1] - .3)
+        text(chh[2], bc, stats, CODE_T, ink, width=chh[3] - chh[2] - 1.3)
+        mark(s, chh[3] + .3, yc, ok, k=.8)
+        if i == 2:
+            text(chh[0], baseline(yc + 2.3, SMALL), L['later'], SMALL, RED, width=hx1 - hx0 - 2.0)
+        y0 += h
+    assert ty0 + hgt < H - .3, ty0 + hgt
+    # The reads of step 4: line 5 sums the counters, line 7 probes the verdicts.
+    for xa, xb in ((24.0, 24.0), (39.0, 39.0)):
+        s.route([(xa, by + bh), (xb, ty0)], EXEC_C, LINE + .04, dash=(.6, .4), length=.8)

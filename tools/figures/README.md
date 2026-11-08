@@ -24,9 +24,9 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 | `metric-record` | `metric_record.py` | 图 1 动机图（单栏，沿用原版样式：LLM 智能体图标、工作台窗口、请求流、共享数据库）。上半：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s091；虚线大框框住全部 20 个会话都重复的第 1–4 步（list tables / read sales / item / date table），第 5 步是各会话自己的做法（试 3 个营业额列 / 给 12 个月排序 / 比较两年）；脚本逐条核对调用与 SQL 片段，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast）。下半：这些 SQL 连接 item 时没有当前行条件，ETL 装载商品历史版本后（与图 2 相同的商品 17）同一 SQL 把它算两次 |
 | `running-example` | `example.py` | 优化实验的学习、使用与修复轨迹，来源见脚本文件头 |
 | `architecture` | `architecture.py` | 系统示意 |
-| `extraction` | `extraction.py` | 第 IV-B 节单栏小图：同一会话的两份草稿对照（(a) 缺品类过滤，按 1 月编译得 13,532,799.00，不予发布；(b) 复现核验答案 2,754,299.60，发布）。核验答案取自 10-01 轨迹的 M5-L1 会话，被 G7 拒绝的值见 `exp/2026-10-31-diverse-scenarios/case-evidence.json`；JSON 只保留两份草稿不同的字段；步骤圆标 1、2 对应图 2 |
-| `maintenance` | `maintenance.py` | 第 IV-D 节单栏小图：item 载入后存储的检查结果（按检查与表版本存放），三个定义连到同一条 date_dim 结果，电子品类营业额连到新的 item 版本 1 结果（红色虚框，只跑一次）；哪些定义共用哪条结果为示意（同图 2）；修复只在图 2 与正文中；步骤圆标 5（ETL）、6（重跑）对应图 2 |
-| `snapshot` | `snapshot.py` | 第 IV-E 节单栏小图：(a) 先检查后执行分属两个事务，ETL 提交落在中间，商品 17 被算两次；(b) MAVRA 同一只读快照内读版本、复用结果、执行 SQL，看不到提交；步骤圆标 5（ETL）、4（执行）对应图 2 |
+| `extraction` | `extraction.py` | 第 IV-A/B 节单栏图（84.6 × 45.6 mm）：上方一行是发布流程（经核验的会话 → LLM 起草 B、I → 服务端推导 C、V_x、E → 门槛 G1–G7 → 写入）；中间是定义条目 `metric:Electronics revenue` 修订版 0 按 B/I/C/V_x/E 字段组的存储格式；下方是它按键与修订号引用的连接条目，以及 $\mathcal H$ 中按 (id(c), V(dep(c))) 存放的一条检查结果（`Unmatched(store_sales→date_dim)`，n_left 1,000,000、n_join 989,695），箭头标出 Accept 用本定义的界限 1.13% 判定 1.03%。数值取自 `exp/2026-10-08-lifecycle/cell-mavra.json` 中 M5-L1 修订的定义与 evidence.versions（结构指纹前缀 1d5b/9662/5a15，DML 1096/1000/1000000，批次 0；time.loss_ratio 0.010305），核验答案 2,754,299.60 取自 10-01 轨迹 |
+| `maintenance` | `maintenance.py` | 第 IV-D 节单栏图（84.6 × 41.2 mm）：算法 1 在 item 载入后的执行。上方是定义记录的版本戳 V_x 与版本跟踪器当前值 V 的逐表对比（V(T)=⟨结构指纹, DML, ETL 批次⟩），只有 item 从 ⟨9662,1000,0⟩ 变为 ⟨9662,1001,1⟩（L7 待验证，L8 选出读 item 的条件）；下方是检查结果存储 $\mathcal H$（键 k(c,V)）：date_dim 结果键不变、三个定义共用；item 键检查在新键上未命中、只执行一次（L2），1001 行 1000 个键而失败；修复候选 `i_is_current = 'Y'` 在同一版本上通过，发布修订版 1（步骤 6）。载入按图 2 只加商品 17 的一行历史，故 item 为 DML 1001、批次 1；哪些定义共用 date_dim 结果为示意（同图 2） |
+| `snapshot` | `snapshot.py` | 第 IV-E 节单栏图（84.6 × 42.8 mm）：算法 2 与 item 载入提交交错时的执行。上方 ETL 事务插入商品 17 的历史行，语句级触发器 `mavra_bump` 在同一事务内把 `mavra_versions` 中 (item, pid%16=5) 行的 v 加 1；中间是只读可重复读快照 s 的 L4/L5/L7/L11 四步（首条语句读计数器时取快照，提交对 s 不可见，商品 17 只算一次）；下方是 `mavra_versions` 表（每表 16 行，v_s 为各行之和）与按 id(c)@v_s(dep(c)) 存放的结论 $\mathcal H_\mathrm{tx}$（item=0 命中；item=1 由之后的快照写入、失败并中止） |
 | `replay-outcomes` | `replay_outcomes.py` | 验证缓存、TPC-DS 和通用性回放 |
 | `maintenance-cost` | `maintenance_cost.py` | `exp/2026-10-02-cache-baseline-tpcds/cb-1m-share-stats.json` |
 | `scenario-changes` | `scenario_changes.py` | `exp/2026-10-10-scenarios-q5/` |
@@ -54,7 +54,7 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 
 **底层函数**（`vecfig.py` 的 `Sheet`）：坐标单位是毫米，原点在图的左上角，按印刷尺寸画（单栏 84.6 mm，通栏 178 mm）。
 
-第 IV 节的三幅单栏小图（`extraction`、`maintenance`、`snapshot`）共用 `smallparts.py`。版式按 SIGMOD/VLDB 技术图的通行做法（2026-11-07 参照 DocETL、Weever、PolySI、ACIDRain、TeCoD 等）：一图一事，用运行示例的真实数值；(a)/(b) 对照或写入后的存储状态；一个阅读方向；SQL 与数据用等宽字体。视觉元素沿用图 2，方便初次接触的读者对回总览（用户 11-07 要求“适当花里胡哨没问题，核心是讲清楚”）：图 2 配色的步骤圆标（学习 1–2 紫、执行 4 橙、数据变化与维护 5–6 青）、人像与 LLM 星标、带浅色标题条的卡片、橙褐色 JSON 字段名；结果只用红（错误或过期）、蓝（MAVRA 的结果）两色，最终结论用实心圆标。图中不得有文字或线条互相压住，宽度由 `text(..., width=)` 断言把关。
+第 IV 节的三幅单栏图（`extraction`、`maintenance`、`snapshot`）共用 `smallparts.py`。2026-11-08 按导师意见（原图“看着没有技术含量”，参考 TVA（VLDB 2026）图 3–5 说明数据到底怎么存）改为存储结构图：每幅图画出系统实际存放的结构（表、键、字段与真实数值：版本戳、检查统计、计数器行），并用 L$n$ 标签标出算法 1、2 对应行在这些结构上的访问路径。配色约定：目录条目（定义、连接）浅蓝标题条，检查结果存储 $\mathcal H$、$\mathcal H_\mathrm{tx}$ 深蓝标题条，数据库中的表（`mavra_versions`）灰色标题条；视觉元素沿用图 2：步骤圆标（学习 1–2 紫、执行 4 橙、数据变化与维护 5–6 青）、LLM 星标、橙褐色 JSON 字段名；结果只用红（错误或过期）、蓝（MAVRA 的结果）两色，最终结论用实心圆标。表格内代码用 5.4 pt（印刷约 5.7 pt），列头 5.3 pt。图中不得有文字或线条互相压住，宽度由 `text(..., width=)` 断言把关。
 
 ```python
 rect(x, y, w, h, fill, stroke, sw, r, dash)   # 矩形，r 为圆角

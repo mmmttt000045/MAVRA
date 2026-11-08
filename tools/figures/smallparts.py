@@ -1,19 +1,22 @@
 """Shared look of the single-column technique figures in Section IV
 (extraction, maintenance, snapshot).
 
-Each figure makes one point with the running example's real values, as
-SIGMOD/VLDB technique figures do, and borrows Fig. 2's visual vocabulary so a
-reader can map it back to the overview: step badges in Fig. 2's path colours
-(learning 1-2 purple, execution 4 orange, data change and maintenance 5-6
-teal), the person and LLM marks, cards with a tinted title band, JSON field
-names in ochre. Outcomes carry two colours: red for a wrong or stale result,
-blue for MAVRA's result, with a filled badge for the final verdict.
+Each figure draws what the system stores and how one operation walks through
+it, with the running example's real keys, version stamps and statistics:
+stored structures are tables with a title band (catalog entries pale blue,
+the outcome stores H and H_tx solid blue, database tables grey), and the
+access path carries tags L<n> for line n of Algorithm 1 or 2. They borrow
+Fig. 2's visual vocabulary so a reader can map them back to the overview:
+step badges in Fig. 2's path colours (learning 1-2 purple, execution 4
+orange, data change and maintenance 5-6 teal), the LLM mark, JSON field names
+in ochre. Outcomes carry two colours: red for a wrong or stale result, blue
+for MAVRA's result, with a filled badge for the final verdict.
 """
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from vecfig import PT  # noqa: E402
+from vecfig import PT, measure  # noqa: E402
 from style import ACC, ACC_DK, ACC_PALE, EDGE, FIELD, MUTED, RED, WHITE  # noqa: E402
 
 # Drawn 84.6 mm wide and scaled to the 88.8 mm IEEEtran column (x1.05).
@@ -96,3 +99,42 @@ def parts(s, x, y, items, size):
         label, color = item[:2]
         x += s.text(x, y, label, size, color, item[2] if len(item) > 2 else 'sans')
     return x
+
+
+# Storage structures (Figs. 3-5 draw what the store holds, as tables with real keys and values).
+CODE_T, HEAD_T, TAG = 5.4, 5.3, 5.0                  # printed 5.7, 5.6, 5.3 pt
+MAINT_PALE = '#E2F1EE'                               # teal tint: a changed version, the maintenance path
+
+
+def stamp(fp, dml, batch):
+    """A version stamp V(T) = <schema fingerprint, DML counter, ETL batch>, as a label.
+
+    dml may be a $...$ math label (e.g. $10^6$); the other parts are code.
+    """
+    d = dml if dml.startswith('$') else f'`{dml}`'
+    return rf'$\langle$`{fp},`{d}`,{batch}`$\rangle$'
+
+
+def structure(s, x, y, w, h, band_h, title, note=None, band=BLUE, ink=WHITE, edge=EDGE, size=SMALL):
+    """A stored structure: a frame with a filled title band, title pieces left and a note right.
+
+    title is a list of (text, style) pieces; returns the y of the band's bottom.
+    """
+    s.rect(x, y, w, h, WHITE, edge, LINE, r=.5)
+    i = LINE / 2 + .05
+    s.rect(x + i, y + i, w - 2 * i, band_h, band, None, r=.4)
+    s.rect(x + i, y + i + band_h / 2, w - 2 * i, band_h / 2, band, None)
+    yb = baseline(y + i + band_h / 2, size)
+    end = parts(s, x + 1.0, yb, [(t, ink, st) for t, st in title], size)
+    if note:
+        s.text(x + w - 1.0, yb, note, size, ink, align='right', width=x + w - 2.0 - end - 1.5)
+    return y + i + band_h
+
+
+def tag(s, x, yc, label, color, size=TAG, align='left'):
+    """An algorithm-line tag such as L7: a white bold label on a small rounded box; returns its width."""
+    w = measure(label, size, 'bold') + 1.1
+    x0 = {'left': x, 'center': x - w / 2, 'right': x - w}[align]
+    s.rect(x0, yc - 1.1, w, 2.2, color, None, r=.55)
+    s.text(x0 + .55, baseline(yc, size), label, size, WHITE, 'bold')
+    return w
