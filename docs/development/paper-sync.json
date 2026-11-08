@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "paper repo -> main repo for sections/01-introduction.tex (zzh's Overleaf edit 411025f, merged as 809a7ce), then main repo overleaf/ -> paper repo (forward sync of main 7495f39: Figs. 3-5 second redraw, explaining mechanisms the text leaves implicit, with the Section IV references)",
-  "previous_head": "809a7ce91c839dd335a8145bec33928dc00d9f86",
-  "remote_commit": "df75494c13d9b44163289c082e0ec59928382dc8",
+  "direction": "paper repo -> main repo for the Overleaf edit 990f546 (merged as 3f6d471: abstract, introduction C1-C3 paragraph, evaluation opening sentence, Fig. 1 caption), merged in main 5d94b75; then main repo overleaf/ -> paper repo (forward sync of main 5d94b75: Figs. 3-5 third redraw, fewer words and meaningful glyphs)",
+  "previous_head": "3f6d471e8dcd3032fd7d2b5dd14d97d75ccb0809",
+  "remote_commit": "17cff56cfd99d63d0eeaa24d60f93ad34329e9f5",
   "pending_payload": null,
   "changed_paths": [
     "figures/extraction.pdf",
@@ -14,20 +14,19 @@
     "figures/maintenance.pdf",
     "figures/maintenance.tex",
     "figures/snapshot.pdf",
-    "figures/snapshot.tex",
-    "sections/04-design.tex"
+    "figures/snapshot.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; figures drawn with tools/figures/build.py (venv in the session scratchpad)",
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; figures drawn with tools/figures/build.py (venv in the session scratchpad), rebuilt byte-identical",
     "status": "bash build.sh en: main.pdf 15 pages, 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "paper repo origin/main had moved to 809a7ce (zzh's introduction edit) after the recorded 460c163; the remote introduction was merged into overleaf/ first (main repo copy was unchanged since 460c163), so --force only skipped the stale-record check; after the fast-forward the introduction was not among the changed paths; a standalone build of the synced checkout gives the same main.pdf text; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Fig. 3 (IV-B/C): G3's phi/p split of session literals, the conditions each node and edge of I's join tree yields, their statistics at publication (baselines), what G1-G7 check; Fig. 4 (IV-D): 15 references of four seeded definitions to 7 outcomes, 2 vs 5 rechecks after the item load and 3 vs 12 after a sales append, the restricted repair search with value-count pruning and the sole-candidate rule; Fig. 5 (IV-E): admission of current/retired/filter-dropping requests, the shard counter bumped in the writer transaction, verdicts recorded outside snapshots only at unchanged counters, writers and reusers of each verdict. IV-A again cites Fig. 2; IV-C, IV-D (two places) and IV-E cite the new figures. Figure heights 50.8/53.2/54.6 mm, captions 3 lines; body on page 13 is 38 lines (31 before the first redraw), Fig. 10 stays on page 12; the page-8 widow is gone"
+    "identical_to_remote": "paper repo origin/main had moved to 3f6d471 (Overleaf edit 990f546) after the recorded df75494; the four edited files were merged into overleaf/ first (the main repo copies were unchanged since df75494), so --force only skipped the stale-record check; applied to a copy of the clone first: after the fast-forward only the six Fig. 3-5 files differed from origin/main, and the pushed commit touches only those; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "Same mechanisms as the second redraw, drawn with glyphs instead of sentences. Fig. 3: I as a column-level join tree (key icons, crow's-foot N:1 links, phi tag, dashed parameter slot p) with arrows from the session literals, Unmatched baselines as gauges with the +0.1-point band, gate tags G1-G7 where each gate acts, answers as bars (draft without phi about 5x). Fig. 4: Fig. 3's markers with KeyUnique/Unmatched icons, joined dots for shared outcomes, bolts and rerun arrows, unit squares 2/5 and 3/12, the repair search as row counts per value against the key-count line. Fig. 5: item's 16 counter rows as cells inside the ETL transaction, the before/after counter read of checks outside snapshots, admission request chips, one-line H_tx keys with versions in teal. Heights 49.0/50.2/47.0 mm (12.4 mm less), captions 3/3/4 lines and rewritten alt text; text of Section IV unchanged. With the figures alone page 13 was identical (38 lines); after merging the Overleaf edits the body ends 35 lines into page 13 and Figs. 3-5 keep their pages"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/df75494c13d9b44163289c082e0ec59928382dc8",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: make Figs. 3-5 more advanced and informative, explaining what the text does not, without repetition).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/17cff56cfd99d63d0eeaa24d60f93ad34329e9f5",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: fewer words in Figs. 3-5 and a richer but meaningful visual design).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "7495f3944c02147f3048a9f12955567bb1b80346"
+  "source_commit": "5d94b7542297e73dee32fc1c4e2a9e5430620ecd"
 }
