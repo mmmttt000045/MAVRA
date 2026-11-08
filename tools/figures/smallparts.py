@@ -139,3 +139,118 @@ def tag(s, x, yc, label, color, size=TAG, align='left'):
     s.rect(x0, yc - 1.1, w, 2.2, color, None, r=.55)
     s.text(x0 + .55, baseline(yc, size), label, size, WHITE, 'bold')
     return w
+
+
+# Glyphs shared by Figs. 3-5 (round 3): each stands for something the store or the check holds.
+GAUGE_BAND = '#B9D3F3'                               # tolerance above a baseline (pale MAVRA blue)
+
+
+def key_icon(s, x, yc, color, k=1.0, sw=.17):
+    """A small key with its bow at the left, starting at x and centred on yc (key columns, KeyUnique); returns its width."""
+    r = .4 * k
+    s.circle(x + r, yc, r, None, color, sw)
+    x1 = x + 2 * r
+    s.line(x1, yc, x1 + 1.3 * k, yc, color, sw)
+    for t in (.75, 1.15):
+        s.line(x1 + t * k, yc, x1 + t * k, yc + .42 * k, color, sw)
+    return 2 * r + 1.3 * k
+
+
+def gauge(s, x, yc, w, value, tol, vmax, h=1.15, color=BLUE):
+    """An unmatched-fraction gauge from 0 to vmax: the measured loss filled, the tolerance band above it, the
+    bound as a red tick, and the region past the bound (a failure) tinted red."""
+    sc = w / vmax
+    y0 = yc - h / 2
+    bound = min(value + tol, vmax)
+    s.rect(x, y0, w, h, WHITE, None)
+    s.rect(x + bound * sc, y0, w - bound * sc, h, RED_PALE, None)
+    if value > 0:
+        s.rect(x, y0, value * sc, h, color, None)
+    s.rect(x + value * sc, y0, tol * sc, h, GAUGE_BAND, None)
+    s.rect(x, y0, w, h, None, EDGE, .12)
+    s.line(x + bound * sc, y0 - .3, x + bound * sc, y0 + h + .3, RED, .2)
+
+
+def gauge_icon(s, x, yc, color=BLUE):
+    """The gauge in miniature, the mark of an Unmatched condition; returns its width."""
+    gauge(s, x, yc, 2.6, .9, .45, 2.6, h=.95, color=color)
+    return 2.6
+
+
+def units(s, x, yc, n, filled, color, cell=.8, gap=.22, per_row=None):
+    """n check runs as small squares: the first `filled` solid (run once by MAVRA), the rest outlined (run only by a
+    full recheck per definition); returns the width."""
+    per_row = per_row or n
+    rows = -(-n // per_row)
+    top = yc - (rows * cell + (rows - 1) * gap) / 2
+    for i in range(n):
+        r, c = divmod(i, per_row)
+        cx, cy = x + c * (cell + gap), top + r * (cell + gap)
+        if i < filled:
+            s.rect(cx, cy, cell, cell, color, None, r=.1)
+        else:
+            s.rect(cx + .07, cy + .07, cell - .14, cell - .14, WHITE, color, .13, r=.1)
+    return min(n, per_row) * (cell + gap) - gap
+
+
+def bolt(s, x, yc, h, color):
+    """A lightning bolt (a write to a table), h mm tall, centred on (x, yc)."""
+    k = h / 2
+    s.poly([(x + .32 * k, yc - k), (x - .44 * k, yc + .14 * k), (x - .02 * k, yc + .14 * k),
+            (x - .32 * k, yc + k), (x + .44 * k, yc - .14 * k), (x + .02 * k, yc - .14 * k)], color, None)
+
+
+def rerun(s, x, yc, r, color, sw=.2):
+    """A circular arrow (the check runs again), radius r, centred on (x, yc)."""
+    import math
+    t0, t1 = math.radians(70), math.radians(345)
+    ts = [t0 + (t1 - t0) * i / 23 for i in range(24)]
+    s.poly([(x + r * math.cos(t), yc - r * math.sin(t)) for t in ts], None, color, sw, closed=False)
+    t = t1
+    ang = math.atan2(-math.cos(t), -math.sin(t))
+    ex, ey = x + r * math.cos(t), yc - r * math.sin(t)
+    s.head(ex + .25 * math.cos(ang), ey + .25 * math.sin(ang), ang, color, length=.85 * r + .2)
+
+
+def crow(s, x, yc, d, color, sw=.16, spread=.75, length=1.5):
+    """Crow's foot of a join's many side, touching a box edge at x; d = +1 when the line leaves to the right."""
+    for dy in (-spread, 0, spread):
+        s.line(x + d * length, yc, x, yc + dy, color, sw)
+
+
+def one_bar(s, x, yc, d, color, sw=.16, at=.8, half=.75):
+    """The bar of a join's one side, at mm from a box edge at x; d = +1 when the line leaves to the right."""
+    s.line(x + d * at, yc - half, x + d * at, yc + half, color, sw)
+
+
+def db_table(s, x, y, w, name, n, head=2.5, row=2.25, note=None, size=CODE_T):
+    """A database table: a grey header with its name, then n column lines; returns the lines' centre ys."""
+    from style import RULE as _RULE, INK as _INK
+    s.rect(x, y, w, head + n * row, WHITE, EDGE, LINE, r=.5)
+    i = LINE / 2 + .05
+    s.rect(x + i, y + i, w - 2 * i, head - i, BAND, None, r=.4)
+    s.rect(x + i, y + head / 2, w - 2 * i, head / 2 - .02, BAND, None)
+    s.line(x, y + head, x + w, y + head, EDGE, .12)
+    s.text(x + .8, baseline(y + head / 2, size), name, size, _INK)
+    if note:
+        s.text(x + w - .8, baseline(y + head / 2, size), note, size, MUTED, align='right')
+    ys = []
+    for k in range(n):
+        if k:
+            s.line(x + .35, y + head + row * k, x + w - .35, y + head + row * k, _RULE, .1)
+        ys.append(y + head + row * (k + .5))
+    return ys
+
+
+def swatch(s, x, yc, color, w=1.6, h=1.0, edge=None):
+    s.rect(x, yc - h / 2, w, h, color, edge, .12)
+    return w
+
+
+def gate(s, x, yc, label, color=LEARN, fill=LEARN_PALE, size=4.7, align='left'):
+    """A publication gate such as G3: an outlined tag, lighter than the L<n> algorithm tags; returns its width."""
+    w = measure(label, size, 'bold') + .9
+    x0 = {'left': x, 'center': x - w / 2, 'right': x - w}[align]
+    s.rect(x0, yc - .92, w, 1.84, fill, color, .14, r=.45)
+    s.text(x0 + .45, baseline(yc, size), label, size, color, 'bold')
+    return w

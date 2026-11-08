@@ -4,24 +4,29 @@ Top: the outcome store seen from the definitions that use it. The four seeded
 definitions of the maintenance experiments (store revenue, returned amount,
 return rate, Electronics revenue) reference 7 distinct conditions 15 times:
 the date_dim key check serves all four, and one key check on store_returns is
-the grain of one definition and the join cardinality of another. A write
-selects the conditions whose dep(c) contains the written table, and each runs
-once for all definitions and agents: 2 rechecks after the item load (5 if each
-affected definition were rechecked whole), 3 after a store_sales append (12).
+the grain of one definition and the join cardinality of another. Markers 1-5
+are Fig. 3's (Electronics revenue's conditions); a key marks KeyUnique, a
+gauge Unmatched. A write (bolt) selects the conditions whose dep(c) contains
+the written table, and each reruns once for all definitions and agents. The
+squares count checks: solid ones run, outlined ones would also run in a full
+recheck per definition (2 of 5 after the item load, 3 of 12 after a
+store_sales append).
 
 Bottom: the restricted repair after the item key check fails at item's new
 stamp (1001 rows over 1000 keys; repair is tried only for 1 < rows/keys < 1.5).
-Candidate columns are item's columns with at most 20 distinct values; a value
-qualifies only if exactly as many rows carry it as there are keys, and then
-only if the filtered rows have one row per key. Exactly one filter passes, so
-it is adopted (stored as grain:item for other definitions on item), giving
-join and metric revision 1 after regression on the learning snapshot.
+Candidate columns are item's non-key columns with at most 20 distinct values
+(i_current_price, with 50, is not tried). Each bar is the row count of one
+value; a value qualifies only if its bar reaches the distinct key count, and
+then only if the filtered rows have one row per key. Exactly one filter
+passes, so it is adopted (stored as grain:item for other definitions on item),
+giving join and metric revision 1 after regression on the learning snapshot.
 
 Values: the fixture of src/metricbench.rs (1000 items in 5 categories of 200,
 i_current_price with 50 values) plus the running example's one history row
 for item 17 ('Electronics', 'N'), so 1001 rows, Electronics 201. Conditions
 follow bound_conditions() for the seeded metrics of src/integration_tests.rs
-(M1, M2, M3, M5); recheck counts follow from their dep sets.
+(M1, M2, M3, M5); recheck counts follow from their dep sets; the search
+follows repair_grain() in src/middle.rs.
 """
 import sys
 from pathlib import Path
@@ -30,66 +35,66 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import style  # noqa: E402
 from vecfig import measure  # noqa: E402
 from style import INK, MUTED, RULE  # noqa: E402
-from smallparts import (BLUE, BLUE_PALE, BLUE_TXT, CODE_T, HEAD_T, MAINT_C, MAINT_PALE,  # noqa: E402
-                        SMALL, baseline, mark, stamp, step, structure)
+from smallparts import (BLUE, BLUE_TXT, CODE_T, HEAD_T, MAINT_C, MAINT_PALE,  # noqa: E402
+                        SMALL, baseline, bolt, gauge_icon, key_icon, mark, rerun, stamp, step, structure, units)
+from extraction import marker  # noqa: E402
 
 NAME = 'maintenance'
-W, H = style.COLUMN, 53.2
+W, H = style.COLUMN, 50.2
 
 DEFS = ('SR', 'RA', 'RR', 'ER')
 R = r'$\rightarrow$'
-# (condition, definitions that reference it, rerun after the item load, rerun after a sales append)
+# (marker, family, table or join, definitions that reference it, rerun after the item load, after a sales append)
 ROWS = (
-    ('`KeyUnique(store_sales.`$K$`)`', 'SR RR ER', False, True),
-    ('`KeyUnique(store_returns.`$K_r$`)`', 'RA RR', False, False),
-    ('`KeyUnique(item.i_item_sk)`', 'ER', True, False),
-    ('`KeyUnique(date_dim.d_date_sk)`', 'SR RA RR ER', False, False),
-    (f'`Unmatched(store_sales`{R}`item)`', 'ER', True, True),
-    (f'`Unmatched(store_sales`{R}`date_dim)`', 'SR RR ER', False, True),
-    (f'`Unmatched(store_returns`{R}`date_dim)`', 'RA', False, False),
+    (1, 'key', '`store_sales.`$K$', 'SR RR ER', False, True),
+    (2, 'key', '`item.i_item_sk`', 'ER', True, False),
+    (3, 'loss', f'`store_sales`{R}`item`', 'ER', True, True),
+    (4, 'key', '`date_dim.d_date_sk`', 'SR RA RR ER', False, False),
+    (5, 'loss', f'`store_sales`{R}`date_dim`', 'SR RR ER', False, True),
+    (6, 'key', '`store_returns.`$K_r$', 'RA RR', False, False),
+    (7, 'loss', f'`store_returns`{R}`date_dim`', 'RA', False, False),
 )
-# Conditions per definition (for the whole-definition recheck count).
-PER_DEF = {d: sum(d in r[1].split() for r in ROWS) for d in DEFS}
+# Conditions per definition (for the full-recheck count).
+PER_DEF = {d: sum(d in r[3].split() for r in ROWS) for d in DEFS}
+KEYS = 1000                       # distinct item keys
+# Candidate columns of item (distinct values) and the row count of each value at stamp <9662,1001,1>.
+CANDS = (('`i_is_current`', 2, (("`'Y'`", 1000), ("`'N'`", 1))),
+         ('`i_category`', 5, ((None, (200, 200, 200, 200, 201)),)))
 
 LABELS = {
     'en': {
-        'store': (('Outcomes in $\\mathcal{H}$ and the definitions using them', 'bold'),),
-        'store_note': '15 references, 7 outcomes',
-        'cond': r'condition $c$ (one outcome per $V(\mathrm{dep}(c))$)', 'used': 'used by', 'rerun': 'rerun after',
+        'store': (('Shared outcomes in $\\mathcal{H}$', 'bold'),),
+        'store_note': '7 outcomes, 15 references',
+        'families': ('KeyUnique', 'Unmatched'),
         'writes': ('`item` load', 'sales append'),
-        'total': 'checks, each once for all agents (whole-definition recheck)',
+        'legend': ('rerun once for all agents', 'full recheck per definition'),
         'repair': (('Repair: a filter on ', 'bold'), ('`item`', 'sans'), (' that restores one row per key', 'bold')),
-        'trigger': (('`KeyUnique(item.i_item_sk)` at ', INK), (stamp('9662', '1001', '1'), MAINT_C),
-                    (': `1001` rows, `1000` keys; ratio $<1.5$, so search', INK)),
-        'cols': ('column (distinct values)', 'value', 'rows', 'rows/keys under it', ''),
-        'cands': ((r'`i_is_current` (2)', "`'Y'`", '`1000`', '`1000/1000`', 'the only pass'),
-                  ('', "`'N'`", '`1`', '', r'pruned: rows $\neq$ keys'),
-                  (r'`i_category` (5)', 'each value', '`200`–`201`', '', r'pruned: rows $\neq$ keys')),
-        'skip': '`i_current_price` has 50 values: not a candidate (limit 20)',
-        'adopt': (('exactly one filter passes: kept as ', INK), ('`grain:item`', INK),
-                  ('; join, metric rev 1 after regression', INK)),
+        'trigger': ((' at ', INK), (stamp('9662', '1001', '1'), MAINT_C),
+                    (': `1001` rows, `1000` keys; ratio in (1, 1.5), so search', INK)),
+        'col': 'column (distinct values)', 'bars': 'rows carrying each value', 'keys': 'keys `1000`',
+        'each': 'each', 'pass': 'sole pass',
+        'skip': ('`i_current_price` (50)', 'over 20 values: not tried'),
+        'adopt': (('kept as ', INK), ('`grain:item`', MAINT_C), ('; join and metric rev 1 after regression', INK)),
     },
     'zh': {
-        'store': (('$\\mathcal{H}$ 中的检查结果及引用它们的定义', 'bold'),),
-        'store_note': '15 处引用，7 条结果',
-        'cond': r'条件 $c$（每个 $V(\mathrm{dep}(c))$ 一条结果）', 'used': '引用者', 'rerun': '写入后重跑',
+        'store': (('$\\mathcal{H}$ 中的共享检查结果', 'bold'),),
+        'store_note': '7 条结果，15 处引用',
+        'families': ('KeyUnique', 'Unmatched'),
         'writes': ('`item` 载入', '销售追加'),
-        'total': '次检查，各对全部智能体只跑一次（整定义重查）',
+        'legend': ('对全部智能体只重跑一次', '整定义重查'),
         'repair': (('修复：在 ', 'bold'), ('`item`', 'sans'), (' 上找恢复每键一行的过滤', 'bold')),
-        'trigger': (('`KeyUnique(item.i_item_sk)` 在 ', INK), (stamp('9662', '1001', '1'), MAINT_C),
-                    ('：`1001` 行、`1000` 个键；比值 $<1.5$，于是搜索', INK)),
-        'cols': ('列（不同取值数）', '取值', '行数', '过滤后 行/键', ''),
-        'cands': ((r'`i_is_current` (2)', "`'Y'`", '`1000`', '`1000/1000`', '唯一通过'),
-                  ('', "`'N'`", '`1`', '', r'剪枝：行数 $\neq$ 键数'),
-                  (r'`i_category` (5)', '每个取值', '`200`–`201`', '', r'剪枝：行数 $\neq$ 键数')),
-        'skip': '`i_current_price` 有 50 个取值，不作候选（上限 20）',
-        'adopt': (('恰好一个过滤通过：存为 ', INK), ('`grain:item`', INK), ('；回归后发布连接与指标修订版 1', INK)),
+        'trigger': ((' 在 ', INK), (stamp('9662', '1001', '1'), MAINT_C),
+                    ('：`1001` 行、`1000` 个键；比值在 (1, 1.5) 内，于是搜索', INK)),
+        'col': '列（不同取值数）', 'bars': '各取值的行数', 'keys': '键数 `1000`',
+        'each': '每个', 'pass': '唯一通过',
+        'skip': ('`i_current_price` (50)', '超过 20 个取值，不尝试'),
+        'adopt': (('存为 ', INK), ('`grain:item`', MAINT_C), ('；回归后发布连接与指标修订版 1', INK)),
     },
 }
 
 
-def is_code(label):
-    return label.startswith('`') or label.startswith(r'$\langle')
+def family_icon(s, x, yc, family):
+    return key_icon(s, x, yc, INK) if family == 'key' else gauge_icon(s, x, yc)
 
 
 def draw(s, lang):
@@ -99,93 +104,128 @@ def draw(s, lang):
     band = 2.9
 
     # The outcome store as a condition-by-definition table, with the conditions each write selects.
-    ay, pitch = 1.0, 2.5
-    head1, head2 = 2.25, 2.35
-    top = ay + band + head1 + head2 + .35
+    ay, pitch, head = 1.0, 2.45, 2.6
+    top = ay + band + head + .2
     n = len(ROWS)
     total_y = top + n * pitch
-    ah = total_y + 2.7 - ay
+    ah = total_y + 3.0 - ay
     yb = structure(s, x0, ay, x1 - x0, ah, band, L['store'], L['store_note'])
-    cx = {d: 38.6 + 4.9 * i for i, d in enumerate(DEFS)}           # definition columns (centres)
-    wx = (63.4, 76.6)                                                # write columns (centres)
-    h1, h2 = yb + 1.9, yb + head1 + 1.95
-    text(x0 + 1.0, h2, L['cond'], HEAD_T, MUTED, width=cx['SR'] - 2.2 - x0 - 1.0)
-    text((cx['SR'] + cx['ER']) / 2, h1, L['used'], HEAD_T, MUTED, align='center')
-    text((wx[0] + wx[1]) / 2, h1, L['rerun'], HEAD_T, MUTED, align='center')
+    cx = {d: 35.4 + 4.9 * i for i, d in enumerate(DEFS)}           # definition columns (centres)
+    wx = (61.8, 75.6)                                                # write columns (centres)
+    hy = yb + head / 2 + .1
+    hx = x0 + 1.0
+    for fam, label in zip(('key', 'loss'), L['families']):
+        hx += family_icon(s, hx, hy, fam) + .6
+        hx += text(hx, baseline(hy, HEAD_T), label, HEAD_T, MUTED) + 1.6
+    assert hx < cx['SR'] - 2.0, hx
     for d in DEFS:
-        text(cx[d], h2, d, HEAD_T, INK, 'bold', 'center')
+        text(cx[d], baseline(hy, HEAD_T), d, HEAD_T, INK, 'bold', 'center')
     for x, label in zip(wx, L['writes']):
-        w = text(x, h2, label, HEAD_T, MAINT_C, 'bold', 'center')
-        assert w < 12.4, w
+        w = measure(label, HEAD_T, 'bold') + 1.5
+        bolt(s, x - w / 2 + .45, hy, 1.9, MAINT_C)
+        text(x - w / 2 + 1.5, baseline(hy, HEAD_T), label, HEAD_T, MAINT_C, 'bold')
+        assert w < 13.0, w
     s.line(x0, top, x1, top, RULE, .14)
-    for i, (cid, users, item_load, append) in enumerate(ROWS):
+    for i, (num, fam, where, users, item_load, append) in enumerate(ROWS):
         yc = top + pitch * (i + .5)
         if item_load:
-            s.rect(x0 + .3, yc - pitch / 2 + .15, x1 - x0 - .6, pitch - .3, MAINT_PALE, None, r=.35)
-        text(x0 + 1.0, baseline(yc, CODE_T), cid, CODE_T, INK, width=cx['SR'] - 2.2 - x0 - 1.0)
-        for d in users.split():
-            s.circle(cx[d], yc, .55, BLUE)
+            s.rect(x0 + .3, yc - pitch / 2 + .12, x1 - x0 - .6, pitch - .24, MAINT_PALE, None, r=.35)
+        marker(s, x0 + 1.7, yc, num, r=.8)
+        family_icon(s, x0 + 3.0, yc, fam)
+        text(x0 + 6.3, baseline(yc, CODE_T), where, CODE_T, INK, width=cx['SR'] - 1.4 - x0 - 6.3)
+        us = users.split()
+        if len(us) > 1:                              # one outcome, several definitions
+            s.line(cx[us[0]], yc, cx[us[-1]], yc, BLUE, .22)
+        for d in us:
+            s.circle(cx[d], yc, .58, BLUE)
         for x, hit in zip(wx, (item_load, append)):
             if hit:
-                s.circle(x, yc, .62, MAINT_C)
-            else:
-                s.line(x - .6, yc, x + .6, yc, RULE, .2)
-        if i == 2:                                  # the item key check fails at the new stamp
-            mark(s, wx[0] + 2.1, yc, False, k=.75)
+                rerun(s, x, yc, .62, MAINT_C)
+        if num == 2:                                 # the item key check fails at the new stamp
+            mark(s, wx[0] + 2.0, yc, False, k=.75)
     s.line(x0, total_y, x1, total_y, RULE, .14)
-    ty = total_y + 1.35
+    # Checks run per write: solid run once for all agents, outlined only in a full recheck per definition.
+    ty = total_y + 1.5
     counts = ((2, PER_DEF['ER']), (3, PER_DEF['SR'] + PER_DEF['RR'] + PER_DEF['ER']))
     assert counts == ((2, 5), (3, 12)), counts
-    text(x0 + 1.0, baseline(ty, SMALL), L['total'], SMALL, MUTED, width=wx[0] - 5.5 - x0 - 1.0)
+    lx = x0 + 1.0
+    for k, label in enumerate(L['legend']):
+        lx += units(s, lx, ty, 2 if k else 1, 1, MAINT_C) + .6
+        lx += text(lx, baseline(ty, SMALL), label, SMALL, MUTED) + 1.8
+    assert lx < wx[0] - 5.0, lx
     for x, (ours, whole) in zip(wx, counts):
-        parts_w = measure(f'{ours}', SMALL, 'bold') + measure(f' ({whole})', SMALL)
-        xs = x - parts_w / 2
-        xs += text(xs, baseline(ty, SMALL), f'{ours}', SMALL, MAINT_C, 'bold')
-        text(xs, baseline(ty, SMALL), f' ({whole})', SMALL, MUTED)
+        label = f'{ours}/{whole}'
+        lw = measure(label, SMALL, 'bold')
+        uw = min(whole, 6) * 1.02 - .22
+        xs = x - (uw + .8 + lw) / 2
+        units(s, xs, ty, whole, ours, MAINT_C, per_row=6)
+        text(xs + uw + .8, baseline(ty, SMALL), label, SMALL, MAINT_C, 'bold')
 
     # Restricted repair of the failing key check (step 6).
-    by = ay + ah + 2.0
-    rows_c = L['cands']
-    cpitch = 2.45
-    btop = by + band + 2.95 + 2.55 + .4
-    bh = btop + len(rows_c) * cpitch + 2.5 * 2 + .3 - by
+    by = ay + ah + 1.6
+    rp, cat_h = 2.3, 3.1
+    btop = by + band + 2.55 + 2.95
+    bh = btop + 2 * rp + cat_h + rp + 2.55 - by
     yb = structure(s, x0, by, x1 - x0, bh, band, L['repair'], None, MAINT_PALE, INK)
     step(s, x1 - 2.2, by + band / 2 + .05, 6, r=1.05)
-    y_tr = yb + 1.45
-    end = x0 + 1.0
+    y_tr = yb + 1.4
+    marker(s, x0 + 1.7, y_tr, 2, r=.8)
+    end = x0 + 3.0 + key_icon(s, x0 + 3.0, y_tr, INK) + .8
+    end += text(end, baseline(y_tr, CODE_T), '`item.i_item_sk`', CODE_T, INK)
     for label, color in L['trigger']:
-        size = CODE_T if is_code(label) else SMALL
+        size = CODE_T if label.startswith(r'$\langle') else SMALL
         end += text(end, baseline(y_tr, size), label, size, color)
     assert end < x1 - .8, end
-    cc = (x0 + 1.0, x0 + 24.6, x0 + 37.0, x0 + 46.6, x0 + 62.0)
+    # Bars: rows carrying each value of each candidate column, against the distinct key count.
+    bx, bw = x0 + 25.4, 33.0
+    kx = bx + bw                                     # the key line
+    sc = bw / KEYS
     hy = y_tr + 2.85
-    for c, label in zip(cc, L['cols']):
-        if label:
-            text(c, hy, label, HEAD_T, MUTED)
+    text(x0 + 1.0, hy, L['col'], HEAD_T, MUTED, width=bx - x0 - 7.0)
+    text(bx, hy, L['bars'], HEAD_T, MUTED)
+    text(kx, hy, L['keys'], HEAD_T, MAINT_C, 'bold', 'center')
     s.line(x0, btop, x1, btop, RULE, .14)
-    for i, row in enumerate(rows_c):
-        yc = btop + cpitch * (i + .5)
-        ok = i == 0
-        if ok:
-            s.rect(x0 + .3, yc - cpitch / 2 + .15, x1 - x0 - .6, cpitch - .3, BLUE_PALE, None, r=.35)
-        for j, (c, v) in enumerate(zip(cc, row)):
-            if not v:
-                continue
-            size = CODE_T if v.startswith('`') else SMALL
-            color = BLUE_TXT if (ok and j == 4) else (MUTED if j == 4 else INK)
-            nxt = cc[j + 1] if j < 4 else x1 - .8
-            pad = 2.0 if j == 4 else 0
-            text(c + pad, baseline(yc, size), v, size, color, 'bold' if (ok and j == 4) else 'sans',
-                 width=nxt - c - .4 - pad)
-        if ok:
-            mark(s, cc[4] + .8, yc, True, k=.75)
-        else:
-            s.line(cc[4] + .2, yc, cc[4] + 1.4, yc, RULE, .2)
-    ny = btop + len(rows_c) * cpitch + 1.35
-    text(x0 + 1.0, baseline(ny, SMALL), L['skip'], SMALL, MUTED, width=x1 - x0 - 2.0)
+    y = btop
+    vx = bx - 1.0
+    for col, nd, values in CANDS:
+        first = True
+        for value, rows in values:
+            h = cat_h if isinstance(rows, tuple) else rp
+            yc = y + h / 2
+            if first:
+                text(x0 + 1.0, baseline(yc, CODE_T), col, CODE_T, INK)
+                text(x0 + 1.0 + measure(col, CODE_T) + .6, baseline(yc, SMALL), f'({nd})', SMALL, MUTED)
+                first = False
+            text(vx, baseline(yc, CODE_T if value else SMALL), value or L['each'], CODE_T if value else SMALL,
+                 INK, align='right')
+            if isinstance(rows, tuple):              # the five categories, each far short of the key count
+                bh_ = .42
+                for k, r in enumerate(rows):
+                    s.rect(bx, yc - 2.5 * bh_ - .4 + k * (bh_ + .2), r * sc, bh_, '#B8B5AE', None)
+                text(bx + max(rows) * sc + .8, baseline(yc, CODE_T), f'`{min(rows)}`–`{max(rows)}`', CODE_T, MUTED)
+                mark(s, kx + 2.0, yc, False, k=.7)
+            elif rows == KEYS:                       # reaches the key line, and one row per key after the filter
+                s.rect(bx, yc - .62, rows * sc, 1.24, BLUE, None)
+                ex = kx + 1.0
+                ex += text(ex, baseline(yc, CODE_T), '`1000/1000`', CODE_T, BLUE_TXT)
+                mark(s, ex + 1.1, yc, True, k=.72)
+                text(ex + 2.4, baseline(yc, SMALL), L['pass'], SMALL, BLUE_TXT, 'bold', width=x1 - ex - 3.0)
+            else:
+                s.rect(bx, yc - .62, max(rows * sc, .3), 1.24, '#B8B5AE', None)
+                text(bx + 1.1, baseline(yc, CODE_T), f'`{rows}`', CODE_T, MUTED)
+                mark(s, kx + 2.0, yc, False, k=.7)
+            y += h
+        s.line(x0 + .6, y, x1 - .6, y, RULE, .1)
+    s.line(kx, btop - .3, kx, y, MAINT_C, .2, dash=(.6, .4))
+    # The column over the limit, never tried.
+    yc = y + rp / 2
+    w = text(x0 + 1.0, baseline(yc, CODE_T), L['skip'][0], CODE_T, MUTED)
+    s.line(x0 + .8, yc - .1, x0 + 1.2 + w, yc - .1, MUTED, .14)
+    text(bx, baseline(yc, SMALL), L['skip'][1], SMALL, MUTED)
+    y += rp
     end = x0 + 1.0
     for label, color in L['adopt']:
         size = CODE_T if label.startswith('`') else SMALL
-        end += text(end, baseline(ny + 2.5, size), label, size, MAINT_C if label.startswith('`') else color)
+        end += text(end, baseline(y + 1.25, size), label, size, color)
     assert end < x1 - .8, end
-    assert by + bh < H - .3, by + bh
+    assert by + bh < H - .25, by + bh
