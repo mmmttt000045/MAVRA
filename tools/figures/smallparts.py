@@ -115,17 +115,18 @@ def stamp(fp, dml, batch):
     return rf'$\langle$`{fp},`{d}`,{batch}`$\rangle$'
 
 
-def structure(s, x, y, w, h, band_h, title, note=None, band=BLUE, ink=WHITE, edge=EDGE, size=SMALL):
+def structure(s, x, y, w, h, band_h, title, note=None, band=BLUE, ink=WHITE, edge=EDGE, size=SMALL, inset=0.0):
     """A stored structure: a frame with a filled title band, title pieces left and a note right.
 
-    title is a list of (text, style) pieces; returns the y of the band's bottom.
+    title is a list of (text, style) pieces, starting inset mm further right (room for a badge);
+    returns the y of the band's bottom.
     """
     s.rect(x, y, w, h, WHITE, edge, LINE, r=.5)
     i = LINE / 2 + .05
     s.rect(x + i, y + i, w - 2 * i, band_h, band, None, r=.4)
     s.rect(x + i, y + i + band_h / 2, w - 2 * i, band_h / 2, band, None)
     yb = baseline(y + i + band_h / 2, size)
-    end = parts(s, x + 1.0, yb, [(t, ink, st) for t, st in title], size)
+    end = parts(s, x + 1.0 + inset, yb, [(t, ink, st) for t, st in title], size)
     if note:
         s.text(x + w - 1.0, yb, note, size, ink, align='right', width=x + w - 2.0 - end - 1.5)
     return y + i + band_h

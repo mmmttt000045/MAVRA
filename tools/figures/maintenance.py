@@ -1,159 +1,191 @@
-"""Lookup and shared maintenance over versioned check outcomes (Section IV-D), single column.
+"""Shared, selective maintenance and restricted repair (Section IV-D), single column.
 
-Algorithm 1 run on the store after the item-history load of Fig. 2 (step 5).
-Top: the definition's recorded stamps V_x next to the version tracker's
-current stamps, V(T) = <schema fingerprint, DML counter, ETL batch>. Only
-item's stamp differs, so lookup marks the definition pending (line 7) and
-selects the conditions that read item (line 8). Bottom: the outcome store H,
-keyed by k(c, V) = (id(c), V(dep(c))). The date_dim outcome keeps its key and
-still serves three definitions; the item key check has no outcome at item's
-new stamp, so it runs once (line 2) and fails with 1001 rows over 1000 keys
-(key 17 repeats); Repair's filter passes at the same stamp and becomes
-revision 1 (step 6). The outcome at item's old stamp stays behind, unused.
+Top: the outcome store seen from the definitions that use it. The four seeded
+definitions of the maintenance experiments (store revenue, returned amount,
+return rate, Electronics revenue) reference 7 distinct conditions 15 times:
+the date_dim key check serves all four, and one key check on store_returns is
+the grain of one definition and the join cardinality of another. A write
+selects the conditions whose dep(c) contains the written table, and each runs
+once for all definitions and agents: 2 rechecks after the item load (5 if each
+affected definition were rechecked whole), 3 after a store_sales append (12).
 
-Values: the stamps recorded for M5-L1 on the 1M-row retail fixture
-(exp/2026-10-08-lifecycle/cell-mavra.json, evidence.versions: schema md5
-prefixes 1d5b, 9662, 5a15; DML counters 1096, 1000, 1000000; batch 0). The
-running example's load adds the one history row of Fig. 2, so item moves to
-DML 1001 and batch 1, and the key check counts 1001 rows over 1000 keys.
-Which definitions share the date_dim outcome is schematic, as in Fig. 2.
+Bottom: the restricted repair after the item key check fails at item's new
+stamp (1001 rows over 1000 keys; repair is tried only for 1 < rows/keys < 1.5).
+Candidate columns are item's columns with at most 20 distinct values; a value
+qualifies only if exactly as many rows carry it as there are keys, and then
+only if the filtered rows have one row per key. Exactly one filter passes, so
+it is adopted (stored as grain:item for other definitions on item), giving
+join and metric revision 1 after regression on the learning snapshot.
+
+Values: the fixture of src/metricbench.rs (1000 items in 5 categories of 200,
+i_current_price with 50 values) plus the running example's one history row
+for item 17 ('Electronics', 'N'), so 1001 rows, Electronics 201. Conditions
+follow bound_conditions() for the seeded metrics of src/integration_tests.rs
+(M1, M2, M3, M5); recheck counts follow from their dep sets.
 """
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import style  # noqa: E402
-from style import INK, MUTED, RED, RULE  # noqa: E402
-from smallparts import (BLUE_PALE, BLUE_TXT, CODE_T, HEAD_T, LINE, MAINT_C, MAINT_PALE,  # noqa: E402
-                        RED_PALE, SMALL, baseline, mark, step, stamp, structure, tag)
+from vecfig import measure  # noqa: E402
+from style import INK, MUTED, RULE  # noqa: E402
+from smallparts import (BLUE, BLUE_PALE, BLUE_TXT, CODE_T, HEAD_T, MAINT_C, MAINT_PALE,  # noqa: E402
+                        SMALL, baseline, mark, stamp, step, structure)
 
 NAME = 'maintenance'
-W, H = style.COLUMN, 41.2
+W, H = style.COLUMN, 53.2
 
-OLD, NEW = stamp('9662', '1000', '0'), stamp('9662', '1001', '1')
-TRACKED = (('`date_dim`', stamp('1d5b', '1096', '0'), None),
-           ('`item`', OLD, NEW),
-           ('`store_sales`', stamp('5a15', '$10^6$', '0'), None))
-# Outcome rows: stamp, n_rows, n_keys, verdict.
-OUTCOMES = ((TRACKED[0][1], '1096', '1096', True), (OLD, '1000', '1000', True),
-            (NEW, '1001', '1000', False), (NEW, '1000', '1000', True))
-GREY = '#9C9A95'
+DEFS = ('SR', 'RA', 'RR', 'ER')
+R = r'$\rightarrow$'
+# (condition, definitions that reference it, rerun after the item load, rerun after a sales append)
+ROWS = (
+    ('`KeyUnique(store_sales.`$K$`)`', 'SR RR ER', False, True),
+    ('`KeyUnique(store_returns.`$K_r$`)`', 'RA RR', False, False),
+    ('`KeyUnique(item.i_item_sk)`', 'ER', True, False),
+    ('`KeyUnique(date_dim.d_date_sk)`', 'SR RA RR ER', False, False),
+    (f'`Unmatched(store_sales`{R}`item)`', 'ER', True, True),
+    (f'`Unmatched(store_sales`{R}`date_dim)`', 'SR RR ER', False, True),
+    (f'`Unmatched(store_returns`{R}`date_dim)`', 'RA', False, False),
+)
+# Conditions per definition (for the whole-definition recheck count).
+PER_DEF = {d: sum(d in r[1].split() for r in ROWS) for d in DEFS}
 
 LABELS = {
     'en': {
-        'def': (('Definition $x$: ', 'bold'), ('`metric:Electronics revenue`', 'sans'), (', rev 0', 'sans')),
-        'def_note': r'$V(T)=\langle$schema, DML, ETL batch$\rangle$',
-        'cols_a': ('table', r'$V_x(T)$, recorded', r'$V(T)$, version tracker'),
-        'pending': 'pending: `item` changed',
-        'delta': r"$\Delta C(x)$: conditions with `item` $\in\mathrm{dep}(c)$, such as `KeyUnique(item.i_item_sk)`",
-        'store': (('Outcome store $H$', 'bold'),),
-        'key': r'key $k(c,V)=(\mathrm{id}(c),\,V(\mathrm{dep}(c)))$',
-        'cols_h': (r'$\mathrm{id}(c)$', r'$V(\mathrm{dep}(c))$', '`n_rows`', '`n_keys`'),
-        'ids': (('`KeyUnique(date_dim.d_date_sk)`',), ('`KeyUnique(item.i_item_sk)`',),
-                ('`KeyUnique(item.i_item_sk)`',),
-                ('`KeyUnique(item.i_item_sk,`', "`          i_is_current = 'Y')`")),
-        'first': (None, None, r'miss: $Q_c$ runs once', 'Repair candidate'),
-        'res': ('pass, used by 3', 'pass, old version', 'fail: key 17 repeats', 'pass: join, metric rev 1'),
+        'store': (('Outcomes in $\\mathcal{H}$ and the definitions using them', 'bold'),),
+        'store_note': '15 references, 7 outcomes',
+        'cond': r'condition $c$ (one outcome per $V(\mathrm{dep}(c))$)', 'used': 'used by', 'rerun': 'rerun after',
+        'writes': ('`item` load', 'sales append'),
+        'total': 'checks, each once for all agents (whole-definition recheck)',
+        'repair': (('Repair: a filter on ', 'bold'), ('`item`', 'sans'), (' that restores one row per key', 'bold')),
+        'trigger': (('`KeyUnique(item.i_item_sk)` at ', INK), (stamp('9662', '1001', '1'), MAINT_C),
+                    (': `1001` rows, `1000` keys; ratio $<1.5$, so search', INK)),
+        'cols': ('column (distinct values)', 'value', 'rows', 'rows/keys under it', ''),
+        'cands': ((r'`i_is_current` (2)', "`'Y'`", '`1000`', '`1000/1000`', 'the only pass'),
+                  ('', "`'N'`", '`1`', '', r'pruned: rows $\neq$ keys'),
+                  (r'`i_category` (5)', 'each value', '`200`–`201`', '', r'pruned: rows $\neq$ keys')),
+        'skip': '`i_current_price` has 50 values: not a candidate (limit 20)',
+        'adopt': (('exactly one filter passes: kept as ', INK), ('`grain:item`', INK),
+                  ('; join, metric rev 1 after regression', INK)),
     },
     'zh': {
-        'def': (('定义 $x$：', 'bold'), ('`metric:Electronics revenue`', 'sans'), ('，修订版 0', 'sans')),
-        'def_note': r'$V(T)=\langle$结构指纹, DML, 批次$\rangle$',
-        'cols_a': ('表', r'$V_x(T)$（记录值）', r'$V(T)$（版本跟踪器）'),
-        'pending': '待验证：`item` 已变化',
-        'delta': r"$\Delta C(x)$：$\mathrm{dep}(c)$ 含 `item` 的条件，如 `KeyUnique(item.i_item_sk)`",
-        'store': (('检查结果存储 $H$', 'bold'),),
-        'key': r'键 $k(c,V)=(\mathrm{id}(c),\,V(\mathrm{dep}(c)))$',
-        'cols_h': (r'$\mathrm{id}(c)$', r'$V(\mathrm{dep}(c))$', '`n_rows`', '`n_keys`'),
-        'ids': (('`KeyUnique(date_dim.d_date_sk)`',), ('`KeyUnique(item.i_item_sk)`',),
-                ('`KeyUnique(item.i_item_sk)`',),
-                ('`KeyUnique(item.i_item_sk,`', "`          i_is_current = 'Y')`")),
-        'first': (None, None, r'未命中：$Q_c$ 只执行一次', '修复候选'),
-        'res': ('通过，三个定义共用', '通过（旧版本）', '失败：键 17 重复', '通过：发布修订版 1'),
+        'store': (('$\\mathcal{H}$ 中的检查结果及引用它们的定义', 'bold'),),
+        'store_note': '15 处引用，7 条结果',
+        'cond': r'条件 $c$（每个 $V(\mathrm{dep}(c))$ 一条结果）', 'used': '引用者', 'rerun': '写入后重跑',
+        'writes': ('`item` 载入', '销售追加'),
+        'total': '次检查，各对全部智能体只跑一次（整定义重查）',
+        'repair': (('修复：在 ', 'bold'), ('`item`', 'sans'), (' 上找恢复每键一行的过滤', 'bold')),
+        'trigger': (('`KeyUnique(item.i_item_sk)` 在 ', INK), (stamp('9662', '1001', '1'), MAINT_C),
+                    ('：`1001` 行、`1000` 个键；比值 $<1.5$，于是搜索', INK)),
+        'cols': ('列（不同取值数）', '取值', '行数', '过滤后 行/键', ''),
+        'cands': ((r'`i_is_current` (2)', "`'Y'`", '`1000`', '`1000/1000`', '唯一通过'),
+                  ('', "`'N'`", '`1`', '', r'剪枝：行数 $\neq$ 键数'),
+                  (r'`i_category` (5)', '每个取值', '`200`–`201`', '', r'剪枝：行数 $\neq$ 键数')),
+        'skip': '`i_current_price` 有 50 个取值，不作候选（上限 20）',
+        'adopt': (('恰好一个过滤通过：存为 ', INK), ('`grain:item`', INK), ('；回归后发布连接与指标修订版 1', INK)),
     },
 }
+
+
+def is_code(label):
+    return label.startswith('`') or label.startswith(r'$\langle')
 
 
 def draw(s, lang):
     L = LABELS[lang]
     text = s.text
-    gx = 2.15                    # the access path runs down this gutter, left of the structures
-    x0, x1 = 4.4, 83.6
-    band, head = 2.9, 2.85       # title band; column heads down to the rule
+    x0, x1 = 1.0, 83.6
+    band = 2.9
 
-    # The definition's recorded stamps next to the current ones (line 7 compares them).
-    ay, pitch_a = 1.0, 2.7
-    top_a = ay + band + head
-    ah = top_a - ay + 3 * pitch_a + .3
-    yb = structure(s, x0, ay, x1 - x0, ah, band, L['def'], L['def_note'], BLUE_PALE, INK)
-    ca = (x0 + 1.0, x0 + 15.0, x0 + 31.0, x0 + 48.0)
-    for c, label in zip(ca, L['cols_a']):
-        text(c, yb + 2.1, label, HEAD_T, MUTED)
-    s.line(x0, top_a, x1, top_a, RULE, .14)
-    rows_a = [top_a + pitch_a * (i + .5) for i in range(3)]
-    for (name, old, new), yc in zip(TRACKED, rows_a):
-        bc = baseline(yc, CODE_T)
-        if new:
-            s.rect(x0 + .3, yc - pitch_a / 2 + .15, x1 - x0 - .6, pitch_a - .3, MAINT_PALE, None, r=.4)
-            step(s, ca[2] + .95, yc, 5, r=.95)
-            text(ca[2] + 2.4, bc, new, CODE_T, MAINT_C)
-            text(ca[3], baseline(yc, SMALL), r'$\neq$', SMALL, MAINT_C)
-            text(ca[3] + 2.6, baseline(yc, SMALL), L['pending'], SMALL, MAINT_C, 'bold', width=x1 - ca[3] - 3.6)
-        else:
-            text(ca[2], bc, old, CODE_T, MUTED)
-            text(ca[3], baseline(yc, SMALL), '=', SMALL, MUTED)
-        text(ca[0], bc, name, CODE_T, INK)
-        text(ca[1], bc, old, CODE_T, INK)
-
-    # Line 8: the affected conditions.
-    y_delta = ay + ah + 2.1
-    text(x0 + 1.0, baseline(y_delta, SMALL), L['delta'], SMALL, INK, width=x1 - x0 - 1.4)
-
-    # The outcome store H; the two rows at item's new stamp take two lines.
-    hy = y_delta + 2.1
-    heights = (2.95, 2.95, 4.75, 4.75)
-    top = hy + band + head
-    tops = [top + sum(heights[:i]) for i in range(4)]
-    bottom = top + sum(heights) + .3
-    yb = structure(s, x0, hy, x1 - x0, bottom - hy, band, L['store'], L['key'])
-    ch = (x0 + 1.0, x0 + 29.4, x0 + 42.2, x0 + 48.9, x0 + 55.4)
-    for c, label in zip(ch, L['cols_h']):
-        text(c, yb + 2.1, label, HEAD_T, MUTED)
+    # The outcome store as a condition-by-definition table, with the conditions each write selects.
+    ay, pitch = 1.0, 2.5
+    head1, head2 = 2.25, 2.35
+    top = ay + band + head1 + head2 + .35
+    n = len(ROWS)
+    total_y = top + n * pitch
+    ah = total_y + 2.7 - ay
+    yb = structure(s, x0, ay, x1 - x0, ah, band, L['store'], L['store_note'])
+    cx = {d: 38.6 + 4.9 * i for i, d in enumerate(DEFS)}           # definition columns (centres)
+    wx = (63.4, 76.6)                                                # write columns (centres)
+    h1, h2 = yb + 1.9, yb + head1 + 1.95
+    text(x0 + 1.0, h2, L['cond'], HEAD_T, MUTED, width=cx['SR'] - 2.2 - x0 - 1.0)
+    text((cx['SR'] + cx['ER']) / 2, h1, L['used'], HEAD_T, MUTED, align='center')
+    text((wx[0] + wx[1]) / 2, h1, L['rerun'], HEAD_T, MUTED, align='center')
+    for d in DEFS:
+        text(cx[d], h2, d, HEAD_T, INK, 'bold', 'center')
+    for x, label in zip(wx, L['writes']):
+        w = text(x, h2, label, HEAD_T, MAINT_C, 'bold', 'center')
+        assert w < 12.4, w
     s.line(x0, top, x1, top, RULE, .14)
-    fills = (BLUE_PALE, None, RED_PALE, MAINT_PALE)
-    colors = (BLUE_TXT, GREY, RED, MAINT_C)
-    firsts = []
-    for i, (y0, h) in enumerate(zip(tops, heights)):
-        if fills[i]:
-            s.rect(x0 + .3, y0 + .2, x1 - x0 - .6, h - .4, fills[i], RED if i == 2 else None, LINE, r=.4,
-                   dash=(.7, .45) if i == 2 else None)
-        two = len(L['ids'][i]) > 1 or L['first'][i]
-        first = y0 + 1.3 if two else y0 + h / 2
-        firsts.append(first)
-        ink = GREY if i == 1 else INK
-        for j, label in enumerate(L['ids'][i]):
-            text(ch[0], baseline(first + 2.15 * j, CODE_T), label, CODE_T, ink, width=ch[1] - ch[0] - .4)
-        bc = baseline(first, CODE_T)
-        st, n_rows, n_keys, ok = OUTCOMES[i]
-        text(ch[1], bc, st, CODE_T, MAINT_C if i >= 2 else ink, width=ch[2] - ch[1] - .4)
-        text(ch[2], bc, f'`{n_rows}`', CODE_T, RED if not ok else ink)
-        text(ch[3], bc, f'`{n_keys}`', CODE_T, ink)
-        tx = ch[4] + 2.2                       # verdict text, right of its mark
-        room = x1 - .8 - tx
-        if L['first'][i]:
-            text(tx, baseline(first, SMALL), L['first'][i], SMALL, colors[i], width=room)
-        vy = first + 2.15 if two else first
-        if i == 1:
-            s.poly([(ch[4] + .3, vy), (ch[4] + .68, vy + .4), (ch[4] + 1.32, vy - .44)], None, GREY, .26,
-                   closed=False)
-        else:
-            mark(s, ch[4] + .8, vy, ok, k=.8)
-        text(tx, baseline(vy, SMALL), L['res'][i], SMALL, colors[i], 'sans' if i == 1 else 'bold', width=room)
+    for i, (cid, users, item_load, append) in enumerate(ROWS):
+        yc = top + pitch * (i + .5)
+        if item_load:
+            s.rect(x0 + .3, yc - pitch / 2 + .15, x1 - x0 - .6, pitch - .3, MAINT_PALE, None, r=.35)
+        text(x0 + 1.0, baseline(yc, CODE_T), cid, CODE_T, INK, width=cx['SR'] - 2.2 - x0 - 1.0)
+        for d in users.split():
+            s.circle(cx[d], yc, .55, BLUE)
+        for x, hit in zip(wx, (item_load, append)):
+            if hit:
+                s.circle(x, yc, .62, MAINT_C)
+            else:
+                s.line(x - .6, yc, x + .6, yc, RULE, .2)
+        if i == 2:                                  # the item key check fails at the new stamp
+            mark(s, wx[0] + 2.1, yc, False, k=.75)
+    s.line(x0, total_y, x1, total_y, RULE, .14)
+    ty = total_y + 1.35
+    counts = ((2, PER_DEF['ER']), (3, PER_DEF['SR'] + PER_DEF['RR'] + PER_DEF['ER']))
+    assert counts == ((2, 5), (3, 12)), counts
+    text(x0 + 1.0, baseline(ty, SMALL), L['total'], SMALL, MUTED, width=wx[0] - 5.5 - x0 - 1.0)
+    for x, (ours, whole) in zip(wx, counts):
+        parts_w = measure(f'{ours}', SMALL, 'bold') + measure(f' ({whole})', SMALL)
+        xs = x - parts_w / 2
+        xs += text(xs, baseline(ty, SMALL), f'{ours}', SMALL, MAINT_C, 'bold')
+        text(xs, baseline(ty, SMALL), f' ({whole})', SMALL, MUTED)
 
-    # The access path down the gutter: line 7 at item's stamp, line 8, line 2 at the new key, step 6 at Repair.
-    y_item, y_l2, y_rep = rows_a[1], firsts[2], firsts[3]
-    s.line(gx, y_item, gx, y_rep, MAINT_C, LINE + .06)
-    for y, label in ((y_item, 'L7'), (y_delta, 'L8'), (y_l2, 'L2')):
-        w = tag(s, gx, y, label, MAINT_C, align='center')
-        assert gx + w / 2 < x0 - .25, w
-    step(s, gx, y_rep, 6, r=1.15)
-    assert bottom < H - .3, bottom
+    # Restricted repair of the failing key check (step 6).
+    by = ay + ah + 2.0
+    rows_c = L['cands']
+    cpitch = 2.45
+    btop = by + band + 2.95 + 2.55 + .4
+    bh = btop + len(rows_c) * cpitch + 2.5 * 2 + .3 - by
+    yb = structure(s, x0, by, x1 - x0, bh, band, L['repair'], None, MAINT_PALE, INK)
+    step(s, x1 - 2.2, by + band / 2 + .05, 6, r=1.05)
+    y_tr = yb + 1.45
+    end = x0 + 1.0
+    for label, color in L['trigger']:
+        size = CODE_T if is_code(label) else SMALL
+        end += text(end, baseline(y_tr, size), label, size, color)
+    assert end < x1 - .8, end
+    cc = (x0 + 1.0, x0 + 24.6, x0 + 37.0, x0 + 46.6, x0 + 62.0)
+    hy = y_tr + 2.85
+    for c, label in zip(cc, L['cols']):
+        if label:
+            text(c, hy, label, HEAD_T, MUTED)
+    s.line(x0, btop, x1, btop, RULE, .14)
+    for i, row in enumerate(rows_c):
+        yc = btop + cpitch * (i + .5)
+        ok = i == 0
+        if ok:
+            s.rect(x0 + .3, yc - cpitch / 2 + .15, x1 - x0 - .6, cpitch - .3, BLUE_PALE, None, r=.35)
+        for j, (c, v) in enumerate(zip(cc, row)):
+            if not v:
+                continue
+            size = CODE_T if v.startswith('`') else SMALL
+            color = BLUE_TXT if (ok and j == 4) else (MUTED if j == 4 else INK)
+            nxt = cc[j + 1] if j < 4 else x1 - .8
+            pad = 2.0 if j == 4 else 0
+            text(c + pad, baseline(yc, size), v, size, color, 'bold' if (ok and j == 4) else 'sans',
+                 width=nxt - c - .4 - pad)
+        if ok:
+            mark(s, cc[4] + .8, yc, True, k=.75)
+        else:
+            s.line(cc[4] + .2, yc, cc[4] + 1.4, yc, RULE, .2)
+    ny = btop + len(rows_c) * cpitch + 1.35
+    text(x0 + 1.0, baseline(ny, SMALL), L['skip'], SMALL, MUTED, width=x1 - x0 - 2.0)
+    end = x0 + 1.0
+    for label, color in L['adopt']:
+        size = CODE_T if label.startswith('`') else SMALL
+        end += text(end, baseline(ny + 2.5, size), label, size, MAINT_C if label.startswith('`') else color)
+    assert end < x1 - .8, end
+    assert by + bh < H - .3, by + bh
