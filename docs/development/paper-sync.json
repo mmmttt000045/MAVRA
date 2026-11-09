@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main d48b070 on top of remote e30d2ad: polish Section V and Table III descriptions to remove circular phrasing, repetition, and defensive language while preserving advisor-edited sections 100% verbatim)",
-  "previous_head": "e30d2ad272bf5750ef75bee52faa58141b7f220c",
-  "remote_commit": "edd2bb10e0eea4aedabe834a34b4e5a50c9fbdf9",
+  "direction": "main repo overleaf/ -> paper repo (merge overleaf-2026-11-09-0801 into main on top of edd2bb1 so Overleaf GitHub sync can continue cleanly)",
+  "previous_head": "edd2bb10e0eea4aedabe834a34b4e5a50c9fbdf9",
+  "remote_commit": "90ec49572f6c7fe52d3d7608aa9ca5eb836da9bc",
   "pending_payload": null,
   "changed_paths": [
     "sections/05-evaluation.tex",
@@ -17,11 +17,11 @@
   "validation": {
     "built_on": "this workstation, Tectonic engine",
     "status": "main.pdf 14 pages (body fits cleanly on pages 1-12, AI Acknowledgment + References on pages 13-14), 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "remote e30d2ad merged first; only sections/05-evaluation.tex and tables/relbench.tex changed relative to e30d2ad; abstract.tex, 01-introduction.tex, 02-background.tex, 03-overview.tex, 04-design.tex, 06-conclusion.tex, and Section V opening/setup paragraphs preserved 100% verbatim",
-    "content": "Pulled remote e30d2ad RelBench table (11 columns without Quality tasks) and polished Section V Evaluation Metrics, Predictive Feature Reuse (Section V-B), Sharing Across Agents (Section V-C), and Maintenance/Ablation descriptions (Section V-D2/V-D3) plus Table III footnote to remove redundancy, circular phrasing, and defensive expressions"
+    "identical_to_remote": "merged origin/overleaf-2026-11-09-0801 (4486e27) into main (90ec495); only sections/05-evaluation.tex and tables/relbench.tex changed relative to e30d2ad; abstract.tex, 01-introduction.tex, 02-background.tex, 03-overview.tex, 04-design.tex, 06-conclusion.tex, and Section V opening/setup paragraphs preserved 100% verbatim",
+    "content": "Pulled remote e30d2ad RelBench table (11 columns without Quality tasks), polished Section V and Table III descriptions to remove redundancy, circular phrasing, and defensive expressions, and merged overleaf-2026-11-09-0801 into main"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/edd2bb10e0eea4aedabe834a34b4e5a50c9fbdf9",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-09: pull remote changes and polish Section V/Table III descriptions while keeping advisor-edited sections untouched).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/90ec49572f6c7fe52d3d7608aa9ca5eb836da9bc",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-09: merge overleaf-2026-11-09-0801 into main to resolve Overleaf GitHub sync conflict).",
   "delivery_mode": "github_only",
   "source_package": null,
   "source_commit": "d48b07080ea931ffef5db281f78548f986089c55"
