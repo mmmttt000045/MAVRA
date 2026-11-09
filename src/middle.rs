@@ -627,12 +627,19 @@ impl Middle {
         })).collect::<Vec<_>>()})
     }
 
-    /// 开场投递的示例检索对照（`traj-push`）：与 `find_trajectory` 同样的检索（题面二元组相似度不低于 0.3，至多 3 条），
-    /// 在会话开始时交给智能体，不占查找次数。
+    /// 开场投递的示例检索对照（`traj-push`）：在会话开始时交给智能体、不占查找次数。相似度取两个方向的较大者：题面的二元组
+    /// 出现在已存题目中的比例（`find_trajectory` 的检索），以及已存题目的题干（“口径”之前）的二元组出现在题面中的比例——
+    /// 后者让题面提到同一指标、但另加维度条件的题也能取到学习会话，与 MAVRA 按指标名投递对等。不低于 0.3，
+    /// 只留与最高者相差不超过 0.05 的，至多 3 条。
     pub fn deliver_trajectories(&self, query: &str) -> Vec<Value> {
-        let mut scored: Vec<(f64, TrajMemo)> =
-            self.trajs.lock().iter().map(|t| (bigram_containment(query, &t.question), t.clone())).filter(|(s, _)| *s >= 0.3).collect();
+        let score = |t: &TrajMemo| {
+            let stem = t.question.split("口径").next().unwrap_or_default();
+            bigram_containment(query, &t.question).max(bigram_containment(stem, query))
+        };
+        let mut scored: Vec<(f64, TrajMemo)> = self.trajs.lock().iter().map(|t| (score(t), t.clone())).filter(|(s, _)| *s >= 0.3).collect();
         scored.sort_by(|a, b| b.0.total_cmp(&a.0));
+        let best = scored.first().map_or(0.0, |x| x.0);
+        scored.retain(|x| x.0 >= best - 0.05);
         scored.truncate(3);
         scored
             .iter()
