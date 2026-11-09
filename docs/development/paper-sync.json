@@ -5,11 +5,24 @@
   "branch": "main",
   "status": "pushed",
   "direction": "main repo overleaf/ -> paper repo (forward sync of main d2a57fa: restore C1-bar + C2-5 cumulative reuse layout and caption for Fig. 6)",
-  "previous_head": "4e58488fe1f3c90dd826c3401c918d52bb5f54d1",
-  "remote_commit": "336eddcb0d126a9975435f038fd9c828a9a28b1d",
+  "previous_head": "336eddcb0d126a9975435f038fd9c828a9a28b1d",
+  "remote_commit": "9f73a674e8efadf3e555986444bbd124adab827b",
   "pending_payload": null,
   "changed_paths": [
-    "figures/relbench-cumulative.pdf"
+    "figures/architecture.tex",
+    "figures/extraction.tex",
+    "figures/fixed-sharing.tex",
+    "figures/maintenance.tex",
+    "figures/population.tex",
+    "figures/relbench-cumulative.pdf",
+    "figures/relbench-cumulative.tex",
+    "figures/reuse-work.tex",
+    "figures/snapshot.tex",
+    "figures/two-schemas.tex",
+    "sections/05-evaluation.tex",
+    "tables/population-cost.tex",
+    "tables/relbench.tex",
+    "tables/replay-policies.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
@@ -19,9 +32,9 @@
     "identical_to_remote": "only figures/relbench-cumulative.pdf and figures/relbench-cumulative.tex changed relative to 90ec495",
     "content": "Restored last night's C1-bar + C2-5 cumulative reuse line chart layout and caption for Fig. 6 (relbench-cumulative), aligned with Table III and Section V-B metrics"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/336eddcb0d126a9975435f038fd9c828a9a28b1d",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/9f73a674e8efadf3e555986444bbd124adab827b",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-09: restore last night's new Fig. 6 layout).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "3993c6e1d4b0e4e9247c1eeb2ba972537957bf25"
+  "source_commit": "c60d39c254864518f74cadf2f7abe5f0e17fdd11"
 }
