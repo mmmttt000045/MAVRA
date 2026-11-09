@@ -149,7 +149,7 @@ def main():
                     if v["unsolved"]:
                         v["test"] = ref.get(key)
         if "none" not in data:
-            table.append(f"\\multicolumn{{12}}{{@{{}}l}}{{\\textit{{{db}}}: running}}\\\\")
+            table.append(f"\\multicolumn{{11}}{{@{{}}l}}{{\\textit{{{db}}}: running}}\\\\")
             table.append("\\midrule")
             continue
         keys = sorted(set.intersection(*(set(d) for d in data.values())), key=lambda x: (x[1], x[0]))
@@ -228,16 +228,14 @@ def main():
         cells = {arm: cost_cells(arm, r) for arm, r in rows.items() if r}
         best_cost = [min((c[i] for c in cells.values() if c[i] is not None), key=float, default=None) for i in range(6)]
         best_solved = max((r["solved"] for r in rows.values() if r), default=None)
-        best_not_worse = max((r["not_worse"] for r in rows.values() if r), default=None)
         for arm, name, label in ARMS:
             r = rows.get(arm)
             if r is None:
-                table.append(f"{label} & \\multicolumn{{11}}{{c}}{{(running)}}\\\\")
+                table.append(f"{label} & \\multicolumn{{10}}{{c}}{{(running)}}\\\\")
                 continue
             costs = ["--" if c is None else bold(c, b) for c, b in zip(cells[arm], best_cost)]
             tests = [bold(score_text(r["test"][t]), best_scores[t]) for t in tasks]
-            counts = [bold(f"{r['solved']}/{len(keys)}", f"{best_solved}/{len(keys)}"),
-                      bold(f"{r['not_worse']}/{len(tasks)}", f"{best_not_worse}/{len(tasks)}")]
+            counts = [bold(f"{r['solved']}/{len(keys)}", f"{best_solved}/{len(keys)}")]
             table.append(" & ".join([label] + costs + tests + counts) + "\\\\")
         table.append("\\midrule")
     if table and table[-1] == "\\midrule":

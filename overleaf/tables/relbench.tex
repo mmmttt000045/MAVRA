@@ -6,28 +6,26 @@
 \setlength{\tabcolsep}{2.8pt}
 \renewcommand{\arraystretch}{1.03}
 \newcommand{\RbPanelHeader}[4]{%
-  \multicolumn{12}{@{}l}{\textbf{#1}}\\[2pt]
+  \multicolumn{11}{@{}l}{\textbf{#1}}\\[2pt]
   & \multicolumn{6}{c}{\bh{Reuse cost: cutoffs 2--5}{复用代价：截点 2--5}}
   & \multicolumn{3}{c}{\bh{Mean test score: cutoffs 1--5}{平均测试分数：截点 1--5}}
-  & \multicolumn{2}{c}{\bh{Quality summary}{质量汇总}}\\
-  \cmidrule(lr){2-7}\cmidrule(lr){8-10}\cmidrule(l){11-12}
+  & \\
+  \cmidrule(lr){2-7}\cmidrule(lr){8-10}
   \bh{Method}{方法} & \bh{Tokens\\(M)}{token\\（百万）} & \bh{Token\\ratio}{token\\比率}
   & \bh{LLM\\calls}{LLM\\调用} & \bh{Tool\\calls}{工具\\调用}
   & \bh{Obs.\\min}{观测\\分钟} & \bh{Cost\\(USD)}{美元}
-  & #2 & #3 & #4 & \bh{Valid\\sessions}{有效会话} & \bh{Quality\\tasks}{达标任务}\\
+  & #2 & #3 & #4 & \bh{Valid\\sessions}{有效会话}\\
   \midrule
 }
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrrr c@{\hspace{8pt}}c@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrrr c@{}}
 \toprule
 \RbTableBody
 \bottomrule
 \end{tabular*}
 \par\smallskip
 \parbox{\textwidth}{\footnotesize\raggedright
-\bt{Token/USD costs include memory operations; ratios are relative to no memory (subscript $0$). Invalid solutions use entity-reference scores.
-Quality: $\mathrm{AUC}\ge\mathrm{AUC}_0-0.01$ or $\mathrm{MAE}\le1.02\,\mathrm{MAE}_0$.
-\textsuperscript{*}SQL-adapted FeatPilot (Section~\ref{sec:setup-baselines}).}{token／美元代价包含记忆操作；比率以无记忆（下标 $0$）为参照。无效方案采用实体参照分数。
-质量：$\mathrm{AUC}\ge\mathrm{AUC}_0-0.01$ 或 $\mathrm{MAE}\le1.02\,\mathrm{MAE}_0$。
+\bt{Token and USD costs include memory operations; token ratios are relative to \emph{No memory}. Sessions without a valid solution receive the single-table entity score.
+\textsuperscript{*}SQL-adapted FeatPilot (Section~\ref{sec:setup-baselines}).}{token 与美元代价包含记忆操作；token 比率以无记忆为参照。无有效方案的会话采用单表实体分数。
 \textsuperscript{*}FeatPilot 的 SQL 适配版本（第~\ref{sec:setup-baselines} 节）。}
 }
 \end{table*}
