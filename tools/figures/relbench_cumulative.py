@@ -10,7 +10,7 @@ from style import INK, MUTED  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 NAME = 'relbench-cumulative'
-W, H = 88.9, 67.0
+W, H = 88.9, 69.5
 DATA = style.ROOT / 'exp/2026-10-20-relbench/paper-sessions.json'
 ARMS = [('none', 'No memory', '无记忆', 'mNoShare', '^'),
         ('ace', 'ACE', 'ACE', 'mACE', 'v'),
@@ -33,8 +33,8 @@ def draw(lang, data_path=DATA, out_dir=None):
     mplstyle.setup(lang)
     fig = mplstyle.figure(W, H)
     dbs = [db for db in ('rel-stack', 'rel-trial') if db in data]
-    gs = fig.add_gridspec(len(dbs), 2, width_ratios=[40.25, 167.71], wspace=0.06, hspace=0.48,
-                          left=0.135, right=0.985, bottom=0.075, top=0.81)
+    gs = fig.add_gridspec(len(dbs), 2, width_ratios=[40.25, 167.71], wspace=0.06, hspace=0.55,
+                          left=0.135, right=0.985, bottom=0.075, top=0.80)
     for panel, db in enumerate(dbs):
         ax_bar = fig.add_subplot(gs[panel, 0])
         ax_line = fig.add_subplot(gs[panel, 1], sharey=ax_bar)
