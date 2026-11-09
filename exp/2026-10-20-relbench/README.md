@@ -404,7 +404,9 @@ AgentSM 离线建库每库 100 个合成会话；rel-stack 附录约 135 个会�
 
 - **决定（用户 11-09 15:20）：不运行 `mavra-select2`，论文回到上一版 Table III。** 用户：“时间确实不太够了，回到上一个 table3 的
   版本”，Quality summary 只保留 Valid sessions，去掉按 0.01 AUC / 2% MAE 门槛二值化的达标任务列（三项任务的均值已在 Mean test
-  score 列给出）。00:31 的启动脚本已停掉（`results/launch-select2.log`），没有花费；`mavra-select2` 的代码与检查保留在 harness 中。
+  score 列给出）。00:31 的启动脚本已停掉（`results/launch-select2.log`；脚本被杀后残留的 `sleep` 于 11-09 17:00 清掉），正式补跑
+  没有花费。此前的冒烟（11-09 14:49–15:07，白天价）花费 1.61 元，余额 14.15 → 12.55 元（17:02 复核无变化）；`mavra-select2`
+  的代码与检查保留在 harness 中。
   论文的 RelBench 部分恢复为论文仓库 e5e2e63 的版本（导师 11-08 的精简稿，MAVRA 来自 11-07 的 `mavra-push`）：Table III、Fig. 6/7、
   §IV-G、§V-B、引言与摘要的区间（2.3–5.6× token、2.1–7.1× 加速）；`paper-stats.py`、`reuse-work-data.py` 与
   `paper-sessions.json`、`reuse-work-data.json` 回到 156737d 之前，`gen/relbench-runs.tex` 删去。`paper-stats.py` 不再输出达标任务列
