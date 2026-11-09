@@ -1,7 +1,8 @@
 #!/bin/bash
 # Structural-variation population study (README.md). Run on noctis from /root/agentdb-struct.
 # usage: queue.sh OUT TAG...   (TAG = r<run>-<mode>, e.g. r1-metric-global-snap r1-paper-tecod)
-# SMOKE=1: 2 agents x 4 questions (MAVRA 4 x 7), results not used. CONC (default 8): cells at a time.
+# SMOKE=1: 2 agents x 4 questions (MAVRA 4 x 7), results not used; SIZE overrides (e.g. "--agents 4 --per-agent 7").
+# CONC (default 8): cells at a time.
 # MIN_FREE (default 8): free GB below which no new cell starts. The TeCoD selection server (port 19532, ~35 GB) and the
 # population TeCoD service (port 19541) start when a paper-tecod tag is present and stop at the end.
 cd /root/agentdb-struct
@@ -27,7 +28,9 @@ for tag in "$@"; do
   r=${tag%%-*}; r=${r#r}; mode=${tag#*-}
   ls "$OUT/$tag"/metric-*/report.json > /dev/null 2>&1 && continue
   while [ "$(jobs -rp | wc -l)" -ge "$(( ${CONC:-8} + ${#SERVICES[@]} ))" ] || [ "$(free_gb)" -lt "${MIN_FREE:-8}" ]; do sleep 30; done
-  if [ "$SMOKE" = 1 ]; then
+  if [ -n "$SIZE" ]; then
+    size="$SIZE"
+  elif [ "$SMOKE" = 1 ]; then
     if [ "$mode" = metric-global-snap ]; then size="--agents 4 --per-agent 7"; else size="--agents 2 --per-agent 4"; fi
   else
     size="--agents 16 --per-agent 7"
