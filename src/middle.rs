@@ -627,6 +627,21 @@ impl Middle {
         })).collect::<Vec<_>>()})
     }
 
+    /// 开场投递的示例检索对照（`traj-push`）：与 `find_trajectory` 同样的检索（题面二元组相似度不低于 0.3，至多 3 条），
+    /// 在会话开始时交给智能体，不占查找次数。
+    pub fn deliver_trajectories(&self, query: &str) -> Vec<Value> {
+        let mut scored: Vec<(f64, TrajMemo)> =
+            self.trajs.lock().iter().map(|t| (bigram_containment(query, &t.question), t.clone())).filter(|(s, _)| *s >= 0.3).collect();
+        scored.sort_by(|a, b| b.0.total_cmp(&a.0));
+        scored.truncate(3);
+        scored
+            .iter()
+            .map(|(s, t)| {
+                json!({"similarity": (s * 100.0).round() / 100.0, "question": t.question, "sql": t.sqls, "derivation": t.derivation})
+            })
+            .collect()
+    }
+
     /// 当前已提交的事务性版本（`catalog::install_tx_versions` 之后）。
     async fn tx_now(&self, tables: &[String]) -> Result<HashMap<String, i64>> {
         let list: Vec<String> = tables.iter().map(|t| lit(t)).collect();
@@ -1607,7 +1622,14 @@ impl Middle {
             "run_sql" => self.run_sql_with(ctx, s("sql")?, &metric_refs(args)?).await?,
             "run_metric" => {
                 let refs = metric_refs(&json!({"metrics":[{"key":s("key")?,"revision":args["revision"]}]}))?;
-                let ask: crate::metric::Ask = serde_json::from_value(args["ask"].clone())?;
+                // 维度问法按整年提问时常给 year 而不给 period：按全年期间处理
+                let mut ask_v = args["ask"].clone();
+                if matches!(ask_v["kind"].as_str(), Some("slice" | "slice_diff" | "rank_by")) && ask_v.get("period").is_none() {
+                    if let Some(y) = ask_v.get("year").and_then(Value::as_i64) {
+                        ask_v["period"] = json!({"year": y, "m1": 1, "m2": 12});
+                    }
+                }
+                let ask: crate::metric::Ask = serde_json::from_value(ask_v)?;
                 Box::pin(self.run_metric(ctx, &refs[0].0, refs[0].1, &ask)).await?
             }
             "find_trajectory" if self.cfg.traj_memory => self.find_trajectory(ctx, s("query")?),

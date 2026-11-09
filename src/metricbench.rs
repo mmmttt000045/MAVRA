@@ -41,6 +41,7 @@ pub struct Options {
           value_parser = ["direct", "middle", "metric-local", "metric-global", "metric-global-noguard",
                           "metric-global-schema", "metric-global-revoke", "metric-global-def", "metric-global-exref",
                           "metric-global-snap", "metric-global-opt", "metric-global-full", "metric-private", "middle-alone", "traj-global", "traj-verify",
+                          "metric-global-push", "traj-push",
                           "reforce", "reforce-traj", "reforce-static", "reforce-mavra",
                           "mem-awm", "mem-ace", "mem-mem0", "mem-agentsm", "mem-ace-shared", "mem-agentsm-shared",
                           "mem-reasoningbank", "mem-apc", "mem-reasoningbank-shared", "mem-apc-shared",
@@ -1043,7 +1044,8 @@ pub(crate) fn config(mode: &str) -> (MiddleConfig, bool, bool) {
         // 条件级维护，但修复回归以提炼出的示例 SQL 为参照（部署中真正可得的参照），而不是基准的判题 SQL
         "metric-global-exref" => (MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, g8_example: true, ..base }, true, true),
         // 同上，但 G8 在学习时快照上比较：快照是单独建的、与 v1 内容相同的库，智能体的连接看不到它
-        "metric-global-snap" | "reforce-mavra" => {
+        // -push：同 -snap，并在会话开始时投递题面中出现的已发布指标（`Middle::deliver_metrics`，见 `run_task`）
+        "metric-global-snap" | "metric-global-push" | "reforce-mavra" => {
             (MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, g8_example: true, g8_snapshot_db: true, ..base }, true, true)
         }
         // 完整配置：同 -opt，并在同一快照中核对所声明修订的条件后执行（事务性版本，见 `catalog::install_tx_versions`）
@@ -1089,7 +1091,8 @@ pub(crate) fn config(mode: &str) -> (MiddleConfig, bool, bool) {
         ),
         // 匹配的轨迹检索基线：同样的中间层工具与学习题，学习成功的轨迹原样保存、按题面检索，不提炼、不维护；
         // traj-verify 只多一句提示：复用前先在当前数据上核对 SQL 依赖的前提
-        "traj-global" | "traj-verify" | "reforce-traj" => {
+        // traj-push：同 traj-global，并在会话开始时投递检索到的解题过程（开场投递的对照）
+        "traj-global" | "traj-verify" | "traj-push" | "reforce-traj" => {
             (MiddleConfig { traj_memory: true, metric_maint: Maint::Off, ..base }, true, false)
         }
         // 单智能体记忆的对照基线（`agentmem`）：工具与无记忆相同（表结构知识只在一道题内有效），跨会话的状态只有各自的记忆
@@ -1315,6 +1318,21 @@ async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Resul
                 lookup["system_prompt"].as_str().unwrap_or_default().to_string(),
                 format!("{}{}", question, lookup["user_prompt"].as_str().unwrap_or_default()),
             )
+        } else if cell.mode == "metric-global-push" || cell.mode == "traj-push" {
+            // 开场投递：不调用模型；投递所用的时间计入这道题
+            let t0 = Instant::now();
+            let (items, what) = if cell.mode == "metric-global-push" {
+                (mid.deliver_metrics(&ctx, &question).await?, "已验证的指标口径（可直接用 run_metric 执行）")
+            } else {
+                (mid.deliver_trajectories(&question), "以往相似问题的成功解题过程")
+            };
+            lookup = json!({"delivered": items.len(), "seconds": t0.elapsed().as_secs_f64(), "input_tokens": 0, "output_tokens": 0});
+            let asked = if items.is_empty() {
+                question.clone()
+            } else {
+                format!("{question}\n\n中间层在会话开始时投递了与题目相符的{what}，不占查找次数：{}", serde_json::to_string(&items)?)
+            };
+            (String::new(), asked)
         } else {
             let (memory, cost) = mid.amem.lookup(env.extractor, agent, &question).await;
             lookup = cost;

@@ -2,7 +2,7 @@
 # Structural-variation population study (README.md). Run on noctis from /root/agentdb-struct.
 # usage: queue.sh OUT TAG...   (TAG = r<run>-<mode>, e.g. r1-metric-global-snap r1-paper-tecod)
 # SMOKE=1: 2 agents x 4 questions (MAVRA 4 x 7), results not used; SIZE overrides (e.g. "--agents 4 --per-agent 7").
-# CONC (default 8): cells at a time.
+# CONC (default 8): cells at a time. BIN: the agentdb-mid binary (default ./target/release/agentdb-mid).
 # MIN_FREE (default 8): free GB below which no new cell starts. The TeCoD selection server (port 19532, ~35 GB) and the
 # population TeCoD service (port 19541) start when a paper-tecod tag is present and stop at the end.
 cd /root/agentdb-struct
@@ -38,7 +38,7 @@ for tag in "$@"; do
   mkdir -p "$OUT/$tag"
   echo "$(date '+%F %T') start $tag (free $(free_gb) GB)" >> "$OUT/queue.log"
   ( env FIG6_MEMORY_URL=http://127.0.0.1:19541/memory FIG6_CELL_KEY="pop-r$r-tecod" \
-      ./target/release/agentdb-mid --pool 8 --out "$OUT/$tag" metric-bench \
+      "${BIN:-./target/release/agentdb-mid}" --pool 8 --out "$OUT/$tag" metric-bench \
       --agent deepseek --extractor deepseek --spec exp/2026-10-11-generality/schemas/tpcds.json \
       --defs exp/2026-11-09-structural-reuse/tpcds-defs.json --metrics M1,M2,M3,M4,M5 --phrasings named \
       --repeats 1 --first-repeat "$r" --question-set v3 --sql-timeout-secs 120 --modes "$mode" --population $size \

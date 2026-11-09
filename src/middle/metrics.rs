@@ -978,6 +978,48 @@ impl Middle {
         Ok(v)
     }
 
+    /// 开场投递（MAVRA 的会话起始下发，同 RelBench 的 `mavra-push`）：题面里出现的已发布指标名称或别名（至少 4 个字符；
+    /// 一个命中的名称是另一个命中名称的一部分时只留较长者），经与 `find_metric` 相同的守护后以精简卡片交给智能体：
+    /// 键、修订、名称、业务口径与定义中已有的表（不含示例 SQL 与证据）。只投递当前有效的条目，不占智能体的查找次数。
+    pub async fn deliver_metrics(&self, ctx: &Ctx, question: &str) -> Result<Vec<Value>> {
+        let q = question.to_lowercase();
+        let prefix = format!("{}|metric:", scope_prefix(self.cfg.metric_scope, ctx));
+        let mut hits: Vec<(String, String)> = vec![];
+        for (fk, e) in self.store.scan(&prefix) {
+            let Some(m) = metric_of(&e) else { continue };
+            if matches!(e.status, Status::Candidate(_)) && !self.is_repaired(&fk) {
+                continue;
+            }
+            let best = std::iter::once(&m.name)
+                .chain(&m.aliases)
+                .map(|n| n.trim().to_lowercase())
+                .filter(|n| n.chars().count() >= 4 && q.contains(n.as_str()))
+                .max_by_key(|n| n.chars().count());
+            if let Some(n) = best {
+                hits.push((fk, n));
+            }
+        }
+        let names: Vec<String> = hits.iter().map(|(_, n)| n.clone()).collect();
+        hits.retain(|(_, n)| !names.iter().any(|o| o.len() > n.len() && o.contains(n.as_str())));
+        let (mut cards, mut found) = (vec![], vec![]);
+        for (fk, _) in hits.into_iter().take(FIND_BUDGET) {
+            if let Checked::Valid(e) = self.metric_check(ctx, &fk).await? {
+                let Some(m) = metric_of(&e) else { continue };
+                self.store.update(&fk, |x| {
+                    x.hits += 1;
+                    x.consumers.insert(ctx.agent.clone());
+                });
+                cards.push(json!({"key": e.key, "revision": e.revision, "name": m.name, "definition": m.definition,
+                                  "tables_in_definition": m.tables()}));
+                found.push((e.key.clone(), e.revision));
+            }
+        }
+        if self.cfg.record && !found.is_empty() {
+            self.tasks.lock().entry(task_key(ctx)).or_default().found.extend(found);
+        }
+        Ok(cards)
+    }
+
     /// 查找时的守护。依赖表没有变化直接返回；有变化时按 `metric_maint` 维护一次。
     /// 同一定义、同一依赖版本的维护在途合并：并发的使用者等同一个结论，不重复撤销与修复。
     pub(super) async fn metric_check(&self, ctx: &Ctx, fk: &str) -> Result<Checked> {

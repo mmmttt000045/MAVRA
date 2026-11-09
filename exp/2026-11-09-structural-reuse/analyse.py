@@ -21,8 +21,9 @@ import json
 import os
 import re
 
-METHODS = ["middle-alone", "traj-global", "paper-tecod", "metric-global-snap"]
-NAMES = {"middle-alone": "No memory", "traj-global": "Example retrieval", "paper-tecod": "TeCoD", "metric-global-snap": "MAVRA"}
+METHODS = ["middle-alone", "traj-global", "traj-push", "paper-tecod", "metric-global-snap", "metric-global-push"]
+NAMES = {"middle-alone": "No memory", "traj-global": "Example retrieval", "traj-push": "Example retrieval (delivered)",
+         "paper-tecod": "TeCoD", "metric-global-snap": "MAVRA (lookup)", "metric-global-push": "MAVRA (delivered)"}
 FORMS = ["P1", "T1", "T2", "T3", "T4"]
 NEW_JOIN = {"M1-T2", "M3-T1", "M3-T3", "M4-T1", "M4-T3", "M5-T1", "M5-T2", "M5-T3"}
 DIM_KINDS = {"slice", "slice_diff", "rank_by"}
@@ -116,7 +117,7 @@ def main():
             c = [cost(r) for r in recs[k] if r["outcome"] != "error"]
             res["cumulative"][k] = {"sessions": len(c), "tok": sum(x[0] for x in c), "s": sum(x[1] for x in c),
                                     "correct": sum(r["outcome"] == "correct" for r in recs[k])}
-        if m == "metric-global-snap":
+        if m in ("metric-global-snap", "metric-global-push"):
             st = [r for r in allr if form(r).startswith("T") and r["outcome"] != "error"]
             calls = [(r, dimension_calls(r)) for r in st]
             src = collections.Counter(s for _, cs in calls for ok, s in cs if ok)
