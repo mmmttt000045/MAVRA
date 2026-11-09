@@ -1,30 +1,28 @@
 {
   "schema_version": 1,
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 6aef317: polish language, transitions, and logic across Sections III-VI, align prose with updated Figures 3-5, and fit body within 12 pages)",
-  "previous_head": "17cff56cfd99d63d0eeaa24d60f93ad34329e9f5",
-  "remote_commit": "e5e2e6364be9ac6a69de598c8b3df2eb6ba05da0",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main d48b070 on top of remote e30d2ad: polish Section V and Table III descriptions to remove circular phrasing, repetition, and defensive language while preserving advisor-edited sections 100% verbatim)",
+  "previous_head": "e30d2ad272bf5750ef75bee52faa58141b7f220c",
+  "remote_commit": "edd2bb10e0eea4aedabe834a34b4e5a50c9fbdf9",
   "pending_payload": null,
   "changed_paths": [
-    "sections/03-overview.tex",
-    "sections/04-design.tex",
     "sections/05-evaluation.tex",
-    "sections/06-conclusion.tex"
+    "tables/relbench.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "this workstation, Tectonic engine",
     "status": "main.pdf 14 pages (body fits cleanly on pages 1-12, AI Acknowledgment + References on pages 13-14), 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "remote commits up to 17cff56 (zzh edits to abstract/intro and updated extraction/maintenance/snapshot figures) verified identical to overleaf/ before applying Sections III-VI polish; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "Polished language, cross-section transitions, and logical flow across Sections III, IV, V, and VI; removed duplicate paragraph at end of Section IV-A; tightly integrated updated Figures 3-5 (G1-G7 gates, phi vs. p separation, markers 1-5, baseline b, 7 outcomes/15 references, 2/5 and 3/12 recheck ratios, low-cardinality <=20 repair pruning, Admissible(q, R) chips, 16-shard mavra_versions counters, and outside-snapshot counter checks); resolved page overflow so Section VI ends on page 12"
+    "identical_to_remote": "remote e30d2ad merged first; only sections/05-evaluation.tex and tables/relbench.tex changed relative to e30d2ad; abstract.tex, 01-introduction.tex, 02-background.tex, 03-overview.tex, 04-design.tex, 06-conclusion.tex, and Section V opening/setup paragraphs preserved 100% verbatim",
+    "content": "Pulled remote e30d2ad RelBench table (11 columns without Quality tasks) and polished Section V Evaluation Metrics, Predictive Feature Reuse (Section V-B), Sharing Across Agents (Section V-C), and Maintenance/Ablation descriptions (Section V-D2/V-D3) plus Table III footnote to remove redundancy, circular phrasing, and defensive expressions"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e5e2e6364be9ac6a69de598c8b3df2eb6ba05da0",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08: polish language, transitions, and logic of last chapters, integrate new figures, and resolve page overflow).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/edd2bb10e0eea4aedabe834a34b4e5a50c9fbdf9",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-09: pull remote changes and polish Section V/Table III descriptions while keeping advisor-edited sections untouched).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "6aef3170a001e4a8f7eddf53ea187f1d071db221"
+  "source_commit": "d48b07080ea931ffef5db281f78548f986089c55"
 }
