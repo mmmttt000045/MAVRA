@@ -9,8 +9,8 @@ by (task, cutoff); an arm that has not finished yet is printed as "--", and so a
 zeros would otherwise read as free or infinitely cheap. A session that ends without a valid solution
 (every validation leaked or failed, or no solution) is scored as the entity-table reference, the model a team keeps
 when feature work fails, and counted in Rb<db><arm>Unsolved; the same for every arm. The table also reports valid
-solutions out of all 15 sessions and tasks meeting the prespecified quality tolerance out of all three tasks; bold marks
-each column's best value.
+solutions out of all 15 sessions; bold marks each column's best value. Tasks within the prespecified quality tolerance
+(Rb<db><arm>NotWorse) are written as macros only: the table and the text give the task means themselves (11-09).
 
   python3 tools/relbench/paper-stats.py --out overleaf/gen
 """
@@ -39,18 +39,14 @@ RUNS = {
 ARMS = [("none", "None", "No memory"), ("ace", "ACE", "ACE~\\cite{zhang2026ace}"),
         ("gmemory", "GMem", "G-Memory~\\cite{zhang2025gmemory}"), ("awm", "AWM", "AWM~\\cite{wang2025awm}"),
         ("tecod", "Tecod", "TeCoD~\\cite{jivani2025tecod}"), ("featpilot", "FeatPilot", "FeatPilot$^{*}$~\\cite{liang2025featpilot}"),
-        ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}"),
-        ("mavra-push", "MavraPush", "\\quad w/o start selection$^{\\dagger}$")]
-# run folder of an arm when it differs from its name: MAVRA is reported from its 11-08 version, which validates the task's
-# program and its extension by other agents' definitions before each later session (arm mavra-select, README 4.y); the
-# 11-07 version that only hands them over (mavra-push) is the ablation row; the earlier mavra runs stay in results/
-RUN_FOLDER = {"mavra": "mavra-select"}
+        ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}")]
+# run folder of an arm when it differs from its name: MAVRA is reported from its 11-07 version, which hands each session
+# its task program and definitions (arm mavra-push); the earlier mavra runs stay in results/
+RUN_FOLDER = {"mavra": "mavra-push"}
 TASK_SHORT = {"post-votes": "post-votes", "user-badge": "user-badge", "user-engagement": "user-engage.",
               "study-outcome": "study-outcome", "study-adverse": "study-adverse", "site-success": "site-success"}
 # arms with no LLM in the loop: their LLM-side cost metrics do not apply and print as "--", not 0
 NO_LLM = {"featpilot"}
-# ablation arms: macros only (the text compares them), no table row, never part of any column's best value
-ABLATION = {"mavra-push"}
 LETTERS = "ABC"
 
 
@@ -224,28 +220,22 @@ def main():
             higher = data['none'][next(k for k in keys if k[0] == t)]['higher']
             metric = r"AUC $\uparrow$" if higher else r"MAE $\downarrow$"
             headings.append(r"\shortstack{" + TASK_SHORT.get(t, t) + r"\\" + metric + "}")
-            scores = [r["test"][t] for a2, r in rows.items() if r and a2 not in ABLATION and r["test"][t] is not None]
+            scores = [r["test"][t] for r in rows.values() if r and r["test"][t] is not None]
             best_scores[t] = score_text((max if higher else min)(scores)) if scores else None
         table.append(r"\RbPanelHeader{" + db + "}{" + "}{".join(headings) + "}")
         # bold marks each column's best printed value, ties included: the fewest in every cost column, the best
-        # score, and the most valid solutions and tasks within tolerance
+        # score, and the most valid solutions
         cells = {arm: cost_cells(arm, r) for arm, r in rows.items() if r}
-        main = {arm: r for arm, r in rows.items() if r and arm not in ABLATION}
-        best_cost = [min((c[i] for a2, c in cells.items() if a2 in main and c[i] is not None), key=float, default=None) for i in range(6)]
-        best_solved = max((r["solved"] for r in main.values()), default=None)
-        best_not_worse = max((r["not_worse"] for r in main.values()), default=None)
+        best_cost = [min((c[i] for c in cells.values() if c[i] is not None), key=float, default=None) for i in range(6)]
+        best_solved = max((r["solved"] for r in rows.values() if r), default=None)
         for arm, name, label in ARMS:
             r = rows.get(arm)
-            if arm in ABLATION:
-                continue
             if r is None:
-                table.append(f"{label} & \\multicolumn{{11}}{{c}}{{(running)}}\\\\")
+                table.append(f"{label} & \\multicolumn{{10}}{{c}}{{(running)}}\\\\")
                 continue
-            mark = (lambda text, best: text) if arm in ABLATION else bold
-            costs = ["--" if c is None else mark(c, b) for c, b in zip(cells[arm], best_cost)]
-            tests = [mark(score_text(r["test"][t]), best_scores[t]) for t in tasks]
-            counts = [mark(f"{r['solved']}/{len(keys)}", f"{best_solved}/{len(keys)}"),
-                      mark(f"{r['not_worse']}/{len(tasks)}", f"{best_not_worse}/{len(tasks)}")]
+            costs = ["--" if c is None else bold(c, b) for c, b in zip(cells[arm], best_cost)]
+            tests = [bold(score_text(r["test"][t]), best_scores[t]) for t in tasks]
+            counts = [bold(f"{r['solved']}/{len(keys)}", f"{best_solved}/{len(keys)}")]
             table.append(" & ".join([label] + costs + tests + counts) + "\\\\")
         table.append("\\midrule")
     if table and table[-1] == "\\midrule":

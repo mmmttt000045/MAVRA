@@ -15,7 +15,7 @@ import os
 RUNS = {"rel-stack": "results/relbench-pilot3/{arm}-rel-stack-r1", "rel-trial": "results/relbench-main/{arm}-rel-trial-r1"}
 ARMS = ("none", "ace", "awm", "gmemory", "tecod", "mavra")
 KINDS = ("schema", "probe", "validate", "memory", "submit")
-RUN_FOLDER = {"mavra": "mavra-select"}  # as in paper-stats.py: MAVRA's 11-08 version (start selection)
+RUN_FOLDER = {"mavra": "mavra-push"}  # as in paper-stats.py: MAVRA's 11-07 version
 
 
 def main():

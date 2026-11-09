@@ -360,6 +360,58 @@ AgentSM 离线建库每库 100 个合成会话；rel-stack 附录约 135 个会�
   第 IV-G 节写入起点选择，第 V-B 节写入结果与两轮对比；引言区间改为 3.2–5.6× token、1.3–7.1× 加速
   （下限来自 RelBench：rel-trial token 比 0.31，rel-trial 加速 1.3×）。
 
+### 4.z 11-09：起点选择的时间预算、首个会话只列定义、首个会话两次探索（arm `mavra-select2`；写于看到任何 `mavra-select2` 结果之前）
+
+- **起因（用户 11-09）：** Table III 中 `mavra-select` r1 的 rel-trial 复用耗时 104 分钟，高于 AWM、FeatPilot（72 分钟）；
+  user-badge 未达质量门槛；用户要求 Table III 上 MAVRA 全面领先。这组改动是在看过 `mavra-select` 的测试分数之后设计的，论文中照实说明。
+- **诊断（`mavra-select` r1/r2 的会话记录）：**
+  (1) 耗时：rel-trial r1 复用阶段 104 分钟中约 55 分钟是起点选择的 SQL（审计不计）。study-adverse 截点 4、5 的扩展版
+  各等满 600 s 语句超时：失败发生在定义 SQL 在 5 万训练种子上的计算（该步审计尚未开始），不是联合 SQL 的查询计划
+  （用 k3 的定义代替重建截点 4 的库，联合 SQL 1.6 s）。同实体上有 “同类研究” 定义（经 `sponsors_studies.sponsor_id`、
+  `conditions_studies.condition_id`、`facilities.country` 等聚合别的研究的结果），编译后每个种子行横向扫描大量行。study-outcome
+  截点 4 的方案 SQL 本身超时（截点 2、3 已用 496/598 s），选择放弃，框架算目标也两次超时，会话无目标、无起点，从头探索
+  2,424 s。r2 同样代码没有超时（27 分钟）。rel-stack 的选择占复用耗时 51 分钟中的 30 分钟，选择的 SQL 约为单次验证的 1.5–2.5 倍
+  （扩展版的定义与核对）。
+  (2) 质量：study-outcome 的首个会话三次（`mavra-push` r1、`mavra-select` r1、r2）都排在兄弟任务 study-adverse 之后，
+  收到其定义与 SQL 并被要求先验证，验证分数比同轮无记忆低约 0.03（见 4.y 的观察）。user-badge 的首个会话是空记忆
+  （与无记忆相同），r1 抽到弱方案（验证 0.8485、测试 0.8165），之后 12 个复用会话智能体只验证 0–1 次、扩展版增益 ≤0.001，
+  弱方案一直沿用；r2 正好相反。同一方法两轮之间 user-badge 截点 1 的测试分数相差 0.034，大于表中七种方法之间的差距。
+- **改动（只影响新 arm `mavra-select2`；`mavra-select` 的行为不变，停止规则、目标、审计与其余方法不变）：**
+  A. 选择的时间预算：方案 SQL 每条语句至多 `SELECT_P_TIMEOUT_S` = 300 s；超时或出错时改用方案的定义 SQL（学习时逐值核对过
+  的列），先在 2,000 个核对种子上计时、按种子行数外推（编译的定义逐种子行横向连接，耗时与种子行数成正比），外推不超过 300 s
+  才计算。方案 SQL 用时超过 `SELECT_EXTEND_MAX_P_S` = 120 s 时不试扩展版（核对要再跑一遍方案）；扩展版的定义 SQL 同样先
+  计时外推，超过方案自身用时（至少 30 s）就不试；核对语句至多 120 s。计时与外推的 SQL 时间计入会话耗时，各步用时记在
+  `memory_select.steps`。
+  B. 任务的首个会话（记忆中还没有本任务的方案）：同实体的已发布定义只列出键与含义（不附 SQL），系统提示说明它们来自
+  别的任务、先探索本任务的表、合适时再用（compose_features 照常可用）；不再要求先验证。
+  C. 任务的首个会话连续探索 `FIRST_ATTEMPTS` = 2 次（同一起点、互不可见），验证分数更好的一次成为该会话（其测试分数、
+  学习与方案）；另一次的模型调用并入 `llm_sub`（计入 token、调用次数与费用），工具调用、智能体时间并入 totals 与
+  `agent_seconds`，完整记录在 `other_attempts`，各次摘要在 `attempts`（另一次的测试分数只作记录，选择只看验证分数）。
+  D（检查后补，见下）：方案 SQL 超过时间上限而没有定义可退回时，首条消息说明这一点并给出其 SQL，请智能体验证更省时的版本。
+  首个会话通常在截点 1（不进 Table III 的复用代价列），论文同时报告含学习的代价；若某任务到截点 2 以后仍无方案，两次探索
+  的代价计入复用阶段。
+- **实现：** `tools/relbench/harness.py`（`Run.session` 拆为 `explore` 与 `finish`，`has_program`、`first_message`、`slow_message`，
+  `_select_start` 的预算分支，`features`/`check_columns` 的 `timeout_s`）。
+- **检查：** pyflakes；冒烟（`results/relbench-select2-smoke/`，`--smoke`、截点 1–2、结果不用）；离线重放 r1 rel-trial 截点 4
+  的两个超时情形（`results/selecttest-out/`）。结果：study-adverse 截点 4 的选择 34 s（原 640 s；定义外推 72 s 超过方案的 30 s，
+  不试扩展）；study-outcome 截点 4 的方案 300 s 超时（原 600 s），该方案的 12 条草稿都未发布、没有定义 SQL 可退回，于是补一条
+  D：方案超过时间上限时，首条消息说明这一点并给出其 SQL，请智能体验证一个更省时的版本（不再原样下发、要求先验证）。扩展版
+  正常路径（`results/selecttest2-out/`，截点 2，四条直接定义）：计时 0.5 s、外推 8.3 s、实际 5.6 s。冒烟中首个会话两次探索的
+  记录正确（totals 含两次：16 次模型调用、37 次工具调用、15.1 万 token、285 s），rel-stack 截点 2 的选择在真实方案上 42 s 完成。
+- **运行计划：** 余额 14.15 元，白天价两倍，四格（两库 × run 1、2）含两次探索约需夜间价 8.6 元、白天价 17 元，因此 11-10 00:30
+  （DeepSeek 夜间价开始）起两库 run 1 与 run 2 四格同时运行（10-21 的正式运行为 5–8 格并行），`--eval-now`，题序与种子同其他
+  方法（配对）。`budget-watch.py` 在花费超过 11 元时停下。无论结果如何都报告；`mavra-select` 的结果保留。
+
+- **决定（用户 11-09 15:20）：不运行 `mavra-select2`，论文回到上一版 Table III。** 用户：“时间确实不太够了，回到上一个 table3 的
+  版本”，Quality summary 只保留 Valid sessions，去掉按 0.01 AUC / 2% MAE 门槛二值化的达标任务列（三项任务的均值已在 Mean test
+  score 列给出）。00:31 的启动脚本已停掉（`results/launch-select2.log`），没有花费；`mavra-select2` 的代码与检查保留在 harness 中。
+  论文的 RelBench 部分恢复为论文仓库 e5e2e63 的版本（导师 11-08 的精简稿，MAVRA 来自 11-07 的 `mavra-push`）：Table III、Fig. 6/7、
+  §IV-G、§V-B、引言与摘要的区间（2.3–5.6× token、2.1–7.1× 加速）；`paper-stats.py`、`reuse-work-data.py` 与
+  `paper-sessions.json`、`reuse-work-data.json` 回到 156737d 之前，`gen/relbench-runs.tex` 删去。`paper-stats.py` 不再输出达标任务列
+  （宏 `Rb<db><arm>NotWorse` 仍写出）；正文 §V-A 的门槛定义改为“报告平均测试分数与有效会话数”，§V-B 改为直接给出：全部会话有效，
+  六项中三项均值优于无记忆，差距最大的是 user-badge AUC（0.8345 对 0.8588）与 study-adverse MAE（42.14 对 40.85）。
+  4.y 写下的“`mavra-select` 无论结果如何都报告”因此没有在论文中兑现，其结果只保留在本 README（4.y）。
+
 ## 5. 待定
 
 - ~~APC 的小模型~~（10-21 晚：不做 APC）。
