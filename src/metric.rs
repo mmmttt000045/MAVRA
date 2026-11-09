@@ -2,7 +2,8 @@
 //! 需要数据库的门槛、守护、受限修复与回归在 `middle::metrics`。协议见 docs/history/metric-experience-protocol.md。
 
 use crate::catalog::Catalog;
-use crate::knowledge::{Basis, EmptyRule, JoinKind, Metric, TimeSpec, TimeStrategy};
+use crate::db::lit;
+use crate::knowledge::{Basis, EmptyRule, JoinKind, JoinRef, Metric, TimeSpec, TimeStrategy};
 use crate::llm::{Provider, Turn};
 use crate::sqlscan;
 use anyhow::{anyhow, bail, ensure, Result};
@@ -31,8 +32,10 @@ impl Period {
     }
 }
 
-/// 题型：单期汇总、跨期差值（前者减后者）、全年中取值最高的月份、比上一个月增加最多的月份、高于各月平均值的月份数。
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+/// 题型：单期汇总、跨期差值（前者减后者）、全年中取值最高的月份、比上一个月增加最多的月份、高于各月平均值的月份数；
+/// 以及按维度属性（`表.列`）的结构问法：取某个属性值的部分、两个属性值之差、取值最高的属性值。
+/// 结构问法的维度表不在口径中时，由中间层沿已验证的多对一关联接入（`compile_with` 的 `extra`）。
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Ask {
     Single {
@@ -53,16 +56,53 @@ pub enum Ask {
     AboveMean {
         year: i32,
     },
+    /// 期间内维度属性 `attr`（`表.列`）等于 `value` 的部分
+    Slice {
+        period: Period,
+        attr: String,
+        value: String,
+    },
+    /// 同一期间内属性取 `value` 的部分减去取 `other` 的部分
+    SliceDiff {
+        period: Period,
+        attr: String,
+        value: String,
+        other: String,
+    },
+    /// 期间内按属性分组，取值最高的属性值（不计属性为空的行；并列取属性值最小者）
+    RankBy {
+        period: Period,
+        attr: String,
+    },
 }
 
 impl Ask {
     /// 题目参数里的年份，用于发现被写进口径过滤的参数。
     pub fn years(&self) -> Vec<i32> {
         match self {
-            Ask::Single { period } => vec![period.year],
+            Ask::Single { period } | Ask::Slice { period, .. } | Ask::SliceDiff { period, .. } | Ask::RankBy { period, .. } => {
+                vec![period.year]
+            }
             Ask::Diff { a, b } => vec![a.year, b.year],
             Ask::RankMonth { year } | Ask::PeakRise { year } | Ask::AboveMean { year } => vec![*year],
         }
+    }
+
+    /// 结构问法的维度属性，拆成（表，列）；表名与列名只能是小写标识符。
+    pub fn attr(&self) -> Option<Result<(&str, &str)>> {
+        let a = match self {
+            Ask::Slice { attr, .. } | Ask::SliceDiff { attr, .. } | Ask::RankBy { attr, .. } => attr.as_str(),
+            _ => return None,
+        };
+        let ident = |s: &str| {
+            let mut cs = s.chars();
+            cs.next().is_some_and(|c| c.is_ascii_lowercase() || c == '_')
+                && cs.all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+        };
+        Some(match a.trim().split_once('.') {
+            Some((t, c)) if ident(t) && ident(c) => Ok((t, c)),
+            _ => Err(anyhow!("维度属性须写成 表.列（小写标识符），收到 {a}")),
+        })
     }
 }
 
@@ -356,8 +396,16 @@ fn fact_source(m: &Metric, keep: Option<&str>) -> String {
 }
 
 pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
+    compile_with(m, ask, &[])
+}
+
+/// 同 `compile`；维度问法所需的维度表不在口径中时，`extra` 是中间层验证过的多对一内连接（从事实表或已关联的表指向维度表），
+/// 接在口径自身的关联之后。口径原有的关联、过滤与时间归属不变；只有维度问法才接受 `extra`。
+pub fn compile_with(m: &Metric, ask: &Ask, extra: &[JoinRef]) -> Result<String> {
     check_join_orientation(m)?;
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义，无法按期间编译"))?;
+    let attr = ask.attr().transpose()?;
+    ensure!(attr.is_some() || extra.is_empty(), "只有按维度属性的问法才接入额外的关联");
     ensure!(time.is_column() || !(time.dim.is_empty() || time.dim_col.is_empty()), "日期维度方式需要维度表与键列");
     let mut tail = String::new();
     let mut wheres = vec![];
@@ -382,6 +430,31 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     if let Some(f) = m.filters.get(&m.fact) {
         push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&m.fact, f)?);
     }
+    // 维度问法：接入额外的多对一关联，确认属性所在的表已关联
+    let mut reached: BTreeSet<&str> = std::iter::once(m.fact.as_str()).chain(m.joins.iter().map(|j| j.right.as_str())).collect();
+    for j in extra {
+        ensure!(
+            j.kind == JoinKind::Inner && reached.contains(j.left.as_str()) && !reached.contains(j.right.as_str()) && !j.on.is_empty(),
+            "额外关联 {}⋈{} 必须是从已关联的表指向新维度表的内连接",
+            j.left,
+            j.right
+        );
+        let other = &j.right;
+        let conds: Vec<String> = j.on.iter().map(|(l, r)| format!("{}.{l} = {other}.{r}", j.left)).collect();
+        if let Some(f) = j.filters.get(other) {
+            push_unique(&mut wheres, &mut seen, &qualify_owned_filter(other, f)?);
+        }
+        tail.push_str(&format!(" join {other} on {}", conds.join(" and ")));
+        reached.insert(other.as_str());
+    }
+    let attr_expr = match attr {
+        Some((t, c)) => {
+            let via_time = !time.is_column() && t == time.dim;
+            ensure!(reached.contains(t) || via_time, "维度表 {t} 不在口径中，需要先由中间层找到并验证一条多对一关联");
+            Some(format!("{t}.{c}"))
+        }
+        None => None,
+    };
     let from = |keep: Option<&str>| format!("{}{tail}", fact_source(m, keep));
     let joined = |keep: Option<&str>| {
         let from = from(keep);
@@ -454,6 +527,11 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
         let src = joined(keep(&yp).as_deref());
         format!("select {mo} as mo, {expr} as v from {src} where {} group by 1", cond(yp))
     };
+    let slice = |p: &Period, v: &str, a: &str| {
+        let pp = pred(p);
+        let src = joined(keep(&pp).as_deref());
+        format!("select {expr} as value from {src} where {} and {a} = {}", cond(pp), lit(v))
+    };
     Ok(match ask {
         Ask::Single { period } => value(period),
         Ask::Diff { a, b } => format!("select ({}) - ({}) as value", value(a), value(b)),
@@ -470,6 +548,22 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
         Ask::AboveMean { year: y } => {
             let m = monthly(*y);
             format!("select count(*) as value from ({m}) m where v > (select avg(v) from ({m}) a)")
+        }
+        // 维度问法都按日期维度（或日期列）的期间谓词取行，不走日期键范围改写
+        Ask::Slice { period, value: v, .. } => slice(period, v, attr_expr.as_deref().unwrap_or_default()),
+        Ask::SliceDiff { period, value: v, other, .. } => {
+            let a = attr_expr.as_deref().unwrap_or_default();
+            format!("select ({}) - ({}) as value", slice(period, v, a), slice(period, other, a))
+        }
+        Ask::RankBy { period, .. } => {
+            let a = attr_expr.as_deref().unwrap_or_default();
+            let pp = pred(period);
+            let src = joined(keep(&pp).as_deref());
+            format!(
+                "select btrim({a}::text) as value from {src} where {} and {a} is not null group by 1 order by {} desc nulls last, 1 limit 1",
+                cond(pp),
+                m.measure
+            )
         }
     })
 }
@@ -1218,7 +1312,7 @@ pub async fn propose(p: &Provider, input: &Value, max_attempts: u32) -> Proposal
 mod tests {
     use super::*;
     use crate::catalog::{Column, Table};
-    use crate::knowledge::{EntityRef, JoinRef};
+    use crate::knowledge::EntityRef;
 
     #[test]
     fn compile_key_range_filters_by_date_key_bounds_without_joining_the_dimension() {
@@ -1562,6 +1656,59 @@ mod tests {
         m.joins[0].left = m.fact.clone();
         m.joins[0].right = m.fact.clone();
         assert!(compile(&m, &ask).is_err());
+    }
+
+    #[test]
+    fn compile_dimension_asks_join_validated_dimension_and_keep_definition_filters() {
+        let m = rate();
+        let p = Period::month(2002, 9);
+        let year = Period { year: 2002, m1: 1, m2: 12 };
+        let item = JoinRef {
+            key: "item|store_sales".into(),
+            left: "store_sales".into(),
+            right: "item".into(),
+            on: vec![("ss_item_sk".into(), "i_item_sk".into())],
+            kind: JoinKind::Inner,
+            filters: BTreeMap::new(),
+            cardinality: "N:1".into(),
+            loss_ratio: 0.0,
+            orphan_ratio: 0.0,
+            revision: 0,
+        };
+        let slice = Ask::Slice { period: p, attr: "item.i_category".into(), value: "Mu'sic".into() };
+        // 维度表不在口径中且没有接入的关联：拒绝
+        assert!(compile(&m, &slice).unwrap_err().to_string().contains("item"));
+        let sql = compile_with(&m, &slice, std::slice::from_ref(&item)).unwrap();
+        assert!(sql.contains("join item on store_sales.ss_item_sk = item.i_item_sk"), "{sql}");
+        assert!(sql.contains("item.i_category = 'Mu''sic'"), "{sql}");
+        // 口径原有的左关联过滤与期间谓词保留
+        assert!(sql.contains("store_returns.sr_status = '完成'") && sql.contains("date_dim.d_moy between 9 and 9"), "{sql}");
+        let diff = compile_with(
+            &m,
+            &Ask::SliceDiff { period: year, attr: "item.i_category".into(), value: "A".into(), other: "B".into() },
+            std::slice::from_ref(&item),
+        )
+        .unwrap();
+        assert!(diff.starts_with("select (select") && diff.contains("= 'A'") && diff.contains("= 'B'"), "{diff}");
+        let rank = compile_with(&m, &Ask::RankBy { period: year, attr: "item.i_category".into() }, std::slice::from_ref(&item)).unwrap();
+        assert!(rank.contains("btrim(item.i_category::text)") && rank.contains("is not null group by 1"), "{rank}");
+        // 日期维度上的属性不需要额外关联
+        let day = compile(&m, &Ask::RankBy { period: year, attr: "date_dim.d_day_name".into() }).unwrap();
+        assert!(day.contains("group by 1") && !day.contains("join item"), "{day}");
+        // 非维度问法不接受额外关联；额外关联必须从已关联的表指向新表
+        assert!(compile_with(&m, &Ask::Single { period: p }, std::slice::from_ref(&item)).is_err());
+        let mut reverse = item.clone();
+        reverse.left = "item".into();
+        reverse.right = "store_sales".into();
+        assert!(compile_with(&m, &slice, &[reverse]).is_err());
+        let mut left = item.clone();
+        left.kind = JoinKind::Left;
+        assert!(compile_with(&m, &slice, &[left]).is_err());
+        // 属性须是 表.列 形式的小写标识符
+        let bad = Ask::Slice { period: p, attr: "item.i_category; drop table x".into(), value: "A".into() };
+        assert!(compile_with(&m, &bad, std::slice::from_ref(&item)).is_err());
+        // 非维度问法的 SQL 与原编译器逐字相同
+        assert_eq!(compile_with(&m, &Ask::Single { period: p }, &[]).unwrap(), compile(&m, &Ask::Single { period: p }).unwrap());
     }
 
     #[test]

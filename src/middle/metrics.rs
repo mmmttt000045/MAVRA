@@ -529,7 +529,7 @@ impl Middle {
         self.store.put(&fk, e);
         let evidence = MetricEvidence {
             task: task.clone(),
-            ask: traj.ask,
+            ask: traj.ask.clone(),
             decimals: traj.decimals,
             value: log.verify(traj).ok(),
             versions: log.chain_versions(traj).unwrap_or_default(),
@@ -1383,7 +1383,7 @@ impl Middle {
         let Some(t) = m.time.as_mut().filter(|t| t.strategy == TimeStrategy::KeyRange) else { return Ok(None) };
         t.strategy = TimeStrategy::DimJoin;
         m.caveats.retain(|c| !c.contains("日期键范围"));
-        let ask = self.metric_evidence.lock().get(fk).map(|x| x.ask);
+        let ask = self.metric_evidence.lock().get(fk).map(|x| x.ask.clone());
         if let Some(sql) = ask.and_then(|a| metric::compile(&m, &a).ok()) {
             let question = m.examples.first().map(|x| x.question.clone()).unwrap_or_default();
             m.examples = vec![Example { question, sql }];
@@ -1490,11 +1490,16 @@ impl Middle {
     pub async fn run_metric(&self, ctx: &Ctx, key: &str, revision: u32, ask: &Ask) -> Result<Value> {
         let period_ok = |p: &crate::metric::Period| (1..=9999).contains(&p.year) && (1..=12).contains(&p.m1) && (p.m1..=12).contains(&p.m2);
         let valid = match ask {
-            Ask::Single { period } => period_ok(period),
+            Ask::Single { period } | Ask::RankBy { period, .. } => period_ok(period),
+            Ask::Slice { period, value, .. } => period_ok(period) && !value.trim().is_empty(),
+            Ask::SliceDiff { period, value, other, .. } => period_ok(period) && !value.trim().is_empty() && !other.trim().is_empty(),
             Ask::Diff { a, b } => period_ok(a) && period_ok(b),
             Ask::RankMonth { year } | Ask::PeakRise { year } | Ask::AboveMean { year } => (1..=9999).contains(year),
         };
-        ensure!(valid, "期间参数无效");
+        ensure!(valid, "期间或维度参数无效");
+        if let Some(attr) = ask.attr() {
+            attr?;
+        }
         let mut view = Box::pin(self.use_metric(ctx, key)).await?;
         if view["status"] != "valid" {
             view["rejected"] = json!(true);
@@ -1509,12 +1514,82 @@ impl Middle {
         }
         let metric: Metric = serde_json::from_value(view["metric"].clone())?;
         ensure!(metric.entity.is_none(), "实体特征请使用 compose_features");
-        let sql = metric::compile(&metric, ask)?;
+        let (extra, slice) = match ask.attr() {
+            Some(attr) => {
+                let (t, c) = attr?;
+                match Box::pin(self.slice_join(ctx, &metric, t, c)).await? {
+                    Ok(x) => x,
+                    Err(reason) => {
+                        return Ok(json!({"status": "rejected", "rejected": true, "reason": reason,
+                                         "metric": {"key": key, "revision": revision}}))
+                    }
+                }
+            }
+            None => (vec![], Value::Null),
+        };
+        let sql = metric::compile_with(&metric, ask, &extra)?;
         let refs = [(key.to_string(), revision)];
         let mut result = Box::pin(self.run_sql_with(ctx, &sql, &refs)).await?;
         result["sql"] = json!(sql);
         result["metric"] = json!({"key":key,"revision":revision});
+        if !slice.is_null() {
+            result["dimension"] = slice;
+        }
         Ok(result)
+    }
+
+    /// 维度问法的接入：属性所在的表已在口径中（事实表、口径的关联或日期维度）时不需要新关联；否则从共享的关联经验中取
+    /// 事实表到该表的路径（当前版本上验证过的直接复用，没有时探索并验证后存入，所有智能体与定义共用），
+    /// 只接受事实表为多侧、维度表键唯一的多对一路径，按维度分组或过滤不会放大事实行。返回内连接与接入记录；
+    /// 不能安全接入时返回原因。
+    async fn slice_join(
+        &self,
+        ctx: &Ctx,
+        m: &Metric,
+        table: &str,
+        col: &str,
+    ) -> Result<std::result::Result<(Vec<crate::knowledge::JoinRef>, Value), String>> {
+        let Some(t) = self.cat.table(table) else { return Ok(Err(format!("表 {table} 不存在"))) };
+        if t.col(col).is_none() {
+            return Ok(Err(format!("表 {table} 没有列 {col}")));
+        }
+        if !ctx.role.allows(table) {
+            return Ok(Err(format!("权限不足：不能访问表 {table}")));
+        }
+        let in_metric = table == m.fact
+            || m.joins.iter().any(|j| j.right == table)
+            || m.time.as_ref().is_some_and(|tm| !tm.is_column() && tm.dim == table);
+        if in_metric {
+            return Ok(Ok((vec![], json!({"table": table, "join": "in_definition"}))));
+        }
+        let v = self.join_path(ctx, &m.fact, table).await?;
+        let paths: Vec<JoinPath> = serde_json::from_value(v["paths"].clone()).unwrap_or_default();
+        let Some(p) = paths.iter().find(|p| p.left == m.fact && p.right == table && p.right_unique) else {
+            return Ok(Err(format!(
+                "没有从 {} 到 {table} 的已验证多对一关联（{}），按 {table}.{col} 切片可能放大事实行；请自行查看表结构计算",
+                m.fact,
+                if paths.is_empty() { "没有找到可靠的关联" } else { "已知路径不是事实表指向维度表的多对一" }
+            )));
+        };
+        let mut filters = BTreeMap::new();
+        if let Some(f) = p.filters.get(table) {
+            filters.insert(table.to_string(), f.clone());
+        }
+        let j = crate::knowledge::JoinRef {
+            key: join_key(&m.fact, table),
+            left: m.fact.clone(),
+            right: table.to_string(),
+            on: p.on.clone(),
+            kind: JoinKind::Inner,
+            filters,
+            cardinality: p.cardinality().to_string(),
+            loss_ratio: p.loss_ratio,
+            orphan_ratio: 0.0,
+            revision: 0,
+        };
+        let record = json!({"table": table, "join": v["source"], "on": p.on, "cardinality": p.cardinality(),
+                            "loss_ratio": p.loss_ratio});
+        Ok(Ok((vec![j], record)))
     }
 
     async fn check_view(&self, ctx: &Ctx, fk: &str) -> Result<Value> {
@@ -1604,7 +1679,7 @@ impl Middle {
                 return Ok(());
             }
         };
-        let ask = self.metric_evidence.lock().get(fk).map(|x| x.ask);
+        let ask = self.metric_evidence.lock().get(fk).map(|x| x.ask.clone());
         if let Some(ask) = ask {
             if let Ok(sql) = metric::compile(&m2, &ask) {
                 let question = m2.examples.first().map(|x| x.question.clone()).unwrap_or_default();

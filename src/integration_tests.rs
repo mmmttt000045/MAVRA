@@ -119,7 +119,7 @@ async fn scoped_admission(url: &str) -> Result<Value> {
     .await?;
     let exec_ctx = Ctx::new("A", "compiled-metric", "execute");
     let ask = Ask::Single { period: Period::month(1997, 9) };
-    let seeded = executor.seed_metric(&exec_ctx, promo, ask, 2, &compiled).await?;
+    let seeded = executor.seed_metric(&exec_ctx, promo, ask.clone(), 2, &compiled).await?;
     ensure!(seeded["promoted"] == true, "shared-column metric must pass publication: {seeded}");
     let request = json!({"key":seeded["key"],"revision":seeded["revision"],"ask":ask});
     let initial = executor.call_tool(&exec_ctx, "run_metric", &request).await?;
@@ -179,7 +179,7 @@ async fn date_key_repair(url: &str) -> Result<Value> {
         "time":{"role":"sale","fact_col":"f_date_sk","dim":"ds","dim_col":"d_date_sk","grain":"day"}}))?;
     let learn = Ask::Single { period: Period::month(2002, 8) };
     let judge = metric::compile(&m, &learn)?;
-    let seeded = mid.seed_metric(&ctx, m, learn, 2, &judge).await?;
+    let seeded = mid.seed_metric(&ctx, m, learn.clone(), 2, &judge).await?;
     ensure!(seeded["promoted"] == true, "metric must pass publication: {seeded}");
     let sep = Ask::Single { period: Period::month(2002, 9) };
     let request = json!({"key":seeded["key"],"revision":seeded["revision"],"ask":sep});
@@ -382,7 +382,7 @@ async fn orientation_counterexample(url: &str) -> Result<Value> {
     ensure!(metric::compile(&m, &ask).is_err(), "反向引用必须被规范编译拒绝");
     // The seeding harness compiles before its gates; production extraction checks the same
     // orientation in G3 before canonical compilation. Both paths must refuse publication.
-    let rejection = mid.seed_metric(&ctx, m, ask, 2, "select sum(f_amount) from facts").await.unwrap_err();
+    let rejection = mid.seed_metric(&ctx, m, ask.clone(), 2, "select sum(f_amount) from facts").await.unwrap_err();
     ensure!(rejection.to_string().contains("反向"), "反向引用必须被拒绝：{rejection}");
     let admission = json!({"rejected": true, "stage": "seed compilation", "reason": rejection.to_string()});
     admin.query(QKind::Meta, "insert into details values (2, 10)").await?;
@@ -409,7 +409,7 @@ async fn orientation_counterexample(url: &str) -> Result<Value> {
             "measure": "sum(f_amount)", "grain": ["f_id"], "filters": {"facts": filter},
             "time": {"role": "event date", "fact_col": "f_date", "dim": "date_dim", "dim_col": "d_date_sk", "grain": "day"}
         }))?;
-        let v = mid.seed_metric(&ctx, candidate, ask, 2, &format!("select sum(f_amount) from facts where {filter}")).await?;
+        let v = mid.seed_metric(&ctx, candidate, ask.clone(), 2, &format!("select sum(f_amount) from facts where {filter}")).await?;
         ensure!(v["promoted"] == should_promote, "不同字面量不能复用另一总体的唯一性结论：{v}");
         if !should_promote {
             ensure!(v["failed_gate"] == "G4", "重复键必须由 G4 拒绝：{v}");
@@ -1716,7 +1716,7 @@ async fn sv_seed(mid: &Middle, base: &Metric) -> Result<Vec<String>> {
                 .trim_end_matches(';'),
             i + 1
         );
-        let r = mid.seed_metric(&ctx, m, ask, 2, &gold).await?;
+        let r = mid.seed_metric(&ctx, m, ask.clone(), 2, &gold).await?;
         ensure!(r["promoted"] == true, "定义未通过发布：{r}");
         keys.push(r["key"].as_str().unwrap_or_default().to_string());
     }

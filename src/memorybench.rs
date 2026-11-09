@@ -90,7 +90,7 @@ impl Learning<'_> {
         let traj = Trajectory {
             task: t.id.clone(),
             question: question.clone(),
-            ask: t.ask,
+            ask: t.ask.clone(),
             basis: Basis::ExplicitQuestion { task: t.id.clone() },
             judged: correct,
             decimals: metricbench::decimals(&t.ask),

@@ -448,7 +448,7 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
                 let (mut seeded, mut seed_failed) = (vec![], vec![]);
                 for (ei, e) in lib.entries.iter().enumerate() {
                     let reference = if oracle == "judge" { &e.judge } else { &e.example };
-                    let v = mid.seed_metric(&ctx, e.metric.clone(), e.ask, e.decimals, reference).await?;
+                    let v = mid.seed_metric(&ctx, e.metric.clone(), e.ask.clone(), e.decimals, reference).await?;
                     if v["promoted"] == true {
                         seeded.push((ei, v["key"].as_str().unwrap_or_default().to_string(), v["revision"].as_u64().unwrap_or(0) as u32));
                     } else {

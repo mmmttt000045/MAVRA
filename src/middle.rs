@@ -1751,12 +1751,16 @@ pub fn tool_specs_with(middle_tools: bool, metric_tools: bool) -> Vec<ToolSpec> 
             "m2":{"type":"integer","minimum":1,"maximum":12}},"required":["year","m1","m2"]});
         v.push(ToolSpec {
             name:"run_metric",
-            description:"执行 find_metric 返回的可用口径。服务端按结构化定义生成 SQL，保留业务粒度、度量与时间归属，并核对修订和当前数据条件。返回 ref，可直接用于 final_answer。ask: single 使用 period；diff 使用 a 和 b（前者减后者）；rank_month、peak_rise、above_mean 使用 year。",
+            description:"执行 find_metric 返回的可用口径。服务端按结构化定义生成 SQL，保留业务粒度、度量、口径过滤与时间归属，并核对修订和当前数据条件。返回 ref，可直接用于 final_answer。ask: single 使用 period；diff 使用 a 和 b（前者减后者）；rank_month、peak_rise、above_mean 使用 year；\
+                         按维度属性提问时：slice 使用 period、attr（维度属性，写成 表.列）与 value，只算该属性等于 value 的部分；slice_diff 另加 other，返回 value 的结果减 other 的结果；rank_by 使用 period 与 attr，返回取值最高的属性值（不计属性为空的行，并列取最小者）。\
+                         属性所在的表不在口径中时，服务端从事实表沿已验证的多对一关联接入（不放大事实行），找不到这样的关联时拒绝并说明原因。",
             schema:json!({"type":"object","properties":{
                 "key":{"type":"string"},"revision":{"type":"integer","minimum":0},
                 "ask":{"type":"object","properties":{
-                    "kind":{"type":"string","enum":["single","diff","rank_month","peak_rise","above_mean"]},
-                    "period":period.clone(),"a":period.clone(),"b":period,"year":{"type":"integer","minimum":1,"maximum":9999}},
+                    "kind":{"type":"string","enum":["single","diff","rank_month","peak_rise","above_mean","slice","slice_diff","rank_by"]},
+                    "period":period.clone(),"a":period.clone(),"b":period,"year":{"type":"integer","minimum":1,"maximum":9999},
+                    "attr":{"type":"string","description":"维度属性，写成 表.列，如 item.i_category"},
+                    "value":{"type":"string"},"other":{"type":"string"}},
                     "required":["kind"]}},"required":["key","revision","ask"]}),
         });
     }

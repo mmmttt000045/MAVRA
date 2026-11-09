@@ -207,7 +207,7 @@ async fn cell(r: &Runner<'_>, library: &Library, policy: &str) -> Result<Value> 
         if policy != "no-share" {
             for entry in &library.entries {
                 let reference = if o.oracle == "example" { &entry.example } else { &entry.judge };
-                let seed = mid.seed_metric(&ctx, entry.metric.clone(), entry.ask, entry.decimals, reference).await?;
+                let seed = mid.seed_metric(&ctx, entry.metric.clone(), entry.ask.clone(), entry.decimals, reference).await?;
                 ensure!(seed["promoted"] == true, "固定库条目 {} 准入失败：{seed}", entry.name);
                 seeds.push(seed);
             }

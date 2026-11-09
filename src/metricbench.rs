@@ -57,8 +57,10 @@ pub struct Options {
     /// 做留出题的 Agent；学习只由 A 完成，默认由未接触过指标的 B 做留出
     #[arg(long, value_delimiter = ',', default_value = "B")]
     holdout_agents: Vec<String>,
-    /// 计分题集：v1 每个指标 3 道（换参数、跨期差值、全年最高月）；v2 再加比上一个月增加最多的月份、高于各月平均值的月份数
-    #[arg(long, default_value = "v1", value_parser = ["v1", "v2"])]
+    /// 计分题集：v1 每个指标 3 道（换参数、跨期差值、全年最高月）；v2 再加比上一个月增加最多的月份、高于各月平均值的月份数；
+    /// v3（结构变化，需要 --spec 与带 judge 的 --defs）：换参数的单月题，加按商品类别取值、门店城市之差、
+    /// 按商品类别与按星期取最高者四道维度题（exp/2026-11-09-structural-reuse）
+    #[arg(long, default_value = "v1", value_parser = ["v1", "v2", "v3"])]
     question_set: String,
     /// 扩展场景题库：六道留出题，每种变化一道题；按固定排列为前 N 种变化再加一道题。省略时保留原协议。
     #[arg(long, value_parser = clap::value_parser!(u32).range(0..=11))]
@@ -156,6 +158,24 @@ pub(crate) struct Def {
     pub(crate) tables: &'static [&'static str],
     /// 模式描述下的判题定义（参照定义加区分列过滤）；合成数据的指标用手写判题 SQL，为空
     reference: Option<Metric>,
+    /// 维度题的手写判题基础（指标文件的 judge 字段）；与 MAVRA 的提炼和编译无关
+    judge: Option<JudgeBase>,
+}
+
+/// 维度题的手写判题基础：度量、含日期维度的 FROM（表名限定、不起别名）、口径过滤与读到的表；
+/// `dims` 是事实表到可切片维度表的手写关联条件。区分列过滤按模式描述另加（同参照定义）。
+#[derive(Clone, Debug, serde::Deserialize)]
+pub(crate) struct JudgeBase {
+    measure: String,
+    from: String,
+    filter: String,
+    tables: Vec<String>,
+    #[serde(skip)]
+    fact: String,
+    #[serde(skip)]
+    dims: BTreeMap<String, String>,
+    #[serde(skip)]
+    guards: Vec<(String, String)>,
 }
 
 /// 模式描述下的指标与年份（`--spec`）：进程内只设一次，`defs()` 与 `tasks_with` 读它。
@@ -195,12 +215,23 @@ fn load_spec_defs(path: &str, spec: &Spec) -> Result<()> {
         let e = entries.iter().find(|e| e["key"] == key).with_context(|| format!("定义库里没有 {key}"))?;
         let m: Metric = serde_json::from_value(e["metric"].clone())?;
         let tables: Vec<&'static str> = m.tables().iter().map(|t| leak(t)).collect();
+        let judge = match d.get("judge") {
+            Some(j) => {
+                let mut j: JudgeBase = serde_json::from_value(j.clone())?;
+                j.fact = m.fact.clone();
+                j.dims = serde_json::from_value(v["judge_dims"][&m.fact].clone()).context("指标文件缺少该事实表的 judge_dims")?;
+                j.guards = spec.judge_filters();
+                Some(j)
+            }
+            None => None,
+        };
         out.push(Def {
             id: leak(d["id"].as_str().context("指标缺少 id")?),
             name: leak(d["name"].as_str().context("指标缺少 name")?),
             definition: leak(d["definition"].as_str().context("指标缺少 definition")?),
             tables: Box::leak(tables.into_boxed_slice()),
             reference: Some(spec.judge_metric(&m)),
+            judge,
         });
     }
     let s = SpecDefs { defs: out, learn: spec.years.learn, holdout: spec.years.holdout };
@@ -215,6 +246,7 @@ static DEFS: [Def; 5] = [
         definition: "门店营业额 = 门店销售行的净支付额（store_sales.ss_net_paid）之和，按销售日期归属期间",
         tables: &["store_sales", "date_dim"],
         reference: None,
+        judge: None,
     },
     Def {
         id: "M2",
@@ -222,6 +254,7 @@ static DEFS: [Def; 5] = [
         definition: "门店退货金额 = 门店退货的退货金额（store_returns.sr_return_amt）之和，按退货日期归属期间；每笔退货只计一次",
         tables: &["store_returns", "date_dim"],
         reference: None,
+        judge: None,
     },
     Def {
         id: "M3",
@@ -231,6 +264,7 @@ static DEFS: [Def; 5] = [
                      按销售日期归属期间，退货按小票号和商品与销售行对应，每笔退货只计一次",
         tables: &["store_sales", "store_returns", "date_dim"],
         reference: None,
+        judge: None,
     },
     Def {
         id: "M4",
@@ -238,6 +272,7 @@ static DEFS: [Def; 5] = [
         definition: "目录渠道营业额 = 目录销售行的净支付额（catalog_sales.cs_net_paid）之和，按销售日期归属期间",
         tables: &["catalog_sales", "date_dim"],
         reference: None,
+        judge: None,
     },
     Def {
         id: "M5",
@@ -246,6 +281,7 @@ static DEFS: [Def; 5] = [
                      按销售日期归属期间；商品按其当前类别计",
         tables: &["store_sales", "item", "date_dim"],
         reference: None,
+        judge: None,
     },
 ];
 
@@ -351,8 +387,42 @@ pub(crate) fn tasks_with(ids: &[String], v2: bool) -> Vec<Task> {
     out
 }
 
+/// 题集 v3（结构变化，exp/2026-11-09-structural-reuse）：学习题同 v2 的模式描述题集（学习年 3 月、上一年 11 月，给出口径），
+/// 计分题只给指标名：留出年 9 月（对照，只变时间）、留出年 9 月某商品类别、留出年两个门店城市之差、
+/// 留出年取值最高的商品类别、留出年取值最高的星期。类别按指标依次取 `V3_CATEGORIES`（写于看到任何结果之前）。
+pub(crate) const V3_CATEGORIES: [&str; 5] = ["Music", "Shoes", "Electronics", "Home", "Sports"];
+
+pub(crate) fn tasks_v3(ids: &[String]) -> Vec<Task> {
+    let (learn, holdout) = SPEC_DEFS.get().map_or((2001, 2002), |s| (s.learn, s.holdout));
+    let month = Period::month;
+    let year = |y| Period { year: y, m1: 1, m2: 12 };
+    let mut out = vec![];
+    for (i, def) in defs().iter().enumerate().filter(|(_, d)| ids.iter().any(|x| x == d.id)) {
+        let plan = [
+            ("L1", Set::Learn, Ask::Single { period: month(learn, 3) }),
+            ("L2", Set::Learn, Ask::Single { period: month(learn - 1, 11) }),
+            ("P1", Set::Param, Ask::Single { period: month(holdout, 9) }),
+            ("T1", Set::Type, Ask::Slice { period: month(holdout, 9), attr: "item.i_category".into(), value: V3_CATEGORIES[i % 5].into() }),
+            (
+                "T2",
+                Set::Type,
+                Ask::SliceDiff { period: year(holdout), attr: "store.s_city".into(), value: "Midway".into(), other: "Fairview".into() },
+            ),
+            ("T3", Set::Type, Ask::RankBy { period: year(holdout), attr: "item.i_category".into() }),
+            ("T4", Set::Type, Ask::RankBy { period: year(holdout), attr: "date_dim.d_day_name".into() }),
+        ];
+        for (tag, set, ask) in plan {
+            out.push(Task { id: format!("{}-{tag}", def.id), def, ask, set });
+        }
+    }
+    out
+}
+
 // Diverse question selection is fixed by metric/phase identity, never outcomes.
 fn study_tasks(o: &Options, spec: Option<&Spec>) -> Vec<Task> {
+    if o.question_set == "v3" {
+        return tasks_v3(&o.metrics);
+    }
     let mut out = tasks_with(&o.metrics, o.question_set == "v2");
     if o.legacy_single {
         out.retain(|t| matches!(t.ask, Ask::Single { .. }));
@@ -375,12 +445,13 @@ fn study_tasks(o: &Options, spec: Option<&Spec>) -> Vec<Task> {
     }
     let (learn, holdout) = SPEC_DEFS.get().map_or((2001, 2002), |s| (s.learn, s.holdout));
     for t in out.iter_mut().filter(|t| t.set != Set::Learn) {
-        t.ask = match t.ask {
+        t.ask = match t.ask.clone() {
             Ask::Single { .. } => Ask::Single { period: Period::month(holdout, 9) },
             Ask::Diff { .. } => Ask::Diff { a: Period::month(holdout, 9), b: Period::month(learn, 6) },
             Ask::RankMonth { .. } => Ask::RankMonth { year: holdout },
             Ask::PeakRise { .. } => Ask::PeakRise { year: holdout },
             Ask::AboveMean { .. } => Ask::AboveMean { year: holdout },
+            ref other => other.clone(),
         };
     }
     let backfill = spec.and_then(|s| s.changes.get("backfill")).map(String::as_str).unwrap_or("store_returns");
@@ -388,12 +459,13 @@ fn study_tasks(o: &Options, spec: Option<&Spec>) -> Vec<Task> {
         .iter()
         .filter(|t| t.set != Set::Learn && t.def.tables.contains(&backfill))
         .map(|t| {
-            let ask = match t.ask {
+            let ask = match &t.ask {
                 Ask::Single { .. } => Ask::Single { period: Period::month(learn, 6) },
                 Ask::Diff { .. } => Ask::Diff { a: Period::month(learn, 6), b: Period::month(learn - 1, 6) },
                 Ask::RankMonth { .. } => Ask::RankMonth { year: learn },
                 Ask::PeakRise { .. } => Ask::PeakRise { year: learn },
                 Ask::AboveMean { .. } => Ask::AboveMean { year: learn },
+                other => other.clone(),
             };
             Task { id: format!("{}-B", t.id), def: t.def, ask, set: t.set }
         })
@@ -505,6 +577,44 @@ async fn bank_probe(env: &Env<'_>) -> Result<Vec<Value>> {
     Ok(rows)
 }
 
+/// 题集 v3 的判题核对：每个指标在学习年 3 月与留出年 9 月上，手写判题基础与参照定义（定义库条目加区分列过滤，
+/// 经 `metric::compile`）的单月值须相等；同时写出每道维度题的标准答案，排名题另给前三名及其取值。
+async fn v3_gold_check(env: &Env<'_>) -> Result<Value> {
+    let (learn, holdout) = SPEC_DEFS.get().map_or((2001, 2002), |s| (s.learn, s.holdout));
+    let mut consistent = true;
+    let mut periods = vec![];
+    for d in defs().iter().filter(|d| env.o.metrics.iter().any(|m| m == d.id)) {
+        let (Some(j), Some(r)) = (&d.judge, &d.reference) else { continue };
+        for p in [Period::month(learn, 3), Period::month(holdout, 9)] {
+            let a = env.admin.query(QKind::Meta, &metric::compile(r, &Ask::Single { period: p })?).await?.cell(0, 0).map(str::to_string);
+            let b = env.admin.query(QKind::Meta, &gold_struct_period(j, &p)).await?.cell(0, 0).map(str::to_string);
+            let same = match (&a, &b) {
+                (Some(x), Some(y)) => same_value(&parse_answer(x), &parse_answer(y), 2),
+                _ => false,
+            };
+            consistent &= same;
+            periods.push(json!({"metric": d.id, "period": p, "reference": a, "judge": b, "same": same}));
+        }
+    }
+    let mut tasks = vec![];
+    for t in env.tasks.iter().filter(|t| t.ask.attr().is_some()) {
+        let sql = gold_sql(t);
+        let gold = env.admin.query(QKind::Meta, &sql).await?.cell(0, 0).map(str::to_string);
+        let mut row = json!({"task": t.id, "ask": t.ask, "question": text(t, false), "gold": gold, "sql": sql});
+        if let (Ask::RankBy { period, attr }, Some(j)) = (&t.ask, &t.def.judge) {
+            let top =
+                sql.replacen(&format!("select btrim({attr}::text) from"), &format!("select btrim({attr}::text), {} from", j.measure), 1);
+            let top = top.replace(" limit 1", " limit 3");
+            let r = env.admin.query(QKind::Meta, &top).await?;
+            row["top3"] = json!((0..r.rows.len()).map(|i| json!([r.cell(i, 0), r.cell(i, 1)])).collect::<Vec<_>>());
+            row["period"] = json!(period);
+        }
+        consistent &= gold.is_some();
+        tasks.push(row);
+    }
+    Ok(json!({"consistent": consistent, "periods": periods, "tasks": tasks}))
+}
+
 async fn study_gold(db: &Db, tasks: &[&Task]) -> Result<HashMap<String, String>> {
     let mut gold = HashMap::new();
     for t in tasks {
@@ -529,11 +639,19 @@ pub(crate) fn text(t: &Task, defined: bool) -> String {
         Ask::RankMonth { year } => format!("{year} 年哪个月的{n}最高？"),
         Ask::PeakRise { year } => format!("{year} 年哪个月的{n}比上一个月增加最多？增加量按本月值减上月值计算。"),
         Ask::AboveMean { year } => format!("{year} 年有几个月的{n}高于当年 12 个月{n}的平均值？"),
+        Ask::Slice { period, attr, value } => format!("{}，{}（{attr}）为「{value}」的{n}是多少？", cn(period), attr_label(attr)),
+        Ask::SliceDiff { period, attr, value, other } => format!(
+            "{}，{}（{attr}）为「{value}」的{n}比为「{other}」的高多少？（用前者减去后者，结果可以为负数）",
+            cn(period),
+            attr_label(attr)
+        ),
+        Ask::RankBy { period, attr } => format!("{}按{}（{attr}）汇总，哪个取值的{n}最高？", cn(period), attr_label(attr)),
     };
     let fmt = match t.ask {
         Ask::RankMonth { .. } => "只回答月份数字（1–12），并列取最早月份。",
         Ask::PeakRise { .. } => "只回答月份数字（2–12），并列取最早月份。",
         Ask::AboveMean { .. } => "只回答月份个数（0–12）。",
+        Ask::RankBy { .. } => "只回答该取值本身（不计取值为空的行），并列取字母序最前者。",
         _ => "保留两位小数。",
     };
     if defined {
@@ -543,8 +661,18 @@ pub(crate) fn text(t: &Task, defined: bool) -> String {
     }
 }
 
+/// 维度属性在题面里的业务名称。
+fn attr_label(attr: &str) -> &'static str {
+    match attr {
+        "item.i_category" => "商品类别",
+        "store.s_city" => "门店所在城市",
+        "date_dim.d_day_name" => "星期",
+        _ => "维度属性",
+    }
+}
+
 pub(crate) fn decimals(ask: &Ask) -> u32 {
-    if matches!(ask, Ask::RankMonth { .. } | Ask::PeakRise { .. } | Ask::AboveMean { .. }) {
+    if matches!(ask, Ask::RankMonth { .. } | Ask::PeakRise { .. } | Ask::AboveMean { .. } | Ask::RankBy { .. }) {
         0
     } else {
         2
@@ -654,7 +782,68 @@ pub(crate) fn gold_above_mean(def: &str, year: i32) -> String {
     format!("select count(*) from ({m}) m where v > (select avg(v) from ({m}) a)")
 }
 
+/// 维度题的判题 SQL：手写的度量、FROM 与口径过滤，维度表不在其中时按手写条件内连接，再加模式描述的区分列过滤与期间谓词。
+/// 不使用定义库里的结构化定义，也不经过 `metric::compile`。
+pub(crate) fn gold_struct(j: &JudgeBase, ask: &Ask) -> Result<String> {
+    let (table, col) = ask.attr().context("不是维度题")??;
+    let mut from = j.from.clone();
+    let mut tables = j.tables.clone();
+    if !tables.iter().any(|x| x == table) {
+        let on = j.dims.get(table).with_context(|| format!("judge_dims 没有 {} → {table}", j.fact))?;
+        from.push_str(&format!(" join {table} on {on}"));
+        tables.push(table.to_string());
+    }
+    let mut filters = vec![format!("({})", j.filter)];
+    for (t, f) in &j.guards {
+        if tables.contains(t) {
+            filters.push(format!("({f})"));
+        }
+    }
+    let attr = format!("{table}.{col}");
+    let when = |p: &Period| format!("date_dim.d_year = {} and date_dim.d_moy between {} and {}", p.year, p.m1, p.m2);
+    let part = |p: &Period, v: &str| {
+        format!("select {} from {from} where {} and {} and {attr} = {}", j.measure, filters.join(" and "), when(p), lit(v))
+    };
+    Ok(match ask {
+        Ask::Slice { period, value, .. } => part(period, value),
+        Ask::SliceDiff { period, value, other, .. } => format!("select ({}) - ({})", part(period, value), part(period, other)),
+        Ask::RankBy { period, .. } => format!(
+            "select btrim({attr}::text) from {from} where {} and {} and {attr} is not null group by 1 order by {} desc, 1 limit 1",
+            filters.join(" and "),
+            when(period),
+            j.measure
+        ),
+        _ => anyhow::bail!("不是维度题"),
+    })
+}
+
+/// 手写判题基础上的单期值（v3 开跑前与参照定义的标准答案核对）。
+pub(crate) fn gold_struct_period(j: &JudgeBase, p: &Period) -> String {
+    let mut filters = vec![format!("({})", j.filter)];
+    for (t, f) in &j.guards {
+        if j.tables.contains(t) {
+            filters.push(format!("({f})"));
+        }
+    }
+    format!(
+        "select {} from {} where {} and date_dim.d_year = {} and date_dim.d_moy between {} and {}",
+        j.measure,
+        j.from,
+        filters.join(" and "),
+        p.year,
+        p.m1,
+        p.m2
+    )
+}
+
 pub(crate) fn gold_sql(t: &Task) -> String {
+    if t.ask.attr().is_some() {
+        return match t.def.judge.as_ref().map(|j| gold_struct(j, &t.ask)) {
+            Some(Ok(sql)) => sql,
+            Some(Err(e)) => format!("select 'ERROR: {}'", e.to_string().replace('\'', "")),
+            None => "select 'ERROR: 维度题需要指标文件的 judge 字段'".to_string(),
+        };
+    }
     if let Some(m) = &t.def.reference {
         return metric::compile(m, &t.ask).unwrap_or_else(|e| format!("select 'ERROR: {}'", e.to_string().replace('\'', "")));
     }
@@ -664,6 +853,7 @@ pub(crate) fn gold_sql(t: &Task) -> String {
         Ask::RankMonth { year } => gold_rank(t.def.id, *year),
         Ask::PeakRise { year } => gold_peak_rise(t.def.id, *year),
         Ask::AboveMean { year } => gold_above_mean(t.def.id, *year),
+        _ => "select 'ERROR: 维度题需要模式描述'".to_string(),
     }
 }
 
@@ -1117,7 +1307,8 @@ async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Resul
         let (memory, asked) = if paper_bridge(cell.mode) {
             lookup = paper_memory(
                 cell.mode,
-                json!({"op":"begin", "question":question, "task":t.id, "metric":t.def.id, "agent":agent, "phase":ph.name, "ask":t.ask}),
+                json!({"op":"begin", "question":question, "task":t.id, "metric":t.def.id, "agent":agent, "phase":ph.name, "ask":t.ask,
+                       "defined":defined}),
             )
             .await?;
             (
@@ -1166,7 +1357,7 @@ async fn run_task(ph: &Phase<'_>, agent: &str, t: &Task, defined: bool) -> Resul
     let published_memory = paper_memory(
         cell.mode,
         json!({"op":"end", "question":question, "task":t.id, "metric":t.def.id, "agent":agent, "phase":ph.name, "ask":t.ask,
-               "correct":correct, "answer":run.answer, "sql":run.sql, "error":error, "transcript":run.transcript}),
+               "defined":defined, "correct":correct, "answer":run.answer, "sql":run.sql, "error":error, "transcript":run.transcript}),
     )
     .await?;
     let plan = if env.o.no_explain || reforce { Value::Null } else { explain(env.probe, &run, &log).await };
@@ -1315,7 +1506,7 @@ async fn learn_step(env: &Env<'_>, mid: &Middle, rec: &TaskRec, t: &Task) -> Res
     let traj = Trajectory {
         task: t.id.clone(),
         question: rec.question.clone(),
-        ask: t.ask,
+        ask: t.ask.clone(),
         basis: Basis::ExplicitQuestion { task: t.id.clone() },
         judged: rec.correct,
         decimals: decimals(&t.ask),
@@ -1347,7 +1538,7 @@ fn remember_step(mid: &Middle, rec: &TaskRec, t: &Task) -> Value {
     let traj = Trajectory {
         task: t.id.clone(),
         question: rec.question.clone(),
-        ask: t.ask,
+        ask: t.ask.clone(),
         basis: Basis::ExplicitQuestion { task: t.id.clone() },
         judged: rec.correct,
         decimals: decimals(&t.ask),
@@ -1876,7 +2067,11 @@ async fn population_cell(env: &Env<'_>, db: Arc<Db>, mode: &str, repeat: u32) ->
 }
 
 pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
-    ensure!(!study_mode(&o) || o.question_set == "v2", "扩展场景题单需要 --question-set v2");
+    ensure!(
+        !study_mode(&o) || o.question_set == "v2" || (o.question_set == "v3" && o.bank_probe && o.bank.is_none()),
+        "扩展场景题单需要 --question-set v2"
+    );
+    ensure!(o.question_set != "v3" || (o.spec.is_some() && (o.population || o.bank_probe)), "题集 v3 只用于模式描述下的群体评测");
     if let Some(path) = &o.bank {
         let v: Value = serde_json::from_str(&std::fs::read_to_string(path).with_context(|| format!("读取题单 {path} 失败"))?)?;
         let phases = v["phases"].as_object().context("题单缺少 phases")?;
@@ -1901,6 +2096,10 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
     ensure!(!o.population || !o.modes.iter().any(|m| is_reforce(m)), "reforce* 组只用于场景评测");
     if let Some(s) = &spec {
         load_spec_defs(o.defs.as_deref().context("--spec 需要 --defs")?, s)?;
+    }
+    if o.question_set == "v3" {
+        let missing: Vec<&str> = defs().iter().filter(|d| o.metrics.iter().any(|m| m == d.id) && d.judge.is_none()).map(|d| d.id).collect();
+        ensure!(missing.is_empty(), "题集 v3 的指标缺少手写判题基础（judge）：{missing:?}");
     }
     if o.question_bank_only {
         let tasks = study_tasks(&o, spec.as_ref());
@@ -2008,6 +2207,15 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
             gen: gen.as_ref(),
             url: isolated.as_str(),
         };
+        if o.question_set == "v3" {
+            // 开跑前（不调用模型）：手写判题基础在单月题上须与参照定义的标准答案一致；维度题的标准答案与排名题的前三名写出备查
+            let check = v3_gold_check(&env).await?;
+            std::fs::write(format!("{directory}/v3-gold-check.json"), serde_json::to_string_pretty(&check)?)?;
+            ensure!(check["consistent"] == true, "手写判题基础与参照定义不一致，见 v3-gold-check.json");
+            if o.bank_probe {
+                return Ok(json!({"options": o, "dataset": dataset, "v3_gold_check": check, "cells": []}));
+            }
+        }
         if o.bank_probe {
             let rows = bank_probe(&env).await?;
             std::fs::write(format!("{directory}/bank-probe.json"), serde_json::to_string_pretty(&rows)?)?;
