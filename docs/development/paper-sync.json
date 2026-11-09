@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "paper repo -> main repo for e5e2e63 (a sync from another checkout, agent4db-adapter 6aef317, not in this repository: Sections III-VI tightened so the body ends on page 12), merged three-way against 17cff56 as main 450c786; then main repo overleaf/ -> paper repo (forward sync of main 450c786: RelBench with MAVRA's validated starts, Fig. 6 redrawn, Fig. 7 and Table III regenerated, two-run comparison, Section IV-G mechanism, introduction ranges)",
-  "previous_head": "e5e2e6364be9ac6a69de598c8b3df2eb6ba05da0",
-  "remote_commit": "fc9e211d5deaa57eabbf0d0a223cf9c972aaafa4",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 3f4c562: the RelBench parts returned to the paper repo's e5e2e63 at the user's decision, Table III without the 'Quality tasks' column)",
+  "previous_head": "fc9e211d5deaa57eabbf0d0a223cf9c972aaafa4",
+  "remote_commit": "e30d2ad272bf5750ef75bee52faa58141b7f220c",
   "pending_payload": null,
   "changed_paths": [
     "figures/relbench-cumulative.pdf",
@@ -19,19 +19,21 @@
     "sections/04-design.tex",
     "sections/05-evaluation.tex",
     "sections/abstract.tex",
-    "gen/relbench-runs.tex"
+    "tables/relbench.tex"
   ],
   "preserve_remote_only": true,
-  "deletions": [],
+  "deletions": [
+    "gen/relbench-runs.tex"
+  ],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; Fig. 6 by tools/figures/relbench_cumulative.py and Fig. 7 by tools/figures/build.py (scratchpad venv, Liberation Serif installed in ~/.local/share/fonts); RelBench numbers by tools/relbench/paper-stats.py, reuse-work-data.py and runs-stats.py run on noctis over the finished runs",
-    "status": "bash build.sh en: main.pdf 14 pages, 0 overfull boxes, no undefined references or citations; the body ends on page 12 (right column), as in the remote e5e2e63 build",
-    "identical_to_remote": "paper repo origin/main had moved to e5e2e63 after the recorded 17cff56; 17cff56's copies equalled main 018429e, so Sections III and VI were taken from e5e2e63 and IV-V merged three-way (one conflict in IV, two in V, resolved by keeping the remote's combined paragraphs and writing the new content into them); --force only skipped the stale-record check; applied to a copy of the clone first: only the 11 listed files differed from origin/main; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "MAVRA reported from arm mavra-select (validated starts: the task program and its extension by other agents' definitions validated before each later-cutoff session; tried columns kept; below-baseline sessions still record their program). Table III r1: reuse tokens 0.91M/2.48M (-79%/-69% vs No memory, -62%/-52% vs TeCoD), lowest calls, tool calls and cost on both databases, lowest time on rel-stack only; quality 5/6 (user-badge misses). mavra-push (no selection) compared in the text: -72%/-56%, 4/6. Two paired runs with No memory (gen/relbench-runs.tex): 5/6, study-outcome misses; reuse tokens -74% to -90%. Fig. 6: learning bars plus cumulative reuse from zero with brackets. Introduction ranges 3.2-5.6x tokens, 1.3-7.1x speedups (lower bounds from RelBench rel-trial). Chinese reading text updated alongside."
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; Table III body by tools/relbench/paper-stats.py run on noctis over the finished runs (MAVRA from mavra-push), identical to e5e2e63's gen/relbench-table.tex except the dropped column; gen/relbench.tex, paper-sessions.json and reuse-work-data.json regenerated identical",
+    "status": "bash build.sh en: main.pdf 14 pages, 0 overfull boxes, no undefined references or citations; Table III page checked rendered",
+    "identical_to_remote": "origin/main was fc9e211 (the recorded sync), no Overleaf edits since; tools/sync-paper-repo.py --apply on a fresh gh clone, then gen/relbench-runs.tex removed by hand (no longer input; the script never deletes) and pushed in the same commit; afterwards the paper repo differs from e5e2e63 only in gen/relbench-table.tex, sections/05-evaluation.tex and tables/relbench.tex; remote-only gen/external.tex and tables/external.tex preserved",
+    "content": "User 11-09: time is short, return to the previous Table III and keep only valid sessions in its quality summary. RelBench parts as in e5e2e63 (MAVRA from mavra-push: reuse tokens -72%/-56%, lowest tokens, calls, tool calls, time and cost on both databases, 15/15 valid sessions on both). Table III drops 'Quality tasks' (task means vs the 0.01 AUC / 2% MAE margins); Section V-A reports mean test scores and valid sessions instead of the margins; V-B: all sessions valid, better task means than No memory on three of six tasks, largest gaps user-badge AUC (0.8345 vs 0.8588) and study-adverse MAE (42.14 vs 40.85). Chinese reading text updated alongside."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/fc9e211d5deaa57eabbf0d0a223cf9c972aaafa4",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-08/09: improve the method and rerun instead of only rewording; Fig. 6 not significant; Table III quality not full).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e30d2ad272bf5750ef75bee52faa58141b7f220c",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-09: return to the previous Table III, keep only valid sessions in the quality summary).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "450c78651e16c4c5bd4f865fd71659b38a37ac5d"
+  "source_commit": "3f4c5620b6364f98e331cd69fd9a89a74d2e38f8"
 }
