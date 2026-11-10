@@ -1,10 +1,10 @@
 \begin{table*}[t]
-\caption{\bt{RelBench predictive quality and reuse cost: three tasks and five cutoffs per database and method.}{RelBench 预测质量与复用代价：每种方法在每个数据库上运行三项任务、五个截点。}}
+\caption{\bt{Predictive quality and reuse cost on RelBench.}{RelBench 上的预测质量与复用开销。}}
 \label{tab:relbench}
 \centering
 \small
 \setlength{\tabcolsep}{2.8pt}
-\renewcommand{\arraystretch}{1.03}
+\renewcommand{\arraystretch}{1.05}
 \newcommand{\RbPanelHeader}[4]{%
   \multicolumn{11}{@{}l}{\textbf{#1}}\\[2pt]
   & \multicolumn{6}{c}{\bh{Reuse cost: cutoffs 2--5}{复用代价：截点 2--5}}
@@ -24,8 +24,6 @@
 \end{tabular*}
 \par\smallskip
 \parbox{\textwidth}{\footnotesize\raggedright
-\bt{Token and USD costs include memory operations; token ratios are relative to \emph{No memory}. Sessions without a valid solution receive the single-table entity score.
-\textsuperscript{*}SQL-adapted FeatPilot (Section~\ref{sec:setup-baselines}).}{token 与美元代价包含记忆操作；token 比率以无记忆为参照。无有效方案的会话采用单表实体分数。
-\textsuperscript{*}FeatPilot 的 SQL 适配版本（第~\ref{sec:setup-baselines} 节）。}
+\bt{Costs include memory operations; token ratios are relative to \emph{No memory}. \textsuperscript{*}SQL-adapted FeatPilot (Section~\ref{sec:setup-baselines}).}{开销包含记忆操作；token 比率以无记忆为基准。\textsuperscript{*}FeatPilot 的 SQL 适配版本（第~\ref{sec:setup-baselines} 节）。}
 }
 \end{table*}

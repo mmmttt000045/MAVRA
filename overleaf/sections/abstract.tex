@@ -1,27 +1,18 @@
 \begin{abstract}
 \bi{
-Data agents have shown promising capabilities in automating complex analytics over enterprise databases.
-However, existing approaches either confine discovered knowledge to individual agents, or share knowledge without handling data evolution. This paper presents \system, a shared memory layer for data agents that automatically acquires, validates, and maintains executable database knowledge.
-\system\ extracts reusable computations from verified sessions as parameterized metric and feature definitions with explicit data conditions, such as grain uniqueness and join cardinality, enabling reuse across tasks and agents.
-By tracking validation outcomes using condition signatures and table versions, \system\ selectively revalidates affected definitions after updates and repairs or invalidates those that fail validation.
-Further, we propose a snapshot-bound execution technique to ensure that queries operate on the same MVCC snapshot, preserving correctness under concurrent writes.
+Data agents automate complex analytics over enterprise databases, yet agents working on the same database repeatedly rediscover the same computations.
+Sharing what one agent found with the next is a caching problem, and its two decisions are hard for data: similar requests need not denote the same computation, and a stored computation silently turns wrong when the data stop satisfying what it assumes.
+This paper presents \system, a shared layer for data agents that stores, matches, and maintains executable database knowledge.
+\system\ extracts reusable computations from verified sessions as parameterized metric and feature definitions.
+To look up the right definition for a new request without first producing its query, \system\ proves equivalence afterwards, on structured definitions and under explicit data conditions, and uses these proofs to explain every constraint of a request and to bound the false-hit rate.
+To keep hits correct as data evolve, \system\ derives each definition's assumptions from its structure and from the agent's probes, checks them on the snapshot the query reads, and repairs or withholds definitions whose assumptions fail.
 We implement \system\ on PostgreSQL and evaluate it against 8 baselines across 5 agentic workloads.
 Experimental results show that \system\ reduces token usage and end-to-end latency by up to \PpMavraLateTokXNone$\times$ and \PpMavraLateSpeedupNone$\times$, respectively.
-% , and prevents incorrect answers caused by invalid data conditions.
-
-% Data agents have shown promising capabilities in automating complex analytics and predictive modeling over enterprise databases.
-% However, existing approaches either confine discovered knowledge to isolated sessions or single agents, incurring redundant exploration or share raw trajectories without verifying their data assumptions, silently propagating errors as data evolve.
-% In this paper, we present \system, a shared memory layer for data agents that automatically acquires, validates, and maintains executable database knowledge.
-% \system\ abstracts computations from verified sessions into parameterized metric and feature definitions with explicit data conditions (e.g., grain uniqueness and join cardinalities) that generalize across periods, tasks, and agents.
-% By indexing validation outcomes by condition signatures and table versions, \system\ rechecks only definitions affected by writes, shares validation evidence across agents, and repairs or invalidates failing definitions via regression tests.
-% Further, snapshot-bound execution couples condition validation with query execution in one MVCC snapshot, ensuring consistency under concurrent writes and reusing valid check outcomes across snapshots.
-% We implement \system\ on PostgreSQL and evaluate it on five analytical schemas and RelBench against eight baselines.
-% Experimental results show that it cuts token usage by 2.3--\PpMavraLateTokXNone$\times$ and achieves 2.1--\PpMavraLateSpeedupNone$\times$ session speedups, with the lowest cost of all methods on RelBench, and answers \CsBreakMavra\% of condition-breaking questions with zero wrong answers (versus \CsBreakBaseWrongMin--\CsBreakBaseWrongMax\% for baselines).
 }
-{基于大语言模型的数据智能体在企业数据库的复杂分析与预测建模自动化方面展现出广阔前景。然而，现有方法要么将探索所得知识局限于孤立会话或单个智能体而导致高昂的重复探查，要么在未校验底层数据假设的情况下直接共享历史轨迹，在数据演进时引发静默错误扩散。本文提出面向数据智能体的共享记忆层 \system{}，用于自动获取、验证并维护可执行的数据库知识。\system{} 将核验会话中的计算抽象为带显式数据条件（如粒度唯一性与连接基数）的参数化指标与特征定义，使其能够跨时间周期、任务与智能体泛化复用。通过按条件签名与表版本索引验证结果，\system{} 仅对受写入影响的定义按需重验，跨智能体共享验证证据，并通过回归测试修复或停用条件失效的定义。此外，我们提出快照绑定执行机制，在同一 MVCC 快照内耦合条件验证与查询执行，在并发写入下保证一致性的同时跨快照复用有效验证结果。我们在 PostgreSQL 上实现了 \system{}，并在五种分析模式与 RelBench 上与八种基线开展评估：实验表明，\system{} 将 token 消耗降低 2.3--\PpMavraLateTokXNone{} 倍、实现 2.1--\PpMavraLateSpeedupNone{} 倍的会话加速，在 RelBench 上代价为所有方法中最低，并在条件破坏更新下以零错答率达到 \CsBreakMavra\% 的准确率（基线错答率达 \CsBreakBaseWrongMin--\CsBreakBaseWrongMax\%）。}
+{数据智能体能够自动完成企业数据库上的复杂分析，但同一数据库上的智能体会反复重新发现相同的计算。把一个智能体的发现交给下一个智能体是一个缓存问题，而缓存的两个判定在数据场景下都很难：相似的请求未必指同一个计算；数据不再满足计算的假设时，已存计算会悄然出错。本文提出面向数据智能体的共享层 \system{}，用于保存、匹配并维护可执行的数据库知识。\system{} 从核验会话中把可复用计算提取为参数化的指标与特征定义。为了在不先生成查询的情况下为新请求查准定义，\system{} 事后在结构化定义上、在显式数据条件下证明等价，并用这些证明解释请求的每个约束、约束误命中率。为了在数据演进时保持命中正确，\system{} 从定义结构与智能体的探查中推导每个定义的假设，在查询读取的快照上检查，并修复或停用假设失效的定义。我们在 PostgreSQL 上实现 \system{}，并在 5 种智能体工作负载上与 8 种基线对比。实验结果表明，\system{} 将 token 用量与端到端延迟分别最多降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍。}
 \end{abstract}
 
 \begin{IEEEkeywords}
-\bt{data agents, agent memory, knowledge reuse}
-{数据智能体，智能体记忆，知识复用，依赖跟踪，数据验证}
+\bt{data agents, agent memory, semantic caching, knowledge reuse}
+{数据智能体，智能体记忆，语义缓存，知识复用}
 \end{IEEEkeywords}
