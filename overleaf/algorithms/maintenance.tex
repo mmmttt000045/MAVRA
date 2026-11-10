@@ -1,5 +1,5 @@
 \begin{algorithm}[t]
-\caption{\bt{Lookup with shared maintenance}{带共享维护的查找}}
+\caption{\bt{Validation with shared maintenance}{带共享维护的验证}}
 \label{alg:maintenance}
 \small
 \begin{algorithmic}[1]
@@ -9,7 +9,7 @@
   \IfThen{$k(c, V) \notin \mathcal H$}{$\mathcal H[k(c, V)] \gets Q_c(D)$}
   \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
 \EndFunction
-\Function{Lookup}{$x, D, V, \mathcal H$}
+\Function{Validate}{$x, D, V, \mathcal H$}
   \IfThen{$x$ is invalid}{\Return $\bot$} \Comment{invalid}
   \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{valid (step 3)}
   \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
