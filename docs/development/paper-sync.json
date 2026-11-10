@@ -4,37 +4,29 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "paper repo 90ec495..9f73a67 (three syncs from another checkout: captions, Table III notes, relbench-cumulative.pdf) merged into overleaf/ first, then main repo overleaf/ -> paper repo (forward sync of main 34509c3)",
-  "previous_head": "9f73a674e8efadf3e555986444bbd124adab827b",
-  "remote_commit": "4b6f066a22c7c802948721a3e0ae80ca88197ca6",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 5009f9c)",
+  "previous_head": "4b6f066a22c7c802948721a3e0ae80ca88197ca6",
+  "remote_commit": "50e76826d912828fd22dfb8b5bc3b48ce4959588",
   "pending_payload": null,
   "changed_paths": [
-    "algorithms/maintenance.tex",
-    "preamble.tex",
-    "references.bib",
     "sections/01-introduction.tex",
     "sections/02-background.tex",
     "sections/03-overview.tex",
     "sections/04-design.tex",
-    "sections/05-evaluation.tex",
     "sections/06-conclusion.tex",
-    "sections/abstract.tex",
-    "tables/capabilities.tex",
-    "algorithms/lookup.tex",
-    "figures/lookup.pdf",
-    "figures/lookup.tex"
+    "sections/abstract.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; Fig. 4 (lookup) drawn by tools/figures/lookup.py in a uv venv that reproduces maintenance.pdf byte-identically",
-    "status": "bash build.sh en: main.pdf 16 pages, 0 overfull boxes, no undefined references or citations; pages 7-8 (Accurate Lookup, Fig. 4, Algorithm 1) checked rendered",
-    "identical_to_remote": "origin/main was 9f73a67; its 14 changed files since 90ec495 equalled the local base and were applied unchanged (05-evaluation.tex then differs only by the new pending subsection); tools/sync-paper-repo.py --force --apply --push on a fresh gh clone; remote-only gen/external.tex, tables/external.tex and the no-longer-input snapshot figure/algorithm preserved",
-    "content": "User 11-10 after the advisor's review: replace the three challenges and contributions. C1 extraction; C2 looking up the right computation (equivalence graph built after the fact under data conditions, explaining every constraint of a request, indifference test, audited false-hit bound; new Section IV-C, Fig. 4, Algorithm 1, Propositions 1-2); C3 knowing what a stored computation assumes (structural conditions plus assumptions lifted from the agent's probes; maintenance and snapshot checking condensed). Abstract, introduction, related work, Problem 1 (false-hit tolerance alpha), overview, conclusion and Table II follow. NOT implemented and NOT evaluated yet: phrasings and difference edges, constraint parse and residue, indifference test, audits and bound, probe-derived assumptions; Section V carries a red \\pending note saying the existing experiments use name matching. Fig. 2 (architecture) not redrawn yet. Chinese reading text updated alongside."
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
+    "status": "bash build.sh en: main.pdf 17 pages, 0 overfull boxes, no undefined references or citations",
+    "identical_to_remote": "origin/main was 4b6f066 (the recorded sync), no edits since; tools/sync-paper-repo.py --apply --push on the same gh clone after a fast-forward pull",
+    "content": "User 11-10: C3 becomes how to maintain definition validity efficiently after data changes: filter out unaffected definitions quickly, repair or retire affected ones accurately. Introduction (challenge, solution, contribution), abstract, problem-formulation mapping, overview, conclusion and Section IV-D/E headings follow; IV-E gains 'Filtering by the written rows' (insert-only batches checked on the delta). NOT implemented yet: that delta filter, in addition to the items listed for 4b6f066. Chinese reading text updated alongside."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4b6f066a22c7c802948721a3e0ae80ca88197ca6",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-10: replace the three challenges and contributions, experiments to follow).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/50e76826d912828fd22dfb8b5bc3b48ce4959588",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-10: change C3 to efficient validity maintenance).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "34509c334d2e8e5b94d144bc5aa7416443617fdc"
+  "source_commit": "5009f9c1f14d453a76d93947c7dc703250b3a2f9"
 }
