@@ -1,39 +1,40 @@
 {
   "schema_version": 1,
-  "date": "2026-11-09",
+  "date": "2026-11-10",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 3f4c562: the RelBench parts returned to the paper repo's e5e2e63 at the user's decision, Table III without the 'Quality tasks' column)",
-  "previous_head": "fc9e211d5deaa57eabbf0d0a223cf9c972aaafa4",
-  "remote_commit": "e30d2ad272bf5750ef75bee52faa58141b7f220c",
+  "direction": "paper repo 90ec495..9f73a67 (three syncs from another checkout: captions, Table III notes, relbench-cumulative.pdf) merged into overleaf/ first, then main repo overleaf/ -> paper repo (forward sync of main 34509c3)",
+  "previous_head": "9f73a674e8efadf3e555986444bbd124adab827b",
+  "remote_commit": "4b6f066a22c7c802948721a3e0ae80ca88197ca6",
   "pending_payload": null,
   "changed_paths": [
-    "figures/relbench-cumulative.pdf",
-    "figures/relbench-cumulative.tex",
-    "figures/reuse-work.pdf",
-    "gen/relbench-table.tex",
-    "gen/relbench.tex",
+    "algorithms/maintenance.tex",
     "preamble.tex",
+    "references.bib",
     "sections/01-introduction.tex",
+    "sections/02-background.tex",
+    "sections/03-overview.tex",
     "sections/04-design.tex",
     "sections/05-evaluation.tex",
+    "sections/06-conclusion.tex",
     "sections/abstract.tex",
-    "tables/relbench.tex"
+    "tables/capabilities.tex",
+    "algorithms/lookup.tex",
+    "figures/lookup.pdf",
+    "figures/lookup.tex"
   ],
   "preserve_remote_only": true,
-  "deletions": [
-    "gen/relbench-runs.tex"
-  ],
+  "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; Table III body by tools/relbench/paper-stats.py run on noctis over the finished runs (MAVRA from mavra-push), identical to e5e2e63's gen/relbench-table.tex except the dropped column; gen/relbench.tex, paper-sessions.json and reuse-work-data.json regenerated identical",
-    "status": "bash build.sh en: main.pdf 14 pages, 0 overfull boxes, no undefined references or citations; Table III page checked rendered",
-    "identical_to_remote": "origin/main was fc9e211 (the recorded sync), no Overleaf edits since; tools/sync-paper-repo.py --apply on a fresh gh clone, then gen/relbench-runs.tex removed by hand (no longer input; the script never deletes) and pushed in the same commit; afterwards the paper repo differs from e5e2e63 only in gen/relbench-table.tex, sections/05-evaluation.tex and tables/relbench.tex; remote-only gen/external.tex and tables/external.tex preserved",
-    "content": "User 11-09: time is short, return to the previous Table III and keep only valid sessions in its quality summary. RelBench parts as in e5e2e63 (MAVRA from mavra-push: reuse tokens -72%/-56%, lowest tokens, calls, tool calls, time and cost on both databases, 15/15 valid sessions on both). Table III drops 'Quality tasks' (task means vs the 0.01 AUC / 2% MAE margins); Section V-A reports mean test scores and valid sessions instead of the margins; V-B: all sessions valid, better task means than No memory on three of six tasks, largest gaps user-badge AUC (0.8345 vs 0.8588) and study-adverse MAE (42.14 vs 40.85). Chinese reading text updated alongside."
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; Fig. 4 (lookup) drawn by tools/figures/lookup.py in a uv venv that reproduces maintenance.pdf byte-identically",
+    "status": "bash build.sh en: main.pdf 16 pages, 0 overfull boxes, no undefined references or citations; pages 7-8 (Accurate Lookup, Fig. 4, Algorithm 1) checked rendered",
+    "identical_to_remote": "origin/main was 9f73a67; its 14 changed files since 90ec495 equalled the local base and were applied unchanged (05-evaluation.tex then differs only by the new pending subsection); tools/sync-paper-repo.py --force --apply --push on a fresh gh clone; remote-only gen/external.tex, tables/external.tex and the no-longer-input snapshot figure/algorithm preserved",
+    "content": "User 11-10 after the advisor's review: replace the three challenges and contributions. C1 extraction; C2 looking up the right computation (equivalence graph built after the fact under data conditions, explaining every constraint of a request, indifference test, audited false-hit bound; new Section IV-C, Fig. 4, Algorithm 1, Propositions 1-2); C3 knowing what a stored computation assumes (structural conditions plus assumptions lifted from the agent's probes; maintenance and snapshot checking condensed). Abstract, introduction, related work, Problem 1 (false-hit tolerance alpha), overview, conclusion and Table II follow. NOT implemented and NOT evaluated yet: phrasings and difference edges, constraint parse and residue, indifference test, audits and bound, probe-derived assumptions; Section V carries a red \\pending note saying the existing experiments use name matching. Fig. 2 (architecture) not redrawn yet. Chinese reading text updated alongside."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e30d2ad272bf5750ef75bee52faa58141b7f220c",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-09: return to the previous Table III, keep only valid sessions in the quality summary).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4b6f066a22c7c802948721a3e0ae80ca88197ca6",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-10: replace the three challenges and contributions, experiments to follow).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "3f4c5620b6364f98e331cd69fd9a89a74d2e38f8"
+  "source_commit": "34509c334d2e8e5b94d144bc5aa7416443617fdc"
 }
