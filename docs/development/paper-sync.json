@@ -1,32 +1,45 @@
 {
   "schema_version": 1,
-  "date": "2026-11-10",
+  "date": "2026-11-11",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main 5009f9c)",
-  "previous_head": "4b6f066a22c7c802948721a3e0ae80ca88197ca6",
-  "remote_commit": "50e76826d912828fd22dfb8b5bc3b48ce4959588",
+  "direction": "main repo overleaf/ -> paper repo (forward sync of main 2a3217b), after merging the paper repo's 931449f/6cd2695 (from another checkout, e91eec3) into overleaf/",
+  "previous_head": "6cd2695c3fc39d0802c0a328dc95af234fa35055",
+  "remote_commit": "745edb940c295494e50035556804e89f72ab975d",
   "pending_payload": null,
   "changed_paths": [
+    "algorithms/maintenance.tex",
+    "figures/architecture.pdf",
+    "figures/architecture.tex",
+    "figures/extraction.pdf",
+    "figures/extraction.tex",
+    "figures/lookup.pdf",
+    "figures/lookup.tex",
+    "figures/maintenance.pdf",
+    "figures/maintenance.tex",
+    "preamble.tex",
     "sections/01-introduction.tex",
     "sections/02-background.tex",
     "sections/03-overview.tex",
     "sections/04-design.tex",
+    "sections/05-evaluation.tex",
     "sections/06-conclusion.tex",
-    "sections/abstract.tex"
+    "sections/abstract.tex",
+    "tables/capabilities.tex",
+    "tables/lookup.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh en: main.pdf 17 pages, 0 overfull boxes, no undefined references or citations",
-    "identical_to_remote": "origin/main was 4b6f066 (the recorded sync), no edits since; tools/sync-paper-repo.py --apply --push on the same gh clone after a fast-forward pull",
-    "content": "User 11-10: C3 becomes how to maintain definition validity efficiently after data changes: filter out unaffected definitions quickly, repair or retire affected ones accurately. Introduction (challenge, solution, contribution), abstract, problem-formulation mapping, overview, conclusion and Section IV-D/E headings follow; IV-E gains 'Filtering by the written rows' (insert-only batches checked on the delta). NOT implemented yet: that delta filter, in addition to the items listed for 4b6f066. Chinese reading text updated alongside."
+    "status": "bash build.sh en: main.pdf 13 pages (body ends on page 11; AI statement and references on 12-13), 0 overfull boxes, no undefined references or citations; the paper-repo checkout after --apply compiles to the identical PDF (1,167,146 bytes)",
+    "merge": "origin/main had 931449f and 6cd2695 since the recorded sync 50e7682 (another checkout of the main repo, e91eec3, not in any local or origin branch). Local overleaf/ equalled 50e7682 except the new lookup figure; the 19 files those commits changed were copied in, then rewritten. Their architecture, extraction and maintenance figures (which drew the evidence graph G, premise revocation and snapshot binding) were not kept: architecture is regenerated from the local script with a new lookup box, extraction and maintenance are the local versions. Their metric-record (Fig. 1) is kept; its script is not in this repository.",
+    "content": "User 11-11: rewrite the lookup parts completely and delete old material boldly. C2 is now a catalog-trained lookup (Definition 1 consistency over a definition's choices; training wordings generated from the catalog and labeled by rule; cross-encoder judge; alias table, bge-m3 recall, three-way decision, references with differences). Removed: equivalence/evidence graph, rewrite rules R1-R3 and their proposition, fingerprints, request templates, residue, audits and the false-hit bound, Algorithm 1 (lookup), the query-optimization subsection and its results, snapshot-bound execution as a contribution and its results, the ideal-saving equation. Added Section V-C with Table V (exp/2026-11-10-lookup-facets). Deleted algorithms/lookup.tex and algorithms/snapshot-execution.tex locally; the sync preserves them in the paper repo as remote-only files (not \\input). Chinese reading text written alongside."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/50e76826d912828fd22dfb8b5bc3b48ce4959588",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-10: change C3 to efficient validity maintenance).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/745edb940c295494e50035556804e89f72ab975d",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: rewrite the lookup parts completely, delete old material).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "5009f9c1f14d453a76d93947c7dc703250b3a2f9"
+  "source_commit": "2a3217b3cac4219a8ee57395cb986076c8da17ce"
 }
