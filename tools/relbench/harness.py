@@ -134,6 +134,11 @@ ARMS = {
                        "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
                        "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
                        "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True},
+    "mavra-cached": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                     "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
+                     "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
+                     "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
+                     "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True, "reuse_goal_frames": True},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -640,6 +645,8 @@ class Run:
         # retraining goal (README §1.2, 10-21): the previous cutoff's model, refit on this cutoff's data.
         # task -> (cutoff, final feature SQL whose audit was clean) of this run's latest session
         self.prev_sql = {}
+        self.incumbent_frames = {}  # task/cutoff-local, private train/validation values; never test rows
+        self.incumbent_work = {}  # charged once if the new arm uses incumbent preflight as its preparation
         self.sql_programs = {}  # SQL-only: latest successful, clean program per task; never other tasks' SQL
         self.targets = {}
         if a.targets_from:
@@ -906,6 +913,10 @@ Shared memory: agents on this database publish verified feature definitions and 
 
     def incumbent(self, t, k, seeds):
         """Refit the previous cutoff's final feature SQL on cutoff k and score it on the validation seeds (no LLM)."""
+        if self.arm.get("reuse_goal_frames"):
+            detail = self.prepare_incumbent(t, k, seeds)
+            work = self.incumbent_work.get((t, k))
+            return {**detail, "seconds": work["seconds"], "charged_to_session": True} if work else detail
         prev = self.prev_sql.get(t)
         if not prev or prev[0] != k - 1:
             return {"val": None, "why": "no previous model"}
@@ -938,6 +949,155 @@ Shared memory: agents on this database publish verified feature definitions and 
                     "seconds": time.time() - t0}
         return {"val": val, "from_cutoff": prev[0], "seconds": time.time() - t0}
 
+    def prepare_incumbent(self, t, k, seeds):
+        """Keep a clean current refit; all attempts are later charged to this arm.
+
+        The common benchmark target used to discard these values. Reusing them
+        does not make them free: their complete non-audit duration and fits are
+        allocated to this task's measured session, including failed preflights.
+        """
+        prev = self.prev_sql.get(t)
+        if not prev or prev[0] != k - 1:
+            return {"val": None, "why": "no previous model"}
+        e = self.tasks[t]
+        ec, yc = e["entity_col"].lower(), e["target_col"].lower()
+        started = time.time()
+        work = {"audit_seconds": 0.0, "sql_seconds": 0.0, "feature_fits": [], "cached": False}
+        self.incumbent_frames.pop((t, k), None)
+
+        def fit(xt, xv):
+            ts, failed = time.time(), None
+            try:
+                return train_predict(e["task_type"], xt, seeds["train_sample"][yc], xv)
+            except Exception as err:
+                failed = type(err).__name__
+                raise
+            finally:
+                work["feature_fits"].append({"purpose": "current_incumbent_preflight", "train_rows": len(xt),
+                                              "features": xt.shape[1], "seconds": time.time() - ts, "error": failed})
+
+        try:
+            for attempt in (1, 2):
+                try:
+                    xtr, s1 = features(self.url, prev[1], f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
+                    work["sql_seconds"] += s1
+                    xva, s2 = features(self.url, prev[1], f"task.{tname(t)}_val", seeds["val"], ec)
+                    work["sql_seconds"] += s2
+                    prediction, importance, _ = fit(xtr, xva)
+                    val = score(e["task_type"], seeds["val"][yc], prediction)
+                    break
+                except Exception as err:
+                    if attempt == 1 and "statement timeout" in str(err):
+                        continue
+                    return {"val": None, "why": f"previous model failed: {str(err)[:200]}", "attempts": attempt}
+            ta = time.time()
+            try:
+                audited = self.audit(t, k, prev[1], seeds)
+            finally:
+                work["audit_seconds"] += time.time() - ta
+            work["audit"] = audited.get("result")
+            if audited.get("result") == "leak":
+                bad = set(audited.get("all_columns_differing") or [])
+                keep = [c for c in xtr if c not in bad]
+                if not bad or not keep:
+                    return {"val": None, "why": "incumbent has no identified clean output subset"}
+                # Preserve the benchmark's retraining-goal rule; these values
+                # are not supplied as an executable candidate without a fresh
+                # check of the projected SQL in the regular selection path.
+                prediction, _, _ = fit(xtr[keep], xva[keep])
+                return {"val": score(e["task_type"], seeds["val"][yc], prediction), "from_cutoff": prev[0],
+                        "dropped_leaking": sorted(bad), "cache_rejected": "source SQL was not clean"}
+            if audited.get("result") != "clean":
+                return {"val": None, "why": "incumbent audit did not pass", "audit_error": audited.get("why")}
+            aligned = [ec, "seed_time", yc]
+            self.incumbent_frames[(t, k)] = {"previous": prev, "sql": prev[1], "val": val, "importance": importance,
+                                             "train": xtr, "valid": xva,
+                                             "train_seeds": seeds["train_sample"][aligned].copy(),
+                                             "valid_seeds": seeds["val"][aligned].copy(), "audit": "clean"}
+            work["cached"] = True
+            return {"val": val, "from_cutoff": prev[0], "current_refit_retained": True}
+        except Exception as err:
+            return {"val": None, "why": f"incumbent preparation failed: {str(err)[:200]}"}
+        finally:
+            work["seconds"] = time.time() - started
+            work["agent_seconds"] = max(0.0, work["seconds"] - work["audit_seconds"])
+            self.incumbent_work[(t, k)] = work
+
+    def current_incumbent(self, t, k, seeds):
+        cached = self.incumbent_frames.get((t, k)) if self.arm.get("reuse_goal_frames") else None
+        if not cached or cached["audit"] != "clean" or self.prev_sql.get(t) != cached["previous"]:
+            return None
+        e = self.tasks[t]
+        cols = [e["entity_col"].lower(), "seed_time", e["target_col"].lower()]
+        if not (cached["train_seeds"].equals(seeds["train_sample"][cols])
+                and cached["valid_seeds"].equals(seeds["val"][cols])):
+            return None
+        return cached
+
+    def charge_incumbent_work(self, t, k, rec):
+        if not self.arm.get("reuse_goal_frames") or k <= 1:
+            return
+        charged = self.incumbent_work.pop((t, k), None)
+        if charged:
+            rec["charged_current_refit"] = charged
+            rec["agent_seconds"] += charged["agent_seconds"]
+            rec.setdefault("feature_fits", []).extend(charged["feature_fits"])
+        self.incumbent_frames.pop((t, k), None)
+
+    def cached_start(self, t, k, seeds, cached):
+        """Start from the exact freshly audited values, without re-running SQL."""
+        from feature_selection import select_subset
+
+        started = time.time()
+        e = self.tasks[t]
+        xtr, xva, sql = cached["train"], cached["valid"], cached["sql"]
+        original = {"name": "program", "sql": sql, "val": cached["val"], "columns": list(xtr),
+                    "importance": cached["importance"], "from_cutoff": e["cutoffs"][k - 2]["test_timestamp"],
+                    "source": "current audited refit", "dropped_leaking": []}
+        choice, candidates = original, [original]
+        rec = {"audit_seconds": 0.0, "sql_seconds": 0.0, "train_seconds": 0.0, "cached_current_refit": True,
+               "definitions_offered": 0, "extension_skipped": "reuse the complete audited incumbent; agent may compose a refinement",
+               "pruning_closed": True}
+        # A speculative projection of an expensive program would need another
+        # expensive SQL reproduction/audit. Keep that program intact instead.
+        work = self.incumbent_work.get((t, k), {})
+        if work.get("sql_seconds", float("inf")) <= 20 and work.get("agent_seconds", float("inf")) <= 60:
+            try:
+                selected = select_subset(xtr, seeds["train_sample"][e["target_col"].lower()], xva,
+                                         seeds["val"][e["target_col"].lower()], cached["importance"], cached["val"],
+                                         metric_of(e["task_type"])[1],
+                                         lambda a, b, c: self.fit_feature_model(e["task_type"], a, b, c, "cached_start_subset"),
+                                         lambda y, p: score(e["task_type"], y, p))
+                rec["subset_selection"] = [{key: value for key, value in selected.items() if key != "chosen"}]
+                rec["train_seconds"] += selected["train_seconds"]
+                best = selected["chosen"]
+                if best["columns"] != list(xtr):
+                    headers, _ = read_sql(self.url, f"SELECT * FROM ({sql.strip().rstrip(';').replace('{seeds}', f'task.{tname(t)}_val')}) q LIMIT 0")
+                    projected = select_columns_sql(sql, list(headers.columns[:2]), best["columns"])
+                    self.check_columns(t, k, projected, seeds, xva[best["columns"]], rec, timeout_s=SELECT_CHECK_TIMEOUT_S)
+                    ta = time.time()
+                    try:
+                        audit = self.audit(t, k, projected, seeds)
+                    finally:
+                        rec["audit_seconds"] += time.time() - ta
+                    if audit.get("result") == "clean":
+                        choice = {**original, "name": "program_pruned", "sql": projected, "val": best["val"],
+                                  "columns": best["columns"], "importance": best["importance"]}
+                        candidates.append(choice)
+                    else:
+                        rec["projection_rejected"] = audit.get("result")
+            except Exception as err:
+                rec["pruning_error"] = str(err)[:300]
+        else:
+            rec["pruning_skipped"] = "the cached SQL was expensive; preserve its complete checked output"
+        rec["candidates"] = [{key: value for key, value in c.items() if key not in ("sql", "importance", "columns")}
+                             | {"n_features": len(c["columns"])} for c in candidates]
+        rec["chosen"] = {**choice, "importance": [c for c, _ in choice["importance"][:30]],
+                         "top": choice["importance"][:10], "never_split": sum(1 for _, g in choice["importance"] if g == 0)}
+        rec["_frames"] = (choice["sql"], xtr[choice["columns"]], xva[choice["columns"]], choice["importance"])
+        rec["seconds"] = time.time() - started
+        return rec
+
     def select_start(self, t, k, seeds, prog, feats, middle, agent, sid):
         """MAVRA's start selection (arm mavra-select, 11-08). On this cutoff's data, without model calls, validate (P) the
         task's program -- its complete SQL when it still runs, else its definitions; columns that read rows after
@@ -949,6 +1109,9 @@ Shared memory: agents on this database publish verified feature definitions and 
         program over it falls back to its definitions when their estimated time fits; the extension is tried only after
         a program that took at most SELECT_EXTEND_MAX_P_S, and only when its definitions' estimated time (timed on the
         check seeds first) is no more than the program's."""
+        cached = self.current_incumbent(t, k, seeds)
+        if cached and (prog.get("program_sql") or prog.get("sql")) == cached["sql"]:
+            return self.cached_start(t, k, seeds, cached)
         made = []  # the probe schema, dropped at the end
         try:
             return self._select_start(t, k, seeds, prog, feats, middle, agent, sid, made)
@@ -1592,7 +1755,14 @@ Shared memory: agents on this database publish verified feature definitions and 
             t0, pushed, looked = time.time(), [], {}
             for name, args in (("find_program", {"task": t}), ("find_features", {"entity": e["entity_table"].lower(), "seed_key": ec})):
                 try:
-                    out = middle.call(name, agent, sid, sid, args)
+                    cached = self.current_incumbent(t, k, seeds) if name == "find_program" else None
+                    if cached:
+                        out = {"sql": cached["sql"], "columns": [], "program": {"task": t,
+                               "cutoff": e["cutoffs"][k - 2]["test_timestamp"], "metric": metric,
+                               "val_score": cached["val"]}, "source": "own current-cutoff audited refit"}
+                        rec["memory_current_refit"] = True
+                    else:
+                        out = middle.call(name, agent, sid, sid, args)
                 except Exception as err:
                     out = {"error": f"{err}"}
                 looked[name] = out if isinstance(out, dict) else {}
@@ -1611,11 +1781,12 @@ Shared memory: agents on this database publish verified feature definitions and 
                     sel = {"error": f"select_start: {type(err).__name__}: {str(err)[:300]}"}
                     log(f"{t} k{k}: {sel['error']}")
                 if sel is not None:
-                    rec["memory_select"] = {k2: v for k2, v in sel.items() if k2 != "chosen"}
+                    rec["memory_select"] = {k2: v for k2, v in sel.items() if k2 not in ("chosen", "_frames")}
                     rec["memory_select"]["chosen"] = {k2: v for k2, v in (sel.get("chosen") or {}).items() if k2 != "sql"} or None
             if text:
                 chosen = sel["chosen"]
                 best, best_sql = chosen["val"], chosen["sql"]
+                best_frames = sel.get("_frames")
                 if reached:
                     goal_hit = 0
                     rec["goal_reached"] = {"validation": 0, "llm_calls": 0, "by": "memory"}
@@ -1883,6 +2054,8 @@ Shared memory: agents on this database publish verified feature definitions and 
             psql, pxtr, pxva, pimp = best_frames
             try:
                 used = sum(x.get("seconds", 0) for x in (rec.get("memory_select") or {}).get("subset_selection", []))
+                if (rec.get("memory_select") or {}).get("pruning_closed"):
+                    used = 15.0  # the current-refit planner already made its one bounded projection decision
                 subset = select_subset(pxtr, seeds["train_sample"][yc], pxva, seeds["val"][yc], pimp, best, higher,
                                        lambda xt, yt, xv: self.fit_feature_model(e["task_type"], xt, yt, xv, "final_subset"),
                                        lambda y, p: score(e["task_type"], y, p), budget_seconds=max(0.0, 15.0 - used))
@@ -1914,6 +2087,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                                 + sum((rec.get(name) or {}).get("audit_seconds", 0)
                                       for name in ("memory_select", "memory_reference", "memory_prune")))
         rec["agent_seconds"] = time.time() - t_start - rec["audit_seconds"]
+        self.charge_incumbent_work(t, k, rec)
         rec["final_sql"] = submitted or best_sql
         rec["final_source"] = "submitted" if submitted else ("best_validated" if best_sql else None)
         rec["best_val"] = best
