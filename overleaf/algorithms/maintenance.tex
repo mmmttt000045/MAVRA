@@ -16,7 +16,9 @@
   \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
   \For{each $c \in \Delta C(x)$}
     \If{$\neg\Call{EvalCond}{c, D, V, \Delta T, \mathcal H}$}
-      \IfThen{$c$ is a domain assumption}{\Return $\text{Pending}(x, c, \text{new values})$}
+      \If{$c$ is a domain assumption}
+        \State \Return $\text{Pending}(x, c, \text{new values})$
+      \EndIf
       \State \Return $\operatorname{Repair}(x, c, D, \mathcal H)$ \Comment{unique single edit, or $\bot$}
     \EndIf
   \EndFor
