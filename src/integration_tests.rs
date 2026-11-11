@@ -1871,6 +1871,167 @@ async fn shared_validation(url: &str, out: &str) -> Result<Value> {
                definitions once after the update; three randomized blocks"}))
 }
 
+/// 持续读写（2026-11-11，审稿第 6 点）：16 个共享定义，8 个智能体 × 8 轮共 64 次会话依次各用全部定义；会话之间按写入频率
+/// λ（每次会话之后的追加写入次数：0、1/8、1/2、2）向 4 个事实表轮流追加一小批新业务键（约 0.1% 的行）。比较 MAVRA
+/// （条件级、跨定义共享结论）与 full-recheck（定义级全部重跑）的检查次数、复用与使用阶段的数据库时间。另测版本触发器
+/// 给追加写入带来的额外耗时（同一批插入，装与不装语句级触发器交替执行）。
+async fn sustained_writes(url: &str, out: &str) -> Result<Value> {
+    let admin = Db::connect(url, 2, false)?;
+    admin.query(QKind::Meta, &metricbench::fixture(200_000)).await?;
+    etl::setup(&admin).await?;
+    scenario::setup(&admin).await?;
+    let sv_cols: Vec<String> = {
+        let r = admin
+            .query(
+                QKind::Meta,
+                "select column_name from information_schema.columns where table_name = 'store_sales' order by ordinal_position",
+            )
+            .await?;
+        (0..r.rows.len()).filter_map(|i| r.cell(i, 0).map(str::to_string)).collect()
+    };
+    let insert = |table: &str, batch: i64| {
+        format!(
+            "insert into {table} ({cols}) select {sel} from store_sales where ss_ticket_number % 1000 = {k}",
+            cols = sv_cols.join(", "),
+            sel = sv_cols
+                .iter()
+                .map(|c| if c == "ss_ticket_number" { format!("{c} + {}", SV_OFFSET + batch * 1_000_000) } else { c.clone() })
+                .collect::<Vec<_>>()
+                .join(", "),
+            k = batch % 1000
+        )
+    };
+    let base = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("缺少 M1")?.1;
+    let rates: [(u32, u32); 4] = [(0, 1), (1, 8), (1, 2), (2, 1)]; // λ = 分子 / 分母
+    let (agents, rounds) = (8usize, 8usize);
+    let mut cells = vec![];
+    for (num, den) in rates {
+        for policy in ["full-recheck", "mavra"] {
+            for p in 0..SV_PAIRS {
+                admin
+                    .query(
+                        QKind::Meta,
+                        &format!(
+                            "drop table if exists sv_fact{p}; drop table if exists sv_date{p}; \
+                                                  create table sv_fact{p} as table store_sales; create table sv_date{p} as table date_dim; \
+                                                  analyze sv_fact{p}; analyze sv_date{p}; select pg_stat_force_next_flush()"
+                        ),
+                    )
+                    .await?;
+            }
+            tokio::time::sleep(Duration::from_millis(1200)).await;
+            let db = Arc::new(Db::connect(url, 8, true)?);
+            let cfg = MiddleConfig {
+                name: policy.into(),
+                metric_maint: if policy == "full-recheck" { Maint::Definition } else { Maint::Condition },
+                cond_reuse: policy != "full-recheck",
+                result_cache: false,
+                version_ttl_ms: 0,
+                ..Default::default()
+            };
+            let mid = Middle::new(db.clone(), cfg).await?;
+            let keys = sv_seed(&mid, &base).await?;
+            mid.take_metric_events();
+            let before = db.meter.snap();
+            let (mut writes, mut write_ms, mut unavailable, mut uses) = (0i64, 0f64, 0usize, 0usize);
+            let start = Instant::now();
+            for session in 0..agents * rounds {
+                unavailable += sv_uses(&mid, &keys, session % agents, 100 + session as u64).await?;
+                uses += keys.len();
+                // 本次会话之后的写入次数：λ = num/den，按会话序号均匀摊开
+                let due = ((session as u32 + 1) * num / den) as i64 - (session as u32 * num / den) as i64;
+                for _ in 0..due {
+                    let t = format!("sv_fact{}", writes as usize % SV_PAIRS);
+                    let w0 = Instant::now();
+                    admin.query(QKind::Meta, &format!("{}; select pg_stat_force_next_flush()", insert(&t, writes + 1))).await?;
+                    write_ms += w0.elapsed().as_secs_f64() * 1000.0;
+                    metricbench::log_batch(&admin, &t, "sustained append").await?;
+                    writes += 1;
+                }
+                if due > 0 {
+                    tokio::time::sleep(Duration::from_millis(1200)).await;
+                    mid.invalidate_versions();
+                }
+            }
+            let wall = start.elapsed().as_secs_f64();
+            let meter = crate::db::diff(&before, &db.meter.snap());
+            let mut actions: BTreeMap<String, u64> = BTreeMap::new();
+            for c in mid
+                .take_metric_events()
+                .iter()
+                .filter(|e| e["event"] == "maintenance")
+                .flat_map(|e| e["conditions"].as_array().cloned().unwrap_or_default())
+            {
+                *actions.entry(c["action"].as_str().unwrap_or("unknown").into()).or_default() += 1;
+            }
+            let row = json!({"policy": policy, "rate": format!("{num}/{den}"), "rate_value": num as f64 / den as f64,
+                             "sessions": agents * rounds, "uses": uses, "writes": writes, "write_ms": write_ms,
+                             "wall_seconds": wall, "db": meter, "unavailable": unavailable, "condition_actions": actions});
+            eprintln!(
+                "sustained {policy} λ={num}/{den}: writes {writes}, {:.0} ms DB, actions {:?}",
+                meter.db_ms, row["condition_actions"]
+            );
+            std::fs::write(format!("{out}/cell-{policy}-{num}-{den}.json"), serde_json::to_string_pretty(&row)?)?;
+            cells.push(row);
+        }
+    }
+    // 版本触发器的写入开销：同一批 200 行插入，装与不装触发器各 60 次交替执行
+    admin.query(QKind::Meta, "drop table if exists sv_wt; create table sv_wt as table store_sales with no data").await?;
+    let (mut with, mut without) = (vec![], vec![]);
+    for i in 0..120i64 {
+        let trig = i % 2 == 0;
+        if trig {
+            catalog::install_tx_versions(&admin, &["sv_wt"]).await?;
+        } else {
+            admin.query(QKind::Meta, "drop trigger if exists mavra_bump on sv_wt").await?;
+        }
+        let t0 = Instant::now();
+        admin.query(QKind::Meta, &insert("sv_wt", 5000 + i)).await?;
+        let ms = t0.elapsed().as_secs_f64() * 1000.0;
+        if trig {
+            with.push(ms)
+        } else {
+            without.push(ms)
+        }
+    }
+    let med = |v: &mut Vec<f64>| {
+        v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        v[v.len() / 2]
+    };
+    let overhead = json!({"inserts_each": with.len(), "rows_per_insert": 200,
+                          "median_ms_with_trigger": med(&mut with), "median_ms_without": med(&mut without)});
+    eprintln!("trigger overhead: {overhead}");
+    Ok(json!({"cells": cells, "trigger_overhead": overhead,
+              "design": "16 shared definitions on 4 fact/date pairs, 200k rows per fact; 64 sessions (8 agents x 8 rounds) each use all 16 definitions; after each session lambda appends (0, 1/8, 1/2, 2) of ~200 new-key rows to the fact tables in turn"}))
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
+async fn postgres_sustained_writes() -> Result<()> {
+    let _ = dotenvy::dotenv();
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_sustained_{}_{stamp}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    let out = format!("results/sustained-writes-{stamp}");
+    std::fs::create_dir_all(&out)?;
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let result = tokio::time::timeout(Duration::from_secs(4 * 3600), sustained_writes(test_url.as_str(), &out)).await;
+    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
+    let report = match &result {
+        Ok(Ok(r)) => r.clone(),
+        Ok(Err(e)) => json!({"error": format!("{e:#}")}),
+        Err(_) => json!({"error": "timeout"}),
+    };
+    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&json!({"report": report, "cleaned_up": cleanup.is_ok()}))?)?;
+    eprintln!("saved {out}/report.json");
+    cleanup?;
+    result.context("sustained-writes timeout")??;
+    Ok(())
+}
+
 #[tokio::test]
 #[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
 async fn postgres_shared_validation_scaling() -> Result<()> {
