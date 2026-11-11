@@ -183,3 +183,85 @@ Expected: two-definition requests always fail (TeCoD returns one template); repo
   65f13fe (binary 22b4874a…); tpcds-nog9 ran with 89322f2 (G9 off, so the change does not apply).
 - Table VI's other policies on the eleven archived changes come from the same run (they are rerun, not archived),
   so all four rows use one binary per schema.
+
+### Review point 6 (addition, registered before running): sustained reads and writes (`postgres_sustained_writes`, 66c2181)
+
+16 shared definitions on 4 fact/date pairs (200k rows per fact, as in Fig. 10). 64 sessions (8 agents x 8 rounds) each
+use all 16 definitions, one after another. After each session, lambda appends of about 200 new-key rows (0.1%) go to the
+fact tables in turn; lambda in {0, 1/8, 1/2, 2}. Policies: MAVRA (condition level, shared results) and full recheck
+(definition level, no sharing), same derived conditions. Reported: condition checks executed / reused / skipped, database
+time of the use phase per use, and the version trigger's write overhead (the same 200-row insert with and without the
+statement-level trigger, 60 times each, interleaved). One run; latencies were measured while the change-study cells,
+the TPC-DS replay and the TeCoD matcher shared the machine, so check counts are the primary result.
+
+### Review point 4 (addition, registered before running): cross-generator paraphrases (`lookup-glm/`)
+
+GLM (glm-5.3, Zhipu API), a model family that wrote none of the training phrasings, rewrites each of the 96 test
+requests twice without adding or removing a metric choice (agent style with business context; colloquial or English).
+Gold sets are those of the originals (same stated choices). Rewrites equal to a training phrasing are dropped. The three
+MAVRA judges (unchanged, no retraining) run end to end with the same thresholds (`serve.py`, first ask). Reported:
+first-response set-exact, direct rate and precision, references containing the gold set. This tests unseen wording from
+another generator on the same catalog; it is not a human-written or second-schema test.
+
+Results (2026-11-11). GLM wrote 182 rewrites; reading each against its original, 8 that add or drop a metric choice
+were removed (`audit.json`), leaving 174 (gold: 108 single, 32 two-definition, 34 absent). Same judges, thresholds, and
+code as Table V.
+
+| Method (174 GLM rewrites) | Exact | Final | Absent rejected | Notes |
+|---|---:|---:|---:|---|
+| Name match | 19.5% | 19.5% | 34/34 | |
+| Embedding top-1 (oracle threshold) | 45.4% | 45.4% | 11/34 | |
+| Full-catalog LLM judge (deepseek-flash) | 95.4% | 95.4% | 32/34 | 2.57 s, 1.6k tokens |
+| MAVRA first response | 81.0% (141) | 87.9% (153) after confirmation | 29/34 | direct 64.4% at 91.1% precision; 0.10 s lookup |
+
+On the authors' 96 requests the same pipeline reached 92% / 99%. The judges were trained only on DeepSeek phrasings;
+another generator's wording costs about 11 points after confirmation, mostly on absent metrics (26/34 first response)
+and choice descriptions (23/32). The LLM judge loses 4 points. Per the stopping rule this is reported as is; training on
+phrasings from several generators is the next method step, to be tested on a third generator.
+
+TeCoD matcher results (`lookup-tecod/tecod-summary.json`): exact 25/96 (26%); entailment match on 13 requests only;
+single-target 8/61, two-definition 0/18 (one template per answer), absent 17/17 rejected. 59.6 s per lookup on the
+shared CPU (two 4B models in float32, contended by the change-study cells), so its time is not comparable.
+
+## Results: replay (A + B + C), four schemas, twelve classes (`replay-hardening.json`, Table VI)
+
+| Policy | Non-breaking (534) | Covered breaks (840) | Premise changes (432) |
+|---|---|---|---|
+| Invalidate on every write | 0/0/534 | 0/0/840 | 0/0/432 |
+| Schema check only | 534/0/0 | 204/636/0 | 173/259/0 |
+| dbt-style table tests | 534/0/0 | 0/0/840 | 89/115/228 |
+| MAVRA (A+B+C) | 534/0/0 | 804/0/36 | 201/0/231 |
+
+- MAVRA serves 0 wrong answers in 1,806 instances. On the eleven archived changes the 11-01 binary served 118 wrong
+  (3 tpch/latekey q12, 115 unit); A turns the 3 into withholdings, C turns 104 served-wrong unit instances into
+  withholdings and also withholds 40 unit instances that were correct (ratio measures are scale-invariant).
+- B: 223 checked repairs passed (dimhist, dupload on tpch/ssb/financial, latekey, revision, status, reclass where the
+  attribute is unread), 45 TPC-DS dedup repairs passed by the proof, 0 false rejections. Reclass: 3 repairs moved
+  history (tpch q17: 1,529 of 2,258 buckets; ssb: 2 definitions) and were withheld (9 instances). Without G9 those 9 are
+  served under current attribution and wrong (e.g. tpch q17 1,573,577 vs as-of 3,006,724). TPC-DS definitions that join
+  item never read i_category, so reclass is correct with and without G9 (135/135).
+- Predictions in the design: all met, except that C also withholds 40 correct ratio instances (now stated in the paper).
+
+## Results: D, closest simple baseline (`results/change-study-20261111`, 12 cells, CNY 7.03, 2,847 calls, 0 errors)
+
+Both schemas, three runs (same banks, prompts, model, feedback as the 11-01 study; published-memory arms archived).
+
+| Group | MAVRA (new binary) | Shared recheck | best published memory |
+|---|---|---|---|
+| Held-out | 100.0 · 12.8k · 5 s | 100.0 · 13.8k · 5 s | 100.0 (ACE, TeCoD) |
+| Non-breaking | 100.0 · 13.2k · 8 s | 100.0 · 14.5k · 16 s | 98.8 (TeCoD) |
+| Covered breaks | 88.6 (0.9 wrong) · 15.7k · 17 s | 74.6 (6.1 wrong, 19.3 clarify) · 34.6k · 38 s | 69.3 (TeCoD) |
+| Premise changes | 85.7 · 65.2k · 45 s | 81.0 · 49.1k · 45 s | 71.4 (ACE) |
+| All | 93.1 · 22.1k · 17 s | 86.6 · 28.0k · 28 s | 80.4 (ACE) |
+
+- All 210 MAVRA answers served from a definition (declared valid revision) were correct; its 5 wrong answers came from
+  agents' own SQL: 1 latekey question in a run where M1 was never learned (both learning questions ended in
+  clarification), 4 backup-copy questions answered after the definition was withheld (23.81 vs 23.80; 0.00 vs -0.01).
+- Shared recheck could use a definition on 14 of 114 covered-break answers; the rest re-explored (71 correct, 22
+  clarification, 7 wrong).
+- Unit: MAVRA 28/30 correct (11-01 binary: 0/30). The scale condition withholds the definition; agents read the reason
+  and convert cents back (trace: synthetic-r1 M1-P1). This is the agent's inference, not a MAVRA decision.
+- Earlier MAVRA numbers (11-01 binary) stay in `exp/2026-11-01-change-study/README.md`.
+- Not rerun with the new binary: the TPC-DS sharing/restatement study (Fig. 8) and RelBench (Table III); their
+  mechanisms touched by A-C are the restatement repair (G9 would compare unchanged months) and feature maintenance
+  (features are revoked on failure, no repair).

@@ -1,0 +1,28 @@
+{
+  "mavra": {
+    "holdout|def|correct": 34,
+    "non_breaking|def|correct": 80,
+    "covered_breaks|def|correct": 96,
+    "covered_breaks|own|clarify": 12,
+    "outside_conditions|own|correct": 36,
+    "outside_conditions|own|clarify": 2,
+    "outside_conditions|own|wrong": 4,
+    "holdout|own|correct": 2,
+    "non_breaking|own|correct": 4,
+    "covered_breaks|own|correct": 5,
+    "covered_breaks|own|wrong": 1
+  },
+  "recheck": {
+    "holdout|def|correct": 34,
+    "non_breaking|def|correct": 80,
+    "covered_breaks|own|correct": 71,
+    "covered_breaks|def|correct": 14,
+    "covered_breaks|own|clarify": 22,
+    "outside_conditions|own|clarify": 6,
+    "outside_conditions|own|wrong": 2,
+    "outside_conditions|own|correct": 34,
+    "covered_breaks|own|wrong": 7,
+    "holdout|own|correct": 2,
+    "non_breaking|own|correct": 4
+  }
+}

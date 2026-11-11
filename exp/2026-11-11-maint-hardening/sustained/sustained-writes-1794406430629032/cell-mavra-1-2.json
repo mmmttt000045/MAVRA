@@ -1,0 +1,50 @@
+{
+  "condition_actions": {
+    "executed": 124,
+    "reused": 372,
+    "skipped": 124
+  },
+  "db": {
+    "by_kind": {
+      "check": [
+        0,
+        0.0
+      ],
+      "exec": [
+        0,
+        0.0
+      ],
+      "guard": [
+        0,
+        0.0
+      ],
+      "meta": [
+        1644,
+        5060.929999999999
+      ],
+      "metric": [
+        124,
+        17750.519
+      ],
+      "probe": [
+        0,
+        0.0
+      ],
+      "repair": [
+        0,
+        0.0
+      ]
+    },
+    "db_ms": 22811.449,
+    "queries": 1768
+  },
+  "policy": "mavra",
+  "rate": "1/2",
+  "rate_value": 0.5,
+  "sessions": 64,
+  "unavailable": 0,
+  "uses": 1024,
+  "wall_seconds": 62.781224881,
+  "write_ms": 1049.4369920000004,
+  "writes": 32
+}

@@ -10,7 +10,7 @@
 \toprule
 \multicolumn{4}{c}{\textbf{\bt{Reuse}{复用}}} & \multicolumn{3}{c}{\textbf{\bt{Validity}{有效性}}}\\
 \cmidrule(lr){1-4}\cmidrule(lr){5-7}
-\textbf{\bh{Design}{设计}} & \textbf{\bh{Reusable object}{复用对象}} & \textbf{\bh{Knowledge\\extraction}{知识提取}} & \textbf{\bh{Accurate\\lookup}{准确查找}} & \textbf{\bh{Derived\\data checks}{派生数据检查}} & \textbf{\bh{Shared\\check results}{共享检查结果}} & \textbf{\bh{Data-update\\handling}{数据更新处理}}\\
+\textbf{\bh{Design}{设计}} & \textbf{\bh{Reusable object}{复用对象}} & \textbf{\bh{Knowledge\\extraction}{知识提取}} & \textbf{\bh{Ambiguity-\\aware lookup}{歧义感知查找}} & \textbf{\bh{Derived\\data checks}{派生数据检查}} & \textbf{\bh{Shared\\check results}{共享检查结果}} & \textbf{\bh{Data-update\\handling}{数据更新处理}}\\
 \midrule
 AgentSM~\cite{biswal2026agentsm} & \bhl{Trajectories; tools}{轨迹；工具} & \capyes & \capno & \capno & \capno & \capno\\
 G-Memory~\cite{zhang2025gmemory} & \bhl{Trajectories; insights}{轨迹；洞见} & \capyes & \capno & \capno & \capno & \capno\\
@@ -26,6 +26,6 @@ TxCache~\cite{ports2010txcache} & \bhl{Computation results}{计算结果} & \cap
 \bottomrule
 \end{tabularx}
 \par\smallskip
-\bt{\capyes: supported; \capno: not supported in the cited design. Data checks concern grain/join predicates.}{\capyes：支持；\capno：所引设计不支持。数据检查指粒度／连接谓词。}
+\bt{\capyes: supported; \capno: not supported in the cited design. Ambiguity-aware lookup: a natural-language request is matched without SQL, competing definitions are returned when it leaves a choice open, and absent metrics are rejected (TeCoD's NLI matcher rejects, but returns one template). Derived data checks are generated from each definition's grain, joins, and filters; dbt-style layers support uniqueness, relationship, and custom SQL tests, declared by hand.}{\capyes：支持；\capno：所引设计不支持。歧义感知查找：不合成 SQL 即可匹配自然语言请求，请求未说明某项口径时返回全部竞争定义，并拒识目录中没有的指标（TeCoD 的 NLI 匹配器可以拒识，但只返回一个模板）。派生数据检查由每个定义的粒度、连接与过滤自动生成；dbt 类语义层支持唯一性、关系与自定义 SQL 测试，但需手工声明。}
 \bt{$^{a}$With declarative caching. $^{b}$With unaggregated materialization and scheduled refresh. $^{c}$Metrics are requested by their declared name. $^{d}$Statistical error bound on response text. $^{e}$Matches given queries or calls, not natural-language requests.}{$^{a}$启用声明式缓存。$^{b}$启用非聚合物化与定时刷新。$^{c}$按声明的名称请求指标。$^{d}$对回答文本的统计错误率上界。$^{e}$匹配给定的查询或调用，而非自然语言请求。}
 \end{table*}

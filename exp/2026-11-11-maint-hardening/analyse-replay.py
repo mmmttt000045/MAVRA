@@ -133,6 +133,8 @@ def main():
         g9 = Counter()
         for (d, c, x), v in g9_events.items():
             g9[x + ('Reclass' if c == 'reclass' else '')] += v
+        mac['RpMavraAllW'] = str(sum(table['condition'][s]['W'] for s in SCOPES))
+        mac['RpOldMavraAllW'] = str(sum(old_table[s]['W'] for s in SCOPES))
         mac['RpGNinePass'] = str(g9['pass'] + g9['vacuous'])
         mac['RpGNineImplied'] = str(g9['implied'])
         mac['RpGNineMoved'] = str(g9['moved'])

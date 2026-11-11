@@ -1,0 +1,49 @@
+{
+  "condition_actions": {
+    "executed": 112,
+    "forced": 28
+  },
+  "db": {
+    "by_kind": {
+      "check": [
+        0,
+        0.0
+      ],
+      "exec": [
+        0,
+        0.0
+      ],
+      "guard": [
+        28,
+        35.905
+      ],
+      "meta": [
+        1192,
+        3450.581
+      ],
+      "metric": [
+        112,
+        16310.57
+      ],
+      "probe": [
+        0,
+        0.0
+      ],
+      "repair": [
+        0,
+        0.0
+      ]
+    },
+    "db_ms": 19797.055999999997,
+    "queries": 1332
+  },
+  "policy": "full-recheck",
+  "rate": "1/8",
+  "rate_value": 0.125,
+  "sessions": 64,
+  "unavailable": 0,
+  "uses": 1024,
+  "wall_seconds": 29.934714628000002,
+  "write_ms": 320.13370399999997,
+  "writes": 8
+}

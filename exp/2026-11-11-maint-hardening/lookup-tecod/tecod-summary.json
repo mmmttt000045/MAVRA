@@ -1,0 +1,13 @@
+{
+  "requests": 96,
+  "exact": 25,
+  "two_def_exact": 0,
+  "two_def": 18,
+  "absent_rejected": 17,
+  "absent": 17,
+  "single_exact": 8,
+  "single": 61,
+  "seconds_mean": 59.62865130354961,
+  "pool_examples": 156,
+  "pool_add_seconds": 361.9204406738281
+}

@@ -1,0 +1,13 @@
+{
+  "cleaned_up": true,
+  "report": {
+    "cells": [],
+    "design": "16 shared definitions on 4 fact/date pairs, 200k rows per fact; 64 sessions (8 agents x 8 rounds) each use all 16 definitions; after each session lambda appends (0, 1/8, 1/2, 2) of ~200 new-key rows to the fact tables in turn",
+    "trigger_overhead": {
+      "inserts_each": 60,
+      "median_ms_with_trigger": 25.762278,
+      "median_ms_without": 24.614299,
+      "rows_per_insert": 200
+    }
+  }
+}

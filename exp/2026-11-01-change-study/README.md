@@ -161,3 +161,15 @@ first study resolve this way). The pool is snapshotted after held-out and restor
 - Result (pooled, both schemas): TeCoD 78.6% correct, 21.0k tokens, 18 s per question (MAVRA 84.4%, 14.6k, 8 s);
   condition-breaking 69.3% correct, 30.7% wrong (MAVRA 89.5%, none wrong); every TPC-H late-batch question wrong; on
   unchanged data fewer tokens than MAVRA (6.9k versus 11.8k); backup copy 11 of 12 correct, as MAVRA.
+
+## MAVRA with value conditions and G9, and the shared-recheck control (2026-11-11)
+
+Protocol addition `addition_20261111`. Cells in `results/change-study-20261111` on noctis (checkout
+`/root/agentdb-hardening`, HEAD 89322f2, binary 43d3349f…): arms `mavra` (metric-global-full, new binary) and
+`recheck` (metric-global-recheck), runs 1-3, both schemas, `--pool 4 --parallel 6`, cap CNY 15; 12 cells, 2,847
+calls, CNY 7.03, 0 errors (smoke CNY 0.74). Aggregation:
+`analyse.py --results results/change-study-20261101 --arm-results mavra=results/change-study-20261111
+--arm-results tecod=results/change-study-20261106-tecod --arm-results recheck=results/change-study-20261111`.
+`study-stats.json`, `summary.md` and `overleaf/gen/change-study.tex` now hold this aggregation (MAVRA from the new
+binary); the recheck arm is kept out of the published-method ranges (`CONTROLS`). Results and discussion:
+`exp/2026-11-11-maint-hardening/README.md`.

@@ -1,0 +1,6 @@
+{
+  "cleaned_up": true,
+  "report": {
+    "error": "SQL 执行失败：22003 整数超出范围"
+  }
+}
