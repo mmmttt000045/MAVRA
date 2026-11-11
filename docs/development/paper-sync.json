@@ -4,25 +4,25 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (artifact URL set; Section V pending markers removed)",
-  "previous_head": "ec6925384f41f53642200872dcff8a4e7764685c",
-  "remote_commit": "2eb9a43762d84966fdfa4d6434e3e50ff3b09d91",
+  "direction": "main repo overleaf/ -> paper repo (build-log warning fixes: TPC years, GPTCache pages, Algorithm 1 line)",
+  "previous_head": "2eb9a43762d84966fdfa4d6434e3e50ff3b09d91",
+  "remote_commit": "ff75375619799e378772ee16ce844ec9962bee45",
   "pending_payload": null,
   "changed_paths": [
-    "main.tex",
-    "sections/05-evaluation.tex"
+    "algorithms/maintenance.tex",
+    "references.bib"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh: main.pdf 12 pages; body and AI statement end on page 11; no overfull hbox; one 1.3pt overfull vbox during output; no undefined references; no \\pending left (the word 'Pending' in the PDF is the state name in Algorithm 1)",
-    "identical_to_remote": "origin/main was ec69253 (the recorded sync); no edits since; changed files cmp-equal to overleaf/",
-    "content": "User 11-11: not submitted to ICDE; artifact URL tentatively https://github.com/mmmttt000045/MAVRA (public, non-empty per gh); delete the red Section V markers (two \\pending notes, English and Chinese)."
+    "status": "bash build.sh: main.pdf 12 pages; body and AI statement end on page 11; page breaks on pages 5-11 identical to before; BibTeX warnings 56 -> 53 (empty year x2 and GPTCache pages gone; the rest are empty publisher/address on every inproceedings and CIDR/ICLR papers that have no page numbers); underfull hbox in maintenance.tex line 19 gone; no overfull hbox; one 1.3pt overfull vbox during output (unchanged); no undefined references",
+    "identical_to_remote": "origin/main was 2eb9a43 (the recorded sync); no edits since; changed files cmp-equal to overleaf/",
+    "content": "User pasted the compile log (paper.tex): fixed what is real. year = {2026} for the two TPC @misc entries (access-year convention of the other web entries); pages 212--218 for GPTCache (verified on ACL Anthology); Algorithm 1 domain-assumption line split into If/Return/EndIf. Left alone: acmart '\\vspace' warning (pinned pvldb.sty \\vldbtopmatter, do-not-modify block), Fig. 1 caption underfull (frozen), bibliography URL underfulls, 1.3pt overfull vbox."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/2eb9a43762d84966fdfa4d6434e3e50ff3b09d91",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/ff75375619799e378772ee16ce844ec9962bee45",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "4e70be22dcc9c234a4321edbcbc462c15f3fcf36"
+  "source_commit": "ee2c1aec23396b122211e0ac085deca6293fc739"
 }
