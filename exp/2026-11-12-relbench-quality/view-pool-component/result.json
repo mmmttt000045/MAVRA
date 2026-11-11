@@ -1,0 +1,179 @@
+{
+  "purpose": "validation component only, not benchmark test evidence or optimizer initialization",
+  "held_out_labels_decoded": false,
+  "model_service_calls": 0,
+  "fits": [
+    {
+      "columns": 1,
+      "seconds": 1.145728349685669
+    },
+    {
+      "columns": 14,
+      "seconds": 2.792741298675537
+    },
+    {
+      "columns": 28,
+      "seconds": 3.438744306564331
+    },
+    {
+      "columns": 17,
+      "seconds": 2.889716863632202
+    },
+    {
+      "columns": 16,
+      "seconds": 2.944793939590454
+    }
+  ],
+  "views": [
+    {
+      "val": 0.407816937947708,
+      "sql_seconds": 8.098054885864258,
+      "offered": 8,
+      "mapping": {
+        "enr_log": "p2_0_enr_log",
+        "enr_mean": "p2_1_enr_mean",
+        "tenure_days": "p2_2_tenure_days",
+        "studies_per_year": "p2_3_studies_per_year",
+        "days_since_last": "p2_4_days_since_last",
+        "frac_int": "p2_5_frac_int",
+        "n_all": "p2_6_n_all",
+        "frac_ind": "p2_7_frac_ind"
+      },
+      "duplicates": [],
+      "sql_sha256": "d5d707b33e7557fffb156820a21e4374e30f110b84d93a1ae5287cd0ad3e5614"
+    },
+    {
+      "val": 0.41612852501790903,
+      "sql_seconds": 29.181602001190186,
+      "offered": 8,
+      "mapping": {
+        "mean_enroll": "p2_0_mean_enroll",
+        "seed_year": "p2_1_seed_year",
+        "frac_na_phase": "p2_2_frac_na_phase",
+        "frac_interv": "p2_3_frac_interv",
+        "country_code": "p2_4_country_code",
+        "n_spons": "p2_5_n_spons",
+        "country_freq": "p2_6_country_freq",
+        "frac_late_phase": "p2_7_frac_late_phase"
+      },
+      "duplicates": [
+        "days_since_last_study",
+        "days_since_first_study"
+      ],
+      "sql_sha256": "fef889677f5e0e50fe20d4b0f83ad841925802c71dfe009ee2b489b4f8f069ed"
+    }
+  ],
+  "passed": false,
+  "baseline": 0.3949142058750565,
+  "archived_baseline": 0.3949142058750565,
+  "base_columns": [
+    "constant"
+  ],
+  "base_sql_seconds": 0.2734522819519043,
+  "selection": {
+    "trials": [
+      {
+        "name": "joint_top100",
+        "columns": [
+          "p2_0_enr_log",
+          "p2_1_enr_mean",
+          "p2_2_tenure_days",
+          "p2_3_studies_per_year",
+          "p2_4_days_since_last",
+          "p2_5_frac_int",
+          "p2_6_n_all",
+          "p2_7_frac_ind",
+          "p2_0_mean_enroll",
+          "p2_1_seed_year",
+          "p2_2_frac_na_phase",
+          "p2_3_frac_interv",
+          "p2_4_country_code",
+          "p2_5_n_spons",
+          "p2_6_country_freq",
+          "p2_7_frac_late_phase"
+        ],
+        "val": 0.40234725397702986,
+        "importance": [
+          [
+            "p2_0_enr_log",
+            388961.4
+          ],
+          [
+            "p2_2_tenure_days",
+            293865.4
+          ],
+          [
+            "p2_3_studies_per_year",
+            260439.7
+          ],
+          [
+            "p2_1_enr_mean",
+            191269.5
+          ],
+          [
+            "p2_4_days_since_last",
+            167070.1
+          ],
+          [
+            "p2_3_frac_interv",
+            153088.9
+          ],
+          [
+            "p2_1_seed_year",
+            120812.2
+          ],
+          [
+            "p2_0_mean_enroll",
+            111714.4
+          ],
+          [
+            "p2_4_country_code",
+            60743.5
+          ],
+          [
+            "p2_5_n_spons",
+            57153.5
+          ],
+          [
+            "p2_2_frac_na_phase",
+            55711.9
+          ],
+          [
+            "p2_7_frac_late_phase",
+            50151.9
+          ],
+          [
+            "p2_6_n_all",
+            42756.6
+          ],
+          [
+            "p2_6_country_freq",
+            42398.8
+          ],
+          [
+            "p2_7_frac_ind",
+            33064.3
+          ],
+          [
+            "p2_5_frac_int",
+            7206.3
+          ]
+        ],
+        "train_seconds": 2.9435484409332275,
+        "seconds": 2.9528421936556697
+      }
+    ],
+    "fits": 2,
+    "train_seconds": 5.832701206207275,
+    "seconds": 5.842876385897398,
+    "margin": 0.000789828411750113,
+    "selection_split": "validation"
+  },
+  "chosen": {
+    "name": "single_attempt",
+    "val": 0.3949142058750565,
+    "columns": [
+      "constant"
+    ]
+  }
+}

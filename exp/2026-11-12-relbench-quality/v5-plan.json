@@ -1,0 +1,14 @@
+{
+  "method": "mavra-signal",
+  "revision": "v5",
+  "status": "prospective_plan_before_code_and_model_calls",
+  "planned_at": "2026-11-12T04:59:00+08:00",
+  "parent": "mavra-cached (v4b)",
+  "evidence": "Own v1/v2 site-success initialization contains only a constant feature. All clean attempted relational feature sets lose on this validation slice, so pre-seeding best with the constant turns the patience rule into early rejection of engineered views. A bounded pooling component did not beat that reference either. V3/v4b remain frozen.",
+  "change": "Use only the training matrix to distinguish an informative start from a constant-only default. A freshly audited start with no varying training feature remains an emergency fallback, but does not pre-seed best, trigger a goal stop, or supply its score and SQL as a feature-search starting point. This applies to both entity references and the method's own cached programs. Retain informative starts and normal validation selection unchanged.",
+  "signal_rule": "At least one numeric output column has more than one distinct training value, including the existing missing-value representation. No labels, validation scores, task names or test data enter this predicate.",
+  "fallback": "At loop exit use the already clean constant default only when no clean agent candidate was obtained. Record the source and charge its fit, queries and audit under the same protocol. Never promote a failed or unknown audit.",
+  "unchanged": "Fixed learner and sample, model settings, cold attempts, warm model/tool limits, SQL limits, data and seed order, audit rules, scoring and all cost/quality gates. No task-specific templates, baseline SQL, prior variants' programs, later cutoffs or held-out labels initialize the candidate.",
+  "development_disclosure": "Post-hoc development: v1/v2 full test summaries have already been inspected and are retained. Those scores are not optimizer inputs and this is not a newly independent holdout.",
+  "evaluation": "First run meaningful local and real-data initialization checks. If they pass, freeze source and run both databases from empty memory, queued behind matching v3 cells. Evaluate tests only after all training cutoffs finish. All costs remain subject to the original unrounded ceilings and all six quality means to the strongest reported results. Joint success is not guaranteed."
+}
