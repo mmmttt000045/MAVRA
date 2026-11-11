@@ -4,28 +4,30 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (868d4a5: remove AI-generated content acknowledgment section)",
-  "previous_head": "f008170156bd01383213f226ff4601a0eaf229f2",
-  "remote_commit": "705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
+  "direction": "main repo overleaf/ -> paper repo (7bb9e35: clarify extraction replay and safe repair in Figures 3 and 5)",
+  "previous_head": "705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
+  "remote_commit": "1509efe41a3f17758470bfd3be292e62ed00b8aa",
   "pending_payload": null,
   "changed_paths": [
-    "paper.tex"
+    "figures/extraction.pdf",
+    "figures/extraction.tex",
+    "figures/maintenance.pdf",
+    "figures/maintenance.tex",
+    "sections/04-design.tex"
   ],
   "preserve_remote_only": true,
-  "deletions": [
-    "sections/ai-statement.tex"
-  ],
+  "deletions": [],
   "validation": {
     "built_on": "this workstation",
-    "status": "Tectonic build succeeded: conclusion and reference start on p.12; 14 pages total; 0 undefined references.",
-    "identical_to_remote": "All 64 main.tex dependency files match icde-2027-paper main @ 705748ec9fc6cc8cd837ea09b4d2798abd0c2c36; sections/ai-statement.tex deleted; unrelated remote files preserved.",
-    "content": "Removed the AI-generated content acknowledgment input and section source; verified the heading and statement are absent from the compiled PDF.",
-    "layout": "Rendered and inspected pages 12 and 14; no visible overlap or clipping. One 1.24957pt vertical-box warning remains in final reference balancing.",
-    "pdf_sha256": "457956264d5d913dca9a9144fc5edee9ab053a7bc335d3189687f780f9dc2541"
+    "status": "Tectonic build succeeded: conclusion and references start on p.12; 14 pages total; 0 undefined references/citations, 0 overfull boxes, and 0 missing-glyph warnings.",
+    "identical_to_remote": "All 64 main.tex dependency files match the verified remote tree 78ccd4514b8387b60befd922af1c4a6345c2853f on icde-2027-paper main @ 1509efe41a3f17758470bfd3be292e62ed00b8aa; all 9 files outside the dependency closure preserved byte-for-byte. Remote main verified after updating with an expected-head check and without force.",
+    "content": "Figure 3 now follows verified session -> fixed core/runtime bindings -> independent replay -> publish/reject, with source-binding evidence limits. Figure 5 distinguishes incremental duplicate detection and candidate pruning from all-condition validation, source-answer reproduction, and exactly-one-edit admission; retire/pending outcomes are explicit. English and Chinese prose, captions, descriptions, and vector figures aligned. Source-answer and missing-filter values checked against archived case evidence.",
+    "layout": "Rendered and inspected final pages 6-14 and both language versions of Figures 3 and 5; no visible overlap or clipping. Figure 3 remains on p.6 and Figure 5 on p.7; minimum body-label size in these drawings is 6.5pt before column scaling.",
+    "pdf_sha256": "16b92317c940e1bd148ce66675d9ad00a0833f9b949466fa9fd1d32bc756ef77"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
-  "sync_authorization": "AGENTS.md and user 2026-11-11: remove ACKNOWLEDGMENT OF AI-GENERATED CONTENT and directly push verified paper changes.",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/1509efe41a3f17758470bfd3be292e62ed00b8aa",
+  "sync_authorization": "AGENTS.md and user 2026-11-11: directly revise Figures 3 and 5 with aligned text/captions, compile and verify, then commit and push the paper repository.",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "868d4a56d45238869b9d659bee0d8efb8667b869"
+  "source_commit": "7bb9e357ef2872baee2a75684ca3535ecc8867d3"
 }
