@@ -4,28 +4,33 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (C1 lossy-extraction framing; text only, Fig. 1 unchanged)",
-  "previous_head": "5fd76d24d902bc58ad3b53a374f53d18f844c299",
-  "remote_commit": "01a40dc84645dfe5f9ec5f5ffade8a3d2fb9cc92",
+  "direction": "main repo overleaf/ -> paper repo (venue change: ICDE 2027 IEEEtran -> VLDB 2027 / PVLDB Vol. 20 official template)",
+  "previous_head": "01a40dc84645dfe5f9ec5f5ffade8a3d2fb9cc92",
+  "remote_commit": "ec6925384f41f53642200872dcff8a4e7764685c",
   "pending_payload": null,
   "changed_paths": [
-    "sections/01-introduction.tex",
-    "sections/04-design.tex",
-    "sections/05-evaluation.tex",
-    "sections/06-conclusion.tex",
-    "sections/abstract.tex"
+    "ACM-Reference-Format.bst (added)",
+    "acmart.cls (added)",
+    "pvldb.sty (added)",
+    "README.md (paper repo's own, venue text)",
+    "build.sh",
+    "main.tex",
+    "paper.tex",
+    "preamble.tex",
+    "sections/abstract.tex",
+    "sections/ai-statement.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh en: main.pdf 13 pages (body ends on page 11), no undefined references; Section IV-B, intro, abstract, conclusion, evaluation gate text updated in English and Chinese",
-    "identical_to_remote": "origin/main was 5fd76d2 (the recorded sync); no edits since; each changed file cmp-equal to overleaf/",
-    "content": "User 11-11: keep C1 largely as is, but state how it works and make lossy extraction the central point. Lossy extraction is defined; the verified answer is the oracle (G6 validates it, G7 tests the compiled I); the boundary (a loss that leaves p0's answer unchanged passes G7) is stated. Fig. 1 and its example paragraph untouched."
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; also a standalone build of the paper-repo checkout",
+    "status": "bash build.sh: main.pdf 12 pages; body and AI statement end on page 11, references start on page 11; 0 overfull boxes; no undefined references or citations",
+    "identical_to_remote": "origin/main was 01a40dc (the recorded sync); no edits since; every synced file cmp-equal to overleaf/",
+    "content": "User 11-11: submit to VLDB at the end of November (PVLDB Vol. 20 guidelines pasted by the user). Template pinned from github.com/vldbproceedings/VLDB-Template 39c95f5 (acmart v2.19). Text unchanged except the dropped keyword block and AI-statement comments. Open items: \\vldbavailabilityurl is the template placeholder; Section V still contains a red [Pending: ...] marker."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/01a40dc84645dfe5f9ec5f5ffade8a3d2fb9cc92",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: C1 wording focuses on lossy extraction).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/ec6925384f41f53642200872dcff8a4e7764685c",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: VLDB submission at the end of November).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "9f1425af12826461f041af702a3e39df4228fe76"
+  "source_commit": "93bc1164d5f3404797eaf4290cc715d527e4cf19"
 }
