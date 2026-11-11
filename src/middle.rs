@@ -139,6 +139,10 @@ pub struct MiddleConfig {
     pub optimize_min_saving: f64,
     /// 特征定义（RelBench）：find_features、compose_features 与 find_program 工具，学习接口 /v1/learn_features
     pub feature_memory: bool,
+    /// 条件不成立时尝试受限修复；关闭时定义失效即撤下，由使用者自行探查（“共享定义、全量重检、失败即失效”对照组）
+    pub repair: bool,
+    /// 修复准入的 G9：替代修订不得改变事实行未变的时间桶上的历史答案（需要学习时快照）
+    pub history_check: bool,
 }
 
 impl Default for MiddleConfig {
@@ -171,6 +175,8 @@ impl Default for MiddleConfig {
             optimize: false,
             optimize_min_saving: 0.10,
             feature_memory: false,
+            repair: true,
+            history_check: true,
         }
     }
 }
@@ -440,6 +446,12 @@ fn outcome_text(c: &Check, o: &Outcome) -> String {
         }
         Check::DateCoverage { .. } => {
             format!("{} 行中 {} 行有日期（{:.2}%）", o.metrics["n_rows"], o.metrics["n_dated"], metric(o, "join_ratio") * 100.0)
+        }
+        Check::NotNull { .. } => {
+            format!("{} 行中 {} 行非空（{:.2}%）", o.metrics["n_rows"], o.metrics["n_nonnull"], metric(o, "join_ratio") * 100.0)
+        }
+        Check::MeasureScale { .. } => {
+            format!("{} 个月的 |值| 中位数在 [{}, {}]", o.metrics["n_months"], o.metrics["lo"], o.metrics["hi"])
         }
         Check::PathCoverage { .. } | Check::KeyAliasCoverage { .. } => {
             format!(

@@ -33,7 +33,19 @@ pub enum Check {
     /// 去除完全重复的行后键唯一：`table` 中满足过滤、在 `cols` 上重复的每个键，其各行在所有列上都相同。
     /// 成立时 `select distinct *` 后每键恰好一行（去重修复后的粒度条件）；没有重复键时也成立。
     DistinctKeyUnique { table: String, cols: Vec<String>, filter: Option<String> },
+    /// 列非空占比：过滤或度量读到的列变为空时，过滤结果为 UNKNOWN、聚合忽略空值，相应的行静默丢失。
+    /// 返回非空行占比，由调用方与准入基线比较（与日期列完整性相同的容差）。
+    NotNull { table: String, col: String },
+    /// 度量尺度：事实表数值列 `col` 按月（`month` 为 yyyymm 表达式，`from` 为带时间连接的来源）取 |值| 的中位数
+    /// （只计非空、非零值，每月至少 30 行）。返回各月中位数的最小与最大值，由调用方与准入时的范围比较：
+    /// 单位或口径换算会让某些月份的中位数跳变一个数量级，这类变化没有结构痕迹，只能由业务方确认。
+    MeasureScale { fact: String, col: String, from: String, month: String, tables: Vec<String> },
 }
+
+/// 度量尺度条件的容许倍数：每月中位数须落在准入范围的 [下界 / K, 上界 × K] 内。
+pub const SCALE_FACTOR: f64 = 5.0;
+/// 度量尺度条件只统计行数不少于此数的月份。
+pub const SCALE_MIN_ROWS: i64 = 30;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Outcome {
@@ -54,6 +66,8 @@ impl Check {
             Check::KeyAliasCoverage { .. } => "KeyAliasCoverage",
             Check::KeyAliasUnique { .. } => "KeyAliasUnique",
             Check::DistinctKeyUnique { .. } => "DistinctKeyUnique",
+            Check::NotNull { .. } => "NotNull",
+            Check::MeasureScale { .. } => "MeasureScale",
         }
     }
 
@@ -78,6 +92,8 @@ impl Check {
             }
             Check::KeyAliasCoverage { fact, dim, .. } => vec![fact.clone(), dim.clone()],
             Check::KeyAliasUnique { dim, .. } => vec![dim.clone()],
+            Check::NotNull { table, .. } => vec![table.clone()],
+            Check::MeasureScale { tables, .. } => tables.clone(),
         }
     }
 
@@ -96,6 +112,8 @@ impl Check {
             }
             Check::KeyAliasCoverage { fact, fact_col, dim, dim_col, alias } => format!("{fact}.{fact_col}>{dim}({dim_col}|{alias})"),
             Check::KeyAliasUnique { dim, dim_col, alias } => format!("{dim}({dim_col}|{alias})"),
+            Check::NotNull { table, col } => format!("{table}({col}) not null"),
+            Check::MeasureScale { fact, col, .. } => format!("{fact}({col}) scale"),
         }
     }
 
@@ -111,6 +129,8 @@ impl Check {
             Check::RowConservation { left, right, .. } => rows(left) * 2.0 + rows(right),
             Check::KeyAliasCoverage { fact, dim, .. } => rows(fact) + 2.0 * rows(dim),
             Check::KeyAliasUnique { dim, .. } => 2.0 * rows(dim),
+            Check::NotNull { table, .. } => rows(table),
+            Check::MeasureScale { fact, .. } => 3.0 * rows(fact),
         }
     }
 
@@ -137,6 +157,8 @@ impl Check {
                 format!("{fact}.{fact_col} 按 {dim}.{dim_col} 或 {alias} 关联得上的占比")
             }
             Check::KeyAliasUnique { dim, dim_col, alias } => format!("{dim} 的 {dim_col} 与 {alias} 合起来是否唯一"),
+            Check::NotNull { table, col } => format!("{table}.{col} 非空的行占比"),
+            Check::MeasureScale { fact, col, .. } => format!("{fact}.{col} 各月中位数的范围"),
         }
     }
 
@@ -224,6 +246,12 @@ impl Check {
                 "select count(*) as n_rows, count(distinct k) as n_keys from \
                  (select {dim}.{dim_col} as k from {dim} union all select {alias} as k from {dim}) u where k is not null"
             ),
+            Check::NotNull { table, col } => format!("select count(*) as n_rows, count({col}) as n_nonnull from {table}"),
+            Check::MeasureScale { fact, col, from, month, .. } => format!(
+                "select count(*) as n_months, min(med) as lo, max(med) as hi from \
+                 (select {month} as mo, percentile_disc(0.5) within group (order by abs({fact}.{col})) as med from {from} \
+                  where {fact}.{col} is not null and {fact}.{col} <> 0 group by 1 having count(*) >= {SCALE_MIN_ROWS}) x"
+            ),
         }
     }
 
@@ -242,6 +270,16 @@ impl Check {
                 let (n_left, n_join) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
                 let ratio = if n_left > 0 { n_join as f64 / n_left as f64 } else { 1.0 };
                 Outcome { pass: true, metrics: json!({"n_left": n_left, "n_join": n_join, "join_ratio": ratio}), ms }
+            }
+            Check::NotNull { .. } => {
+                let (n_rows, n_nonnull) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
+                let ratio = if n_rows > 0 { n_nonnull as f64 / n_rows as f64 } else { 1.0 };
+                Outcome { pass: true, metrics: json!({"n_rows": n_rows, "n_nonnull": n_nonnull, "join_ratio": ratio}), ms }
+            }
+            Check::MeasureScale { .. } => {
+                let n_months = rows.i64(0, 0).unwrap_or(0);
+                let (lo, hi) = (rows.f64(0, 1), rows.f64(0, 2));
+                Outcome { pass: true, metrics: json!({"n_months": n_months, "lo": lo, "hi": hi}), ms }
             }
             Check::DateCoverage { .. } => {
                 let (n_rows, n_dated) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
@@ -323,6 +361,24 @@ mod tests {
              join orders on lineitem.l_orderkey = orders.o_orderkey left join customer on orders.o_custkey = customer.c_custkey"
         );
         assert_eq!(c.tables(), vec!["lineitem".to_string(), "orders".to_string(), "customer".to_string()]);
+    }
+
+    #[test]
+    fn value_conditions_measure_nulls_and_monthly_medians() {
+        let n = Check::NotNull { table: "lineitem".into(), col: "l_shipdate".into() };
+        assert_eq!(n.sql(), "select count(*) as n_rows, count(l_shipdate) as n_nonnull from lineitem");
+        let rows = Rows { cols: vec![], rows: vec![vec![Some("1000".into()), Some("990".into())]] };
+        assert!((n.eval(&rows, 0.0).metrics["join_ratio"].as_f64().unwrap() - 0.99).abs() < 1e-9);
+        let s = Check::MeasureScale {
+            fact: "store_sales".into(),
+            col: "ss_net_paid".into(),
+            from: "store_sales join date_dim on store_sales.ss_sold_date_sk = date_dim.d_date_sk".into(),
+            month: "date_dim.d_year * 100 + date_dim.d_moy".into(),
+            tables: vec!["store_sales".into(), "date_dim".into()],
+        };
+        assert!(s.sql().contains("percentile_disc(0.5) within group (order by abs(store_sales.ss_net_paid))"));
+        assert!(s.sql().contains("having count(*) >= 30"));
+        assert_eq!(s.tables(), vec!["store_sales".to_string(), "date_dim".to_string()]);
     }
 
     #[test]

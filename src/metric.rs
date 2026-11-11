@@ -395,6 +395,106 @@ fn fact_source(m: &Metric, keep: Option<&str>) -> String {
     }
 }
 
+/// 时间连接：日期维度方式下接在事实表后面的维度连接（日期键修复后为两种编码合并的扩展维度）；日期列方式为空。
+fn time_join(m: &Metric, time: &TimeSpec) -> String {
+    if time.is_column() {
+        return String::new();
+    }
+    match &time.key_alias {
+        // 日期键修复后：日期维度按两种键编码各出一行（两者互不重叠，由条件 KeyAliasUnique 维护），事实键与其中之一相等
+        Some(alias) => format!(
+            " join (select {d}.*, {d}.{dc} as {DATE_KEY} from {d} union all select {d}.*, {alias} as {DATE_KEY} from {d}) {d} \
+             on {}.{} = {d}.{DATE_KEY}",
+            m.fact,
+            time.fact_col,
+            d = time.dim,
+            dc = time.dim_col
+        ),
+        None => format!(" join {d} on {}.{} = {d}.{}", m.fact, time.fact_col, time.dim_col, d = time.dim),
+    }
+}
+
+/// 从事实表沿口径的关联到达 `table` 的连接（不带过滤，只为取到该表的列）；`table` 是事实表时为空，到不了时为 None。
+fn path_joins(m: &Metric, table: &str) -> Option<String> {
+    let mut chain = vec![];
+    let mut cur = table.to_string();
+    while cur != m.fact {
+        let j = m.joins.iter().find(|j| j.right == cur)?;
+        chain.push(j);
+        cur = j.left.clone();
+    }
+    chain.reverse();
+    Some(
+        chain
+            .iter()
+            .map(|j| {
+                let conds: Vec<String> = j.on.iter().map(|(l, r)| format!("{}.{l} = {}.{r}", j.left, j.right)).collect();
+                format!(" join {} on {}", j.right, conds.join(" and "))
+            })
+            .collect(),
+    )
+}
+
+/// 时间桶：日期维度方式取事实表的日期键（不经维度，任一编码的键都各成一桶），日期列方式取日期。
+fn bucket_expr(time: &TimeSpec, fact: &str) -> String {
+    if time.is_column() {
+        let (tb, c) = time.column_of(fact);
+        format!("({tb}.{c})::date")
+    } else {
+        format!("{fact}.{}", time.fact_col)
+    }
+}
+
+/// 修复准入（G9）比较的全量序列：不限期间，按时间桶分组的度量值（列 b, v）。连接、过滤、去重与时间归属同 `compile`，
+/// 关联不上时间维度的事实行不进入任何桶。
+pub fn compile_series(m: &Metric) -> Result<String> {
+    compile_target(m, Target::Series, &[])
+}
+
+/// 事实行指纹（列 b, n, h）：按时间桶统计事实表的行数与所读列取值的哈希和。只读事实表本身（不去重、不带过滤），
+/// 日期列在别的表上时沿口径的关联取到它。两个快照上同一桶的指纹相同，就认为该桶的事实行没有变化。
+pub fn compile_fact_fingerprint(m: &Metric, cols: &[String]) -> Result<String> {
+    let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义"))?;
+    let mut from = m.fact.clone();
+    if time.is_column() {
+        let (tb, _) = time.column_of(&m.fact);
+        from.push_str(&path_joins(m, &tb).ok_or_else(|| anyhow!("日期列所在的表 {tb} 不在口径的关联中"))?);
+    }
+    let h = if cols.is_empty() {
+        "0::bigint".to_string()
+    } else {
+        let qualified: Vec<String> = cols.iter().map(|c| format!("{}.{c}", m.fact)).collect();
+        format!("coalesce(sum(hashtext(row({})::text)::bigint), 0)", qualified.join(", "))
+    };
+    Ok(format!("select {} as b, count(*) as n, {h} as h from {from} group by 1", bucket_expr(time, &m.fact)))
+}
+
+/// 按月统计用的来源与月份表达式（度量尺度条件）：日期维度方式连接日期维度（含日期键修复后的扩展维度），
+/// 日期列方式沿关联取到日期列；返回（FROM 子句、月份 yyyymm 表达式、读到的表）。
+pub fn month_source(m: &Metric) -> Option<(String, String, Vec<String>)> {
+    let time = m.time.as_ref()?;
+    if time.is_column() {
+        let (tb, c) = time.column_of(&m.fact);
+        let from = format!("{}{}", m.fact, path_joins(m, &tb)?);
+        let mut tables = vec![m.fact.clone()];
+        let mut cur = tb.clone();
+        while cur != m.fact {
+            tables.push(cur.clone());
+            cur = m.joins.iter().find(|j| j.right == cur)?.left.clone();
+        }
+        Some((from, format!("to_char({tb}.{c}, 'YYYYMM')::int"), tables))
+    } else {
+        let month = format!("{d}.{} * 100 + {d}.{}", time.year_col, time.month_col, d = time.dim);
+        Some((format!("{}{}", m.fact, time_join(m, time)), month, vec![m.fact.clone(), time.dim.clone()]))
+    }
+}
+
+/// 编译目标：一道题，或维护用的全量序列。
+enum Target<'a> {
+    Ask(&'a Ask),
+    Series,
+}
+
 pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
     compile_with(m, ask, &[])
 }
@@ -402,9 +502,16 @@ pub fn compile(m: &Metric, ask: &Ask) -> Result<String> {
 /// 同 `compile`；维度问法所需的维度表不在口径中时，`extra` 是中间层验证过的多对一内连接（从事实表或已关联的表指向维度表），
 /// 接在口径自身的关联之后。口径原有的关联、过滤与时间归属不变；只有维度问法才接受 `extra`。
 pub fn compile_with(m: &Metric, ask: &Ask, extra: &[JoinRef]) -> Result<String> {
+    compile_target(m, Target::Ask(ask), extra)
+}
+
+fn compile_target(m: &Metric, target: Target, extra: &[JoinRef]) -> Result<String> {
     check_join_orientation(m)?;
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义，无法按期间编译"))?;
-    let attr = ask.attr().transpose()?;
+    let attr = match target {
+        Target::Ask(ask) => ask.attr().transpose()?,
+        Target::Series => None,
+    };
     ensure!(attr.is_some() || extra.is_empty(), "只有按维度属性的问法才接入额外的关联");
     ensure!(time.is_column() || !(time.dim.is_empty() || time.dim_col.is_empty()), "日期维度方式需要维度表与键列");
     let mut tail = String::new();
@@ -456,24 +563,7 @@ pub fn compile_with(m: &Metric, ask: &Ask, extra: &[JoinRef]) -> Result<String> 
         None => None,
     };
     let from = |keep: Option<&str>| format!("{}{tail}", fact_source(m, keep));
-    let joined = |keep: Option<&str>| {
-        let from = from(keep);
-        if time.is_column() {
-            return from;
-        }
-        match &time.key_alias {
-            // 日期键修复后：日期维度按两种键编码各出一行（两者互不重叠，由条件 KeyAliasUnique 维护），事实键与其中之一相等
-            Some(alias) => format!(
-                "{from} join (select {d}.*, {d}.{dc} as {DATE_KEY} from {d} union all select {d}.*, {alias} as {DATE_KEY} from {d}) {d} \
-                 on {}.{} = {d}.{DATE_KEY}",
-                m.fact,
-                time.fact_col,
-                d = time.dim,
-                dc = time.dim_col
-            ),
-            None => format!("{from} join {d} on {}.{} = {d}.{}", m.fact, time.fact_col, time.dim_col, d = time.dim),
-        }
-    };
+    let joined = |keep: Option<&str>| format!("{}{}", from(keep), time_join(m, time));
     // 去重的事实表先按期间过滤：日期列在事实表上时就是期间谓词；日期维度方式下是“事实日期键属于期间的键集合”
     // （日期键修复后含另一种编码），与随后的维度连接和期间谓词选出同一批事实行
     let keep = |pp: &str| -> Option<String> {
@@ -531,6 +621,13 @@ pub fn compile_with(m: &Metric, ask: &Ask, extra: &[JoinRef]) -> Result<String> 
         let pp = pred(p);
         let src = joined(keep(&pp).as_deref());
         format!("select {expr} as value from {src} where {} and {a} = {}", cond(pp), lit(v))
+    };
+    let ask = match target {
+        Target::Ask(ask) => ask,
+        Target::Series => {
+            let w = if wheres.is_empty() { "true".to_string() } else { wheres.join(" and ") };
+            return Ok(format!("select {} as b, {expr} as v from {} where {w} group by 1", bucket_expr(time, &m.fact), joined(None)));
+        }
     };
     Ok(match ask {
         Ask::Single { period } => value(period),
@@ -1484,6 +1581,8 @@ mod tests {
             basis: Basis::None,
             entity: None,
             dedup: false,
+            null_base: Default::default(),
+            scale_base: Default::default(),
         }
     }
 
@@ -1568,6 +1667,31 @@ mod tests {
         );
         assert_eq!(qualify_owned_filter("part", "part.is_current = 'Y'").unwrap(), "part.is_current = 'Y'");
         assert!(qualify_owned_filter("part", "is_current = 'Y'; select 2").is_err());
+    }
+
+    #[test]
+    fn series_and_fingerprint_bucket_by_fact_date_key() {
+        let m = rate();
+        let series = compile_series(&m).unwrap();
+        assert!(series
+            .starts_with("select store_sales.ss_sold_date_sk as b, 100.0 * sum(sr_return_amt) / sum(ss_net_paid) as v from store_sales"));
+        assert!(series.contains("join date_dim on store_sales.ss_sold_date_sk = date_dim.d_date_sk where true group by 1"));
+        let fp = compile_fact_fingerprint(&m, &["ss_net_paid".to_string(), "ss_ticket_number".to_string()]).unwrap();
+        assert_eq!(
+            fp,
+            "select store_sales.ss_sold_date_sk as b, count(*) as n, \
+             coalesce(sum(hashtext(row(store_sales.ss_net_paid, store_sales.ss_ticket_number)::text)::bigint), 0) as h \
+             from store_sales group by 1"
+        );
+        let (from, month, tables) = month_source(&m).unwrap();
+        assert_eq!(from, "store_sales join date_dim on store_sales.ss_sold_date_sk = date_dim.d_date_sk");
+        assert_eq!(month, "date_dim.d_year * 100 + date_dim.d_moy");
+        assert_eq!(tables, vec!["store_sales".to_string(), "date_dim".to_string()]);
+        // 去重修订的序列读去除完全重复行的整张事实表；指纹仍读原表（重复装载会改变指纹）
+        let mut d = m.clone();
+        d.dedup = true;
+        assert!(compile_series(&d).unwrap().contains("from (select distinct * from store_sales) store_sales"));
+        assert!(compile_fact_fingerprint(&d, &[]).unwrap().ends_with("0::bigint as h from store_sales group by 1"));
     }
 
     #[test]

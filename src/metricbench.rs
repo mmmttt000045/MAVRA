@@ -40,7 +40,7 @@ pub struct Options {
     #[arg(long, value_delimiter = ',', default_value = "direct,middle,metric-local,metric-global,metric-global-noguard",
           value_parser = ["direct", "middle", "metric-local", "metric-global", "metric-global-noguard",
                           "metric-global-schema", "metric-global-revoke", "metric-global-def", "metric-global-exref",
-                          "metric-global-snap", "metric-global-opt", "metric-global-full", "metric-private", "middle-alone", "traj-global", "traj-verify",
+                          "metric-global-snap", "metric-global-opt", "metric-global-full", "metric-global-recheck", "metric-private", "middle-alone", "traj-global", "traj-verify",
                           "metric-global-push", "traj-push",
                           "reforce", "reforce-traj", "reforce-static", "reforce-mavra",
                           "mem-awm", "mem-ace", "mem-mem0", "mem-agentsm", "mem-ace-shared", "mem-agentsm-shared",
@@ -1062,6 +1062,22 @@ pub(crate) fn config(mode: &str) -> (MiddleConfig, bool, bool) {
             true,
             true,
         ),
+        // 最接近的简单对照（2026-11-11）：同 -full 的共享定义、学习、条件集合与绑定快照执行，但写入后首次使用时重跑该定义的
+        // 全部条件（定义级），条件结论不跨定义共享，条件不成立即撤下、不修复，使用者自行探查
+        "metric-global-recheck" => (
+            MiddleConfig {
+                metric_maint: Maint::Definition,
+                cond_reuse: false,
+                repair: false,
+                g8_example: true,
+                g8_snapshot_db: true,
+                optimize: true,
+                snapshot_exec: true,
+                ..base
+            },
+            true,
+            true,
+        ),
         // 单智能体记忆：同 -snap 的学习、检查与维护，但每个智能体只看得到自己学到的定义和表结构知识
         "metric-private" => (
             MiddleConfig {
@@ -1274,7 +1290,8 @@ async fn explain(probe: &Db, run: &AgentRun, log: &TaskLog) -> Value {
 /// 跨越边界的只有题面、智能体自己的轨迹与作答后的二值正确性。设置了 `FIG6_MEMORY_URL` 时 MAVRA 也经它取得同一格式的
 /// 近期结果反馈，各方法的反馈相同；其余实验不经过它。
 fn paper_bridge(mode: &str) -> bool {
-    mode.starts_with("paper-") || (mode == "metric-global-full" && std::env::var_os("FIG6_MEMORY_URL").is_some())
+    mode.starts_with("paper-")
+        || (matches!(mode, "metric-global-full" | "metric-global-recheck") && std::env::var_os("FIG6_MEMORY_URL").is_some())
 }
 
 async fn paper_memory(mode: &str, mut body: Value) -> Result<Value> {
@@ -1282,7 +1299,11 @@ async fn paper_memory(mode: &str, mut body: Value) -> Result<Value> {
         return Ok(Value::Null);
     }
     body["key"] = json!(std::env::var("FIG6_CELL_KEY").context("FIG6_CELL_KEY missing")?);
-    body["arm"] = json!(if mode == "metric-global-full" { "mavra" } else { mode.trim_start_matches("paper-") });
+    body["arm"] = json!(match mode {
+        "metric-global-full" => "mavra",
+        "metric-global-recheck" => "recheck",
+        m => m.trim_start_matches("paper-"),
+    });
     let url = std::env::var("FIG6_MEMORY_URL").context("FIG6_MEMORY_URL missing")?;
     let response =
         reqwest::Client::builder().no_proxy().timeout(std::time::Duration::from_secs(900)).build()?.post(url).json(&body).send().await?;

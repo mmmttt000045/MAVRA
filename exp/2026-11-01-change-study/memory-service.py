@@ -166,7 +166,7 @@ class Actor:
             raise ValueError("Previous task has not ended")
         self.active = (req["task"], req["agent"], req["phase"])
         common = "\n\nEnvironment feedback from your own earlier tasks (binary correctness; no reference answers):\n" + json.dumps(self.feedback[-3:], ensure_ascii=False)
-        if self.arm == "mavra":
+        if self.arm in ("mavra", "recheck"):
             return {"system_prompt": common, "user_prompt": "", "common_feedback": self.feedback[-3:]}
         if self.arm == "ace":
             book = self.actor.playbooks.get(req["agent"], h.ACE_EMPTY_PLAYBOOK)
@@ -211,7 +211,7 @@ class Actor:
         self.feedback.append({"question":req["question"], "own_answer":req.get("answer"),
             "correct":bool(req["correct"]), "own_sql":own_sql[:1800], "own_observations":observations[-3:]})
         self.feedback = self.feedback[-3:]
-        if self.arm == "mavra":
+        if self.arm in ("mavra", "recheck"):
             self.active = None
             return {"common_feedback_recorded":True,"feedback_records":len(self.feedback),"input_tokens":0,"output_tokens":0}
         if self.arm == "tecod":
@@ -355,7 +355,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("Request size outside limit")
             req = json.loads(self.rfile.read(n))
             key, arm = req["key"], req["arm"]
-            if not key.replace("-", "").isalnum() or arm not in ("ace", "awm", "gmemory", "mavra", "tecod"):
+            if not key.replace("-", "").isalnum() or arm not in ("ace", "awm", "gmemory", "mavra", "tecod", "recheck"):
                 raise ValueError("Invalid actor")
             with self.server.registry_lock:
                 if key not in self.server.actors:

@@ -187,6 +187,8 @@ fn metric(s: &Spec) -> Metric {
         basis: Basis::None,
         entity: None,
         dedup: false,
+        null_base: Default::default(),
+        scale_base: Default::default(),
     }
 }
 

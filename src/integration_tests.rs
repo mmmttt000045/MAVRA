@@ -810,6 +810,8 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
         basis: Basis::None,
         entity: None,
         dedup: false,
+        null_base: Default::default(),
+        scale_base: Default::default(),
     };
     let sales = ["ss_ticket_number", "ss_item_sk"];
     let mut m1 = base("门店营业额", "store_sales", "sum(ss_net_paid)", &sales);
@@ -843,6 +845,8 @@ fn expected(c: Change) -> [&'static str; 4] {
         Change::Mirror => [V0, V1, V1, V0],
         // 未优化的定义不依赖日期键连续：各条件都成立
         Change::Rekey => [V0, V0, V0, V0],
+        // 改类：M5 的商品关联不再唯一，候选修复取当前行，但会改变事实未变日期上的历史答案（G9），不自动发布
+        Change::Reclass => [V0, V0, V0, "unavailable"],
     }
 }
 

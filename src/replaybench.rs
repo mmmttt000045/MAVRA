@@ -53,7 +53,8 @@ pub struct Options {
     spec: Option<String>,
     #[arg(long, value_delimiter = ',',
           default_value = "append,backfill,correct,addcol,status,revision,dupload,dimhist,latekey,unit,mirror",
-          value_parser = ["append", "backfill", "correct", "addcol", "status", "revision", "dupload", "dimhist", "latekey", "unit", "mirror"])]
+          value_parser = ["append", "backfill", "correct", "addcol", "status", "revision", "dupload", "dimhist", "latekey", "unit", "mirror",
+                          "reclass"])]
     changes: Vec<String>,
     /// 中间层连接池的单条 SQL 超时
     #[arg(long, default_value_t = 120, value_parser = clap::value_parser!(u64).range(10..=3600))]

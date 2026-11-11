@@ -3,7 +3,7 @@
 
 use super::{inc, join_key, outcome_text, scope_prefix, snap_key, task_key, ver_sig, Ctx, Maint, Middle, SqlCall, TaskLog, LOOKUP_NOTE};
 use crate::catalog::{self, TableVersion};
-use crate::checks::{same_on, Check, On, Outcome};
+use crate::checks::{same_on, Check, On, Outcome, SCALE_FACTOR};
 use crate::db::QKind;
 use crate::knowledge::{BadPath, Basis, Content, Entry, Example, JoinKind, JoinPath, Metric, Status, TimeSpec, TimeStrategy};
 use crate::metric::{self, Answer, Ask, Draft, Trajectory};
@@ -38,6 +38,9 @@ pub struct MetricEvidence {
     /// 已发布的优化修订数（等价且更省的改写）
     #[serde(default)]
     pub optimized: u32,
+    /// 正在修复的前一修订（G9 在上次验证的快照上重算它的历史序列）；修复回归结束后清空
+    #[serde(skip)]
+    pub prev: Option<Metric>,
 }
 
 pub(super) enum Checked {
@@ -64,6 +67,10 @@ enum Breach {
     Grain(String),
     /// 优化修订新增的前提不成立（日期键不再按月连续）：前一修订的条件仍成立时恢复前一修订，否则失效
     Premise(String),
+    /// 过滤或度量读到的列空值占比超过基线：行静默丢失；不在受限修复范围
+    NullFrac(String),
+    /// 度量的月中位数超出准入范围的倍数：可能换了单位或口径，需业务方确认；不在受限修复范围
+    Scale(String),
 }
 
 impl Breach {
@@ -76,6 +83,8 @@ impl Breach {
             | Breach::TimeCoverage(r)
             | Breach::Grain(r)
             | Breach::Premise(r)
+            | Breach::NullFrac(r)
+            | Breach::Scale(r)
             | Breach::Join { reason: r, .. } => r.clone(),
         }
     }
@@ -202,6 +211,11 @@ pub(super) fn metric_of(e: &Entry) -> Option<&Metric> {
 pub(super) fn view(e: &Entry) -> Value {
     let Some(m) = metric_of(e) else { return Value::Null };
     let mut v = serde_json::to_value(m).unwrap_or_default();
+    // 条件基线只供维护使用，不给智能体看
+    if let Some(o) = v.as_object_mut() {
+        o.remove("null_base");
+        o.remove("scale_base");
+    }
     v["key"] = json!(e.key);
     v["revision"] = json!(e.revision);
     v["depends_on"] = json!(e.deps);
@@ -323,35 +337,152 @@ pub(super) fn time_contiguity_check(t: &TimeSpec) -> Check {
     Check::DateKeysContiguous { dim: t.dim.clone(), key: t.dim_col.clone(), year_col: t.year_col.clone(), month_col: t.month_col.clone() }
 }
 
+/// 条件 NotNull 的列：过滤（口径与关联上的，任一表）与度量读到的列。日期列由覆盖条件维护，关联键由连接完整性维护，不重复。
+fn predicate_columns(m: &Metric, cat: &catalog::Catalog) -> Vec<(String, String)> {
+    let tables = m.tables();
+    let mut skip: BTreeSet<(String, String)> = BTreeSet::new();
+    if let Some(t) = &m.time {
+        skip.insert(if t.is_column() { t.column_of(&m.fact) } else { (m.fact.clone(), t.fact_col.clone()) });
+    }
+    for j in &m.joins {
+        for (l, r) in &j.on {
+            skip.insert((j.left.clone(), l.clone()));
+            skip.insert((j.right.clone(), r.clone()));
+        }
+    }
+    let mut out = BTreeSet::new();
+    let exprs = std::iter::once(&m.measure).chain(m.filters.values()).chain(m.joins.iter().flat_map(|j| j.filters.values()));
+    for e in exprs {
+        for w in sqlscan::words(e) {
+            for t in cat.owners(&w).iter().filter(|t| tables.contains(*t)) {
+                let k = (t.clone(), w.clone());
+                if !skip.contains(&k) {
+                    out.insert(k);
+                }
+            }
+        }
+    }
+    out.into_iter().collect()
+}
+
+/// 条件 MeasureScale 的列：度量读到的事实表数值列（不含粒度键、日期键与关联键）。
+fn scale_columns(m: &Metric, cat: &catalog::Catalog) -> Vec<String> {
+    let Some(f) = cat.table(&m.fact) else { return vec![] };
+    let mut keys: BTreeSet<String> = m.grain.iter().map(|c| c.to_lowercase()).collect();
+    if let Some(t) = &m.time {
+        keys.insert(t.fact_col.to_lowercase());
+    }
+    for j in m.joins.iter().filter(|j| j.left == m.fact) {
+        keys.extend(j.on.iter().map(|(l, _)| l.to_lowercase()));
+    }
+    let numeric = |d: &str| ["numeric", "decimal", "integer", "bigint", "smallint", "double", "real"].iter().any(|x| d.starts_with(x));
+    let mut out = BTreeSet::new();
+    for w in sqlscan::words(&m.measure) {
+        if f.col(&w).is_some_and(|c| numeric(&c.dtype)) && !keys.contains(&w) {
+            out.insert(w);
+        }
+    }
+    out.into_iter().collect()
+}
+
+fn scale_check(m: &Metric, col: &str) -> Option<Check> {
+    let (from, month, tables) = metric::month_source(m)?;
+    Some(Check::MeasureScale { fact: m.fact.clone(), col: col.to_string(), from, month, tables })
+}
+
+/// 度量尺度是否在准入范围内：各月中位数都落在 [下界 / K, 上界 × K]；没有可统计的月份时不作判断。
+fn scale_ok(base: (f64, f64), o: &Outcome) -> bool {
+    match (o.metrics["lo"].as_f64(), o.metrics["hi"].as_f64()) {
+        (Some(lo), Some(hi)) => lo >= base.0 / SCALE_FACTOR && hi <= base.1 * SCALE_FACTOR,
+        _ => true,
+    }
+}
+
+/// 条件的判定：直接看检查结论、按丢行比例与基线比较，或按度量尺度范围比较。
+#[derive(Clone, Copy, Debug)]
+enum Accept {
+    Pass,
+    LossAtMost(f64),
+    Scale(f64, f64),
+}
+
+impl Accept {
+    fn ok(self, o: &Outcome) -> bool {
+        match self {
+            Accept::Pass => o.pass,
+            Accept::LossAtMost(b) => loss_of(o) <= b,
+            Accept::Scale(lo, hi) => scale_ok((lo, hi), o),
+        }
+    }
+
+    /// 几个修订共用一个检查时取最严的判定（每个修订的条件都要成立）。
+    fn tighter(self, other: Accept) -> Accept {
+        match (self, other) {
+            (Accept::LossAtMost(a), Accept::LossAtMost(b)) => Accept::LossAtMost(a.min(b)),
+            (Accept::Scale(a, b), Accept::Scale(c, d)) => Accept::Scale(a.max(c), b.min(d)),
+            (x, _) => x,
+        }
+    }
+}
+
 /// 绑定快照执行要核对的条件（与 `metric_breach` 维护的条件一致）：各关联一侧的键唯一性、内连接的完整性（附准入基线）、
 /// 时间维度键的唯一性（日期维度方式）、覆盖（附准入基线）、粒度；日期键范围修订另加日期键连续。
-/// 返回条件与覆盖基线（只有完整性条件有）。
-fn bound_conditions(m: &Metric) -> Vec<(Check, Option<f64>)> {
+/// 过滤与度量读到的列的空值条件、度量尺度条件（有准入基线的列）。返回条件与判定。
+fn value_conditions(m: &Metric) -> Vec<(Check, Accept)> {
+    let mut out = vec![];
+    for (k, b) in &m.null_base {
+        if let Some((t, c)) = k.split_once('.') {
+            out.push((Check::NotNull { table: t.to_string(), col: c.to_string() }, Accept::LossAtMost(b + COVERAGE_TOLERANCE)));
+        }
+    }
+    for (k, (lo, hi)) in &m.scale_base {
+        if let Some(c) = k.split_once('.').and_then(|(_, c)| scale_check(m, c)) {
+            out.push((c, Accept::Scale(*lo, *hi)));
+        }
+    }
+    out
+}
+
+/// 返回条件与判定。
+fn bound_conditions(m: &Metric) -> Vec<(Check, Accept)> {
     let mut out = vec![];
     for (i, j) in m.joins.iter().enumerate() {
         let mut cols: Vec<String> = j.on.iter().map(|(_, r)| r.clone()).collect();
         cols.sort();
-        out.push((Check::KeyUnique { table: j.right.clone(), cols, filter: j.filters.get(&j.right).cloned() }, None));
+        out.push((Check::KeyUnique { table: j.right.clone(), cols, filter: j.filters.get(&j.right).cloned() }, Accept::Pass));
         if j.kind == JoinKind::Inner {
-            out.push((join_coverage(m, i), Some(j.orphan_ratio + COVERAGE_TOLERANCE)));
+            out.push((join_coverage(m, i), Accept::LossAtMost(j.orphan_ratio + COVERAGE_TOLERANCE)));
         }
     }
     if let Some(t) = &m.time {
         if !t.is_column() {
-            out.push((Check::KeyUnique { table: t.dim.clone(), cols: vec![t.dim_col.clone()], filter: None }, None));
+            out.push((Check::KeyUnique { table: t.dim.clone(), cols: vec![t.dim_col.clone()], filter: None }, Accept::Pass));
             if let Some(c) = alias_unique_check(t) {
-                out.push((c, None));
+                out.push((c, Accept::Pass));
             }
         }
         if let Some(c) = coverage_check(m) {
-            out.push((c, Some(t.loss_ratio + COVERAGE_TOLERANCE)));
+            out.push((c, Accept::LossAtMost(t.loss_ratio + COVERAGE_TOLERANCE)));
         }
         if t.strategy == TimeStrategy::KeyRange {
-            out.push((time_contiguity_check(t), None));
+            out.push((time_contiguity_check(t), Accept::Pass));
         }
     }
-    out.push((grain_check(m), None));
+    out.extend(value_conditions(m));
+    out.push((grain_check(m), Accept::Pass));
     out
+}
+
+/// 在同一个只读快照里执行两条查询（`schema` 给出时以它为 search_path，即同一库里保存的学习时数据）。
+async fn snapshot_pair(db: &crate::db::Db, schema: Option<&str>, a: &str, b: &str) -> Result<(crate::db::Rows, crate::db::Rows)> {
+    let snap = db.snapshot().await?;
+    if let Some(s) = schema {
+        snap.query(QKind::Metric, &format!("set local search_path to \"{s}\"")).await?;
+    }
+    let x = snap.query(QKind::Metric, a).await?;
+    let y = snap.query(QKind::Metric, b).await?;
+    snap.commit().await?;
+    Ok((x, y))
 }
 
 impl TaskLog {
@@ -528,6 +659,7 @@ impl Middle {
         };
         self.store.put(&fk, e);
         let evidence = MetricEvidence {
+            prev: None,
             task: task.clone(),
             ask: traj.ask.clone(),
             decimals: traj.decimals,
@@ -611,6 +743,7 @@ impl Middle {
         };
         self.store.put(&fk, e);
         let evidence = MetricEvidence {
+            prev: None,
             task: key.clone(),
             ask,
             decimals,
@@ -806,7 +939,36 @@ impl Middle {
                 }
             }
         }
+        self.fill_baselines(ctx, m).await;
         Ok(Ok(()))
+    }
+
+    /// 条件 NotNull 与 MeasureScale 的准入基线。只补还没有基线的列：修复后的修订保留原基线，修复新引入的列取当前数据。
+    /// 基线查询失败时该列不设条件（不影响准入）。
+    async fn fill_baselines(&self, ctx: &Ctx, m: &mut Metric) {
+        for (t, c) in predicate_columns(m, &self.cat) {
+            let k = format!("{t}.{c}");
+            if m.null_base.contains_key(&k) {
+                continue;
+            }
+            if let Ok((o, _)) = self.cond_outcome(ctx, &Check::NotNull { table: t, col: c }, false).await {
+                m.null_base.insert(k, loss_of(&o));
+            }
+        }
+        for c in scale_columns(m, &self.cat) {
+            let k = format!("{}.{c}", m.fact);
+            if m.scale_base.contains_key(&k) {
+                continue;
+            }
+            let Some(chk) = scale_check(m, &c) else { continue };
+            if let Ok((o, _)) = self.cond_outcome(ctx, &chk, false).await {
+                if let (Some(lo), Some(hi)) = (o.metrics["lo"].as_f64(), o.metrics["hi"].as_f64()) {
+                    if lo > 0.0 {
+                        m.scale_base.insert(k, (lo, hi));
+                    }
+                }
+            }
+        }
     }
 
     /// G4：事实表在粒度键上唯一（带口径过滤）。`reuse`：同一条件在当前版本上已有结论就复用（条件级维护的修复回归用）；
@@ -1134,6 +1296,9 @@ impl Middle {
                 } else if m.entity.is_some() {
                     // 特征定义失效即撤下：受限修复的回归以单个答案值为准，特征没有这样的参照
                     "revoked"
+                } else if !self.cfg.repair {
+                    // 对照组（共享定义、全量重检、失败即失效）：不修复，使用者自行探查
+                    "revoked"
                 } else {
                     crate::timing::measure("repair", self.restricted_repair(ctx, fk, e, &m, b)).await?;
                     if let Some(now) = self.store.get(fk).filter(|x| x.status == Status::Valid) {
@@ -1283,6 +1448,36 @@ impl Middle {
                         return Ok(Some(Breach::Time(format!("日期键两种编码出现重叠：{}", outcome_text(&c, &o)))));
                     }
                 }
+            }
+        }
+        // 过滤与度量读到的列不应变空、度量不应换尺度；不成立时不在受限修复范围，定义暂停提供
+        for (c, accept) in value_conditions(m) {
+            let label = match &c {
+                Check::NotNull { table, col } => format!("非空 {table}.{col}"),
+                Check::MeasureScale { fact, col, .. } => format!("尺度 {fact}.{col}"),
+                _ => c.describe(),
+            };
+            if !force && !c.tables().iter().any(|x| changed.contains(x)) {
+                conds.push(json!({"cond": label, "tables": c.tables(), "action": "skipped"}));
+                continue;
+            }
+            let (o, how) = self.cond_outcome(ctx, &c, force).await?;
+            let pass = accept.ok(&o);
+            let ms = if how == "executed" { o.ms } else { 0.0 };
+            conds.push(json!({"cond": label, "tables": c.tables(), "action": how, "pass": pass, "metrics": o.metrics, "ms": ms}));
+            if !pass {
+                return Ok(Some(match (&c, accept) {
+                    (Check::NotNull { table, col }, Accept::LossAtMost(b)) => Breach::NullFrac(format!(
+                        "{table}.{col} 为空的行占比从 {:.2}% 升至 {:.2}%，读到该列的过滤或度量会静默丢行",
+                        (b - COVERAGE_TOLERANCE).max(0.0) * 100.0,
+                        loss_of(&o) * 100.0
+                    )),
+                    (Check::MeasureScale { fact, col, .. }, Accept::Scale(lo, hi)) => Breach::Scale(format!(
+                        "{fact}.{col} 的月中位数范围从 [{lo}, {hi}] 变为 [{}, {}]，超出 {SCALE_FACTOR} 倍，可能换了单位或口径，需业务方确认",
+                        o.metrics["lo"], o.metrics["hi"]
+                    )),
+                    _ => Breach::NullFrac(c.describe()),
+                }));
             }
         }
         let c = grain_check(m);
@@ -1739,9 +1934,14 @@ impl Middle {
         self.store.put(fk, e);
         if let Some(ev) = self.metric_evidence.lock().get_mut(fk) {
             ev.repaired = true;
+            ev.prev = Some(m.clone());
         }
         self.metric_event(json!({"event": "repair_candidate", "key": old.key, "revision": rev, "change": change}));
-        self.regress(ctx, fk).await
+        let r = self.regress(ctx, fk).await;
+        if let Some(ev) = self.metric_evidence.lock().get_mut(fk) {
+            ev.prev = None;
+        }
+        r
     }
 
     /// 修复通过回归后，把撤销时发给使用者的通知换成修复通知：旧修订失效的原因与可用的新修订。
@@ -1891,7 +2091,7 @@ impl Middle {
     /// 维护，所以快照读到的版本恰好对应它能看到的数据：核对与执行之间提交的写入对本次执行不可见。
     /// 任一条件不成立即放弃快照并拒绝，同时让下一次请求重读版本，后续使用按常规维护处理。
     pub(super) async fn run_bound(&self, ctx: &Ctx, sql: &str, refs: &[(String, u32)]) -> Result<Value> {
-        let mut conds: Vec<(Check, Option<f64>)> = vec![];
+        let mut conds: Vec<(Check, Accept)> = vec![];
         for (key, rev) in refs {
             // 声明的是被优化修订替代、仍然可用的前一修订时，核对它自己的条件
             let fk = self.mfk(ctx, key);
@@ -1900,11 +2100,7 @@ impl Middle {
             for c in metric_of(&e).map(bound_conditions).unwrap_or_default() {
                 // 几个声明的修订共用一个检查时只执行一次；完整性阈值取最严的，因为每个修订的条件都要成立
                 match conds.iter_mut().find(|(k, _)| same_cond(k, &c.0) || k.key() == c.0.key()) {
-                    Some((_, b)) => {
-                        if let (Some(x), Some(y)) = (b.as_mut(), c.1) {
-                            *x = x.min(y);
-                        }
-                    }
+                    Some((_, b)) => *b = b.tighter(c.1),
                     None => conds.push(c),
                 }
             }
@@ -1912,7 +2108,7 @@ impl Middle {
         let snap = self.db.snapshot().await?;
         let vers = catalog::tx_versions(&snap.query(QKind::Metric, catalog::TX_VERSIONS_SQL).await?);
         let (mut run, mut reused) = (0u32, 0u32);
-        for (c, baseline) in &conds {
+        for (c, accept) in &conds {
             // 同一条件在相同事务性版本上的结论（来自更早的快照，或前后版本一致的维护检查）直接用
             let vkey = snap_key(c, &vers);
             let known = self.snap_verdicts.lock().get(&vkey).cloned();
@@ -1943,10 +2139,7 @@ impl Middle {
                     o
                 }
             };
-            let pass = match baseline {
-                Some(b) => loss_of(&o) <= *b,
-                None => o.pass,
-            };
+            let pass = accept.ok(&o);
             if !pass {
                 drop(snap);
                 inc(&self.stats.snapshot_rejections);
@@ -1996,7 +2189,64 @@ impl Middle {
             },
         };
         gate!(gates, "G8", g8);
+        // G9：修复不改变事实行未变的历史答案（前一修订在上次验证的快照上、替代修订在当前快照上，按时间桶比较）
+        if let (true, Some(prev)) = (self.cfg.history_check, &ev.prev) {
+            gate!(gates, "G9", self.history_gate(ctx, m, prev, ev.decimals).await);
+        }
         Ok(None)
+    }
+
+    /// G9：上次验证的快照（学习时快照库或模式）上前一修订的全量序列，与当前快照上替代修订的全量序列，在事实行指纹相同的
+    /// 时间桶上逐桶比较（答案精度）。任一桶不同：修复改变了写入没有触及的历史答案，说明它在做数据区分不了的业务选择，
+    /// 不自动发布。没有可比较的桶时本门槛不起作用（写入触及了全部历史），照常记录。没有学习时快照时跳过。
+    async fn history_gate(&self, ctx: &Ctx, new: &Metric, prev: &Metric, decimals: u32) -> Gate {
+        let (old_db, schema): (&crate::db::Db, Option<&str>) = match (&self.learn_db, &self.cfg.g8_snapshot) {
+            (Some(ldb), _) => (ldb, None),
+            (None, Some(s)) => (&self.db, Some(s.as_str())),
+            _ => {
+                self.metric_event(json!({"event": "history_skipped", "agent": ctx.agent, "metric": prev.name, "reason": "没有学习时快照"}));
+                return Ok(());
+            }
+        };
+        let cols: Vec<String> = metric::columns(prev, &self.cat).get(&prev.fact).map(|s| s.iter().cloned().collect()).unwrap_or_default();
+        let sqls = (metric::compile_fact_fingerprint(new, &cols), metric::compile_series(prev), metric::compile_series(new));
+        let (Ok(fp), Ok(old_s), Ok(new_s)) = sqls else { return Err("无法编译历史序列".into()) };
+        let t0 = Instant::now();
+        let (old, now) = match (snapshot_pair(old_db, schema, &fp, &old_s).await, snapshot_pair(&self.db, None, &fp, &new_s).await) {
+            (Ok(o), Ok(n)) => (o, n),
+            (Err(e), _) | (_, Err(e)) => return Err(format!("历史序列查询失败：{e:#}")),
+        };
+        let fps = |r: &crate::db::Rows| -> HashMap<String, (String, String)> {
+            r.rows.iter().filter_map(|x| Some((x.first()?.clone()?, (x.get(1)?.clone()?, x.get(2)?.clone().unwrap_or_default())))).collect()
+        };
+        let series = |r: &crate::db::Rows| -> HashMap<String, Option<String>> {
+            r.rows.iter().filter_map(|x| Some((x.first()?.clone()?, x.get(1).cloned().flatten()))).collect()
+        };
+        let (fp_old, fp_now, s_old, s_now) = (fps(&old.0), fps(&now.0), series(&old.1), series(&now.1));
+        let (mut compared, mut moved, mut example) = (0usize, 0usize, None);
+        for (b, v) in &s_old {
+            let Some(v) = v else { continue };
+            if fp_old.get(b).is_none() || fp_old.get(b) != fp_now.get(b) {
+                continue;
+            }
+            compared += 1;
+            let expect = metric::parse_answer(v);
+            let same = s_now.get(b).cloned().flatten().is_some_and(|x| metric::same_value(&metric::parse_answer(&x), &expect, decimals));
+            if !same {
+                moved += 1;
+                example.get_or_insert_with(|| format!("{b}: {v} → {}", s_now.get(b).cloned().flatten().unwrap_or_else(|| "NULL".into())));
+            }
+        }
+        self.metric_event(json!({"event": "history_checked", "agent": ctx.agent, "metric": prev.name, "buckets": s_old.len(),
+                                 "compared": compared, "moved": moved, "example": example,
+                                 "ms": t0.elapsed().as_secs_f64() * 1000.0}));
+        match (compared, moved) {
+            (_, 0) => Ok(()),
+            _ => Err(format!(
+                "修复会改变 {moved} 个事实行未变的时间桶的历史答案（共比较 {compared} 个，例如 {}），口径需业务方确认",
+                example.unwrap_or_default()
+            )),
+        }
     }
 }
 
@@ -2081,6 +2331,8 @@ mod tests {
             basis: Default::default(),
             entity: None,
             dedup: false,
+            null_base: Default::default(),
+            scale_base: Default::default(),
         };
         assert_eq!(grain_check(&m), ku("t", &["a", "b"], None));
         assert_eq!(exact_duplicates(&m), dk(&["a", "b"], None));

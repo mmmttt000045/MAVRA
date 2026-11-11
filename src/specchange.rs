@@ -76,6 +76,14 @@ const CURRENT_COL: &str = "is_current";
 const SOURCE_COL: &str = "source_system";
 const NOTE_COL: &str = "note_text";
 
+/// 模式描述里给出目标表的变化名：维度改类与维表拉链作用于同一张拉链维表。
+fn spec_key(ch: Change) -> &'static str {
+    match ch {
+        Change::Reclass => "dimhist",
+        c => c.name(),
+    }
+}
+
 impl Spec {
     pub fn load(path: &str) -> Result<Spec> {
         let s: Spec = serde_json::from_str(&std::fs::read_to_string(path).with_context(|| format!("读取模式描述 {path}"))?)
@@ -110,7 +118,7 @@ impl Spec {
 
     /// 变化作用的表（决定哪些定义要重答）。
     pub fn change_tables(&self, ch: Change) -> Vec<String> {
-        self.changes.get(ch.name()).cloned().into_iter().collect()
+        self.changes.get(spec_key(ch)).cloned().into_iter().collect()
     }
 
     /// 标准答案的区分列过滤：业务方知道的“当前、完成”口径，在初始快照上不起作用（与 TPC-DS 库的 `judge_metric` 相同）。
@@ -210,7 +218,7 @@ impl Spec {
 
     /// 报告里的变化说明（作用的表与写入方式）。
     pub fn describe(&self, ch: Change) -> String {
-        let t = self.changes.get(ch.name()).map(String::as_str).unwrap_or("?");
+        let t = self.changes.get(spec_key(ch)).map(String::as_str).unwrap_or("?");
         let y = self.years.holdout;
         match ch {
             Change::Append => format!("{t}：复制 {y}-09 的行并偏移新键"),
@@ -221,6 +229,7 @@ impl Spec {
             Change::Revision => format!("{t}：{} 年起部分行更正为 0.9 倍，旧行保留为 {CURRENT_COL} = 0", self.years.learn),
             Change::Duplicate => format!("{t}：{y}-06 至 {y}-09 的行整批重复装载"),
             Change::DimHistory => format!("{t}：三分之一的键追加 {CURRENT_COL} = 'N' 的旧版本行，描述属性不同"),
+            Change::Reclass => format!("{t}：三分之一的键改类，原描述属性保留为 {CURRENT_COL} = 'N' 的历史版本行，当前行换成另一取值"),
             Change::LateKey => format!("{t}：追加 {y}-09 的行，其日期键换用另一种格式（日期列日历：日期为空）"),
             Change::Unit => format!("{t}：{y}-07 起金额乘以 100"),
             Change::Mirror => format!("{t}：部分行金额更正后，追加一整份保留旧金额的备份副本（{SOURCE_COL} 标记）"),
@@ -295,7 +304,7 @@ impl Gen {
     }
 
     fn target(&self, ch: Change) -> Result<&str> {
-        self.spec.changes.get(ch.name()).map(String::as_str).ok_or_else(|| anyhow!("模式描述没有给出变化 {} 的目标表", ch.name()))
+        self.spec.changes.get(spec_key(ch)).map(String::as_str).ok_or_else(|| anyhow!("模式描述没有给出变化 {} 的目标表", ch.name()))
     }
 
     fn fact(&self, ch: Change) -> Result<&FactSpec> {
@@ -409,7 +418,7 @@ impl Gen {
                 let set = Self::money_set(f, &|c| format!("{c} - 1"));
                 write(db, &f.table, "更正部分金额", &format!("update {} set {set} where {}", f.table, self.subset(f, 3, &day(y, 1)))).await
             }
-            Change::AddColumn | Change::Status | Change::Duplicate | Change::DimHistory | Change::Unit => Ok(0),
+            Change::AddColumn | Change::Status | Change::Duplicate | Change::DimHistory | Change::Unit | Change::Reclass => Ok(0),
             Change::Rekey => bail!("模式描述驱动的变化不含日期键重编号"),
         }
     }
@@ -453,6 +462,34 @@ impl Gen {
                     &format!("insert into {t} select * from {t} where {}", self.dated(f, &day(y, 6), &day(y, 10)), t = f.table),
                 )
                 .await
+            }
+            Change::Reclass => {
+                let t = self.target(ch)?;
+                let d = self.spec.dim(t).ok_or_else(|| anyhow!("{t} 不是维表"))?;
+                let c = cols(db, t, &[CURRENT_COL]).await?;
+                let (a, k) = (&d.attr, &d.key[0]);
+                let n = write(
+                    db,
+                    t,
+                    "改类：原描述属性保留为历史版本",
+                    &format!(
+                        "insert into {t} ({cs}, {CURRENT_COL}) select {cs}, 'N' from {t} where {k} % 3 = 0 and {CURRENT_COL} = 'Y'",
+                        cs = c.join(", ")
+                    ),
+                )
+                .await?;
+                // 当前行换成另一取值（最小值与最大值互换，其余改为最小值），与维表拉链的取值规则相同
+                write(
+                    db,
+                    t,
+                    "改类：当前行换成另一取值",
+                    &format!(
+                        "update {t} set {a} = case when {a} = (select min({a}) from {t}) then (select max({a}) from {t}) \
+                         else (select min({a}) from {t}) end where {k} % 3 = 0 and {CURRENT_COL} = 'Y'"
+                    ),
+                )
+                .await?;
+                Ok(n)
             }
             Change::DimHistory => {
                 let t = self.target(ch)?;
@@ -619,6 +656,23 @@ impl Gen {
             Change::DimHistory => {
                 let t = self.target(ch)?;
                 write(db, t, "撤回维表历史版本", &format!("delete from {t} where {CURRENT_COL} = 'N'")).await?;
+            }
+            Change::Reclass => {
+                let t = self.target(ch)?;
+                let d = self.spec.dim(t).ok_or_else(|| anyhow!("{t} 不是维表"))?;
+                let a = &d.attr;
+                let on: Vec<String> = d.key.iter().map(|k| format!("c.{k} = h.{k}")).collect();
+                write(
+                    db,
+                    t,
+                    "撤回改类：当前行恢复原取值",
+                    &format!(
+                        "update {t} c set {a} = h.{a} from {t} h where h.{CURRENT_COL} = 'N' and c.{CURRENT_COL} = 'Y' and {}",
+                        on.join(" and ")
+                    ),
+                )
+                .await?;
+                write(db, t, "撤回改类：删除历史版本", &format!("delete from {t} where {CURRENT_COL} = 'N'")).await?;
             }
             Change::Unit => {
                 let f = self.fact(ch)?;
