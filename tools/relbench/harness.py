@@ -160,6 +160,8 @@ ARMS = {
     # a matched template and three examples, or the examples alone, go into the prompt (tools/relbench/tecod_service.py)
     "tecod": {"middle_mode": "middle-alone", "parallel_ok": False, "tecod": True},
 }
+# Spend one additional response on refinement within the original reuse-call ceilings.
+ARMS["mavra-refine"] = {**ARMS["mavra-signal"], "reuse_llm_limit": 4}
 GMEMORY_REPO = "results/ext/GMemory"
 GMEMORY_PYTHON = "results/ext/venv-gmem/bin/python"
 GMEMORY_OBS_CHARS = 2000
