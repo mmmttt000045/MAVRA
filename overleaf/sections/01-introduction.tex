@@ -25,13 +25,28 @@ When different agents receive similar requests, they may independently issue que
 
 \begin{example}
 \bi{
-Figure~\ref{fig:metric-record} illustrates three challenges when $N$ independent agents query a shared retail database.
-In Figure~\ref{fig:metric-record}(a), Agent~1 asks for January electronics revenue: it inspects \code{date}, \code{sales}, and \code{item}, joins them on \code{date\_id} and \code{item\_id}, filters \code{category='Elec.'}, and sums \code{net\_paid} for \code{month=1}.
-When Agent~2 asks for the highest-revenue month for electronics and Agent~$N$ asks for the September year-over-year difference, both repeat the exact same exploration in Steps~1--4 (all \WxSessions\ sessions on this metric repeat Steps~1--4; 93\% of database probes revisit earlier targets and 57\% of LLM calls issue no final SQL), differing only in Step~5's parameter or post-aggregation derivation.
-In Figure~\ref{fig:metric-record}(b), even after extracting \code{Electronics revenue} (\code{ER}), deciding which request can reuse it is non-trivial: Request~A (\emph{``electronics turnover in Feb.''}) uses different wording for the same computation, whereas Request~B (\emph{``electronics revenue net of returns in Jan.''}) is lexically closer to \code{ER} yet adds an anti-join to \code{store\_returns}. Embedding similarity directly reuses \code{ER} on Request~B and silently overstates revenue.
-In Figure~\ref{fig:metric-record}(c), database updates threaten stored definitions: appending February rows to \code{sales} changes the query answer while \code{ER} stays valid, whereas loading historical \code{item} versions introduces duplicate \code{item\_id=17} rows under an unchanged schema, causing \code{ER}'s join to double-count item~17's sales.
+Figure~\ref{fig:metric-record} illustrates a typical e-commerce scenario in which $N$ independent data agents query the same retail database.
+Agent~1 asks for revenue in January.
+% It inspects the schemas of the \code{date}, \code{sales}, and \code{item} tables, identifies the join keys (\code{date\_id} and \code{item\_id}), examines the revenue columns (\code{net\_paid} and \code{gross}), and applies the required filters. 
+It first explores the database to check the schemas of the \code{date}, \code{sales}, and \code{item} tables,
+% It then finds that a join is needed, and thus joins the tables on \code{date\_id} and \code{item\_id} (\code{join}).
+It then identifies the join keys and joins the tables on \code{date\_id} and \code{item\_id}.
+Next, it probes the revenue columns (\code{net\_paid} and \code{gross}), and queries January revenue (\code{month=1}).
+Suppose another independent Agent~2 asks for the month with the highest electronics revenue. 
+% Agent~2 is asked to identify the month with the highest electronics revenue. 
+It starts by inspecting the same tables as Agent 1, then applies the electronics filter (\code{category='Elec.'}), joins the tables, and ranks the months.
+% It independently repeats the similar database exploration before grouping revenue by month and identifying the highest. Similarly, Agent~$N$ repeats this process to compare September revenue across years. 
+As highlighted in the dashed box, while the final steps differ (Step~5), these agents share a similar knowledge discovery process in Steps~1--4. 
+% Figure~\ref{fig:metric-record} shows a typical multi-agent use case in e-commerce senario, where $N$ independent agents on the same retail database. 
+% Agent~1 asks for electronics revenue in January.
+
+% Suppose another independent Agent~2 asks for the best month for electronics revenue.
+% It also starts by inspecting the same \code{date}, \code{sales}, and \code{item} tables, then applies the electronics filter (\code{category='Elec.'}), joins the tables, and ranks the months.
+% As the dashed box shows, Steps~1--4 are repeated across agents, and only Step~5 differs (all \WxSessions\ sessions on this metric repeat Steps~1--4; overall, 93\% of database probes revisit earlier targets and 57\% of LLM calls issue no final SQL). 
+% Agent~$N$ repeats this process again to compare September across years. 
+% This raises a natural question: must every agent repeat this exploration independently, or can we extract and share the common calculation?
 }
-{图~\ref{fig:metric-record} 展示了同一零售数据库上 $N$ 个独立智能体协作的三项挑战。在图~\ref{fig:metric-record}(a) 中，智能体~1 询问 1 月电子品类营业额：它查看 \code{date}、\code{sales} 和 \code{item}，按 \code{date\_id} 和 \code{item\_id} 连接三表，过滤 \code{category='Elec.'} 并汇总 \code{month=1} 的 \code{net\_paid}。当智能体~2 询问电子品类营业额最高的月份、智能体~$N$ 询问 9 月同比差值时，二者均完整重复了步骤 1--4 的探索（该指标的全部 \WxSessions\ 个会话均重复了步骤 1--4；93\% 的数据库探查重复访问已有目标，57\% 的大模型调用未产出最终 SQL），仅在步骤 5 的参数或聚合后派生操作上不同。在图~\ref{fig:metric-record}(b) 中，即使提取出 \code{Electronics revenue}（\code{ER}），判断后续请求能否复用依然困难：请求 A（\emph{``2 月电子品类周转额''}）措辞不同但指向同一计算，而请求 B（\emph{``1 月扣除退货的电子品类营业额''}）字面更接近 \code{ER}，却多出对 \code{store\_returns} 的反连接；按向量相似度匹配会直接复用 \code{ER} 并悄然高估收入。在图~\ref{fig:metric-record}(c) 中，数据更新威胁已存定义：向 \code{sales} 追加 2 月数据仅改变结果而不影响 \code{ER} 的有效性；但载入 \code{item} 历史版本会在表结构不变的情况下引入重复的 \code{item\_id=17}，导致 \code{ER} 的连接将商品 17 的销售重复计入。}
+{图~\ref{fig:metric-record} 展示了同一零售数据库上 $N$ 个相互独立的智能体。智能体~1 询问 1 月的电子品类营业额：它首先探索数据库（\code{desc}），查看 \code{date}、\code{sales} 和 \code{item} 三张表；查完后发现需要连接操作，便按 \code{date\_id} 和 \code{item\_id} 连接三张表（\code{join}），探查营业额候选列（\code{net\_paid}、\code{gross}），最后查询 1 月数据（\code{month=1}）。接着，另一个独立的智能体~2 询问电子品类营业额最高的月份，它同样从头开始：先查数据库并重复查看 \code{date}、\code{sales} 和 \code{item} 表，再尝试品类过滤（\code{category='Elec.'}）与表连接，最后按月份排序；智能体~$N$ 在做 9 月同比分析时又重复了同一过程。如虚线框所示，步骤 1--4 在各智能体间高度重复，仅步骤 5 不同（该指标的全部 \WxSessions\ 个会话均重复了步骤 1--4；整体上 93\% 的数据库探查重复访问已有目标，57\% 的大模型调用未产出最终 SQL）。这自然引出一个问题：是否有必要让每个智能体都独立重复这些探索，还是可以把公共计算提取出来供多智能体共享？}
 \end{example}
 
 \bi{
