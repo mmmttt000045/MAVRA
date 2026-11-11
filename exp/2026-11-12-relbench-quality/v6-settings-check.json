@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "only_arm_difference": {
+    "reuse_llm_limit": [
+      3,
+      4
+    ]
+  },
+  "warm_model_limit": 4,
+  "warm_tool_limit": 6,
+  "max_reuse_agent_model_calls": 48,
+  "old_stack_agent_model_calls": 52,
+  "max_reuse_agent_tool_calls": 72,
+  "old_stack_agent_tool_calls": 74,
+  "prompt_and_final_slot_checked": true,
+  "model_service_calls": 0,
+  "harness_sha256": "31db294b9eb95434b7c62e9bbe04826d51ffeabd876fe6a6691c4e90724b380f"
+}
