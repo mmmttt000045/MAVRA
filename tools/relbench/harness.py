@@ -139,6 +139,12 @@ ARMS = {
                      "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
                      "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
                      "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True, "reuse_goal_frames": True},
+    "mavra-signal": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                     "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
+                     "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
+                     "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
+                     "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True,
+                     "reuse_goal_frames": True, "require_start_signal": True},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -1028,6 +1034,9 @@ Shared memory: agents on this database publish verified feature definitions and 
                                              "train_seeds": seeds["train_sample"][aligned].copy(),
                                              "valid_seeds": seeds["val"][aligned].copy(), "audit": "clean"}
             work["cached"] = True
+            if not self.start_is_informative(xtr):
+                return {"val": None, "fallback_val": val, "fallback_only": True, "from_cutoff": prev[0],
+                        "current_refit_retained": True, "why": "previous program has no varying training features"}
             return {"val": val, "from_cutoff": prev[0], "current_refit_retained": True, "dropped_leaking": dropped}
         except Exception as err:
             return {"val": None, "why": f"incumbent preparation failed: {str(err)[:200]}"}
@@ -1046,6 +1055,18 @@ Shared memory: agents on this database publish verified feature definitions and 
                 and cached["valid_seeds"].equals(seeds["val"][cols])):
             return None
         return cached
+
+    def start_is_informative(self, train):
+        """Constant defaults remain fallbacks, using training values alone."""
+        if not self.arm.get("require_start_signal"):
+            return True
+        return train is not None and bool((train.nunique(dropna=False) > 1).any())
+
+    @staticmethod
+    def constant_start_message():
+        return ("The checked default has no varying training features. It is kept only as an emergency fallback, "
+                "not as a feature-search starting point. Build task-relevant relational features and validate a working "
+                "SQL early; its best clean validation will be retained.")
 
     def charge_incumbent_work(self, t, k, rec):
         if not self.arm.get("reuse_goal_frames") or k <= 1:
@@ -1761,6 +1782,7 @@ Shared memory: agents on this database publish verified feature definitions and 
         goal_hit = None  # model calls made when a validation first reached the goal
         chosen = None  # mavra-select: the start the memory validated
         best_frames = None  # only the current best's matrices, reused by the bounded selector
+        fallback = None  # clean constant default, not a successful engineered candidate
         t_start = time.time()
         if self.arm.get("push_memory"):
             # the two lookups the agent used to start with, done by the memory at the session start (inside the
@@ -1786,10 +1808,15 @@ Shared memory: agents on this database publish verified feature definitions and 
                 try:
                     sel = self.select_start(t, k, seeds, looked["find_program"], looked["find_features"], middle, agent, sid)
                     if sel is not None and sel.get("chosen"):
-                        goal = self.target(t, k)
-                        v = sel["chosen"]["val"]
-                        reached = goal is not None and (v >= goal if higher else v <= goal)
-                        text = self.select_message(t, k, sel, looked, reached)
+                        frames = sel.get("_frames")
+                        if self.start_is_informative(frames[1] if frames else None):
+                            goal = self.target(t, k)
+                            v = sel["chosen"]["val"]
+                            reached = goal is not None and (v >= goal if higher else v <= goal)
+                            text = self.select_message(t, k, sel, looked, reached)
+                        else:
+                            fallback = {"val": sel["chosen"]["val"], "frames": frames, "source": "own_program"}
+                            sel["fallback_only"] = True
                 except Exception as err:  # noqa: BLE001 - the session then starts from the plain lookups and the error is kept
                     sel = {"error": f"select_start: {type(err).__name__}: {str(err)[:300]}"}
                     log(f"{t} k{k}: {sel['error']}")
@@ -1804,6 +1831,9 @@ Shared memory: agents on this database publish verified feature definitions and 
                     goal_hit = 0
                     rec["goal_reached"] = {"validation": 0, "llm_calls": 0, "by": "memory"}
                 msgs[1]["content"] = task_line + "\n\n" + text
+            elif fallback is not None:
+                msgs[1]["content"] = (task_line + "\n\n" + self.first_message(t, looked["find_features"])
+                                      + "\n\n" + self.constant_start_message())
             elif self.arm.get("select_budget") and sel and "statement timeout" in str(sel.get("error") or ""):
                 # the program went over the selection's time limit: say so, instead of handing it over to be validated as is
                 msgs[1]["content"] = task_line + "\n\n" + self.slow_message(t, k, looked)
@@ -1818,7 +1848,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             rec["memory_push"] = {"seconds": time.time() - t0, "chars": len(msgs[1]["content"]) - len(task_line),
                                   "program": '"sql"' in pushed[0], "error": any('"error"' in x[:40] for x in pushed)}
 
-        if self.arm.get("subset_selection") and chosen is None:
+        if self.arm.get("subset_selection") and chosen is None and fallback is None:
             # A candidate search should never throw away a sound entity-table
             # model just because the agent's first relational SQL is weaker.
             # This refit and its audit are inside the measured session.
@@ -1844,10 +1874,16 @@ Shared memory: agents on this database publish verified feature definitions and 
                 rec["memory_reference"] = {"val": rv, "sql_seconds": s1 + s2, "train_seconds": rt,
                                            "audit_seconds": audit_s, "audit": ra.get("result")}
                 if ra.get("result") == "clean":
-                    best, best_sql = rv, rsql
-                    best_frames = (rsql, rxtr, rxva, rimp)
-                    msgs[1]["content"] += (f"\n\nThe memory validated an entity-table fallback ({metric}={rv:.5f}). "
-                                            "Improve it with features relevant to this task; retain it if new features hurt validation.\n" + rsql)
+                    frames = (rsql, rxtr, rxva, rimp)
+                    if self.start_is_informative(rxtr):
+                        best, best_sql = rv, rsql
+                        best_frames = frames
+                        msgs[1]["content"] += (f"\n\nThe memory validated an entity-table fallback ({metric}={rv:.5f}). "
+                                                "Improve it with features relevant to this task; retain it if new features hurt validation.\n" + rsql)
+                    else:
+                        fallback = {"val": rv, "frames": frames, "source": "entity_reference"}
+                        rec["memory_reference"]["fallback_only"] = True
+                        msgs[1]["content"] += "\n\n" + self.constant_start_message()
             except Exception as err:
                 rec["memory_reference"] = {"error": str(err)[:300], "audit_seconds": 0.0}
             rec["memory_reference"]["seconds"] = time.time() - ts
@@ -2060,6 +2096,10 @@ Shared memory: agents on this database publish verified feature definitions and 
             if stop:
                 rec["stop"] = stop
                 break
+        if best_sql is None and submitted is None and fallback is not None:
+            best, best_frames = fallback["val"], fallback["frames"]
+            best_sql = best_frames[0]
+            rec["used_checked_fallback"] = {"source": fallback["source"], "val": best}
         if self.arm.get("subset_selection") and best_frames is not None and submitted in (None, best_sql):
             from feature_selection import select_subset
 
@@ -2102,7 +2142,8 @@ Shared memory: agents on this database publish verified feature definitions and 
         rec["agent_seconds"] = time.time() - t_start - rec["audit_seconds"]
         self.charge_incumbent_work(t, k, rec)
         rec["final_sql"] = submitted or best_sql
-        rec["final_source"] = "submitted" if submitted else ("best_validated" if best_sql else None)
+        rec["final_source"] = ("submitted" if submitted else "checked_constant_fallback" if rec.get("used_checked_fallback")
+                               else "best_validated" if best_sql else None)
         rec["best_val"] = best
         state = {"rec": rec, "msgs": msgs, "chosen": chosen, "gmem_tokens": gmem_tokens, "part": part}
         if self.arm.get("cold_union"):
