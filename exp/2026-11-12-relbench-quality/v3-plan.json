@@ -1,0 +1,23 @@
+{
+  "method": "mavra-directed",
+  "parent": "mavra-portfolio",
+  "design_date": "2026-11-12",
+  "recorded_at_utc": "2026-11-11 18:27:40 UTC",
+  "status": "prospective development candidate; not paper evidence",
+  "observed_without_new_test_scores": [
+    "The budgeted arms enforce three model calls and six agent tools on warm sessions, but system_prompt still advertises forty calls, and select_message says five calls after reaching the goal.",
+    "Several completed v1 warm sessions used the enforced budget without validating a changed feature program. Both frozen runs remain untouched.",
+    "The memory-start program is bounded to forty-five seconds per statement, but agent validation still permits six-hundred-second statements. This can lose the time advantage when an attempted improvement is expensive."
+  ],
+  "changes": [
+    "Advertise the actual warm-session model and tool budget and the SQL statement limit.",
+    "Remind the agent of remaining calls and tools after each response. On the last call or with only one tool slot left, expose validation and submit only, so exploration leaves a final decision opportunity.",
+    "Apply the forty-five-second statement limit to warm agent validations. Retain the already audited incumbent on failure."
+  ],
+  "unchanged": [
+    "All v2 cold-start search, union, projection, feature selection, learning and test boundary rules.",
+    "Three warm model calls, six executed agent tools, original fixed learner, data, seeds, service and benchmark scoring.",
+    "Both prior arms and their in-flight frozen sources and all outcomes."
+  ],
+  "acceptance": "Same strict unrounded six cost columns and six task quality gates as v2. Full from-empty run; all extra work accounted. No claim before complete tests."
+}

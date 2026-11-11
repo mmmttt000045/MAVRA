@@ -129,6 +129,11 @@ ARMS = {
                        "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
                        "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
                        "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45},
+    "mavra-directed": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
+                       "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
+                       "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
+                       "budget_guidance": True, "reuse_validation_timeout": 45},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -816,6 +821,15 @@ class Run:
         ec = e["entity_col"].lower()
         spec = self.manifest["tables"][e["entity_table"]]
         n_times = seeds["train"]["seed_time"].nunique()
+        guided = self.arm.get("budget_guidance") and k > 1
+        model_calls = self.arm.get("reuse_llm_limit", MAX_LLM_CALLS) if guided else MAX_LLM_CALLS
+        budget_detail = (f" At most {self.arm['reuse_tool_limit']} executed agent tools in total. "
+                         f"Feature SQL statements stop after {self.validation_timeout(k)} seconds. "
+                         "When memory provides a checked incumbent, it is already validated; do not repeat that validation. "
+                         "Use at most one response for essential exploration, then validate one deliberate improvement. "
+                         "On the last response only validate_features and submit are available. "
+                         "A failed refinement retains the checked incumbent."
+                         if guided else "")
         return f"""You are a data scientist agent working on a PostgreSQL database: {self.manifest.get('description', '')}
 Your job is to engineer features with SQL for one prediction task. A fixed LightGBM model is trained on your features; you cannot change the model.
 
@@ -827,10 +841,10 @@ Seed tables: task.{tname(t)}_train (labelled training seeds, {len(seeds['train']
 Feature SQL contract: one SELECT statement that uses {{seeds}} as the seed table (columns {ec}, seed_time) and returns exactly one row per seed row, with {ec} and seed_time as the first two columns followed by numeric feature columns (at most {MAX_FEATURES}). A feature may only use rows whose time is at or before the seed row's seed_time; using later rows is leakage and makes the features invalid.
 
 Tools: list_tables, describe_table, join_path, check_join and run_sql explore the database; the first four cover the tables in schema public, and the seed tables are read with run_sql (read-only, at most 50 rows returned). validate_features(sql) computes your features on a {SAMPLE_SIZE}-row training sample and on the validation seeds, trains the model and returns the validation {metric}. submit(sql) ends the session with your final features.
-Budget: at most {MAX_VALIDATIONS} validations and {MAX_LLM_CALLS} model calls; the session also ends after {PATIENCE} validations in a row without improvement. If you do not submit, your best validated features are used.""" + (
+Budget: at most {MAX_VALIDATIONS} validations and {model_calls} model calls; the session also ends after {PATIENCE} validations in a row without improvement. If you do not submit, your best validated features are used.{budget_detail}""" + (
             f"\n\nRetraining goal: this task's model from the previous cutoff ({e['cutoffs'][k - 2]['test_timestamp'][:10]}), refit on this cutoff's data, "
             f"reaches validation {metric} {self.target(t, k):.5f}. Once your features reach that score you may make one more attempt to improve them: "
-            f"one more validation within the next {POST_GOAL_LLM_CALLS} model calls, after which the session ends with your best validated features." if self.target(t, k) is not None else "") + ("""
+            f"one more validation within the next {self.post_goal_window(k)} model calls, after which the session ends with your best validated features." if self.target(t, k) is not None else "") + ("""
 
 Shared memory: agents on this database publish verified feature definitions and feature programs. Start with find_program (this task's verified program from an earlier cutoff: its complete feature SQL when it still runs, and a feature SQL of its definitions) and find_features (definitions for the entity table, with a feature SQL of them for these seed tables). If they return a feature SQL, validate it first (the complete program SQL first); explore the tables and extend the SQL only to improve on it. compose_features compiles chosen definitions (by key) into a feature SQL.""" if self.arm.get("feature_memory") and not self.arm.get("push_memory") else "") + ("""
 
@@ -857,6 +871,30 @@ Shared memory: agents on this database publish verified feature definitions and 
     def target(self, t, k):
         """Validation score of this run's previous-cutoff model of task t, refit on cutoff k (none at the first cutoff)."""
         return (self.targets.get((t, k)) or {}).get("val")
+
+    def post_goal_window(self, k, calls_used=0):
+        if self.arm.get("budget_guidance") and k > 1:
+            return max(0, min(POST_GOAL_LLM_CALLS, self.arm["reuse_llm_limit"] - calls_used))
+        return POST_GOAL_LLM_CALLS
+
+    def validation_timeout(self, k):
+        return self.arm.get("reuse_validation_timeout", FEATURE_SQL_TIMEOUT_S) if k > 1 else FEATURE_SQL_TIMEOUT_S
+
+    def remaining_budget_message(self, k, calls_used, tools_used):
+        if not self.arm.get("budget_guidance") or k <= 1:
+            return None
+        remaining_calls = max(0, self.arm["reuse_llm_limit"] - calls_used)
+        remaining_tools = max(0, self.arm["reuse_tool_limit"] - tools_used)
+        return (f"Remaining session budget: {remaining_calls} model response(s), {remaining_tools} executed tool call(s). "
+                "Validate a concrete feature refinement now, or submit without sql to retain the checked incumbent. "
+                "Exploration alone does not improve it. The SQL must still obey seed_time and the statement limit.")
+
+    def step_tools(self, k, calls_used, tools_used):
+        specs = self.tool_specs()
+        if (self.arm.get("budget_guidance") and k > 1
+                and (calls_used >= self.arm["reuse_llm_limit"] - 1 or tools_used >= self.arm["reuse_tool_limit"] - 1)):
+            return [s for s in specs if s["function"]["name"] in ("validate_features", "submit")]
+        return specs
 
     def incumbent(self, t, k, seeds):
         """Refit the previous cutoff's final feature SQL on cutoff k and score it on the validation seeds (no LLM)."""
@@ -1176,7 +1214,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             lines.append(f"Verified definitions for {entity} not in these features (compose_features compiles them by key): "
                          + ", ".join(other[:30]))
         if goal:
-            lines.append(f"You may make one more attempt to improve them: one validate_features within the next {POST_GOAL_LLM_CALLS} "
+            lines.append(f"You may make one more attempt to improve them: one validate_features within the next {self.post_goal_window(k)} "
                          "model calls, after which the session ends with your best validated features. Call submit without sql to finish now.")
         else:
             lines.append("Improve on them with validate_features; submit without sql keeps your best validated features.")
@@ -1636,7 +1674,10 @@ Shared memory: agents on this database publish verified feature definitions and 
                 rec["stop"] = "llm_budget"
                 break
             try:
-                r = self.llm.chat(msgs, self.tool_specs())
+                guidance = self.remaining_budget_message(k, len(rec["llm"]), len(rec["tools"]))
+                if guidance and rec["llm"]:
+                    msgs.append({"role": "user", "content": guidance})
+                r = self.llm.chat(msgs, self.step_tools(k, len(rec["llm"]), len(rec["tools"])))
             except LlmUnavailable as err:
                 rec["error"] = f"llm: {err}"
                 rec["stop"] = "llm_error"
@@ -1716,8 +1757,10 @@ Shared memory: agents on this database publish verified feature definitions and 
                     if args.get("bullet_ids"):
                         rec["bullet_ids"] = [str(b) for b in args["bullet_ids"]]
                     try:
-                        xtr, s1 = features(self.url, sql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
-                        xva, s2 = features(self.url, sql, f"task.{tname(t)}_val", seeds["val"], ec)
+                        xtr, s1 = features(self.url, sql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec,
+                                           timeout_s=self.validation_timeout(k))
+                        xva, s2 = features(self.url, sql, f"task.{tname(t)}_val", seeds["val"], ec,
+                                           timeout_s=self.validation_timeout(k))
                         p, imp, tt = self.fit_feature_model(e["task_type"], xtr, seeds["train_sample"][yc], xva, "agent_validation")
                         val = score(e["task_type"], seeds["val"][yc], p)
                         # leak check at validation time (README §1.2, 10-21): a leaking validation does not count, so that
@@ -1781,9 +1824,11 @@ Shared memory: agents on this database publish verified feature definitions and 
                         if len(rec["validations"]) >= MAX_VALIDATIONS:
                             stop = "reached_previous"
                         else:
-                            out["goal_reached"] = (f"This reaches the goal. You may make one more attempt to improve: one more validate_features "
-                                                   f"within the next {POST_GOAL_LLM_CALLS} model calls, after which the session ends with your "
-                                                   f"best validated features. Call submit to finish now.")
+                            window = self.post_goal_window(k, len(rec["llm"]))
+                            out["goal_reached"] = ((f"This reaches the goal. You may make one more attempt to improve: one more validate_features "
+                                                    f"within the next {window} model calls, after which the session ends with your "
+                                                    "best validated features. Call submit to finish now.") if window else
+                                                   "This reaches the goal and the session budget is exhausted. The best validated features are retained.")
                     elif len(rec["validations"]) >= MAX_VALIDATIONS:
                         stop = "validation_budget"
                     elif streak >= PATIENCE and best is not None:
@@ -1792,7 +1837,8 @@ Shared memory: agents on this database publish verified feature definitions and 
                     entry["category"] = "submit"
                     sql = args.get("sql") or best_sql
                     ta = time.time()
-                    leak = self.audit(t, k, sql, seeds) if sql and sql != best_sql else {}
+                    rejected_unvalidated = self.arm.get("budget_guidance") and self.arm.get("subset_selection") and sql != best_sql
+                    leak = self.audit(t, k, sql, seeds) if sql and sql != best_sql and not rejected_unvalidated else {}
                     entry["audit_seconds"] = time.time() - ta
                     if not sql:
                         out = {"error": "nothing validated yet; validate features first or pass sql"}
