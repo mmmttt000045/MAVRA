@@ -56,6 +56,7 @@ def main():
     old = old_mavra(a.old_tgz)
     table = {p: {s: Counter() for s in SCOPES} for p, _ in POLICIES}
     old_table = {s: Counter() for s in SCOPES}
+    new_archived = {s: Counter() for s in SCOPES}  # MAVRA now, on the eleven archived changes only
     per_change, audit, ablation, g9_events = {}, {}, {}, Counter()
     for ds in SCHEMAS:
         main_r = report(f'{a.run}/{ds}-main/replay-*/report.json')
@@ -78,6 +79,8 @@ def main():
             scope = next(s for s, cs in SCOPES.items() if r['change'] in cs)
             old_table[scope][CLASS[o['class']]] += 1
             old_table[scope]['n'] += 1
+            new_archived[scope][CLASS[r['class']]] += 1
+            new_archived[scope]['n'] += 1
             if o['class'] != r['class']:
                 changed[(r['change'], o['class'], r['class'])] += 1
                 if len(examples) < 6:
@@ -95,8 +98,11 @@ def main():
             for e in m['events']:
                 if e.get('event') == 'history_checked':
                     g9_events[(ds, m['change'], 'moved' if e['moved'] else ('vacuous' if e['compared'] == 0 else 'pass'))] += 1
+                elif e.get('event') == 'history_implied':
+                    g9_events[(ds, m['change'], 'implied')] += 1
     out = {'table': {p: {s: dict(c) for s, c in v.items()} for p, v in table.items()},
            'old_mavra_on_archived_changes': {s: dict(c) for s, c in old_table.items()},
+           'new_mavra_on_archived_changes': {s: dict(c) for s, c in new_archived.items()},
            'per_change': {k: {p: dict(c) for p, c in v.items()} for k, v in sorted(per_change.items())},
            'ablation_no_g9': {k: dict(c) for k, c in sorted(ablation.items())},
            'g9_events': {f'{d}/{c}/{x}': v for (d, c, x), v in sorted(g9_events.items())},
@@ -123,6 +129,15 @@ def main():
         for s in SCOPES:
             for cls in 'CWR':
                 mac[f'RpOldMavra{s}{cls}'] = f'{old_table[s][cls]:,}'.replace(',', '{,}')
+                mac[f'RpNewMavraArch{s}{cls}'] = f'{new_archived[s][cls]:,}'.replace(',', '{,}')
+        g9 = Counter()
+        for (d, c, x), v in g9_events.items():
+            g9[x + ('Reclass' if c == 'reclass' else '')] += v
+        mac['RpGNinePass'] = str(g9['pass'] + g9['vacuous'])
+        mac['RpGNineImplied'] = str(g9['implied'])
+        mac['RpGNineMoved'] = str(g9['moved'])
+        mac['RpGNineReclassMoved'] = str(g9['movedReclass'])
+        mac['RpGNineReclassPass'] = str(g9['passReclass'] + g9['vacuousReclass'])
         rc = Counter()
         for k, v in per_change.items():
             if k.endswith('/reclass'):

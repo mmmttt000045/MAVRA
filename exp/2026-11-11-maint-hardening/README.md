@@ -162,3 +162,24 @@ user-badge AUC, MAVRA vs No memory, cutoffs 1-5: 0.8195/0.8458, 0.8205/0.8501, 0
 0.8379/0.8632 (behind at every cutoff, by 0.018-0.030). study-adverse MAE: 35.51/35.07, 50.74/48.76, 44.55/43.54,
 41.77/39.46, 38.16/37.43 (1-6% higher at every cutoff). study-outcome is mixed. Both systematic gaps start in the
 cutoff-1 learning session whose program later sessions retrain.
+
+### Review point 4 (addition, registered before running): TeCoD's matcher on the lookup benchmark (`lookup-tecod/`)
+
+TeCoD's released template selection (Qwen3-Embedding-4B search, Qwen3-Re4B NLI, `tools/relbench/tecod_server.py`) on
+the same 96 requests. Pool: per definition one canonical question and 5 single-target phrasings sampled with seed 7 from
+the catalog-generated training data MAVRA's judges use (156 examples); one SQL template per definition. A request
+resolves to the matched template's definition, or none without an entailment match. Scored set-exact as in Table V.
+Expected: two-definition requests always fail (TeCoD returns one template); reported as measured either way.
+
+### Execution notes (replay)
+
+- tpch, ssb, financial: commit 89322f2 (binary 43d3349f…), `results/maint-replay-20261111/{schema}-{main,nog9}` on noctis.
+- tpcds, first attempt (89322f2) stopped by hand in `dupload` after 2,560 s (`tpcds-main-aborted-dupload`, not
+  used): G9 computed the per-bucket series of every dedup revision, which needs `select distinct *` over the whole
+  store_sales table (7+ minutes per definition, about 45 definitions). Commit 65f13fe skips that computation for
+  dedup-only repairs with a proof (the previous revision held grain uniqueness on the learning snapshot, so unchanged
+  buckets hold no exact duplicates and deduplication cannot change them) and logs `history_implied`. On tpch/ssb/
+  financial the full computation ran and admitted every dedup repair, as the proof says. tpcds-main reran with
+  65f13fe (binary 22b4874a…); tpcds-nog9 ran with 89322f2 (G9 off, so the change does not apply).
+- Table VI's other policies on the eleven archived changes come from the same run (they are rerun, not archived),
+  so all four rows use one binary per schema.

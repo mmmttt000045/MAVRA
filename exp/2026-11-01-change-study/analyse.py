@@ -170,6 +170,7 @@ def main():
                     mac[f'Cs{gtag}{stag}{tag[arm]}Min'] = f"{x['min']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}Max'] = f"{x['max']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}Wrong'] = f"{x['wrong_pct']:.1f}"
+                    mac[f'Cs{gtag}{stag}{tag[arm]}Clarify'] = f"{x['clarify_pct']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}TokK'] = f"{x['tokens']/1000:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}S'] = f"{x['seconds']:.0f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}MedS'] = f"{x['median_seconds']:.0f}"
