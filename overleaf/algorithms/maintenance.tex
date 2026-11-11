@@ -1,28 +1,31 @@
 \begin{algorithm}[t]
-\caption{\bt{Two-stage validation and maintenance}{两级验证与维护}}
+\caption{\bt{Dependency-aware shared validation and maintenance}{依赖感知的共享验证与维护}}
 \label{alg:maintenance}
 \small
 \begin{algorithmic}[1]
-\Require Revision $x$; state $D$; stamps $V$; insert batch $\Delta T$; outcome store $\mathcal H$
-\Ensure Validated revision $x'$, a pending revision, or $\bot$
-\Function{EvalCond}{$c, D, V, \Delta T, \mathcal H$}
-  \If{key $k(c, V)$ is not in $\mathcal H$}
-    \State $\mathcal H[k(c, V)] \gets \operatorname{DeltaCheck}(c, \Delta T)$ if $\Delta T$ is insert-only, else $Q_c(D)$ \Comment{Stage 2}
-  \EndIf
-  \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
-\EndFunction
+\Require Revision $x$; snapshot $D$; table stamps $V$; optional append batch $\Delta T$; shared outcome store $\mathcal H$
+\Ensure Validated revision $x'$, $\text{Pending}(x, c, \text{vals})$, or $\bot$ (retired)
 \Function{Validate}{$x, D, V, \Delta T, \mathcal H$}
-  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{Stage 1}
+  \Statex \hspace{\algorithmicindent}\textit{// Stage 1: Version Filtering and Shared Outcomes}
+  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$}
   \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
   \For{each $c \in \Delta C(x)$}
     \If{$\neg\Call{EvalCond}{c, D, V, \Delta T, \mathcal H}$}
-      \If{$c$ is a domain assumption}
-        \State \Return $\text{Pending}(x, c, \text{new values})$
-      \EndIf
-      \State \Return $\operatorname{Repair}(x, c, D, \mathcal H)$ \Comment{unique single edit, or $\bot$}
+      \Statex \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textit{// Repair or Retire}
+      \IfThen{$c\text{ checks }\operatorname{Dom}$}{\Return $\text{Pending}(x, c, \text{vals})$}
+      \State $\mathcal E_{\mathrm{ok}} \gets \{e \in \mathcal E(x, c) \mid C(x \oplus e)\text{ on }D \wedge \operatorname{Repro}(x \oplus e, E_x)\}$
+      \IfThen{$\lvert\mathcal E_{\mathrm{ok}}\rvert = 1$}{\Return published revision $x' \gets x \oplus e^*$}
+      \State \Return $\bot$
     \EndIf
   \EndFor
   \State $V_x(\operatorname{dep}(x)) \gets V(\operatorname{dep}(x))$; \Return $x$
+\EndFunction
+\Function{EvalCond}{$c, D, V, \Delta T, \mathcal H$}
+  \Statex \hspace{\algorithmicindent}\textit{// Stage 2: Incremental Check on Inserted Rows}
+  \If{key $k(c, V)$ is not in $\mathcal H$}
+    \State $\mathcal H[k(c, V)] \gets \operatorname{DeltaCheck}(c, \Delta T)$ if $\Delta T$ insert-only, else $Q_c(D)$
+  \EndIf
+  \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
