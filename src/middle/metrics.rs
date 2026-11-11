@@ -473,6 +473,23 @@ fn bound_conditions(m: &Metric) -> Vec<(Check, Accept)> {
     out
 }
 
+/// 两个修订除去重外计算相同：事实表、度量、粒度、时间归属（含日期键编码与策略）、关联（两侧、键、方式、过滤）与口径过滤。
+/// 名称、示例、基线与关联的统计字段不参与比较。
+fn same_computation(a: &Metric, b: &Metric) -> bool {
+    let time =
+        |m: &Metric| m.time.as_ref().map(|t| (t.fact_col.clone(), t.dim.clone(), t.dim_col.clone(), t.key_alias.clone(), t.strategy));
+    let joins =
+        |m: &Metric| m.joins.iter().map(|j| (j.left.clone(), j.right.clone(), j.on.clone(), j.kind, j.filters.clone())).collect::<Vec<_>>();
+    a.fact == b.fact
+        && a.measure == b.measure
+        && a.grain == b.grain
+        && a.filters == b.filters
+        && time(a) == time(b)
+        && joins(a) == joins(b)
+        && a.entity.is_none()
+        && b.entity.is_none()
+}
+
 /// 在同一个只读快照里执行两条查询（`schema` 给出时以它为 search_path，即同一库里保存的学习时数据）。
 async fn snapshot_pair(db: &crate::db::Db, schema: Option<&str>, a: &str, b: &str) -> Result<(crate::db::Rows, crate::db::Rows)> {
     let snap = db.snapshot().await?;
@@ -2208,6 +2225,13 @@ impl Middle {
                 return Ok(());
             }
         };
+        // 只加了整行去重的修订不可能改变事实行未变的桶：前一修订在上次验证的快照上满足粒度唯一（带口径过滤的行里没有重复键，
+        // 也就没有完全相同的行），未变的桶里行完全相同，去重对它们不起作用。不必逐桶计算（去重序列要对整张事实表 DISTINCT）
+        if new.dedup && !prev.dedup && same_computation(new, prev) {
+            self.metric_event(json!({"event": "history_implied", "agent": ctx.agent, "metric": prev.name,
+                                     "reason": "只加了整行去重：粒度唯一时未变的桶里没有完全相同的行"}));
+            return Ok(());
+        }
         let cols: Vec<String> = metric::columns(prev, &self.cat).get(&prev.fact).map(|s| s.iter().cloned().collect()).unwrap_or_default();
         let sqls = (metric::compile_fact_fingerprint(new, &cols), metric::compile_series(prev), metric::compile_series(new));
         let (Ok(fp), Ok(old_s), Ok(new_s)) = sqls else { return Err("无法编译历史序列".into()) };
