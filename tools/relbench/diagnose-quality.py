@@ -104,11 +104,19 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--root", type=Path, default=Path("."))
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--sessions-jsonl", type=Path, help="keep detailed session records in a separate JSONL file")
     a = ap.parse_args()
     result = audit(a.root)
+    count = len(result["sessions"])
+    if a.sessions_jsonl:
+        a.sessions_jsonl.parent.mkdir(parents=True, exist_ok=True)
+        records = "".join(json.dumps(s, ensure_ascii=False, separators=(",", ":")) + "\n" for s in result.pop("sessions"))
+        a.sessions_jsonl.write_text(records, encoding="utf-8")
+        result["sessions_jsonl"] = {"file": a.sessions_jsonl.name, "records": count,
+                                    "sha256": hashlib.sha256(records.encode()).hexdigest()}
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"groups": len(result["groups"]), "sessions": len(result["sessions"]), "out": str(a.out)}))
+    print(json.dumps({"groups": len(result["groups"]), "sessions": count, "out": str(a.out)}))
 
 
 if __name__ == "__main__":
