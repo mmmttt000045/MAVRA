@@ -24,8 +24,8 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 | `metric-record` | `metric_record.py` | 图 1 动机图（单栏，沿用原版样式：LLM 智能体图标、工作台窗口、请求流、共享数据库）。上半：10-01 工作负载轨迹（`exp/2026-10-01-workload-characterization/`）中三个只给指标名称的电子品类营业额会话 s094、s073、s091；虚线大框框住全部 20 个会话都重复的第 1–4 步（list tables / read sales / item / date table），第 5 步是各会话自己的做法（试 3 个营业额列 / 给 12 个月排序 / 比较两年）；脚本逐条核对调用与 SQL 片段，会话数取自 `gen/workload-example.tex`（`tools/workload-stats.py --example M5`，需 pglast）。下半：这些 SQL 连接 item 时没有当前行条件，ETL 装载商品历史版本后（与图 2 相同的商品 17）同一 SQL 把它算两次 |
 | `running-example` | `example.py` | 优化实验的学习、使用与修复轨迹，来源见脚本文件头 |
 | `architecture` | `architecture.py` | 系统示意 |
-| `extraction` | `extraction.py` | 第 IV-B 节单栏小图：同一会话的两份草稿对照（(a) 缺品类过滤，按 1 月编译得 13,532,799.00，不予发布；(b) 复现核验答案 2,754,299.60，发布）。核验答案取自 10-01 轨迹的 M5-L1 会话，被 G7 拒绝的值见 `exp/2026-10-31-diverse-scenarios/case-evidence.json`；JSON 只保留两份草稿不同的字段；步骤圆标 1、2 对应图 2 |
-| `maintenance` | `maintenance.py` | 第 IV-D 节单栏小图：item 载入后存储的检查结果（按检查与表版本存放），三个定义连到同一条 date_dim 结果，电子品类营业额连到新的 item 版本 1 结果（红色虚框，只跑一次）；哪些定义共用哪条结果为示意（同图 2）；修复只在图 2 与正文中；步骤圆标 5（ETL）、6（重跑）对应图 2 |
+| `extraction` | `extraction.py` | 第 4.2 节单栏图（84.6 × 63.2 mm）：按核验源会话、分离固定核心 $I$ 与运行期 $(p,d)$、重新编译回放三步展开。G1--G7 按检查动作标注；保留与遗漏品类过滤分别产生 2,754,299.60 与 13,532,799.00，回放证据仅覆盖学习快照与源绑定。核验答案取自 10-01 的 M5-L1，会放大结果的缺过滤草稿见 `exp/2026-10-31-diverse-scenarios/case-evidence.json`。条件 1--5 与维护图一致；步骤圆标 1、2 对应图 2 |
+| `maintenance` | `maintenance.py` | 第 4.4 节单栏图（84.6 × 75.2 mm）：上部保留 7 项共享结果、15 条引用的示意矩阵，明确比较共享后的新检查次数与受影响定义逐份全检次数（商品装载 2 对 5，销售追加 3 对 12）。下部沿商品 17 历史行追加展示增量检重、低基数等值过滤候选剪枝、当前数据上全部条件检查与源答案回放、唯一候选通过才发布；无候选或多个候选通过则退役，值域条件失败则待确认。行数仅用于剪枝，不作为发布判定；引用分配为机制示意，非新的实验测量。步骤圆标 5、6 对应图 2 |
 | `snapshot` | `snapshot.py` | 第 IV-E 节单栏小图：(a) 先检查后执行分属两个事务，ETL 提交落在中间，商品 17 被算两次；(b) MAVRA 同一只读快照内读版本、复用结果、执行 SQL，看不到提交；步骤圆标 5（ETL）、4（执行）对应图 2 |
 | `replay-outcomes` | `replay_outcomes.py` | 验证缓存、TPC-DS 和通用性回放 |
 | `maintenance-cost` | `maintenance_cost.py` | `exp/2026-10-02-cache-baseline-tpcds/cb-1m-share-stats.json` |
