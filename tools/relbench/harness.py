@@ -1425,13 +1425,14 @@ Shared memory: agents on this database publish verified feature definitions and 
             lines.append("Improve on them with validate_features; submit without sql keeps your best validated features.")
         return "\n".join(lines)
 
-    def first_message(self, t, found):
+    def first_message(self, t, found, constant_only=False):
         """The session's first message after the task line when the task has no program yet (arm mavra-select2)."""
         entity = self.tasks[t]["entity_table"].lower()
+        status = "has only a checked constant default" if constant_only else "has no verified program yet"
         defs = [f for f in found.get("features") or [] if f.get("key")]
         if not defs:
-            return f"Looked up for you in shared memory: this task has no verified program yet, and no verified definitions for {entity} have been published yet."
-        lines = [f"Looked up for you in shared memory: this task has no verified program yet. Verified definitions that other agents "
+            return f"Looked up for you in shared memory: this task {status}, and no verified definitions for {entity} have been published yet."
+        lines = [f"Looked up for you in shared memory: this task {status}. Verified definitions that other agents "
                  f"published for {entity} (made for other tasks; compose_features compiles any of them by key into a feature SQL):"]
         for f in defs[:FIRST_LIST_DEFS]:
             w = f" (window {f['window_days']} days)" if f.get("window_days") else ""
@@ -1832,7 +1833,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                     rec["goal_reached"] = {"validation": 0, "llm_calls": 0, "by": "memory"}
                 msgs[1]["content"] = task_line + "\n\n" + text
             elif fallback is not None:
-                msgs[1]["content"] = (task_line + "\n\n" + self.first_message(t, looked["find_features"])
+                msgs[1]["content"] = (task_line + "\n\n" + self.first_message(t, looked["find_features"], constant_only=True)
                                       + "\n\n" + self.constant_start_message())
             elif self.arm.get("select_budget") and sel and "statement timeout" in str(sel.get("error") or ""):
                 # the program went over the selection's time limit: say so, instead of handing it over to be validated as is
