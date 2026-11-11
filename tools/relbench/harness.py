@@ -125,6 +125,10 @@ ARMS = {
                        "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
                        "first_attempts": FIRST_ATTEMPTS, "subset_selection": True,
                        "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45},
+    "mavra-portfolio": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
+                       "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
+                       "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -907,6 +911,20 @@ Shared memory: agents on this database publish verified feature definitions and 
                 with psycopg.connect(self.url, autocommit=True) as con:
                     con.execute(f"DROP SCHEMA IF EXISTS {made[0]} CASCADE")
 
+    def fit_feature_model(self, task_type, xtrain, ytrain, xvalid, purpose):
+        """Keep the unchanged learner, recording every internal fit as well as agent validations."""
+        started, failed = time.time(), None
+        try:
+            return train_predict(task_type, xtrain, ytrain, xvalid)
+        except Exception as err:
+            failed = type(err).__name__
+            raise
+        finally:
+            ledger = getattr(self, "_fit_ledger", None)
+            if ledger is not None:
+                ledger.append({"purpose": purpose, "train_rows": len(xtrain), "features": xtrain.shape[1],
+                               "seconds": time.time() - started, "error": failed})
+
     def _select_start(self, t, k, seeds, prog, feats, middle, agent, sid, made):
         e = self.tasks[t]
         ec, yc = e["entity_col"].lower(), e["target_col"].lower()
@@ -963,7 +981,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             return r
 
         def fit(xtr, xev):
-            p, imp, tt = train_predict(e["task_type"], xtr, seeds["train_sample"][yc], xev)
+            p, imp, tt = self.fit_feature_model(e["task_type"], xtr, seeds["train_sample"][yc], xev, "memory_start")
             rec["train_seconds"] += tt
             return p, imp
 
@@ -1026,7 +1044,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             selected = select_subset(
                 xtr[candidate["columns"]], seeds["train_sample"][yc], xva[candidate["columns"]], seeds["val"][yc],
                 candidate["importance"], candidate["val"], higher,
-                lambda xt, yt, xv: train_predict(e["task_type"], xt, yt, xv),
+                lambda xt, yt, xv: self.fit_feature_model(e["task_type"], xt, yt, xv, "start_subset"),
                 lambda y, p: score(e["task_type"], y, p), budget_seconds=subset_time_left[0])
             subset_time_left[0] -= selected["seconds"]
             rec["train_seconds"] += selected["train_seconds"]
@@ -1341,7 +1359,138 @@ Shared memory: agents on this database publish verified feature definitions and 
             if v is not None and (pick is None or (v > pick[0] if higher else v < pick[0])):
                 pick = (v, st)
         chosen = pick[1] if pick else sts[0]
+        if self.arm.get("cold_union"):
+            self.combine_cold_start(t, k, seeds, chosen, [st for st in sts if st is not chosen])
         return self.finish(t, k, seeds, middle, chosen, [st for st in sts if st is not chosen])
+
+    def combine_cold_start(self, t, k, seeds, primary, others):
+        """Try a bounded union of this task's own, independently validated attempts.
+
+        All matrices are from the same seed rows, cutoff and fixed learner. The
+        baseline remains the best single attempt unless the union improves
+        validation and its SQL passes reproduction and the leakage audit.
+        """
+        from feature_selection import complementary_pool, select_union
+
+        rec = primary["rec"]
+        self._fit_ledger = rec.setdefault("feature_fits", [])
+        frames = primary.get("frames")
+        alternate = next((st for st in others if st.get("frames") and st["rec"].get("final_sql")), None)
+        if frames is None or alternate is None or frames[0] != rec.get("final_sql"):
+            return
+        other_frames = alternate["frames"]
+        if other_frames[0] != alternate["rec"]["final_sql"]:
+            return
+        started, audit_seconds = time.time(), 0.0
+        event = {"source": "independent_own_task_attempts", "selection_split": "validation", "max_features": MAX_FEATURES,
+                 "primary_before": {"val": rec["best_val"], "sql": rec["final_sql"]},
+                 "secondary_before": {"val": alternate["rec"]["best_val"], "attempt": alternate["rec"].get("attempt")}}
+        rec["memory_union"] = event
+        e = self.tasks[t]
+        yc = e["target_col"].lower()
+        task_type = e["task_type"]
+        try:
+            psql, pxtr, pxva, _ = frames
+            dsql, dxtr, dxva, dimp = other_frames
+            xt, xv, mapping, duplicates = complementary_pool(pxtr, pxva, dxtr, dxva, dimp)
+            event.update(offered=len(mapping), duplicate_columns=duplicates, alternate_columns=mapping)
+            selected = select_union(xt, seeds["train_sample"][yc], xv, seeds["val"][yc], list(pxtr),
+                                    rec["best_val"], rec["higher_is_better"],
+                                    lambda a, b, c: self.fit_feature_model(task_type, a, b, c, "cold_union"),
+                                    lambda y, p: score(task_type, y, p), max_features=MAX_FEATURES)
+            event.update({key: value for key, value in selected.items() if key != "chosen"})
+            best = selected["chosen"]
+            event["chosen"] = {key: best.get(key) for key in ("name", "val", "columns")}
+            if best["name"] == "single_attempt":
+                return
+            columns = best["columns"]
+            val_table = f"task.{tname(t)}_val"
+
+            def headers(sql):
+                result, _ = read_sql(self.url, f"SELECT * FROM ({sql.strip().rstrip(';').replace('{seeds}', val_table)}) q LIMIT 0")
+                return list(result.columns[:2])
+
+            pkeys, dkeys = headers(psql), headers(dsql)
+            pcols = [c for c in columns if c in pxtr]
+            extra = [(original, renamed) for original, renamed in mapping.items() if renamed in columns]
+            renamed = [f"q.{quote_ident(original)} AS {quote_ident(name)}" for original, name in extra]
+            secondary_sql = (f"SELECT q.{quote_ident(dkeys[0])}, q.{quote_ident(dkeys[1])}, " + ", ".join(renamed)
+                             + f" FROM (\n{dsql.strip().rstrip(';')}\n) AS q") if extra else None
+            if not extra:
+                sql = select_columns_sql(psql, pkeys, pcols)
+            elif not pcols:
+                sql = secondary_sql
+            else:
+                sql = union_sql(psql, pkeys, pcols, secondary_sql, dkeys, [name for _, name in extra])
+            check = {"sql_seconds": 0.0}
+            self.check_columns(t, k, sql, seeds, xv[columns], check, timeout_s=SELECT_CHECK_TIMEOUT_S)
+            event["sql_seconds"] = check["sql_seconds"]
+            ta = time.time()
+            audit = self.audit(t, k, sql, seeds)
+            audit_seconds = time.time() - ta
+            event["audit"] = audit.get("result")
+            if audit.get("result") != "clean":
+                event["rejected"] = "combined SQL did not pass the leakage audit"
+                return
+            rec["final_sql"], rec["best_val"], rec["final_source"] = sql, best["val"], "memory_union"
+            rec["validations"].append({"tool_i": None, "val": best["val"], "sql": sql, "leak": False,
+                                       "improved": True, "audit_result": "clean", "source": "memory_union",
+                                       "n_features": len(columns), "columns": columns,
+                                       "importance": [c for c, _ in best["importance"]]})
+            primary["frames"] = (sql, xt[columns], xv[columns], best["importance"])
+            event["accepted"] = True
+            log(f"{t} k{k}: complementary union validation={best['val']:.6f}, features={len(columns)}, no model requests")
+        except Exception as err:
+            event["error"] = str(err)[:300]
+        finally:
+            event["elapsed_seconds"] = time.time() - started
+            event["audit_seconds"] = audit_seconds
+            rec["agent_seconds"] += event["elapsed_seconds"] - audit_seconds
+            rec["audit_seconds"] += audit_seconds
+
+    def sanitize_candidate(self, t, k, seeds, sql, xtrain, xvalid, audit):
+        """Salvage only an explicitly identified, reproducible clean projection.
+
+        Dropping outputs never grants an execution exemption: the projected SQL
+        is checked against the already computed values and audited again. An
+        error/unknown audit or a failed check leaves the original rejected.
+        """
+        if not self.arm.get("sanitize_candidates") or audit.get("result") != "leak":
+            return None, None
+        bad = {str(c).lower() for c in audit.get("all_columns_differing") or audit.get("columns_differing") or []}
+        keep = [c for c in xtrain if str(c).lower() not in bad]
+        event = {"removed_columns": [c for c in xtrain if str(c).lower() in bad], "accepted": False,
+                 "audit_seconds": 0.0, "sql_seconds": 0.0, "train_seconds": 0.0}
+        if not bad or not keep or len(keep) == len(xtrain.columns):
+            event["rejected"] = "no explicitly identified clean output subset"
+            return event, None
+        started = time.time()
+        e = self.tasks[t]
+        try:
+            val_table = f"task.{tname(t)}_val"
+            columns, seconds = read_sql(self.url, f"SELECT * FROM ({sql.strip().rstrip(';').replace('{seeds}', val_table)}) q LIMIT 0")
+            event["sql_seconds"] += seconds
+            projected = select_columns_sql(sql, list(columns.columns[:2]), keep)
+            check = {"sql_seconds": 0.0}
+            self.check_columns(t, k, projected, seeds, xvalid[keep], check, timeout_s=SELECT_CHECK_TIMEOUT_S)
+            event["sql_seconds"] += check["sql_seconds"]
+            ta = time.time()
+            clean = self.audit(t, k, projected, seeds)
+            event["audit_seconds"] += time.time() - ta
+            event["audit"] = clean.get("result")
+            if clean.get("result") != "clean":
+                event["rejected"] = "projected SQL did not pass a fresh leakage audit"
+                return event, None
+            prediction, importance, seconds = self.fit_feature_model(e["task_type"], xtrain[keep], seeds["train_sample"][e["target_col"].lower()], xvalid[keep], "clean_projection")
+            event["train_seconds"] += seconds
+            val = score(e["task_type"], seeds["val"][e["target_col"].lower()], prediction)
+            event.update(accepted=True, columns=keep, val=val)
+            return event, (projected, xtrain[keep], xvalid[keep], importance, val)
+        except Exception as err:
+            event["error"] = str(err)[:300]
+            return event, None
+        finally:
+            event["seconds"] = time.time() - started
 
     def explore(self, t, k, seeds, middle, attempt=None):
         """The agent's part of a session: the start, the tool loop and the stopping rule."""
@@ -1357,6 +1506,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                "metric": metric, "target": self.target(t, k),
                "target_detail": self.targets.get((t, k)),
                "higher_is_better": higher, "llm": [], "tools": [], "validations": [], "stop": None, "error": None}
+        self._fit_ledger = rec.setdefault("feature_fits", []) if self.arm.get("cold_union") else None
         task_line = f"Build features for {t} at cutoff {e['cutoffs'][k - 1]['test_timestamp'][:10]}."
         msgs = [{"role": "system", "content": self.system_prompt(t, k, seeds)}, {"role": "user", "content": task_line}]
         if self.arm.get("subset_selection") and attempt:
@@ -1447,11 +1597,20 @@ Shared memory: agents on this database publish verified feature definitions and 
                 rsql = self.reference_sql(t)
                 rxtr, s1 = features(self.url, rsql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
                 rxva, s2 = features(self.url, rsql, f"task.{tname(t)}_val", seeds["val"], ec)
-                rp, rimp, rt = train_predict(e["task_type"], rxtr, seeds["train_sample"][yc], rxva)
+                rp, rimp, rt = self.fit_feature_model(e["task_type"], rxtr, seeds["train_sample"][yc], rxva, "reference_start")
                 rv = score(e["task_type"], seeds["val"][yc], rp)
                 ta = time.time()
                 ra = self.audit(t, k, rsql, seeds)
                 audit_s = time.time() - ta
+                sanitized, repaired = self.sanitize_candidate(t, k, seeds, rsql, rxtr, rxva, ra)
+                if sanitized:
+                    rec["reference_sanitization"] = sanitized
+                    audit_s += sanitized["audit_seconds"]
+                    rt += sanitized["train_seconds"]
+                    s1 += sanitized["sql_seconds"]
+                    if repaired:
+                        rsql, rxtr, rxva, rimp, rv = repaired
+                        ra = {"result": "clean", "source": "checked_projection"}
                 rec["memory_reference"] = {"val": rv, "sql_seconds": s1 + s2, "train_seconds": rt,
                                            "audit_seconds": audit_s, "audit": ra.get("result")}
                 if ra.get("result") == "clean":
@@ -1559,13 +1718,23 @@ Shared memory: agents on this database publish verified feature definitions and 
                     try:
                         xtr, s1 = features(self.url, sql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
                         xva, s2 = features(self.url, sql, f"task.{tname(t)}_val", seeds["val"], ec)
-                        p, imp, tt = train_predict(e["task_type"], xtr, seeds["train_sample"][yc], xva)
+                        p, imp, tt = self.fit_feature_model(e["task_type"], xtr, seeds["train_sample"][yc], xva, "agent_validation")
                         val = score(e["task_type"], seeds["val"][yc], p)
                         # leak check at validation time (README §1.2, 10-21): a leaking validation does not count, so that
                         # neither the goal nor the best score can be reached with data after seed_time
                         ta = time.time()
                         leak = self.audit(t, k, sql, seeds)
                         audit_s = time.time() - ta
+                        requested_sql = sql
+                        sanitized, repaired = self.sanitize_candidate(t, k, seeds, sql, xtr, xva, leak)
+                        if sanitized:
+                            entry["sanitization"] = sanitized
+                            audit_s += sanitized["audit_seconds"]
+                            tt += sanitized["train_seconds"]
+                            s1 += sanitized["sql_seconds"]
+                            if repaired:
+                                sql, xtr, xva, imp, val = repaired
+                                leak = {"result": "clean", "source": "checked_projection"}
                         # A failed audit is not evidence of safety. All arms must pass.
                         leaking = leak.get("result") != "clean"
                         improved = (not leaking) and better(val)
@@ -1580,12 +1749,19 @@ Shared memory: agents on this database publish verified feature definitions and 
                                                    "audit_result": leak.get("result"),
                                                    "leaking_columns": leak.get("columns_differing"), "n_features": xtr.shape[1],
                                                    "sql": sql, "importance": [c for c, _ in imp[:30]], "columns": list(xtr.columns)})
+                        if sanitized:
+                            rec["validations"][-1]["sanitization"] = sanitized
+                            rec["validations"][-1]["requested_sql"] = requested_sql
                         out = {f"validation_{metric}": round(val, 5), "improved": improved,
                                "n_features": xtr.shape[1], "train_rows": len(xtr), "val_rows": len(xva),
                                "top_features_by_gain": imp[:15],
                                "validations_left": MAX_VALIDATIONS - len(rec["validations"])}
                         if best is not None:
                             out["best_so_far"] = round(best, 5)
+                        if sanitized and sanitized.get("accepted"):
+                            out["sanitized"] = {"removed_columns": sanitized["removed_columns"],
+                                                "note": "Only the remaining outputs passed fresh value reproduction and leakage checks. "
+                                                        "Submit without sql to keep the best checked candidate; do not reintroduce these columns."}
                         if leaking:
                             out["leak"] = {"counted": False, "columns_reading_data_after_seed_time": leak.get("columns_differing"),
                                            "note": "these columns change when rows after seed_time are hidden; this validation does not count"}
@@ -1653,7 +1829,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             try:
                 used = sum(x.get("seconds", 0) for x in (rec.get("memory_select") or {}).get("subset_selection", []))
                 subset = select_subset(pxtr, seeds["train_sample"][yc], pxva, seeds["val"][yc], pimp, best, higher,
-                                       lambda xt, yt, xv: train_predict(e["task_type"], xt, yt, xv),
+                                       lambda xt, yt, xv: self.fit_feature_model(e["task_type"], xt, yt, xv, "final_subset"),
                                        lambda y, p: score(e["task_type"], y, p), budget_seconds=max(0.0, 15.0 - used))
                 rec["memory_prune"] = {k2: v for k2, v in subset.items() if k2 != "chosen"}
                 sub = subset["chosen"]
@@ -1668,6 +1844,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                     rec["memory_prune"]["audit"] = qa.get("result")
                     if qa.get("result") == "clean":
                         best, best_sql = sub["val"], q
+                        best_frames = (q, pxtr[sub["columns"]], pxva[sub["columns"]], sub["importance"])
                         if submitted is not None:
                             submitted = q
                         rec["validations"].append({"tool_i": None, "val": best, "sql": q, "leak": False,
@@ -1685,7 +1862,10 @@ Shared memory: agents on this database publish verified feature definitions and 
         rec["final_sql"] = submitted or best_sql
         rec["final_source"] = "submitted" if submitted else ("best_validated" if best_sql else None)
         rec["best_val"] = best
-        return {"rec": rec, "msgs": msgs, "chosen": chosen, "gmem_tokens": gmem_tokens, "part": part}
+        state = {"rec": rec, "msgs": msgs, "chosen": chosen, "gmem_tokens": gmem_tokens, "part": part}
+        if self.arm.get("cold_union"):
+            state["frames"] = best_frames
+        return state
 
     def finish(self, t, k, seeds, middle, st, others=()):
         """The rest of a session after the agent's part: test score, audit, the goal of the next cutoff, learning and the
@@ -1701,6 +1881,9 @@ Shared memory: agents on this database publish verified feature definitions and 
                        "llm_calls": len(orec["llm"]), "tool_calls": len(orec["tools"]), "validations": len(orec["validations"]),
                        "tokens": sum(x["input_tokens"] + x["output_tokens"] for x in orec["llm"]),
                        "agent_seconds": orec["agent_seconds"]}
+                if (orec.get("memory_union") or {}).get("accepted"):
+                    row["best_val"] = orec["memory_union"]["primary_before"]["val"]
+                    row["combined_validation"] = orec["best_val"]
                 if o is not st and orec["final_sql"] and self.a.eval_now:
                     try:  # for the record only; the choice used validation scores
                         row["test"] = self.evaluate(t, k, orec["final_sql"], seeds).get("test")
@@ -1794,6 +1977,10 @@ Shared memory: agents on this database publish verified feature definitions and 
             "validation_sql_seconds": sum(x.get("sql_seconds", 0) for x in rec["validations"]),
             "validation_train_seconds": sum(x.get("train_seconds", 0) for x in rec["validations"]),
         }
+        if self.arm.get("cold_union"):
+            fits = [*rec.get("feature_fits", []), *(f for o in others for f in o["rec"].get("feature_fits", []))]
+            rec["totals"]["feature_fit_calls"] = len(fits)
+            rec["totals"]["feature_fit_seconds"] = sum(f["seconds"] for f in fits)
         for o in others:
             ot = o["rec"]["tools"]
             rec["totals"]["tool_calls"] += len(ot)

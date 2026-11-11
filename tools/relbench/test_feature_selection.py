@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from feature_selection import select_subset
+from feature_selection import complementary_pool, select_subset, select_union
 
 
 class FeatureSelectionTests(unittest.TestCase):
@@ -48,6 +48,61 @@ class FeatureSelectionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             select_subset(self.x, self.y, self.x.iloc[:, ::-1], self.y, self.imp,
                           0.8, True, self.fit, lambda y, p: 0.9)
+
+
+class ComplementaryFeaturesTests(unittest.TestCase):
+    def setUp(self):
+        self.p = pd.DataFrame({"a": [1., 2., 3.], "b": [2., 3., 4.]})
+        self.s = pd.DataFrame({"copy": [1., 2., 3.], "new": [9., 8., 7.]})
+
+    def test_equal_values_are_deduplicated_across_different_names(self):
+        xt, xv, names, duplicates = complementary_pool(self.p, self.p, self.s, self.s, [("copy", 10), ("new", 5)])
+        self.assertEqual(duplicates, ["copy"])
+        self.assertEqual(set(names), {"new"})
+        self.assertEqual(list(xt), list(xv))
+        self.assertTrue(xt[names["new"]].equals(self.s["new"]))
+
+    def test_training_duplicates_that_diverge_on_validation_are_retained(self):
+        val = self.s.copy()
+        val.loc[0, "copy"] = 100
+        _, _, names, duplicates = complementary_pool(self.p, self.p, self.s, val, [("copy", 10)])
+        self.assertIn("copy", names)
+        self.assertEqual(duplicates, [])
+
+    def test_alternate_pool_respects_the_column_budget(self):
+        xt, _, names, _ = complementary_pool(self.p, self.p, self.s, self.s, [("new", 5)], max_extra=0)
+        self.assertEqual(list(xt), list(self.p))
+        self.assertEqual(names, {})
+
+    def test_misaligned_seed_order_is_rejected(self):
+        with self.assertRaises(ValueError):
+            complementary_pool(self.p, self.p, self.s.iloc[::-1], self.s, [("new", 5)])
+
+    def test_union_keeps_the_single_attempt_if_validation_does_not_improve(self):
+        x = self.p.assign(extra=[4., 6., 5.])
+        y = pd.Series([0, 1, 0])
+        calls = []
+
+        def fit(xt, yt, xv):
+            calls.append(list(xt))
+            return np.full(len(xv), 0.7), [(c, 1) for c in xt], 0.01
+
+        result = select_union(x, y, x, y, list(self.p), 0.8, True, fit, lambda y, p: p[0])
+        self.assertEqual(result["chosen"]["name"], "single_attempt")
+        self.assertLessEqual(result["fits"], 4)
+        self.assertTrue(calls)
+
+    def test_union_can_add_a_complementary_signal_without_exceeding_the_limit(self):
+        x = self.p.assign(signal=[4., 6., 5.])
+        y = pd.Series([0, 1, 0])
+
+        def fit(xt, yt, xv):
+            return np.full(len(xv), 0.9 if "signal" in xt else 0.7), [(c, 1) for c in xt], 0.01
+
+        result = select_union(x, y, x, y, list(self.p), 0.8, True, fit, lambda y, p: p[0], max_features=3)
+        self.assertGreater(result["chosen"]["val"], 0.8)
+        self.assertIn("signal", result["chosen"]["columns"])
+        self.assertLessEqual(len(result["chosen"]["columns"]), 3)
 
 
 if __name__ == "__main__":

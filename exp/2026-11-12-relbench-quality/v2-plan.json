@@ -9,8 +9,10 @@
     "Identify duplicate columns by actual values, preserve distinct complementary columns, and select at most 100 using the fixed learner and validation labels",
     "Compare the union with the best single attempt; keep the single attempt unless the union clears the same validation margin",
     "Reproduce the chosen union SQL on check seeds and audit leakage before publication",
+    "If the current leakage audit explicitly identifies bad output columns, try projecting only the remaining columns; require fresh value reproduction and a fresh clean audit, then refit the fixed learner. Failed or unknown audits never authorize a candidate.",
     "Keep v1 reuse model/tool caps, fixed learner, test-data boundary and full cost accounting"
   ],
+  "validation_only_observation": "Before v1 test evaluation, one cold-start attempt had seven leaking validations, finally isolating account_age_days. The candidate will salvage checked output projections instead of losing all other columns.",
   "development_rule": "Freeze this variant before running it; do not change the in-flight v1 source or discard its result",
   "claim": "Hypothesis only. No quality or cost improvement is asserted."
 }
