@@ -162,6 +162,7 @@ ARMS = {
 }
 # Spend one additional response on refinement within the original reuse-call ceilings.
 ARMS["mavra-refine"] = {**ARMS["mavra-signal"], "reuse_llm_limit": 4}
+ARMS["mavra-early"] = {**ARMS["mavra-refine"], "cold_first_validation_by": 8}
 GMEMORY_REPO = "results/ext/GMemory"
 GMEMORY_PYTHON = "results/ext/venv-gmem/bin/python"
 GMEMORY_OBS_CHARS = 2000
@@ -904,8 +905,20 @@ Shared memory: agents on this database publish verified feature definitions and 
                 "Validate a concrete feature refinement now, or submit without sql to retain the checked incumbent. "
                 "Exploration alone does not improve it. The SQL must still obey seed_time and the statement limit.")
 
-    def step_tools(self, k, calls_used, tools_used):
+    def early_validation_hint(self, k, calls_used=0, validations_used=0):
+        deadline = self.arm.get("cold_first_validation_by")
+        if k != 1 or not deadline or validations_used:
+            return None
+        return (f"Make your first validate_features attempt no later than model response {deadline}; "
+                f"{max(0, deadline - calls_used)} response(s) remain before that deadline. "
+                "Build a simple working SQL from the known schema, preserving every seed row. "
+                "Use validation feedback to refine it afterwards; do not spend the whole search on probes.")
+
+    def step_tools(self, k, calls_used, tools_used, validations_used=0):
         specs = self.tool_specs()
+        deadline = self.arm.get("cold_first_validation_by")
+        if k == 1 and deadline and calls_used >= deadline - 1 and validations_used == 0:
+            return [s for s in specs if s["function"]["name"] == "validate_features"]
         if (self.arm.get("budget_guidance") and k > 1
                 and (calls_used >= self.arm["reuse_llm_limit"] - 1 or tools_used >= self.arm["reuse_tool_limit"] - 1)):
             return [s for s in specs if s["function"]["name"] in ("validate_features", "submit")]
@@ -1755,6 +1768,9 @@ Shared memory: agents on this database publish verified feature definitions and 
         self._fit_ledger = rec.setdefault("feature_fits", []) if self.arm.get("cold_union") else None
         task_line = f"Build features for {t} at cutoff {e['cutoffs'][k - 1]['test_timestamp'][:10]}."
         msgs = [{"role": "system", "content": self.system_prompt(t, k, seeds)}, {"role": "user", "content": task_line}]
+        early = self.early_validation_hint(k)
+        if early:
+            msgs[0]["content"] += "\n\n" + early
         if self.arm.get("subset_selection") and attempt:
             focus = ("Prioritize event history, recency, multiple look-back windows and activity changes."
                      if attempt == 1 else
@@ -1908,7 +1924,10 @@ Shared memory: agents on this database publish verified feature definitions and 
                 guidance = self.remaining_budget_message(k, len(rec["llm"]), len(rec["tools"]))
                 if guidance and rec["llm"]:
                     msgs.append({"role": "user", "content": guidance})
-                r = self.llm.chat(msgs, self.step_tools(k, len(rec["llm"]), len(rec["tools"])))
+                early = self.early_validation_hint(k, len(rec["llm"]), len(rec["validations"]))
+                if early and rec["llm"] and len(rec["llm"]) >= self.arm["cold_first_validation_by"] - 2:
+                    msgs.append({"role": "user", "content": early})
+                r = self.llm.chat(msgs, self.step_tools(k, len(rec["llm"]), len(rec["tools"]), len(rec["validations"])))
             except LlmUnavailable as err:
                 rec["error"] = f"llm: {err}"
                 rec["stop"] = "llm_error"
