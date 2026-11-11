@@ -4,33 +4,25 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (venue change: ICDE 2027 IEEEtran -> VLDB 2027 / PVLDB Vol. 20 official template)",
-  "previous_head": "01a40dc84645dfe5f9ec5f5ffade8a3d2fb9cc92",
-  "remote_commit": "ec6925384f41f53642200872dcff8a4e7764685c",
+  "direction": "main repo overleaf/ -> paper repo (artifact URL set; Section V pending markers removed)",
+  "previous_head": "ec6925384f41f53642200872dcff8a4e7764685c",
+  "remote_commit": "2eb9a43762d84966fdfa4d6434e3e50ff3b09d91",
   "pending_payload": null,
   "changed_paths": [
-    "ACM-Reference-Format.bst (added)",
-    "acmart.cls (added)",
-    "pvldb.sty (added)",
-    "README.md (paper repo's own, venue text)",
-    "build.sh",
     "main.tex",
-    "paper.tex",
-    "preamble.tex",
-    "sections/abstract.tex",
-    "sections/ai-statement.tex"
+    "sections/05-evaluation.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive; also a standalone build of the paper-repo checkout",
-    "status": "bash build.sh: main.pdf 12 pages; body and AI statement end on page 11, references start on page 11; 0 overfull boxes; no undefined references or citations",
-    "identical_to_remote": "origin/main was 01a40dc (the recorded sync); no edits since; every synced file cmp-equal to overleaf/",
-    "content": "User 11-11: submit to VLDB at the end of November (PVLDB Vol. 20 guidelines pasted by the user). Template pinned from github.com/vldbproceedings/VLDB-Template 39c95f5 (acmart v2.19). Text unchanged except the dropped keyword block and AI-statement comments. Open items: \\vldbavailabilityurl is the template placeholder; Section V still contains a red [Pending: ...] marker."
+    "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
+    "status": "bash build.sh: main.pdf 12 pages; body and AI statement end on page 11; no overfull hbox; one 1.3pt overfull vbox during output; no undefined references; no \\pending left (the word 'Pending' in the PDF is the state name in Algorithm 1)",
+    "identical_to_remote": "origin/main was ec69253 (the recorded sync); no edits since; changed files cmp-equal to overleaf/",
+    "content": "User 11-11: not submitted to ICDE; artifact URL tentatively https://github.com/mmmttt000045/MAVRA (public, non-empty per gh); delete the red Section V markers (two \\pending notes, English and Chinese)."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/ec6925384f41f53642200872dcff8a4e7764685c",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: VLDB submission at the end of November).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/2eb9a43762d84966fdfa4d6434e3e50ff3b09d91",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "93bc1164d5f3404797eaf4290cc715d527e4cf19"
+  "source_commit": "4e70be22dcc9c234a4321edbcbc462c15f3fcf36"
 }
