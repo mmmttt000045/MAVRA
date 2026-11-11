@@ -3,29 +3,39 @@
   "date": "2026-11-11",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
-  "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (Fig. 2 redrawn as a component diagram; Section 3 rewritten; merged the other checkout's wording pass b9a8f79 first)",
-  "previous_head": "b9a8f792ed0facc927b3646604b2ab5dd092d09b",
-  "remote_commit": "f66f1a35c38cd552a801a46ae76069215c41357e",
+  "status": "pulled",
+  "direction": "paper repo -> main repo overleaf/ (pull only, nothing pushed): 5 syncs from another checkout of agent4db-adapter (a84c395, 773860a, 2ba3fd6, 261e4c7, c6afe7a; not in this repo) and a direct commit removing the AI statement",
+  "previous_head": "f66f1a35c38cd552a801a46ae76069215c41357e",
+  "remote_commit": "705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
   "pending_payload": null,
   "changed_paths": [
+    "algorithms/maintenance.tex",
     "figures/architecture.pdf",
     "figures/architecture.tex",
+    "paper.tex",
     "sections/01-introduction.tex",
+    "sections/02-background.tex",
     "sections/03-overview.tex",
-    "sections/04-design.tex"
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/06-conclusion.tex",
+    "sections/abstract.tex",
+    "sections/implementation.tex",
+    "tables/lookup.tex"
   ],
   "preserve_remote_only": true,
-  "deletions": [],
+  "deletions": [
+    "sections/ai-statement.tex"
+  ],
   "validation": {
     "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh en: main.pdf 13 pages; Fig. 2 (178 x 96.6 mm) at the top of page 5; body ends at the top of page 12 (conclusion and AI statement), references start on page 12; no overfull hbox or vbox; no undefined references; remaining underfull warnings are the Fig. 1 caption, page breaks and the bibliography",
-    "identical_to_remote": "origin/main was b9a8f79 (pushed from another checkout, f9b2765, after the recorded sync ff75375); merged three-way into overleaf/ in main 49d6f6a, then --force; dry run on a cp -a copy changed exactly the 5 listed files",
-    "content": "User asked (advisor request) to redraw Fig. 2 as components: Publish with input/process/output, the knowledge base's storage layout, a simple Lookup, Maintain; and to enrich System Overview without citing C1-C3. Merge of b9a8f79: took its wording pass for abstract, intro, background, design, evaluation, conclusion, AI statement, lookup caption and Table V; kept the local Fig. 1 example block (frozen) and the new Section 3 (adding feature revisions and leak-free cutoff queries from b9a8f79); Section IV-F \"Feature compile\" -> \"Check and run\"; one contribution item reordered to remove a 3 pt overfull line. Chinese reading text updated with the English for the new Section 3 and caption."
+    "status": "bash build.sh en: main.pdf 13 pages; no undefined references; one overfull hbox (8.0 pt) in the Background paragraph starting 'On lookup, embedding caches', which the pulled edits rewrote; left as pulled",
+    "identical_to_remote": "overleaf/ equalled f66f1a3 before the pull; after copying the 13 changed files and deleting sections/ai-statement.tex, a --force dry run against a fresh clone at 705748e reports 0 changed, 0 added, 6 remote-only files preserved",
+    "content": "User asked to pull the latest version. figures/architecture.pdf was redrawn in the other checkout; tools/figures/architecture.py here still produces the 016fb59 drawing, so rerunning it would revert Fig. 2."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/f66f1a35c38cd552a801a46ae76069215c41357e",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "49d6f6a6bc2dff5d86ed53097020b83320630f05"
+  "source_commit": "e78c12be5db6cc6b99311e984d63bf548581576e"
 }
