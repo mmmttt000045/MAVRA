@@ -88,7 +88,7 @@ def check(source, candidates, arm, run):
         report["reported_session_sha256"] = {a: session_hashes(base_dir / f"{a}-{db}-r1") for a in ARMS}
         report["quality"] = {}
         for task in sorted({t for t, _ in expected}):
-            keys = [key for key in expected if key[0] == task]
+            keys = sorted(key for key in expected if key[0] == task)
             higher = old["none"][keys[0]]["higher"]
             scores = {a: statistics.mean(old[a][key]["test"] for key in keys) for a in ARMS
                       if all(key in old[a] and old[a][key]["test"] is not None for key in keys)}

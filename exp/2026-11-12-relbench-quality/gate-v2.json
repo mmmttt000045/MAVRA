@@ -222,7 +222,54 @@
             "featpilot": 0.06539816938269699,
             "mavra-push": 0.06439223346241725
           },
-          "first_or_tied": false
+          "first_or_tied": false,
+          "per_cutoff": [
+            {
+              "cutoff": 1,
+              "candidate_test": 0.06367912861502335,
+              "candidate_validation": 0.06547890856270648,
+              "candidate_valid": true,
+              "reported_winner_test": 0.0645736707980381,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.06420276543780513
+            },
+            {
+              "cutoff": 2,
+              "candidate_test": 0.06896598391863441,
+              "candidate_validation": 0.06368418054759745,
+              "candidate_valid": true,
+              "reported_winner_test": 0.06852643836352473,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.06980245710228201
+            },
+            {
+              "cutoff": 3,
+              "candidate_test": 0.06189952899857736,
+              "candidate_validation": 0.06967562332847047,
+              "candidate_valid": true,
+              "reported_winner_test": 0.06138474294820904,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.06169984171537053
+            },
+            {
+              "cutoff": 4,
+              "candidate_test": 0.060645469031923215,
+              "candidate_validation": 0.061924970014559176,
+              "candidate_valid": true,
+              "reported_winner_test": 0.05965455916122244,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.06031971344497776
+            },
+            {
+              "cutoff": 5,
+              "candidate_test": 0.06581980575159455,
+              "candidate_validation": 0.060354956607272095,
+              "candidate_valid": true,
+              "reported_winner_test": 0.06430210264442501,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.06593638961165081
+            }
+          ]
         },
         "user-badge": {
           "higher": true,
@@ -238,7 +285,54 @@
             "featpilot": 0.8295968439020507,
             "mavra-push": 0.8344683672443363
           },
-          "first_or_tied": false
+          "first_or_tied": false,
+          "per_cutoff": [
+            {
+              "cutoff": 1,
+              "candidate_test": 0.8545455144865891,
+              "candidate_validation": 0.8806340417139892,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8515796362400209,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8194890794538658
+            },
+            {
+              "cutoff": 2,
+              "candidate_test": 0.8433151786938751,
+              "candidate_validation": 0.8456989531953713,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8512781526342115,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8205215383535335
+            },
+            {
+              "cutoff": 3,
+              "candidate_test": 0.8555381044668109,
+              "candidate_validation": 0.8556857655345635,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8609949781282267,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8375269846225724
+            },
+            {
+              "cutoff": 4,
+              "candidate_test": 0.8726155643504256,
+              "candidate_validation": 0.8573728046942166,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8767526254823458,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8569293906025733
+            },
+            {
+              "cutoff": 5,
+              "candidate_test": 0.8592834535005635,
+              "candidate_validation": 0.8716362711772708,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8597349541259407,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8378748431891364
+            }
+          ]
         },
         "user-engagement": {
           "higher": true,
@@ -254,7 +348,54 @@
             "featpilot": 0.877397687977767,
             "mavra-push": 0.8888124096912877
           },
-          "first_or_tied": false
+          "first_or_tied": false,
+          "per_cutoff": [
+            {
+              "cutoff": 1,
+              "candidate_test": 0.8784360538391016,
+              "candidate_validation": 0.8810357230322294,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8859459190848338,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8859459190848338
+            },
+            {
+              "cutoff": 2,
+              "candidate_test": 0.870006202927687,
+              "candidate_validation": 0.8762397609648579,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8768901859023092,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8768901859023092
+            },
+            {
+              "cutoff": 3,
+              "candidate_test": 0.8858658790472863,
+              "candidate_validation": 0.873112640048018,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8922959226259803,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8922959226259803
+            },
+            {
+              "cutoff": 4,
+              "candidate_test": 0.890847739369258,
+              "candidate_validation": 0.8854402282791615,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8952148841572608,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8952148841572608
+            },
+            {
+              "cutoff": 5,
+              "candidate_test": 0.8833010138413946,
+              "candidate_validation": 0.8858828922661729,
+              "candidate_valid": true,
+              "reported_winner_test": 0.8937151366860547,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.8937151366860547
+            }
+          ]
         }
       },
       "all_costs_preserved": true,
@@ -479,7 +620,54 @@
             "featpilot": 0.4266792186381206,
             "mavra-push": 0.41021256564567804
           },
-          "first_or_tied": false
+          "first_or_tied": false,
+          "per_cutoff": [
+            {
+              "cutoff": 1,
+              "candidate_test": 0.508448417743245,
+              "candidate_validation": 0.3949142058750565,
+              "candidate_valid": true,
+              "reported_winner_test": 0.40584317093874417,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.4400937273138911
+            },
+            {
+              "cutoff": 2,
+              "candidate_test": 0.4125676319611412,
+              "candidate_validation": 0.5055578455824591,
+              "candidate_valid": true,
+              "reported_winner_test": 0.39862487947605435,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.43420875363403844
+            },
+            {
+              "cutoff": 3,
+              "candidate_test": 0.4138089358514066,
+              "candidate_validation": 0.4176874036579925,
+              "candidate_valid": true,
+              "reported_winner_test": 0.3914100582671035,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.40161112268876115
+            },
+            {
+              "cutoff": 4,
+              "candidate_test": 0.47536519602767396,
+              "candidate_validation": 0.41360540977321075,
+              "candidate_valid": true,
+              "reported_winner_test": 0.4352292823671972,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.3905817299481924
+            },
+            {
+              "cutoff": 5,
+              "candidate_test": 0.46222197509331003,
+              "candidate_validation": 0.4749371681853262,
+              "candidate_valid": true,
+              "reported_winner_test": 0.4060234429263201,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.38456749464350715
+            }
+          ]
         },
         "study-adverse": {
           "higher": false,
@@ -495,7 +683,54 @@
             "featpilot": 44.16023670316044,
             "mavra-push": 42.144023645909726
           },
-          "first_or_tied": true
+          "first_or_tied": true,
+          "per_cutoff": [
+            {
+              "cutoff": 1,
+              "candidate_test": 33.5087540949037,
+              "candidate_validation": 20.185469295450705,
+              "candidate_valid": true,
+              "reported_winner_test": 33.94613908319921,
+              "reported_winner_valid": true,
+              "original_mavra_test": 35.50935681353368
+            },
+            {
+              "cutoff": 2,
+              "candidate_test": 48.22728428194852,
+              "candidate_validation": 33.34005992529967,
+              "candidate_valid": true,
+              "reported_winner_test": 49.08230449096497,
+              "reported_winner_valid": true,
+              "original_mavra_test": 50.73625674351897
+            },
+            {
+              "cutoff": 3,
+              "candidate_test": 42.671179733135055,
+              "candidate_validation": 46.835230681716425,
+              "candidate_valid": true,
+              "reported_winner_test": 43.28525723899927,
+              "reported_winner_valid": true,
+              "original_mavra_test": 44.54566508707743
+            },
+            {
+              "cutoff": 4,
+              "candidate_test": 37.529268428632,
+              "candidate_validation": 41.86767249096585,
+              "candidate_valid": true,
+              "reported_winner_test": 38.51082552031783,
+              "reported_winner_valid": true,
+              "original_mavra_test": 41.76683640790329
+            },
+            {
+              "cutoff": 5,
+              "candidate_test": 31.94850943580583,
+              "candidate_validation": 36.246914534816156,
+              "candidate_valid": true,
+              "reported_winner_test": 33.17877777271772,
+              "reported_winner_valid": true,
+              "original_mavra_test": 38.16200317751526
+            }
+          ]
         },
         "study-outcome": {
           "higher": true,
@@ -511,7 +746,54 @@
             "featpilot": 0.6388269147775131,
             "mavra-push": 0.6691927075685121
           },
-          "first_or_tied": false
+          "first_or_tied": false,
+          "per_cutoff": [
+            {
+              "cutoff": 1,
+              "candidate_test": 0.6359104092813407,
+              "candidate_validation": 0.6869668263110885,
+              "candidate_valid": true,
+              "reported_winner_test": 0.667840799226555,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.6807444408636802
+            },
+            {
+              "cutoff": 2,
+              "candidate_test": 0.6320504051352205,
+              "candidate_validation": 0.644179825974863,
+              "candidate_valid": true,
+              "reported_winner_test": 0.6490976533726192,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.631146085446701
+            },
+            {
+              "cutoff": 3,
+              "candidate_test": 0.5094097956307259,
+              "candidate_validation": 0.5324807998122134,
+              "candidate_valid": true,
+              "reported_winner_test": 0.6635359408033826,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.6637878787878789
+            },
+            {
+              "cutoff": 4,
+              "candidate_test": 0.47179910714285717,
+              "candidate_validation": 0.5097585365341986,
+              "candidate_valid": true,
+              "reported_winner_test": 0.6869464285714286,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.6655401785714286
+            },
+            {
+              "cutoff": 5,
+              "candidate_test": 0.5020280169021588,
+              "candidate_validation": 0.49481993754439574,
+              "candidate_valid": true,
+              "reported_winner_test": 0.7088554720133666,
+              "reported_winner_valid": true,
+              "original_mavra_test": 0.7047449541728719
+            }
+          ]
         }
       },
       "all_costs_preserved": true,
@@ -519,6 +801,6 @@
       "accepted": false
     }
   },
-  "reporting_code_sha256": "d15bea00ebe6410ec0f43e6587057ca50a4a4c0dde106699ee11fb1175b6c3d0",
+  "reporting_code_sha256": "a4ccec8840ef9f690ac0f7b1eaf83c0c92354568b3b00f9619b13ce6108e2b46",
   "accepted": false
 }
