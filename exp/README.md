@@ -21,6 +21,7 @@
 | [2026-11-01-change-study](2026-11-01-change-study/README.md)<br>十一种数据变化下与 ACE、AWM、G-Memory 的比较 | 当前 Fig.6：合成零售与 TPC-H SF1，四方法×三轮，1,104 次计分作答。基线格取首批（CNY 27.53），MAVRA 格以最终二进制重跑（CNY 2.33）：条件覆盖的破坏答对 89.5%、零错误，基线答对 49.1–66.7%、答错 33–51%；每组 token 与平均耗时最少；未覆盖变化中备份副本 11/12、单位变化 0/30 如实报告。 |
 | [2026-11-01-replay-rerun](2026-11-01-replay-rerun/README.md)<br>固定库回放：按维护策略比较（Table VI） | 当前 Table VI：四个模式的已学定义库保持不变，只改变维护方式；MAVRA（条件级维护）行用最终二进制重跑，其余三种策略沿用 10-02、10-11 的存档结果。1,641 个共同题次中，MAVRA 在条件覆盖的破坏上正确 804、错误 3、拒绝 33（96%），只检查模式答错 636（76%），表级测试全部拒绝。 |
 | [2026-11-01-shared-validation](2026-11-01-shared-validation/README.md)<br>一次更新后验证代价随智能体数增长 | 当前 Fig.7：16 个定义、四个事实／日期表对、1–32 个智能体、交错与同时到达、三轮随机块（108 格，无模型调用）。最终二进制：MAVRA 始终 8 次检查；32 个智能体时各自验证为 MAVRA 的 15 倍（同时到达 34 倍），整定义重查 2.4 倍（1.7 倍）。首轮旧二进制结果保留。 |
+| [2026-11-11-maint-hardening](2026-11-11-maint-hardening/README.md)<br>值条件、历史保持修复与查找补证 | 当前稿件新增值条件、G9 修复准入、共享重验对照、查找确认与持续写入证据；各子实验的范围见协议。 |
 
 ## 补充证据
 
@@ -38,6 +39,8 @@
 | [2026-10-29-fig5-review](2026-10-29-fig5-review/README.md)<br>复用轨迹来源与归因范围审计 | 只读复核完整任务 SQL 与结构化定义的实际使用；工作量结果不单独证明特征组合的增量作用。 |
 | [2026-10-30-published-scenarios](2026-10-30-published-scenarios/README.md)<br>修复前已发表记忆基线比较与失败分析 | 修复前两轮比较及逐例分析：发现共用 SQL 审查误拒绝、失效语义丢失及反馈条件差异；原始分数和费用保留。当前 Fig.6 采用 2026-11-01-change-study，旧结果不与其合并。 |
 | [2026-10-31-corrected-scenarios](2026-10-31-corrected-scenarios/README.md)<br>SQL 审查／语义保留修复与统一反馈比较 | SQL 审查／语义保留修复后的有效批次：232 任务、184 次计分；当前扩展比较复用其全部六个未变更基线格，旧 MAVRA 仅作历史结果。原始数值、492 文件及累计 14.30 元扣费记录保留。 |
+| [2026-11-09-structural-reuse](2026-11-09-structural-reuse/README.md)<br>结构变化下的跨智能体复用 | 维度过滤、差值与排名的结构化复用协议及冒烟记录；独立于旧版只改变时间的群体实验。 |
+| [2026-11-12-relbench-quality](2026-11-12-relbench-quality/README.md)<br>RelBench 质量与代价联合优化 | 开发候选 mavra-budgeted；保留旧结果，完成全部成本和质量检查前不替换论文。 |
 
 ## 历史批次
 
@@ -89,6 +92,9 @@
 | 2026-11-01-change-study | [protocol.json](2026-11-01-change-study/protocol.json)、[bank-synthetic.json](2026-11-01-change-study/bank-synthetic.json)、[bank-tpch.json](2026-11-01-change-study/bank-tpch.json)、[bank-synthetic-smoke.json](2026-11-01-change-study/bank-synthetic-smoke.json)、[bank-tpch-smoke.json](2026-11-01-change-study/bank-tpch-smoke.json)、[probe-synthetic.json](2026-11-01-change-study/probe-synthetic.json)、[probe-tpch.json](2026-11-01-change-study/probe-tpch.json)、[raw-results.tgz](2026-11-01-change-study/raw-results.tgz)、[raw-results-final.tgz](2026-11-01-change-study/raw-results-final.tgz) | [analyse.py](2026-11-01-change-study/analyse.py)、[run-study.py](2026-11-01-change-study/run-study.py)、[budget-proxy.py](2026-11-01-change-study/budget-proxy.py)、[memory-service.py](2026-11-01-change-study/memory-service.py)、[select-bank.py](2026-11-01-change-study/select-bank.py) | [study-stats.json](2026-11-01-change-study/study-stats.json)、[summary.md](2026-11-01-change-study/summary.md)、[change-study.tex](../overleaf/gen/change-study.tex) |
 | 2026-11-01-replay-rerun | [rerun-reports.tgz](2026-11-01-replay-rerun/rerun-reports.tgz)、[rerun-final-reports.tgz](2026-11-01-replay-rerun/rerun-final-reports.tgz) | [analyse.py](2026-11-01-replay-rerun/analyse.py) | [replay-policies.json](2026-11-01-replay-rerun/replay-policies.json)、[replay-policies.tex](../overleaf/gen/replay-policies.tex) |
 | 2026-11-01-shared-validation | [cells.tgz](2026-11-01-shared-validation/cells.tgz)、[cells-final.tgz](2026-11-01-shared-validation/cells-final.tgz) | [analyse.py](2026-11-01-shared-validation/analyse.py) | [stats.json](2026-11-01-shared-validation/stats.json)、[shared-validation.tex](../overleaf/gen/shared-validation.tex) |
+| 2026-11-09-structural-reuse | [tpcds-defs.json](2026-11-09-structural-reuse/tpcds-defs.json) | [analyse.py](2026-11-09-structural-reuse/analyse.py) | — |
+| 2026-11-11-maint-hardening | [binding-report.json](2026-11-11-maint-hardening/binding-report.json)、[replay-hardening.json](2026-11-11-maint-hardening/replay-hardening.json)、[served-split.json](2026-11-11-maint-hardening/served-split.json) | [analyse-replay.py](2026-11-11-maint-hardening/analyse-replay.py)、[served-split.py](2026-11-11-maint-hardening/served-split.py) | [binding.tex](../overleaf/gen/binding.tex)、[served-split.tex](../overleaf/gen/served-split.tex)、[sustained.tex](../overleaf/gen/sustained.tex) |
+| 2026-11-12-relbench-quality | [protocol.json](2026-11-12-relbench-quality/protocol.json) | [diagnose-quality.py](../tools/relbench/diagnose-quality.py)、[feature_selection.py](../tools/relbench/feature_selection.py) | — |
 
 ## 原始数据与代码版本记录
 
@@ -126,6 +132,9 @@
 | 2026-11-01-change-study | raw-results.tgz：首批 24 格报告、完成记录与用量账本；raw-results-final.tgz：最终二进制 MAVRA 六格的报告、逐题日志、完成记录与用量账本。服务器 results/change-study-20261101 与 results/change-study-20261101-final 保留完整输出；API 密钥只在服务器私有文件中，不入库。 | 首批二进制 67e2fc83（96da0bc）；最终 MAVRA 格 HEAD fdf56be、二进制 3ec110d0，新增去重修复、修复搜索预筛与失败结论共享，Rust 单元与 PostgreSQL 集成测试通过。冒烟测试 0.52 + 0.16 元；累计约 30.5 元，在用户授权的 40 元内。命令见 README。 |
 | 2026-11-01-replay-rerun | rerun-final-reports.tgz：最终二进制四模式报告（results/replay-final2-20261101）；rerun-reports.tgz：上一版二进制重跑报告。存档策略结果见 exp/2026-10-02-cache-baseline-tpcds 与 exp/2026-10-11-generality。 | replay-bench --policies condition --oracles snapshot；最终运行 HEAD d648f3d（含去重修复与期间日期键下推）。命令与差异见 README。 |
 | 2026-11-01-shared-validation | cells-final.tgz：最终二进制 108 格（results/shared-validation-1793508134275611）；cells.tgz：旧二进制 108 格（results/shared-validation-1793471974128556）。 | src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。 |
+| 2026-11-09-structural-reuse | noctis results/structural-reuse-smoke；后续范围以本目录运行记录为准。 | 原目录 README 记录 run_metric 维度问法与 v3 题集实现；不以本次整理提交替代运行版本。 |
+| 2026-11-11-maint-hardening | 原始位置、时间、源码校验与失败记录见本目录 README；归档 JSON 不代表所有原始输出均已下载。 | 9334549、89322f2、65f13fe、66c2181 等；各子实验版本按原 README 核对。 |
+| 2026-11-12-relbench-quality | noctis 独立目录 /root/agentdb-quality-20261112/results；既有 369 个会话的只读诊断记录另存并逐文件哈希。 | 从主仓库 b60a84b 和论文 ec8d755 开始；运行前冻结源码及校验，命令与接纳规则见本目录 README。 |
 
 ## 维护索引
 

@@ -10,7 +10,7 @@ use anyhow::{anyhow, bail, ensure, Result};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlparser::ast::{Expr, Ident, SetExpr, Statement, VisitMut, VisitorMut};
+use sqlparser::ast::{Expr, Ident, SetExpr, Statement, Visit, VisitMut, Visitor, VisitorMut};
 use sqlparser::dialect::PostgreSqlDialect;
 use sqlparser::parser::Parser;
 use std::collections::{BTreeMap, BTreeSet};
@@ -684,7 +684,16 @@ pub fn feature_ident(name: &str) -> String {
 /// 特征定义编译为对种子表 `s`（列：实体键 `seed_key`、`seed_time`）逐行的 LATERAL 聚合，别名 `alias`，值列为 `v`。
 /// 关联与过滤的写法与 `compile` 相同；`时间列 <= s.seed_time` 与窗口下界写在 SQL 里，所以按定义执行不会读到种子时间之后的行；
 /// LATERAL 里的聚合对每个种子恰好返回一行。
+#[cfg(test)]
 pub fn feature_lateral(m: &Metric, alias: &str, seed_key: &str) -> Result<String> {
+    let (expr, source) = feature_read(m, seed_key)?;
+    Ok(format!("left join lateral (select ({expr})::double precision as v from {source}) {alias} on true"))
+}
+
+/// Separate the projected value from its exact input relation. Sharing is allowed
+/// only for aggregates over byte-identical relations, including all time bounds,
+/// filters, joins, deduplication and the seed-to-entity mapping.
+fn feature_read(m: &Metric, seed_key: &str) -> Result<(String, String)> {
     check_join_orientation(m)?;
     let e = m.entity.as_ref().ok_or_else(|| anyhow!("不是特征定义：没有 entity"))?;
     let time = m.time.as_ref().filter(|t| t.is_column()).ok_or_else(|| anyhow!("特征定义的时间须为日期列方式"))?;
@@ -729,7 +738,29 @@ pub fn feature_lateral(m: &Metric, alias: &str, seed_key: &str) -> Result<String
         _ if m.empty == EmptyRule::Zero => format!("coalesce({measure}, 0)"),
         _ => measure,
     };
-    Ok(format!("left join lateral (select ({expr})::double precision as v from {from} where {}) {alias} on true", wheres.join(" and ")))
+    Ok((expr, format!("{from} where {}", wheres.join(" and "))))
+}
+
+fn aggregate_feature(expr: &str) -> bool {
+    #[derive(Default)]
+    struct Aggregate {
+        found: bool,
+        window: bool,
+    }
+    impl Visitor for Aggregate {
+        type Break = ();
+        fn pre_visit_expr(&mut self, expr: &Expr) -> ControlFlow<()> {
+            if let Expr::Function(f) = expr {
+                self.found |= matches!(f.name.to_string().to_lowercase().as_str(), "count" | "sum" | "avg" | "min" | "max");
+                self.window |= f.over.is_some();
+            }
+            ControlFlow::Continue(())
+        }
+    }
+    let Ok(statements) = Parser::parse_sql(&PostgreSqlDialect {}, &format!("select {expr}")) else { return false };
+    let mut a = Aggregate::default();
+    let _ = Visit::visit(&statements, &mut a);
+    a.found && !a.window
 }
 
 fn seed_time_re() -> &'static Regex {
@@ -740,19 +771,38 @@ fn seed_time_re() -> &'static Regex {
 /// 一组特征定义编译成交给 validate_features 的特征 SQL：以 `{seeds}` 为种子表，前两列为实体键与 seed_time，
 /// 其后每个定义一列（列名为 `feature_ident(名称)`）。返回 SQL 与各定义的列名。
 pub fn compose_features(defs: &[&Metric], seed_key: &str) -> Result<(String, Vec<String>)> {
-    let mut sel = vec![format!("s.{seed_key}"), "s.seed_time".to_string()];
-    let mut joins = vec![];
+    let mut groups: Vec<(String, bool, Vec<String>)> = vec![];
+    let mut slots = vec![];
     let mut names = vec![];
-    for (i, m) in defs.iter().enumerate() {
+    for m in defs {
         let mut col = feature_ident(&m.name);
         while names.contains(&col) {
             col.push_str("_2");
         }
-        let a = format!("f{i}");
-        joins.push(feature_lateral(m, &a, seed_key)?);
-        sel.push(format!("{a}.v as {col}"));
+        let (expr, source) = feature_read(m, seed_key)?;
+        let aggregate = aggregate_feature(&m.measure);
+        let group = if aggregate { groups.iter().position(|(s, a, _)| *a && *s == source) } else { None };
+        let gi = group.unwrap_or_else(|| {
+            groups.push((source, aggregate, vec![]));
+            groups.len() - 1
+        });
+        let vi = groups[gi].2.len();
+        groups[gi].2.push(expr);
+        slots.push((gi, vi));
         names.push(col);
     }
+    let value = |i| if i == 0 { "v".to_string() } else { format!("v{i}") };
+    let mut sel = vec![format!("s.{seed_key}"), "s.seed_time".to_string()];
+    sel.extend(slots.iter().zip(&names).map(|((g, v), col)| format!("f{g}.{} as {col}", value(*v))));
+    let joins: Vec<String> = groups
+        .iter()
+        .enumerate()
+        .map(|(g, (source, _, exprs))| {
+            let projected: Vec<String> =
+                exprs.iter().enumerate().map(|(i, e)| format!("({e})::double precision as {}", value(i))).collect();
+            format!("left join lateral (select {} from {source}) f{g} on true", projected.join(", "))
+        })
+        .collect();
     Ok((format!("select {} from {{seeds}} s {}", sel.join(", "), joins.join(" ")), names))
 }
 
@@ -1443,7 +1493,9 @@ mod tests {
         let (sql, cols) = compose_features(&[m, m], "owneruserid").unwrap();
         assert_eq!(cols, vec!["user_upvotes_received_91d", "user_upvotes_received_91d_2"]);
         assert!(sql.starts_with("select s.owneruserid, s.seed_time, f0.v as user_upvotes_received_91d"), "{sql}");
-        assert!(sql.contains("from {seeds} s left join lateral (select (coalesce(count(*), 0))::double precision as v from votes join posts on votes.postid = posts.id"), "{sql}");
+        assert_eq!(sql.matches("left join lateral").count(), 1, "identical aggregate inputs should share one scan: {sql}");
+        assert!(sql.contains("f0.v1 as user_upvotes_received_91d_2"), "both output columns must remain: {sql}");
+        assert!(sql.contains("from votes join posts on votes.postid = posts.id"), "{sql}");
         for part in [
             "posts.owneruserid = s.owneruserid",
             "votes.creationdate <= s.seed_time",
@@ -1479,6 +1531,37 @@ mod tests {
         );
         let parsed: EntityRef = serde_json::from_str(r#"{"table": "users", "key": "id", "via": "votes.userid", "fill": -1}"#).unwrap();
         assert_eq!(parsed.fill, Some(-1.0));
+    }
+
+    #[test]
+    fn feature_scan_fusion_respects_input_boundaries() {
+        let (drafts, _) = parse_feature_drafts(
+            r#"{"features":[{"column":"n","name":"n","definition":"count","fact":"votes",
+            "measure":"count(*)","grain":["id"],"time":{"role":"event","fact_col":"creationdate","strategy":"column","grain":"day"},
+            "entity":{"table":"users","key":"id","via":"userid","window_days":91},"empty":"zero"}]}"#,
+        )
+        .unwrap();
+        let a = &drafts[0].metric;
+        let mut b = a.clone();
+        b.measure = "sum(votes.value)".into();
+        assert_eq!(compose_features(&[a, &b], "id").unwrap().0.matches("left join lateral").count(), 1);
+        b.entity.as_mut().unwrap().window_days = Some(30);
+        assert_eq!(compose_features(&[a, &b], "id").unwrap().0.matches("left join lateral").count(), 2);
+        b = a.clone();
+        b.filters.insert("votes".into(), "votetypeid = 2".into());
+        assert_eq!(compose_features(&[a, &b], "id").unwrap().0.matches("left join lateral").count(), 2);
+        b = a.clone();
+        b.entity.as_mut().unwrap().anchor = Some("related_id".into());
+        assert_eq!(compose_features(&[a, &b], "id").unwrap().0.matches("left join lateral").count(), 2);
+        b = a.clone();
+        b.measure = "votes.value".into();
+        assert_eq!(
+            compose_features(&[&b, &b], "id").unwrap().0.matches("left join lateral").count(),
+            2,
+            "scalar reads must never be fused using the aggregate rule"
+        );
+        assert!(!aggregate_feature("'max(v)'"), "function names in literals are not aggregates");
+        assert!(!aggregate_feature("count(*) over ()"), "window functions have different row cardinality");
     }
 
     #[test]

@@ -12,6 +12,7 @@
 | PPT 生成与版本 | [slides/README.md](../slides/README.md) |
 | RelBench SQL 复用对照 | [协议](../exp/2026-10-22-sql-only/README.md)、`relbench/sql-only-stats.py`、`relbench/test_sql_only.py` |
 | RelBench 主实验 | [实验协议](../exp/2026-10-20-relbench/README.md)、[基线复现说明](../exp/2026-10-20-relbench/reproduction-notes.md)、`relbench/` |
+| RelBench 质量与代价诊断 | [11-12 协议](../exp/2026-11-12-relbench-quality/README.md)；`relbench/diagnose-quality.py` 只读旧记录，`feature_selection.py` 使用固定学习器与验证集做有预算的特征筛选 |
 | 机制预实验与论文图 | [10-29 证据与合入记录](../exp/2026-10-29-mechanism-pilot/paper-integration/README.md)；`figures/mechanism.py` 从已存档 JSON 生成 A/B/C 图与数值宏，无模型调用 |
 | 官方 API 实验与图表重构 | [10-28 协议、队列与分析](../exp/2026-10-28-official/README.md)；费用闸门、完整配对核对、独立机制图 |
 | 最新场景比较与离线复核 | [10-30 已发表基线](../exp/2026-10-30-published-scenarios/README.md)、[10-31 修复比较](../exp/2026-10-31-corrected-scenarios/README.md)、[10-31 跨智能体题型迁移](../exp/2026-10-31-diverse-scenarios/README.md)；各批次保留运行脚本、冻结源码和 `test-budget.py`，最终聚合入口为 `analyse-paired-reuse.py` |

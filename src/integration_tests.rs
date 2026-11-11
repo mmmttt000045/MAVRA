@@ -13,6 +13,83 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
+async fn feature_scan_fusion(url: &str) -> Result<Value> {
+    let db = Db::connect(url, 2, false)?;
+    db.query(
+        QKind::Meta,
+        "create table events (id int, entity_id int, occurred timestamp, amount numeric, kind text); \
+         create table seeds (id int, seed_time timestamp); \
+         insert into events values (1,1,'2020-01-01',10,'a'),(2,1,'2020-01-20',null,'b'), \
+         (3,1,'2020-01-25',20,'a'),(4,2,'2019-01-01',7,'a'),(5,1,'2021-01-01',999,'a'); \
+         insert into seeds values (1,'2020-02-01'),(2,'2020-02-01'),(3,'2020-02-01'),(1,'2020-01-15')",
+    )
+    .await?;
+    let base: Metric = serde_json::from_value(json!({"name":"count", "definition":"event count", "fact":"events",
+        "measure":"count(*)", "grain":["id"], "time":{"role":"event time","fact_col":"occurred","strategy":"column","grain":"day"},
+        "entity":{"table":"entities","key":"id","via":"entity_id"}, "empty":"zero"}))?;
+    let mut defs = vec![base.clone()];
+    for (name, measure) in [
+        ("sum", "sum(amount)"),
+        ("avg", "avg(amount)"),
+        ("distinct", "count(distinct kind)"),
+        ("recency", "extract(epoch from (seed_time - max(occurred))) / 86400"),
+        ("ratio", "sum(amount) / nullif(count(*),0)"),
+    ] {
+        let mut m = base.clone();
+        m.name = name.into();
+        m.measure = measure.into();
+        m.empty = EmptyRule::Null;
+        defs.push(m);
+    }
+    let mut recent = base.clone();
+    recent.name = "recent".into();
+    recent.entity.as_mut().unwrap().window_days = Some(31);
+    defs.push(recent);
+    let mut filtered = base;
+    filtered.name = "only_a".into();
+    filtered.filters.insert("events".into(), "kind = 'a'".into());
+    defs.push(filtered);
+    let refs: Vec<&Metric> = defs.iter().collect();
+    let (fused, columns) = metric::compose_features(&refs, "id")?;
+    let mut projection = vec!["s.id".to_string(), "s.seed_time".to_string()];
+    let mut joins = vec![];
+    for (i, m) in defs.iter().enumerate() {
+        projection.push(format!("f{i}.v as {}", columns[i]));
+        joins.push(metric::feature_lateral(m, &format!("f{i}"), "id")?);
+    }
+    let independent = format!("select {} from seeds s {} order by s.id,s.seed_time", projection.join(","), joins.join(" "));
+    let compiled = format!("{} order by s.id,s.seed_time", fused.replace("{seeds}", "seeds"));
+    let expected = db.query(QKind::Meta, &independent).await?.to_json(20);
+    let actual = db.query(QKind::Meta, &compiled).await?.to_json(20);
+    ensure!(actual == expected, "fused SQL must preserve nulls, ratios, windows, and duplicate-entity seed times: {actual} vs {expected}");
+    ensure!(actual["rows"][1][2] == "3", "the February seed must count three past events: {actual}");
+    ensure!(actual["rows"][3][3].is_null(), "an empty nullable sum must remain NULL: {actual}");
+    db.query(QKind::Meta, "insert into events values (6,1,'2022-01-01',1000000,'b')").await?;
+    let after = db.query(QKind::Meta, &compiled).await?.to_json(20);
+    ensure!(after == actual, "future rows must not affect any fused feature");
+    Ok(json!({"status":"passed","features":columns.len(),"independent_scans":defs.len(),
+              "fused_scans":fused.matches("left join lateral").count(),"rows":actual["row_count"]}))
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
+async fn postgres_feature_scan_fusion() -> Result<()> {
+    let _ = dotenvy::dotenv();
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_featurefusion_{}_{stamp}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let result = tokio::time::timeout(Duration::from_secs(90), feature_scan_fusion(test_url.as_str())).await;
+    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
+    cleanup.context("feature fusion test database cleanup failed")?;
+    let report = result.context("feature fusion test timed out")??;
+    println!("{}", serde_json::to_string(&report)?);
+    Ok(())
+}
+
 async fn tool(http: &reqwest::Client, base: &str, name: &str, args: Value) -> Result<Value> {
     let response = http
         .post(format!("{base}/v1/tools/{name}"))

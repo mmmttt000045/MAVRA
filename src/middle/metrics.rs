@@ -2250,7 +2250,7 @@ impl Middle {
         let (mut compared, mut moved, mut example) = (0usize, 0usize, None);
         for (b, v) in &s_old {
             let Some(v) = v else { continue };
-            if fp_old.get(b).is_none() || fp_old.get(b) != fp_now.get(b) {
+            if !fp_old.contains_key(b) || fp_old.get(b) != fp_now.get(b) {
                 continue;
             }
             compared += 1;

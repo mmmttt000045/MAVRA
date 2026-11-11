@@ -118,6 +118,13 @@ ARMS = {
     "mavra-select2": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
                       "first_attempts": FIRST_ATTEMPTS},
+    # 11-12: validation-only feature pruning reuses computed matrices; an audited
+    # entity-table model is a cold-start fallback. Reuse gets a small, explicit
+    # model/tool budget instead of repeatedly reading a large memory payload.
+    "mavra-budgeted": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
+                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
+                       "first_attempts": FIRST_ATTEMPTS, "subset_selection": True,
+                       "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -908,6 +915,7 @@ Shared memory: agents on this database publish verified feature definitions and 
         if not psql:
             return None
         budget = bool(self.arm.get("select_budget"))
+        program_timeout = self.arm.get("program_timeout", SELECT_P_TIMEOUT_S)
         rec = {"candidates": [], "audit_seconds": 0.0, "sql_seconds": 0.0, "train_seconds": 0.0, "chosen": None}
         t0 = time.time()
         val_table = f"task.{tname(t)}_val"
@@ -967,7 +975,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             return a > b if higher else a < b
 
         try:
-            pxtr, pxva = run(psql, SELECT_P_TIMEOUT_S if budget else FEATURE_SQL_TIMEOUT_S, "program")
+            pxtr, pxva = run(psql, program_timeout if budget else FEATURE_SQL_TIMEOUT_S, "program")
             pkeys = heads(psql)
         except Exception as err:  # noqa: BLE001 - a program that no longer runs gives no start; the session explores
             dsql_p = prog.get("sql")
@@ -980,9 +988,9 @@ Shared memory: agents on this database publish verified feature definitions and 
             try:
                 est = probe(dsql_p, "program_definitions_timing")
                 rec["program_definitions_estimate_s"] = round(est, 1)
-                if est > SELECT_P_TIMEOUT_S:
+                if est > program_timeout:
                     raise FeatureError(f"estimated {est:.0f} s on the training sample and the validation seeds")
-                pxtr, pxva = run(dsql_p, min(FEATURE_SQL_TIMEOUT_S, max(30, 2 * est)), "program_definitions")
+                pxtr, pxva = run(dsql_p, min(program_timeout, max(10, 2 * est)), "program_definitions")
                 pkeys = heads(dsql_p)
             except Exception as err2:  # noqa: BLE001 - neither runs: no start, the session explores
                 rec["error"] = f"program: {str(err)[:200]}; its definitions: {str(err2)[:200]}"
@@ -1008,6 +1016,28 @@ Shared memory: agents on this database publish verified feature definitions and 
         cands = [{"name": "program", "sql": p_sql, "val": pval, "columns": pcols, "importance": pimp,
                   "dropped_leaking": sorted(bad), "from_cutoff": (prog.get("program") or {}).get("cutoff"),
                   "source": rec.get("program_source", "program SQL")}]
+        subset_time_left = [15.0]
+
+        def prune(candidate, xtr, xva, keys):
+            if not self.arm.get("subset_selection") or subset_time_left[0] <= 0:
+                return
+            from feature_selection import select_subset
+
+            selected = select_subset(
+                xtr[candidate["columns"]], seeds["train_sample"][yc], xva[candidate["columns"]], seeds["val"][yc],
+                candidate["importance"], candidate["val"], higher,
+                lambda xt, yt, xv: train_predict(e["task_type"], xt, yt, xv),
+                lambda y, p: score(e["task_type"], y, p), budget_seconds=subset_time_left[0])
+            subset_time_left[0] -= selected["seconds"]
+            rec["train_seconds"] += selected["train_seconds"]
+            rec.setdefault("subset_selection", []).append({k2: v for k2, v in selected.items() if k2 != "chosen"})
+            chosen = selected["chosen"]
+            if chosen["columns"] != candidate["columns"]:
+                cands.append({**candidate, "name": candidate["name"] + "_pruned", "val": chosen["val"],
+                              "columns": chosen["columns"], "importance": chosen["importance"],
+                              "sql": select_columns_sql(candidate["sql"], keys, chosen["columns"])})
+
+        prune(cands[0], pxtr, pxva, pkeys)
         # U: the verified definitions of the entity that the program does not already use
         in_prog = {c.get("key") for c in prog.get("columns") or []}
         keys = [f["key"] for f in feats.get("features") or [] if f.get("key") and f["key"] not in in_prog][:SELECT_MAX_DEFS]
@@ -1070,12 +1100,14 @@ Shared memory: agents on this database publish verified feature definitions and 
                     if ua.get("result") != "clean":
                         raise FeatureError(f"extended SQL audit: {ua.get('result')} {ua.get('columns_differing') or ua.get('why')}")
                 cands.append(cand)
+                if better(uval, pval):
+                    prune(cand, uxtr, uxva, pkeys)
             except Exception as err:  # noqa: BLE001 - the program alone still starts the session
                 rec["extension_error"] = str(err)[:300]
         if bad:  # the program without its leaking columns is a new SQL: audit it as one before it starts the session
             pa = audit(p_sql)
             if pa.get("result") != "clean":
-                cands = [c for c in cands if c["name"] != "program"]
+                cands = [c for c in cands if not c["name"].startswith("program")]
                 rec["program_error"] = f"program without leaking columns: {pa.get('result')}"
         best = None
         for c in cands:
@@ -1100,7 +1132,7 @@ Shared memory: agents on this database publish verified feature definitions and 
         ch = sel["chosen"]
         lines = ["Prepared for you by the shared memory (validated on this cutoff's data; none of your validations were used):"]
         for c in sel["candidates"]:
-            if c["name"] == "program":
+            if c["name"].startswith("program"):
                 s = (f"- this task's verified program from cutoff {str(c.get('from_cutoff'))[:10]}"
                      + (" as its verified definitions (its complete SQL went over the time limit on this cutoff)"
                         if c.get("source") == "definitions" else "")
@@ -1111,7 +1143,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                 s = (f"- the program extended with {len(c['added'])} verified definitions that other agents published for {entity}: "
                      f"validation {metric} {c['val']:.5f} ({c['n_features']} features)")
             lines.append(s)
-        lines.append(f"Your current best features are the {'extended program' if ch['name'] == 'extended' else 'program'} "
+        lines.append(f"Your current best features are the {'extended program' if ch['name'].startswith('extended') else 'program'} "
                      f"(validation {metric} {ch['val']:.5f}{', which reaches the retraining goal' if goal else ''}):")
         lines.append(ch["sql"])
         lines.append("Its top features by gain: " + ", ".join(f"{c} ({g:g})" for c, g in ch["top"]))
@@ -1291,6 +1323,8 @@ Shared memory: agents on this database publish verified feature definitions and 
         score becomes the session (its test score, its learning) and the others' model calls, tool calls and time are
         charged to it."""
         n = self.arm.get("first_attempts") or 1
+        if self.arm.get("subset_selection") and k > 1:
+            n = 1  # keep the reuse session's total model/tool budget, even after a missing program
         if n < 2 or self.has_program(t, k, middle):
             return self.finish(t, k, seeds, middle, self.explore(t, k, seeds, middle))
         higher = metric_of(self.tasks[t]["task_type"])[1]
@@ -1325,6 +1359,13 @@ Shared memory: agents on this database publish verified feature definitions and 
                "higher_is_better": higher, "llm": [], "tools": [], "validations": [], "stop": None, "error": None}
         task_line = f"Build features for {t} at cutoff {e['cutoffs'][k - 1]['test_timestamp'][:10]}."
         msgs = [{"role": "system", "content": self.system_prompt(t, k, seeds)}, {"role": "user", "content": task_line}]
+        if self.arm.get("subset_selection") and attempt:
+            focus = ("Prioritize event history, recency, multiple look-back windows and activity changes."
+                     if attempt == 1 else
+                     "Prioritize the entity's own attributes and distinct signals tied to this prediction target; "
+                     "use past related-entity outcomes only when they were observable at the seed time.")
+            msgs[0]["content"] += ("\n\nFeature-search focus for this independent attempt: " + focus
+                                    + " Keep a compact, complementary feature set; validate a working SQL early before adding complexity.")
         gmem_tokens = [0, 0]
         if self.gmem:
             g = self.gmem.send({"op": "begin", "task_main": f"{self.task_desc[t]['description']} (task {t}, cutoff {e['cutoffs'][k - 1]['test_timestamp'][:10]})",
@@ -1347,6 +1388,7 @@ Shared memory: agents on this database publish verified feature definitions and 
         best, best_sql, streak, idle, submitted = None, None, 0, 0, None
         goal_hit = None  # model calls made when a validation first reached the goal
         chosen = None  # mavra-select: the start the memory validated
+        best_frames = None  # only the current best's matrices, reused by the bounded selector
         t_start = time.time()
         if self.arm.get("push_memory"):
             # the two lookups the agent used to start with, done by the memory at the session start (inside the
@@ -1396,6 +1438,34 @@ Shared memory: agents on this database publish verified feature definitions and 
             rec["memory_push"] = {"seconds": time.time() - t0, "chars": len(msgs[1]["content"]) - len(task_line),
                                   "program": '"sql"' in pushed[0], "error": any('"error"' in x[:40] for x in pushed)}
 
+        if self.arm.get("subset_selection") and chosen is None:
+            # A candidate search should never throw away a sound entity-table
+            # model just because the agent's first relational SQL is weaker.
+            # This refit and its audit are inside the measured session.
+            ts = time.time()
+            try:
+                rsql = self.reference_sql(t)
+                rxtr, s1 = features(self.url, rsql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
+                rxva, s2 = features(self.url, rsql, f"task.{tname(t)}_val", seeds["val"], ec)
+                rp, rimp, rt = train_predict(e["task_type"], rxtr, seeds["train_sample"][yc], rxva)
+                rv = score(e["task_type"], seeds["val"][yc], rp)
+                ta = time.time()
+                ra = self.audit(t, k, rsql, seeds)
+                audit_s = time.time() - ta
+                rec["memory_reference"] = {"val": rv, "sql_seconds": s1 + s2, "train_seconds": rt,
+                                           "audit_seconds": audit_s, "audit": ra.get("result")}
+                if ra.get("result") == "clean":
+                    best, best_sql = rv, rsql
+                    best_frames = (rsql, rxtr, rxva, rimp)
+                    msgs[1]["content"] += (f"\n\nThe memory validated an entity-table fallback ({metric}={rv:.5f}). "
+                                            "Improve it with features relevant to this task; retain it if new features hurt validation.\n" + rsql)
+            except Exception as err:
+                rec["memory_reference"] = {"error": str(err)[:300], "audit_seconds": 0.0}
+            rec["memory_reference"]["seconds"] = time.time() - ts
+
+        model_limit = self.arm.get("reuse_llm_limit", MAX_LLM_CALLS) if k > 1 else MAX_LLM_CALLS
+        tool_limit = self.arm.get("reuse_tool_limit") if k > 1 else None
+
         def better(x):
             return best is None or (x > best if higher else x < best)
 
@@ -1403,7 +1473,7 @@ Shared memory: agents on this database publish verified feature definitions and 
             if goal_hit is not None and len(rec["llm"]) - goal_hit >= POST_GOAL_LLM_CALLS:
                 rec["stop"] = "reached_previous"
                 break
-            if len(rec["llm"]) >= MAX_LLM_CALLS:
+            if len(rec["llm"]) >= model_limit:
                 rec["stop"] = "llm_budget"
                 break
             try:
@@ -1428,6 +1498,9 @@ Shared memory: agents on this database publish verified feature definitions and 
             idle = 0
             stop = None
             for c in calls:
+                if tool_limit is not None and len(rec["tools"]) >= tool_limit:
+                    stop = "reuse_tool_budget"
+                    break
                 name = c["function"]["name"]
                 try:
                     args = json.loads(c["function"].get("arguments") or "{}")
@@ -1498,6 +1571,8 @@ Shared memory: agents on this database publish verified feature definitions and 
                         improved = (not leaking) and better(val)
                         if improved:
                             best, best_sql, streak = val, sql, 0
+                            if self.arm.get("subset_selection"):
+                                best_frames = (sql, xtr, xva, imp)
                         elif not leaking:
                             streak += 1
                         rec["validations"].append({"tool_i": entry["i"], "val": val, "improved": improved, "sql_seconds": s1 + s2,
@@ -1545,6 +1620,8 @@ Shared memory: agents on this database publish verified feature definitions and 
                     entry["audit_seconds"] = time.time() - ta
                     if not sql:
                         out = {"error": "nothing validated yet; validate features first or pass sql"}
+                    elif self.arm.get("subset_selection") and sql != best_sql:
+                        out = {"error": "validate this exact SQL first, or submit the current best validated features"}
                     elif leak.get("result") == "leak":
                         out = {"error": "not submitted: these features read rows after seed_time",
                                "columns_reading_data_after_seed_time": leak.get("columns_differing")}
@@ -1568,8 +1645,42 @@ Shared memory: agents on this database publish verified feature definitions and 
             if stop:
                 rec["stop"] = stop
                 break
+        if self.arm.get("subset_selection") and best_frames is not None and submitted in (None, best_sql):
+            from feature_selection import select_subset
+
+            ts = time.time()
+            psql, pxtr, pxva, pimp = best_frames
+            try:
+                used = sum(x.get("seconds", 0) for x in (rec.get("memory_select") or {}).get("subset_selection", []))
+                subset = select_subset(pxtr, seeds["train_sample"][yc], pxva, seeds["val"][yc], pimp, best, higher,
+                                       lambda xt, yt, xv: train_predict(e["task_type"], xt, yt, xv),
+                                       lambda y, p: score(e["task_type"], y, p), budget_seconds=max(0.0, 15.0 - used))
+                rec["memory_prune"] = {k2: v for k2, v in subset.items() if k2 != "chosen"}
+                sub = subset["chosen"]
+                if sub["columns"] != list(pxtr.columns):
+                    headers, _ = read_sql(self.url, f"SELECT * FROM ({psql.strip().rstrip(';').replace('{seeds}', f'task.{tname(t)}_val')}) q LIMIT 0")
+                    q = select_columns_sql(psql, list(headers.columns[:2]), sub["columns"])
+                    check = {"sql_seconds": 0}
+                    self.check_columns(t, k, q, seeds, pxva[sub["columns"]], check, timeout_s=SELECT_CHECK_TIMEOUT_S)
+                    ta = time.time()
+                    qa = self.audit(t, k, q, seeds)
+                    rec["memory_prune"]["audit_seconds"] = time.time() - ta
+                    rec["memory_prune"]["audit"] = qa.get("result")
+                    if qa.get("result") == "clean":
+                        best, best_sql = sub["val"], q
+                        if submitted is not None:
+                            submitted = q
+                        rec["validations"].append({"tool_i": None, "val": best, "sql": q, "leak": False,
+                                                   "improved": True, "audit_result": "clean", "source": "memory_prune",
+                                                   "n_features": len(sub["columns"]), "columns": sub["columns"],
+                                                   "importance": [c for c, _ in sub["importance"]]})
+            except Exception as err:
+                rec.setdefault("memory_prune", {})["error"] = str(err)[:300]
+            rec.setdefault("memory_prune", {})["elapsed_seconds"] = time.time() - ts
         # leak audits (at every validation and at submit) are the harness's checks, not the agent's work
-        rec["audit_seconds"] = sum(x.get("audit_seconds", 0) for x in rec["tools"]) + (rec.get("memory_select") or {}).get("audit_seconds", 0)
+        rec["audit_seconds"] = (sum(x.get("audit_seconds", 0) for x in rec["tools"])
+                                + sum((rec.get(name) or {}).get("audit_seconds", 0)
+                                      for name in ("memory_select", "memory_reference", "memory_prune")))
         rec["agent_seconds"] = time.time() - t_start - rec["audit_seconds"]
         rec["final_sql"] = submitted or best_sql
         rec["final_source"] = "submitted" if submitted else ("best_validated" if best_sql else None)
