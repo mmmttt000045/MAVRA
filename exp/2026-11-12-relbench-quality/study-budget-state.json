@@ -1,0 +1,19 @@
+{
+  "study_cap_cny": 25,
+  "initial_account_balance_cny": 146.87,
+  "target_stop_balance_cny": 121.87,
+  "guard_pid": 4148490,
+  "previous_guard_pid": 3885129,
+  "guard_anchor_cny": 132.7,
+  "guard_cap_from_anchor_cny": 10.729999999999984,
+  "previous_waiting_queue_pid": 4111469,
+  "previous_model_calls": 0,
+  "active_cells_before_start": [
+    4059527,
+    4082806
+  ],
+  "recorded_amendment": "exp/2026-11-12-relbench-quality/v6-execution-amendment.json",
+  "time_utc": "2026-11-11T22:43:36Z",
+  "spending_log": "/root/agentdb-quality-20261112/results/quality-20261112-v1/shared-spending-v6.log",
+  "parallel_launcher_pid": 4148491
+}
