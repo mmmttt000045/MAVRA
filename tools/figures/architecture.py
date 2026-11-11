@@ -39,7 +39,7 @@ from style import (ACC, ACC_DK, ACC_PALE, AMBER, AMBER_PALE, EDGE, FACE, FIELD, 
                    RED, RULE, SIDE, SLATE, TOP, WHITE)
 
 NAME = 'architecture'
-W, H = style.TEXTWIDTH, 95.6
+W, H = style.TEXTWIDTH, 90.0
 
 TITLE, BODY, SMALL, TINY, STEP = 7.1, 6.1, 5.5, 5.0, 6.1
 LEARN, LEARN_DK, LEARN_PALE = '#735EB0', '#523E8E', '#EFEBF9'
@@ -196,7 +196,7 @@ def draw(s, lang):
     # =========================================================================
     # 2. Middle Band: MAVRA Shared Layer Container
     # =========================================================================
-    my, mh = 13.4, 64.4
+    my, mh = 13.4, 58.9
     rect(1.2, my, W - 2.4, mh, FIELD, '#B9D4F2', .22, r=1.15)
     rect(2.6, my + .9, .65, 2.0, ACC)
     label(3.85, my + 1.9, 'MAVRA', TITLE + .15, ACC_DK, 'bold')
@@ -511,107 +511,97 @@ def draw(s, lang):
           REF, .18, length=.58, radius=.32)
 
     # -------------------------------------------------------------------------
-    # (C) Bottom-Left+Center: MAINTAIN (Step 6) — 3 Rich Schematic Cards
+    # (C) Bottom-Left+Center: MAINTAIN (Step 6) — Compact 3-Stage Pipeline
     # -------------------------------------------------------------------------
-    MAINT = (2.4, 60.4, 126.2, 16.4)
+    MAINT = (2.4, 60.6, 126.2, 10.8)
     qx, qy, qw, qh = MAINT
     rect(qx, qy, qw, qh, WHITE, MAINT_C, .2, r=.65)
-    sb_w = 19.4
+    sb_w = 18.8
     rect(qx + .12, qy + .12, sb_w, qh - .24, MAINT_PALE, None, r=.55)
     rect(qx + sb_w / 2, qy + .12, sb_w / 2 + .12, qh - .24, MAINT_PALE, None)
-    label(qx + 1.25, qy + 3.4, 'Maintain' if en else '维护', TITLE, INK, 'bold')
-    label(qx + 1.25, qy + 6.7, 'on write' if en else '写入触发', 4.85, MAINT_DK, 'bold')
-    mini_step(qx + (12.8 if en else 12.2), qy + 6.7, 5, MAINT_C, r=.78)
-    label(qx + 1.25, qy + 9.8, 'stamps $V(T)$' if en else '表版本戳 $V(T)$', 4.65, MUTED)
-    label(qx + 1.25, qy + 12.4, '& delta $\\Delta T$' if en else '与增量 $\\Delta T$', 4.65, MUTED)
+    label(qx + 1.2, qy + 2.55, 'Maintain' if en else '维护', TITLE, INK, 'bold')
+    label(qx + 1.2, qy + 5.65, 'after write' if en else '写入触发', 4.75, MAINT_DK, 'bold')
+    mini_step(qx + (13.7 if en else 11.8), qy + 5.65, 5, MAINT_C, r=.74)
+    label(qx + 1.2, qy + 8.45, 'recheck & repair' if en else '增量重验与修复', 4.35, MUTED)
 
-    sc_y, sc_h = qy + .95, qh - 1.9
-    s1_x, s1_w = qx + sb_w + 1.1, 33.4
-    s2_x, s2_w = s1_x + s1_w + 1.7, 33.4
-    s3_x, s3_w = s2_x + s2_w + 1.7, qw - (sb_w + 1.1 + 33.4 * 2 + 3.4) - 1.0
+    sc_y, sc_h = qy + .85, qh - 1.7
+    s1_x, s1_w = qx + sb_w + 1.0, 32.8
+    s2_x, s2_w = s1_x + s1_w + 1.8, 33.4
+    s3_x, s3_w = s2_x + s2_w + 1.8, qw - (sb_w + 1.0 + 32.8 + 33.4 + 3.6) - 1.0
 
     def maint_card_head(cx, cw, num, title_s, border_c='#A8D8D1', bg_c='#FAFCFC'):
-        rect(cx, sc_y, cw, sc_h, bg_c, border_c, .17, r=.46)
-        rect(cx + .1, sc_y + .1, cw - .2, 2.75, MAINT_PALE, None, r=.36)
-        pill(cx + .75, sc_y + 1.48, str(num), MAINT_C, WHITE, size=4.2, pad=.52, h=1.55)
-        label(cx + 3.25, sc_y + 1.48, title_s, 4.85, INK, 'bold', width=cw - 4.0)
+        rect(cx, sc_y, cw, sc_h, bg_c, border_c, .17, r=.44)
+        rect(cx + .1, sc_y + .1, cw - .2, 2.3, MAINT_PALE, None, r=.34)
+        pill(cx + .7, sc_y + 1.22, str(num), MAINT_C, WHITE, size=4.0, pad=.48, h=1.42)
+        label(cx + 3.05, sc_y + 1.22, title_s, 4.65, INK, 'bold', width=cw - 3.6)
 
-    # Stage 1: Dependency Stamp Filter & Shared H
+    r1_y = sc_y + 4.45
+    r2_y = sc_y + 7.45
+
+    # Stage 1: Skip Unchanged Tables & Share H
     maint_card_head(s1_x, s1_w, 1,
-                    'Version Filter $V(\\mathrm{dep}(c))$' if en else '依赖版本筛选 $V(\\mathrm{dep}(c))$')
-    # Three table stamp mini-badges
-    c_y1 = sc_y + 4.95
-    pill(s1_x + .8, c_y1, '`sales` v0', FACE, MUTED, edge_c='#CFCBC4', size=4.15, pad=.48, h=1.78, wt='sans')
-    pill(s1_x + 11.0, c_y1, '`date` v0', FACE, MUTED, edge_c='#CFCBC4', size=4.15, pad=.48, h=1.78, wt='sans')
-    pill(s1_x + 20.5, c_y1, '`item` 0$\\rightarrow$1', AMBER_PALE, EXEC_DK, edge_c=AMBER, size=4.15, pad=.5, h=1.78)
-    # 5-block progress indicator (2 rerun, 3 skipped)
-    c_y2 = sc_y + 8.55
-    for b_i in range(5):
-        bx_m = s1_x + 1.0 + b_i * 1.95
-        filled = (b_i < 2)
-        rect(bx_m, c_y2 - .72, 1.5, 1.44, MAINT_C if filled else WHITE, MAINT_C, .15, r=.18)
-    label(s1_x + 11.4, c_y2,
-          'rerun 2/5 once' if en else '仅重查 2/5 项一次', 4.65, MAINT_DK, 'bold')
-    label(s1_x + s1_w / 2, sc_y + 12.15,
-          'reuse $\\mathcal{H}$ across SR, RA, RR, ER' if en else '结果在 SR, RA, RR, ER 间共享',
-          4.45, MUTED, 'sans', 'center')
+                    'Skip Unchanged Tables' if en else '跳过未变表并共享结果')
+    s1_t1, s1_t2, s1_t3 = '`sales` v0', '`date` v0', '`item` v0$\\rightarrow$v1'
+    s1_w1 = measure(s1_t1, 4.0, 'sans') + 1.0
+    s1_w2 = measure(s1_t2, 4.0, 'sans') + 1.0
+    s1_w3 = measure(s1_t3, 4.0, 'bold') + 1.04
+    s1_start = s1_x + (s1_w - (s1_w1 + s1_w2 + s1_w3 + 1.4)) / 2
+    x_cur1 = s1_start
+    x_cur1 += pill(x_cur1, r1_y, s1_t1, FACE, MUTED, edge_c='#CFCBC4', size=4.0, pad=.5, h=1.68, wt='sans') + .7
+    x_cur1 += pill(x_cur1, r1_y, s1_t2, FACE, MUTED, edge_c='#CFCBC4', size=4.0, pad=.5, h=1.68, wt='sans') + .7
+    pill(x_cur1, r1_y, s1_t3, AMBER_PALE, EXEC_DK, edge_c=AMBER, size=4.0, pad=.52, h=1.68)
+    label(s1_x + s1_w / 2, r2_y,
+          'only `item` changed · check once in $\\mathcal{H}$' if en else '仅 `item` 变更 · 在 $\\mathcal{H}$ 中共享重查一次',
+          4.15, MAINT_DK, 'bold', 'center')
 
-    route([(s1_x + s1_w, sc_y + sc_h / 2), (s2_x, sc_y + sc_h / 2)], MAINT_C, .24, length=.72)
+    route([(s1_x + s1_w, sc_y + sc_h / 2), (s2_x, sc_y + sc_h / 2)], MAINT_C, .24, length=.68)
 
-    # Stage 2: Delta-Scoped Index Probe on Delta T
+    # Stage 2: Probe Only New Rows Delta T
     maint_card_head(s2_x, s2_w, 2,
-                    'Delta Probe on $\\Delta T$' if en else '批次增量探针 $\\Delta T$')
-    p_y = sc_y + 4.05
-    p_h = 5.15
-    # Base indexed table block + Delta block + index probe connector
-    b_w1 = 15.6
-    b_w2 = 13.4
-    rect(s2_x + .9, p_y, b_w1, p_h, '#EDEBE6', '#BFB9B0', .14, r=.34)
-    label(s2_x + .9 + b_w1 / 2, p_y + 1.75, '`item` base', 4.45, INK, 'bold', 'center')
-    label(s2_x + .9 + b_w1 / 2, p_y + 3.75, '1,000 idx keys' if en else '1,000 索引键', 4.2, MUTED, 'sans', 'center')
-    dx_b = s2_x + s2_w - .9 - b_w2
-    rect(dx_b, p_y, b_w2, p_h, RED_PALE, RED, .17, r=.34)
-    label(dx_b + b_w2 / 2, p_y + 1.75, '$\\Delta\\mathrm{item}$', 4.5, RED, 'bold', 'center')
-    label(dx_b + b_w2 / 2, p_y + 3.75, "`sk=17, 'N'`", 4.2, INK, 'sans', 'center')
-    route([(dx_b, p_y + p_h / 2), (s2_x + .9 + b_w1, p_y + p_h / 2)], RED, .22, length=.62)
-    label(s2_x + s2_w / 2, sc_y + 12.15,
-          'dup `key 17` (`1001/1000` $\\times$) · no full scan' if en
-          else '免全表扫描检出键 `17` 重复 (`1001/1000`)',
-          4.45, RED, 'bold', 'center')
+                    'Probe New Rows $\\Delta T$' if en else '仅探测新增行 $\\Delta T$')
+    w_dt = pill(s2_x + .85, r1_y, "$\\Delta\\mathrm{item}$ (`17,'N'`)", AMBER_PALE, EXEC_DK, edge_c=AMBER, size=3.95, pad=.48, h=1.68)
+    dup_lbl = 'dup `17`' if en else '键 `17` 重复'
+    dup_w = measure(dup_lbl, 4.0, 'bold') + 2.85
+    dup_x = s2_x + s2_w - .85 - dup_w
+    rect(dup_x, r1_y - .84, dup_w, 1.68, RED_PALE, RED, .15, r=.34)
+    label(dup_x + .55, r1_y, dup_lbl, 4.0, RED, 'bold')
+    check_mark(dup_x + dup_w - .95, r1_y, False, RED, k=.52)
+    route([(s2_x + .85 + w_dt + .2, r1_y), (dup_x - .2, r1_y)], RED, .2, length=.55)
+    label(s2_x + s2_w / 2, r2_y,
+          'index lookup only · no full scan' if en else '仅按索引探测新增键 · 免全表扫描',
+          4.15, MUTED, 'sans', 'center')
 
-    route([(s2_x + s2_w, sc_y + sc_h / 2), (s3_x, sc_y + sc_h / 2)], MAINT_C, .24, length=.72)
+    route([(s2_x + s2_w, sc_y + sc_h / 2), (s3_x, sc_y + sc_h / 2)], MAINT_C, .24, length=.68)
 
-    # Stage 3: Guarded Single-Edit Repair & Replay
+    # Stage 3: Repair & Replay (else Withhold / Retire)
     maint_card_head(s3_x, s3_w, 3,
-                    'Single-Edit Repair $\\mathcal{E}(x,c)$' if en else '受限单步修复 $\\mathcal{E}(x,c)$',
+                    'Repair or Withhold' if en else '单步修复重放或安全拦截',
                     border_c=MAINT_C, bg_c='#F4FBF9')
-    r3_y1 = sc_y + 5.25
-    rect(s3_x + .85, r3_y1 - 1.35, s3_w - 1.7, 2.7, WHITE, MAINT_C, .16, r=.34)
-    label(s3_x + 1.5, r3_y1, "`+ i_is_current='Y'`", 4.45, MAINT_DK, 'bold')
-    label(s3_x + s3_w - 1.4, r3_y1,
-          'Ans $\\rightarrow$ `r1`' if en else '重放通过$\\rightarrow$`r1`',
-          4.35, MAINT_DK, 'bold', 'right')
-    r3_y2 = sc_y + 8.85
-    pill(s3_x + .85, r3_y2,
-         '$\\neq 1$ edit $\\rightarrow$ retire $\\perp$' if en else '无或多重补丁 $\\rightarrow$ 退役 $\\perp$',
-         FACE, MUTED, edge_c='#CFCBC4', size=4.05, pad=.46, h=1.72, wt='sans')
-    dom_p_txt = 'new `Dom` $\\rightarrow$ pending' if en else '新值域 $\\rightarrow$ 挂起'
-    dom_p_w = measure(dom_p_txt, 4.05, 'sans') + .92
-    pill(s3_x + s3_w - .85 - dom_p_w, r3_y2,
-         dom_p_txt, AMBER_PALE, EXEC_DK, edge_c=AMBER, size=4.05, pad=.46, h=1.72, wt='sans')
-    label(s3_x + s3_w / 2, sc_y + 12.15,
-          'sole edit restoring $C$ & source Ans' if en else '唯一恢复 $C$ 且复现源答案时自动升版',
-          4.45, MAINT_DK, 'bold', 'center')
+    w_patch = pill(s3_x + .8, r1_y, "`+ i_is_current='Y'`", WHITE, MAINT_DK, edge_c=MAINT_C, size=3.85, pad=.44, h=1.68)
+    rev_lbl = '$\\rightarrow$ `rev 1`'
+    ans_lbl = 'Ans' if en else '重放'
+    w_ans = measure(ans_lbl, 3.9, 'bold')
+    w_rev = measure(rev_lbl, 3.95, 'bold')
+    out_w = w_ans + w_rev + 3.25
+    out_x = s3_x + s3_w - .8 - out_w
+    rect(out_x, r1_y - .84, out_w, 1.68, MAINT_PALE, MAINT_C, .15, r=.34)
+    label(out_x + .5, r1_y, ans_lbl, 3.9, MAINT_DK, 'bold')
+    check_mark(out_x + .5 + w_ans + .82, r1_y, True, MAINT_C, k=.48)
+    label(out_x + out_w - .5, r1_y, rev_lbl, 3.95, MAINT_DK, 'bold', 'right')
+    route([(s3_x + .8 + w_patch + .18, r1_y), (out_x - .18, r1_y)], MAINT_C, .2, length=.52)
+    label(s3_x + s3_w / 2, r2_y,
+          'else: new value $\\rightarrow$ pending | retire' if en else '否则：新值域 $\\rightarrow$ 挂起 ／ 多解退役',
+          4.1, MUTED, 'sans', 'center')
 
     # Step 6 thick arrow: Maintain Stage 3 -> Knowledge base (into H)
     s6_x = s3_x + s3_w / 2
-    route([(s6_x, qy), (s6_x, ky + kh)], MAINT_C, THICK, length=.88)
-    step_badge(s6_x + 2.6, (qy + ky + kh) / 2, 6, MAINT_C, r=1.18)
+    route([(s6_x, qy), (s6_x, ky + kh)], MAINT_C, THICK, length=.82)
+    step_badge(s6_x + 2.4, (qy + ky + kh) / 2, 6, MAINT_C, r=1.02)
 
     # -------------------------------------------------------------------------
     # (D) Top-Right: LOOKUP (Step 3) — Visual Index + Cross-Encoder + Spectrum
     # -------------------------------------------------------------------------
-    LOOK = (131.6, 16.8, 42.6, 25.4)
+    LOOK = (131.6, 16.8, 42.6, 22.8)
     lx_k, ly_k, lw_k, lh_k = LOOK
     card_head(LOOK, 'Lookup' if en else '查找',
               'no SQL · no online LLM' if en else '不生 SQL · 免在线 LLM',
@@ -631,67 +621,67 @@ def draw(s, lang):
     label(req_x + 1.2, 14.65, 'request $\\rho$' if en else '请求 $\\rho$', 4.85, ACC_DK, 'bold')
 
     # Catalog sync arrow: Knowledge base -> Lookup
-    sync_y = ly_k + 6.8
+    sync_y = ly_k + 6.5
     route([(kx + kw, sync_y), (lx_k, sync_y)], REF, .22, dash=(.62, .38), length=.78)
 
     # Top row inside Lookup: (1) Alias & Dense Recall  ->  (2) Cross-Encoder x3
-    t_y, t_h = ly_k + 4.05, 10.1
+    t_y, t_h = ly_k + 3.85, 9.5
     t1_x, t1_w = lx_k + 1.05, 19.3
     t2_x, t2_w = t1_x + t1_w + 1.6, lw_k - 2.1 - t1_w - 1.6
 
     # Module 1: Alias Hash + bge-m3 Vector Neighborhood + Top-K Grid
     rect(t1_x, t_y, t1_w, t_h, '#F8FBFF', '#9EC0E6', .16, r=.45)
-    label(t1_x + t1_w / 2, t_y + 1.35, '1. Alias & Recall' if en else '1. 别名与向量召回', 4.75, ACC_DK, 'bold', 'center')
-    vcx, vcy = t1_x + 4.35, t_y + 5.95
-    s.circle(vcx, vcy, 2.85, WHITE, '#8AB4E2', .15)
-    s.circle(vcx, vcy, 1.85, '#EDF5FE', '#79A8DF', .12)
-    sparkle_icon(vcx - .2, vcy, .78, EXEC_C)
-    for dx_v, dy_v, col_v in ((-.95, -.75, ACC), (.9, -.65, ACC), (.65, .85, ACC),
-                              (-1.95, 1.35, '#B8C8DC'), (2.05, .3, '#B8C8DC')):
-        s.circle(vcx + dx_v, vcy + dy_v, .28, col_v)
+    label(t1_x + t1_w / 2, t_y + 1.25, '1. Alias & Recall' if en else '1. 别名与向量召回', 4.7, ACC_DK, 'bold', 'center')
+    vcx, vcy = t1_x + 4.35, t_y + 5.65
+    s.circle(vcx, vcy, 2.75, WHITE, '#8AB4E2', .15)
+    s.circle(vcx, vcy, 1.78, '#EDF5FE', '#79A8DF', .12)
+    sparkle_icon(vcx - .2, vcy, .75, EXEC_C)
+    for dx_v, dy_v, col_v in ((-.9, -.7, ACC), (.85, -.6, ACC), (.62, .8, ACC),
+                              (-1.85, 1.28, '#B8C8DC'), (1.95, .28, '#B8C8DC')):
+        s.circle(vcx + dx_v, vcy + dy_v, .27, col_v)
     # Right side of Module 1: alias chip + 2x2 top-K candidate chips
     gx = t1_x + 8.1
-    pill(gx, t_y + 3.65, 'alias $O(1)$' if en else '别名直达', WHITE, ACC_DK, edge_c=ACC, size=4.0, pad=.48, h=1.55)
+    pill(gx, t_y + 3.4, 'alias $O(1)$' if en else '别名直达', WHITE, ACC_DK, edge_c=ACC, size=3.95, pad=.46, h=1.5)
     cand_tags = (('D01', True), ('D02', True), ('ER', True), ('top8', False))
     for idx_g, (ctag, chi) in enumerate(cand_tags):
         col_i, row_i = idx_g % 2, idx_g // 2
         cx_g = gx + col_i * 5.25
-        cy_g = t_y + 5.5 + row_i * 2.1
-        rect(cx_g, cy_g, 4.85, 1.75, ACC_PALE if chi else WHITE, ACC if chi else '#C5C1B9', .13, r=.24)
-        label(cx_g + 2.42, cy_g + .88, ctag, 3.95, ACC_DK if chi else MUTED, 'bold' if chi else 'sans', 'center')
+        cy_g = t_y + 5.1 + row_i * 1.98
+        rect(cx_g, cy_g, 4.85, 1.68, ACC_PALE if chi else WHITE, ACC if chi else '#C5C1B9', .13, r=.24)
+        label(cx_g + 2.42, cy_g + .84, ctag, 3.9, ACC_DK if chi else MUTED, 'bold' if chi else 'sans', 'center')
 
     route([(t1_x + t1_w, t_y + t_h / 2), (t2_x, t_y + t_h / 2)], ACC, .22, length=.65)
 
     # Module 2: Catalog-Trained Cross-Encoder x3 (Token Pair + Attention Stack)
     rect(t2_x, t_y, t2_w, t_h, '#F8FBFF', '#9EC0E6', .16, r=.45)
-    label(t2_x + t2_w / 2, t_y + 1.35, '2. Matcher $\\times 3$' if en else '2. 目录判别器 $\\times 3$', 4.75, ACC_DK, 'bold', 'center')
+    label(t2_x + t2_w / 2, t_y + 1.25, '2. Matcher $\\times 3$' if en else '2. 目录判别器 $\\times 3$', 4.7, ACC_DK, 'bold', 'center')
     # Token strip: [rho] [choices] [diffs] centered cleanly inside Module 2
-    tok_y = t_y + 3.55
+    tok_y = t_y + 3.35
     tok_specs = (('$\\rho$', ACC, WHITE, 3.8), ('choices', LEARN_PALE, LEARN_DK, 6.8), ('diffs', AMBER_PALE, EXEC_DK, 5.4))
     tot_tok_w = sum(tw_i for _, _, _, tw_i in tok_specs) + .45 * (len(tok_specs) - 1)
     tx_cur = t2_x + (t2_w - tot_tok_w) / 2
     tok_centers = []
     for t_lbl, t_bg, t_fg, t_w in tok_specs:
-        rect(tx_cur, tok_y - .8, t_w, 1.6, t_bg, t_fg if t_bg != ACC else ACC_DK, .12, r=.24)
-        label(tx_cur + t_w / 2, tok_y, t_lbl, 3.85, t_fg, 'bold', 'center')
+        rect(tx_cur, tok_y - .76, t_w, 1.52, t_bg, t_fg if t_bg != ACC else ACC_DK, .12, r=.24)
+        label(tx_cur + t_w / 2, tok_y, t_lbl, 3.8, t_fg, 'bold', 'center')
         tok_centers.append(tx_cur + t_w / 2)
         tx_cur += t_w + .45
     # Stacked XLM-R x3 bar
-    att_y = t_y + 6.35
-    for st_off in (.55, .28, 0.0):
-        rect(t2_x + 1.15 + st_off, att_y - .95 - st_off * .42, t2_w - 2.8, 1.85, WHITE, ACC, .13, r=.26)
+    att_y = t_y + 6.0
+    for st_off in (.52, .26, 0.0):
+        rect(t2_x + 1.15 + st_off, att_y - .9 - st_off * .4, t2_w - 2.8, 1.78, WHITE, ACC, .13, r=.26)
     for tc_x in tok_centers:
-        s.line(tc_x, tok_y + .8, tc_x, att_y - 1.35, '#8AB4E2', .13)
+        s.line(tc_x, tok_y + .76, tc_x, att_y - 1.28, '#8AB4E2', .13)
     label(t2_x + t2_w / 2, att_y, 'XLM-R $\\times 3 \\rightarrow p$' if en else '交叉编码 $\\times 3 \\rightarrow p$',
-          4.15, INK, 'bold', 'center')
-    label(t2_x + t2_w / 2, t_y + 8.85,
+          4.1, INK, 'bold', 'center')
+    label(t2_x + t2_w / 2, t_y + 8.35,
           'catalog self-supervised' if en else '目录自监督离线训练',
-          4.1, LEARN_DK, 'bold', 'center')
+          4.05, LEARN_DK, 'bold', 'center')
 
     # Middle row inside Lookup: Calibrated Decision Spectrum (.1, .9)
-    sp_y = t_y + t_h + 1.6
-    label(lx_k + 1.2, sp_y, '$p$:', 4.6, INK, 'bold')
-    bar_lx, bar_lw, bar_lh = lx_k + 4.4, lw_k - 5.6, 2.05
+    sp_y = t_y + t_h + 1.4
+    label(lx_k + 1.2, sp_y, '$p$:', 4.55, INK, 'bold')
+    bar_lx, bar_lw, bar_lh = lx_k + 4.4, lw_k - 5.6, 1.85
     w_miss = bar_lw * .18
     w_ref = bar_lw * .54
     w_hit = bar_lw - w_miss - w_ref
@@ -699,31 +689,31 @@ def draw(s, lang):
     rect(bar_lx + w_miss, sp_y - bar_lh / 2, w_ref, bar_lh, AMBER_PALE, None)
     rect(bar_lx + w_miss + w_ref, sp_y - bar_lh / 2, w_hit, bar_lh, ACC, None, r=.25)
     rect(bar_lx, sp_y - bar_lh / 2, bar_lw, bar_lh, None, '#9E9A92', .14, r=.25)
-    s.line(bar_lx + w_miss, sp_y - bar_lh / 2 - .25, bar_lx + w_miss, sp_y + bar_lh / 2 + .25, INK, .18)
-    s.line(bar_lx + w_miss + w_ref, sp_y - bar_lh / 2 - .25, bar_lx + w_miss + w_ref, sp_y + bar_lh / 2 + .25, INK, .18)
+    s.line(bar_lx + w_miss, sp_y - bar_lh / 2 - .22, bar_lx + w_miss, sp_y + bar_lh / 2 + .22, INK, .18)
+    s.line(bar_lx + w_miss + w_ref, sp_y - bar_lh / 2 - .22, bar_lx + w_miss + w_ref, sp_y + bar_lh / 2 + .22, INK, .18)
     label(bar_lx + w_miss / 2, sp_y, '<.1', 3.85, MUTED, 'bold', 'center')
     label(bar_lx + w_miss + w_ref / 2, sp_y,
-          '.1  refer / diffs  .9' if en else '.1  歧义确认 / 同名  .9', 3.95, EXEC_DK, 'bold', 'center')
-    label(bar_lx + w_miss + w_ref + w_hit / 2, sp_y, '$\\geq$.9', 3.9, WHITE, 'bold', 'center')
+          '.1  refer / diffs  .9' if en else '.1  歧义确认 / 同名  .9', 3.9, EXEC_DK, 'bold', 'center')
+    label(bar_lx + w_miss + w_ref + w_hit / 2, sp_y, '$\\geq$.9', 3.85, WHITE, 'bold', 'center')
 
     # Bottom row inside Lookup: 2-Way Dispatch (Hit vs Diffs/Refer/Miss)
-    dec_y, dec_h = sp_y + 1.85, 5.15
+    dec_y, dec_h = sp_y + 1.65, 4.65
     b1_x, b1_w = lx_k + 1.05, 19.6
     b2_x, b2_w = b1_x + b1_w + 1.25, lw_k - 2.1 - b1_w - 1.25
     route([(bar_lx + w_miss + w_ref + w_hit / 2, sp_y + bar_lh / 2),
-           (bar_lx + w_miss + w_ref + w_hit / 2, dec_y - .45),
-           (b1_x + b1_w / 2, dec_y - .45),
-           (b1_x + b1_w / 2, dec_y)], ACC, .19, length=.55, radius=.25)
+           (bar_lx + w_miss + w_ref + w_hit / 2, dec_y - .4),
+           (b1_x + b1_w / 2, dec_y - .4),
+           (b1_x + b1_w / 2, dec_y)], ACC, .19, length=.52, radius=.22)
     route([(bar_lx + w_miss + w_ref / 2, sp_y + bar_lh / 2),
-           (b2_x + b2_w / 2, dec_y)], AMBER, .19, length=.55)
+           (b2_x + b2_w / 2, dec_y)], AMBER, .19, length=.52)
 
     rect(b1_x, dec_y, b1_w, dec_h, ACC_PALE, ACC, .18, r=.42)
-    label(b1_x + b1_w / 2, dec_y + 1.7, 'Hit $(m^r, p, d)$' if en else '唯一命中 $(m^r,p,d)$', 4.75, ACC_DK, 'bold', 'center')
-    label(b1_x + b1_w / 2, dec_y + 3.75, 'to snapshot $D_s$' if en else '进入快照 $D_s$ 执行', 4.35, ACC_DK, 'sans', 'center')
+    label(b1_x + b1_w / 2, dec_y + 1.55, 'Hit $(m^r, p, d)$' if en else '唯一命中 $(m^r,p,d)$', 4.7, ACC_DK, 'bold', 'center')
+    label(b1_x + b1_w / 2, dec_y + 3.4, 'to snapshot $D_s$' if en else '进入快照 $D_s$ 执行', 4.3, ACC_DK, 'sans', 'center')
 
     rect(b2_x, dec_y, b2_w, dec_h, AMBER_PALE, AMBER, .16, r=.42)
-    label(b2_x + b2_w / 2, dec_y + 1.7, 'Diffs / Refer / Miss' if en else '同名差异 / 确认 / 未中', 4.65, EXEC_DK, 'bold', 'center')
-    label(b2_x + b2_w / 2, dec_y + 3.75, 'confirm$\\rightarrow$alias | explore' if en else '确认写别名 / 探索库', 4.25, MUTED, 'sans', 'center')
+    label(b2_x + b2_w / 2, dec_y + 1.55, 'Diffs / Refer / Miss' if en else '同名差异 / 确认 / 未中', 4.6, EXEC_DK, 'bold', 'center')
+    label(b2_x + b2_w / 2, dec_y + 3.4, 'confirm$\\rightarrow$alias | explore' if en else '确认写别名 / 探索库', 4.2, MUTED, 'sans', 'center')
 
     # Ambiguous/Miss dashed return lane (lane 1: x = 175.15 up to agent request bus)
     ret_amb_x = 175.15
@@ -734,7 +724,7 @@ def draw(s, lang):
     # -------------------------------------------------------------------------
     # (E) Bottom-Right: CHECK AND RUN (Step 4) — Snapshot Gate + Compiler + <-> DB
     # -------------------------------------------------------------------------
-    EXEC = (131.6, 44.8, 42.6, 32.0)
+    EXEC = (131.6, 42.1, 42.6, 29.3)
     ex, ey, ew, eh = EXEC
     card_head(EXEC, 'Check and run' if en else '检查并执行',
               '`REPEATABLE READ` $D_s$' if en else '可重复读快照 $D_s$',
@@ -742,77 +732,77 @@ def draw(s, lang):
 
     # Step 4 arrow: Lookup Hit -> Check and run
     hit_cx = b1_x + b1_w / 2
-    route([(hit_cx, dec_y + dec_h), (hit_cx, ey)], EXEC_C, THIN, length=.88)
-    step_badge(hit_cx + 2.9, (ly_k + lh_k + ey) / 2, 4, EXEC_C, r=1.22)
+    route([(hit_cx, dec_y + dec_h), (hit_cx, ey)], EXEC_C, THIN, length=.82)
+    step_badge(hit_cx + 2.8, (ly_k + lh_k + ey) / 2, 4, EXEC_C, r=1.08)
 
     # Inner dashed container: One Read-Only Transaction Snapshot D_s
-    sx_in, sy_in, sw_in, sh_in = ex + 1.05, ey + 4.15, ew - 2.1, 22.85
+    sx_in, sy_in, sw_in, sh_in = ex + 1.05, ey + 4.0, ew - 2.1, 20.65
     rect(sx_in, sy_in, sw_in, sh_in, '#FFFDF9', EXEC_C, .18, r=.48, dash=(.72, .4))
-    label(sx_in + sw_in / 2, sy_in + 1.48,
+    label(sx_in + sw_in / 2, sy_in + 1.38,
           'One Read-Only Snapshot $D_s$ (stamps $V_s$)' if en else '同一只读事务快照 $D_s$（读取版本 $V_s$）',
-          4.7, EXEC_DK, 'bold', 'center')
+          4.65, EXEC_DK, 'bold', 'center')
 
     # Sub-card 1: Snapshot Condition Gate via H(c, V_s)
-    st1_y, st1_h = sy_in + 2.75, 6.75
+    st1_y, st1_h = sy_in + 2.55, 6.15
     rect(sx_in + .85, st1_y, sw_in - 1.7, st1_h, WHITE, '#E2BE8E', .15, r=.38)
-    shield_icon(sx_in + 2.65, st1_y + 2.0, 1.08, EXEC_PALE, EXEC_DK)
-    label(sx_in + 4.3, st1_y + 1.95,
-          '1. Validate $C(m^r)$ at $V_s$' if en else '1. 快照条件门禁 $C(m^r)$', 4.75, INK, 'bold')
-    check_mark(sx_in + sw_in - 2.0, st1_y + 1.95, True, ACC, k=.72)
-    pill(sx_in + 1.5, st1_y + 4.85,
+    shield_icon(sx_in + 2.65, st1_y + 1.8, 1.02, EXEC_PALE, EXEC_DK)
+    label(sx_in + 4.25, st1_y + 1.78,
+          '1. Validate $C(m^r)$ at $V_s$' if en else '1. 快照条件门禁 $C(m^r)$', 4.7, INK, 'bold')
+    check_mark(sx_in + sw_in - 2.0, st1_y + 1.78, True, ACC, k=.7)
+    pill(sx_in + 1.5, st1_y + 4.45,
          '$\\mathcal{H}(c, V_s)$ hit $\\rightarrow O(1)$' if en else '命中 $\\mathcal{H}(c,V_s) \\rightarrow O(1)$',
-         ACC_PALE, ACC_DK, edge_c=ACC, size=4.05, pad=.5, h=1.65)
+         ACC_PALE, ACC_DK, edge_c=ACC, size=4.0, pad=.48, h=1.6)
     miss_q_txt = 'miss $\\rightarrow Q_c(D_s)$' if en else '未中 $\\rightarrow Q_c(D_s)$'
-    miss_q_w = measure(miss_q_txt, 4.05, 'sans') + .96
-    pill(sx_in + sw_in - 1.5 - miss_q_w, st1_y + 4.85,
-         miss_q_txt, FACE, INK, edge_c='#C5C1B9', size=4.05, pad=.48, h=1.65, wt='sans')
+    miss_q_w = measure(miss_q_txt, 4.0, 'sans') + .94
+    pill(sx_in + sw_in - 1.5 - miss_q_w, st1_y + 4.45,
+         miss_q_txt, FACE, INK, edge_c='#C5C1B9', size=4.0, pad=.46, h=1.6, wt='sans')
 
     # Read arrow from Check outcomes H -> Validate C(m^r)
-    h_read_y = st1_y + 2.6
+    h_read_y = st1_y + 2.2
     route([(kx + kw, h_read_y), (sx_in + .85, h_read_y)], REF, .22, dash=(.62, .38), length=.78)
 
-    route([(sx_in + sw_in / 2, st1_y + st1_h), (sx_in + sw_in / 2, st1_y + st1_h + .95)],
-          EXEC_C, .2, length=.58)
+    route([(sx_in + sw_in / 2, st1_y + st1_h), (sx_in + sw_in / 2, st1_y + st1_h + .8)],
+          EXEC_C, .2, length=.55)
 
     # Sub-card 2: Relational & Leak-Free Query Compiler
-    st2_y, st2_h = st1_y + st1_h + .95, 11.55
+    st2_y, st2_h = st1_y + st1_h + .8, 10.4
     rect(sx_in + .85, st2_y, sw_in - 1.7, st2_h, WHITE, '#E2BE8E', .15, r=.38)
-    pill(sx_in + 1.5, st2_y + 1.8, 'SQL', EXEC_PALE, EXEC_DK, edge_c=EXEC_C, size=4.1, pad=.52, h=1.62)
-    label(sx_in + 6.3, st2_y + 1.8,
-          '2. Bind & Compile on $D_s$' if en else '2. 绑定参数并编译查询', 4.75, INK, 'bold')
+    pill(sx_in + 1.5, st2_y + 1.68, 'SQL', EXEC_PALE, EXEC_DK, edge_c=EXEC_C, size=4.05, pad=.5, h=1.58)
+    label(sx_in + 6.2, st2_y + 1.68,
+          '2. Bind & Compile on $D_s$' if en else '2. 绑定参数并编译查询', 4.7, INK, 'bold')
 
     # Track M: Analytical Metric
-    tm_y = st2_y + 4.75
-    w_pm = pill(sx_in + 1.5, tm_y, 'Metric' if en else '指标', ACC_PALE, ACC_DK, edge_c=ACC, size=4.0, pad=.48, h=1.58)
-    label(sx_in + 2.1 + w_pm, tm_y,
+    tm_y = st2_y + 4.35
+    w_pm = pill(sx_in + 1.5, tm_y, 'Metric' if en else '指标', ACC_PALE, ACC_DK, edge_c=ACC, size=3.95, pad=.46, h=1.54)
+    label(sx_in + 2.05 + w_pm, tm_y,
           '$d(q_0(D_s, p))$ · `rev 1` (`\'Y\'`)' if en else '$d(q_0(D_s,p))$ · `rev 1` (`\'Y\'`)',
-          4.45, INK, width=sw_in - w_pm - 3.6)
+          4.4, INK, width=sw_in - w_pm - 3.5)
 
-    s.line(sx_in + 1.5, st2_y + 6.55, sx_in + sw_in - 1.5, st2_y + 6.55, RULE, .12)
+    s.line(sx_in + 1.5, st2_y + 5.95, sx_in + sw_in - 1.5, st2_y + 5.95, RULE, .12)
 
     # Track F: Predictive Feature with Labeled Point-in-Time Anti-Leakage Window!
-    tf_y = st2_y + 8.95
-    w_pf = pill(sx_in + 1.5, tf_y, 'Feature' if en else '特征', EXEC_PALE, EXEC_DK, edge_c=EXEC_C, size=4.0, pad=.46, h=1.58)
-    label(sx_in + 2.0 + w_pf, tf_y, '$(u_i, t_i)$:', 4.35, INK, 'bold')
+    tf_y = st2_y + 8.3
+    w_pf = pill(sx_in + 1.5, tf_y, 'Feature' if en else '特征', EXEC_PALE, EXEC_DK, edge_c=EXEC_C, size=3.95, pad=.45, h=1.54)
+    label(sx_in + 1.95 + w_pf, tf_y, '$(u_i, t_i)$:', 4.3, INK, 'bold')
     # Mini anti-leakage timeline: [t_i - w ======o==o| t_i]  x > t_i
     tl_x1 = sx_in + 19.6
     tl_x2 = sx_in + sw_in - 1.7
     tl_cut = tl_x1 + (tl_x2 - tl_x1) * .66
     s.line(tl_x1, tf_y, tl_x2, tf_y, '#B5B1A8', .18)
-    rect(tl_x1 + 1.2, tf_y - .85, tl_cut - (tl_x1 + 1.2), 1.7, MAINT_PALE, MAINT_C, .14, r=.22)
+    rect(tl_x1 + 1.2, tf_y - .8, tl_cut - (tl_x1 + 1.2), 1.6, MAINT_PALE, MAINT_C, .14, r=.22)
     for px_dot in (.28, .58, .84):
-        s.circle(tl_x1 + 1.2 + (tl_cut - tl_x1 - 1.2) * px_dot, tf_y, .26, MAINT_DK)
-    s.line(tl_cut, tf_y - 1.25, tl_cut, tf_y + 1.25, EXEC_DK, .32)
-    label(tl_cut, tf_y - 1.9, '$\\leq t_i$', 3.85, MAINT_DK, 'bold', 'center')
-    check_mark(tl_cut + (tl_x2 - tl_cut) * .52, tf_y, False, RED, k=.58)
+        s.circle(tl_x1 + 1.2 + (tl_cut - tl_x1 - 1.2) * px_dot, tf_y, .25, MAINT_DK)
+    s.line(tl_cut, tf_y - 1.18, tl_cut, tf_y + 1.18, EXEC_DK, .3)
+    label(tl_cut, tf_y - 1.78, '$\\leq t_i$', 3.8, MAINT_DK, 'bold', 'center')
+    check_mark(tl_cut + (tl_x2 - tl_cut) * .52, tf_y, False, RED, k=.55)
 
-    # Verified Answer / Feature Output Bar + Upward Return Arrow (lane 2: x = 176.3)
-    ans_y, ans_h = sy_in + sh_in + .75, 3.45
+    # Verified Answer / Feature Output Bar + Upward Return Arrow (lane 2: x = 176.25)
+    ans_y, ans_h = sy_in + sh_in + .65, 3.2
     rect(sx_in, ans_y, sw_in, ans_h, EXEC_PALE, EXEC_C, .18, r=.42)
-    check_mark(sx_in + 1.8, ans_y + ans_h / 2, True, EXEC_DK, k=.76)
+    check_mark(sx_in + 1.8, ans_y + ans_h / 2, True, EXEC_DK, k=.74)
     label(sx_in + 3.3, ans_y + ans_h / 2,
           'Verified answer / leak-free features' if en else '返回经核验答案 ／ 防穿越特征表',
-          4.7, EXEC_DK, 'bold')
+          4.65, EXEC_DK, 'bold')
 
     ret_ans_x = 176.25
     ag_p_right = 132.4 + 41.2
@@ -823,7 +813,7 @@ def draw(s, lang):
     # =========================================================================
     # 3. Bottom Band: ETL Job (Step 5) and PostgreSQL Database with Snapshot D_s
     # =========================================================================
-    db_y, db_h = 81.5, 12.5
+    db_y, db_h = 76.4, 12.2
     ETL = (1.6, db_y + .3, 22.0, db_h - .6)
     tx, ty, tw_e, th_e = ETL
     for off in (.85, .42, 0.0):
@@ -903,17 +893,17 @@ def draw(s, lang):
     # =========================================================================
     maint_db_x = ix + iw / 2
     route([(maint_db_x, qy + qh), (maint_db_x, ctop)],
-          MAINT_C, .32, heads='both', dash=(.72, .4), length=1.02)
-    label(maint_db_x + 1.4, 79.15,
-          'stamps $V(T) \\leftrightarrow \\Delta T$ probes' if en else '读版本戳 $V(T) \\leftrightarrow \\Delta T$ 探针',
-          4.45, MAINT_DK, 'bold')
+          MAINT_C, .32, heads='both', dash=(.72, .4), length=1.0)
+    label(maint_db_x + 1.4, 73.85,
+          'stamps $V(T) \\leftrightarrow \\Delta T$ probe' if en else '读版本戳 $V(T) \\leftrightarrow \\Delta T$ 探针',
+          4.4, MAINT_DK, 'bold')
 
     snap_cx = sn_x + sn_w / 2
     route([(snap_cx, ey + eh), (snap_cx, ctop)],
-          EXEC_C, .34, heads='both', dash=(.72, .4), length=1.06)
-    label(snap_cx + 1.4, 79.15,
+          EXEC_C, .34, heads='both', dash=(.72, .4), length=1.04)
+    label(snap_cx + 1.4, 73.85,
           'SQL $q(D_s) \\leftrightarrow$ rows' if en else '快照查询 $q(D_s) \\leftrightarrow$ 结果',
-          4.45, EXEC_DK, 'bold')
+          4.4, EXEC_DK, 'bold')
 
 
 if __name__ == '__main__':
