@@ -1,31 +1,28 @@
 \begin{algorithm}[t]
-\caption{\bt{Lookup: decide before, verify after}{查找：事前判定，事后验证}}
+\caption{\bt{Constraint-explaining lookup and post-hoc graph update}{约束解释查找与事后关联图更新}}
 \label{alg:lookup}
 \small
 \begin{algorithmic}[1]
-\Require Request $\rho$; equivalence graph $G$; snapshot $s$; tolerance $\alpha$
-\Ensure An answer, a partial hit, or a miss
+\Require Request $\rho$; evidence graph $G$; snapshot $s$; risk bound $\alpha$
+\Ensure Answer, clarification, partial hit, or exploration result
 \Function{Lookup}{$\rho, G, s, \alpha$}
-  \State $A \gets \operatorname{Parse}(\rho)$; $K \gets$ candidates for $A$ in $G$ and their neighbors
-  \State $S \gets \{m \in K \mid \operatorname{Res}(\rho,m)=\emptyset \wedge m \text{ not excluded}\}$
-  \If{$S = \emptyset$}
-    \State \Return partial hit $(m,\operatorname{Res}(\rho,m))$ if some $m\in K$ explains the computation phrase, else miss
-  \EndIf
-  \State $Y \gets \{\operatorname{Run}(m,\rho,s) \mid m \in S\}$ \Comment{each validated on $s$}
-  \IfThen{$\lvert Y\rvert > 1$}{\Return clarification on $\delta$ with $Y$}
-  \State $g \gets$ stratum of $(\rho,S)$
-  \IfThen{$U_g \le \alpha$ and no residual audit is drawn}{\Return the value in $Y$}
-  \State $u \gets$ verified computation of an exploring agent \Comment{audit}
-  \State \Call{Record}{$G,u,\rho$}; update $U_g$; \Return the answer of $u$
+  \State $A(\rho) \gets \operatorname{Parse}(\rho)$; $\; K \gets \operatorname{Candidates}(A(\rho), G)$
+  \State $S \gets \{m \in K \mid \operatorname{Res}(\rho,m)=\varnothing \wedge \neg\operatorname{Excl}(\rho,m) \wedge P_{\mathrm{route}}(D_s)\}$
+  \IfThen{$S = \varnothing$}{\Return $\text{PartialHit}(m,\operatorname{Res})$ if matched, else $\text{Miss}$}
+  \IfThen{$\lvert S\rvert = 1 \wedge \rho \in \Phi(S)$}{\Return $\operatorname{CheckAndRun}(S, \rho, s)$}
+  \State $Y \gets \{\operatorname{CheckAndRun}(m,\rho,s) \mid m \in S\}$ \Comment{indifference test}
+  \IfThen{$\lvert Y\rvert > 1$}{\Return $\text{Clarify}(\delta, Y)$} \Comment{else outputs agree on $D_s$}
+  \State $g \gets \operatorname{Stratum}(\rho, S)$ \Comment{tentative match: check audit bound}
+  \IfThen{$U_g(t) \le \alpha \wedge \neg\operatorname{ResidualAudit}()$}{\Return value in $Y$}
+  \State $u \gets \operatorname{Explore}(\rho, s)$; $\; \ell \gets \Call{RecordAndLabel}{u, \rho, S, s}$
+  \State Update $U_g(t+1)$ with $z = \mathbb{1}[\ell \neq \text{equiv}]$; \Return output of $u$
 \EndFunction
-\Function{Record}{$G, u, \rho$} \Comment{also after misses and at publication}
+\Function{RecordAndLabel}{$u, \rho, S, s$}
   \For{each definition $m$ on $u$'s fact table}
-    \If{$I_u$ and $I_m$ meet under rules with premises $P$ holding}
-      \State add equivalence edge $(u,m,P)$; add masked $\rho$ to $\Phi(m)$
-    \ElsIf{$\lvert\delta(u,m)\rvert \le 2$}
-      \State add difference edge $(u,m,\delta)$
-    \EndIf
+    \IfThen{$I_u \equiv_P I_m$ on $D_s$}{Add $(u, m, P)$ to $G$; add $\rho$ to $\Phi(m)$}
+    \IfThen{$0 < \lvert\delta(u,m)\rvert \le 2$}{Add contrast $(u, m, \delta)$ and modifier}
   \EndFor
+  \State \Return $\text{equiv}$ if $\exists m\in S: I_u \equiv_P I_m$, $\text{distinct}$ if $\not\equiv$, else $\text{unprovable}$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}

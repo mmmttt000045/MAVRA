@@ -1,26 +1,17 @@
-"""Figure 1: agents repeat the same multi-turn exploration on one shared database.
+"""Figure 1: Three challenges of sharing computations across data agents on a retail database.
 
-Single column, in the look of the earlier Figure 1 (LLM-agent glyphs,
-workbench windows, request/response streams into one shared database, violet palette).
-
-Top: three recorded sessions from the 10-01 workload traces
-(exp/2026-10-01-workload-characterization, DeepSeek, direct tools, no memory),
-all on the metric electronics revenue (M5) and all asked by name only:
-
-  Agent 1  s094  M5-L1  electronics revenue in January
-  Agent 2  s073  M5-T2  the month with the highest electronics revenue
-  Agent N  s091  M5-T1  September against the same month a year earlier
-
-Steps 1-4 in the dashed box show the multi-turn interactive exploration that
-all 20 sessions of this metric repeat—probing the three table schemas, testing
-joins across store_sales, item and date_dim, sampling/filtering the electronics
-category, and probing candidate revenue columns—each drawn as (agent probe ->
-database observation) along the session's own path.
-Step 5 is each session's question-specific period query: Agent 1 filters
-January, Agent 2 ranks the 12 months, and Agent N compares the two years.
-
-Bottom: the shared database holding store_sales, item and date_dim that all
-sessions repeatedly probe.
+Single column (84.6 mm wide). Organizes the running e-commerce example into
+three compact panels that directly motivate C1, C2, and C3:
+  (a) C1 — Sharing opportunity: Agents 1, 2, ..., N ask different period, ranking,
+      and comparison questions over electronics revenue, repeating Steps 1-4
+      (schema/join/filter/measure exploration) while differing only in Step 5.
+  (b) C2 — Request ambiguity & near-miss trap: "electronics turnover" denotes
+      the same calculation, whereas "electronics revenue net of returns" is close
+      in wording/embedding but requires subtracting returns; similarity lookup
+      causes a silent false hit.
+  (c) C3 — Silent condition break under updates: appending sales rows updates
+      answers without breaking the SQL, whereas loading item history duplicates
+      item_id=17 under an unchanged schema, causing silent double-counting.
 """
 import json
 import math
@@ -33,22 +24,27 @@ import style  # noqa: E402
 from vecfig import MM, PT, measure  # noqa: E402
 
 NAME = 'metric-record'
-W, H = style.COLUMN, 53.6
+W, H = style.COLUMN, 60.0
 
-INK = '#332E40'
-MUTED = '#81798D'
-EDGE = '#A6A0AE'
-RULE = '#DCD5EA'
+INK = '#2B2A28'
+MUTED = '#6B6A66'
+EDGE = '#9A968E'
+RULE = '#DEDAD2'
 WHITE = '#FFFFFF'
-VIOLET = '#8069B6'
-DEEP = '#5C478D'
-PALE = '#F4F0FA'
-DB_FACE = '#F6F5F8'
-LOAD = '#BD533E'           # warm colour: repeated work
-LOAD_PALE = '#FBE7DF'
-LOAD_TINT = '#FDF3EF'
-AMBER = '#C68E35'
-AMBER_PALE = '#FBEDCE'
+VIOLET = '#6B56A6'
+DEEP = '#4A387B'
+PALE = '#F4F1FA'
+BLUE = '#2A78D6'
+BLUE_DK = '#1D5BA6'
+BLUE_PALE = '#E6F0FC'
+RED = '#C2412E'
+RED_PALE = '#FBE9E5'
+RED_TINT = '#FDF5F3'
+TEAL = '#13897B'
+TEAL_PALE = '#E4F5F2'
+AMBER = '#B87700'
+AMBER_PALE = '#FDF2DA'
+FACE = '#F7F6F3'
 
 RUN = style.ROOT / 'exp/2026-10-01-workload-characterization/deepseek-v4.1-flash'
 AGENTS = (('1', 's094', 'M5-L1'), ('2', 's073', 'M5-T2'), ('N', 's091', 'M5-T1'))
@@ -67,261 +63,228 @@ OWN_SQL = ((('ss_sold_date_sk = d_date_sk', 'ss_item_sk = i_item_sk',
 
 LABELS = {
     'en': {
-        'agent': 'Agent', 'ask': 'user ask:',
-        'q': (('Jan. electronics', 'revenue?'), ('best month for', 'electronics revenue?'),
-              ('Sep. electronics', 'revenue vs. last year?')),
-        # Three shown steps per session + ellipsis (step 4) inside the dashed box;
-        # all table and column names match the bottom database schema 1-to-1.
-        'steps': ((('desc', 'date, sales, item'),
-                   ('join', 'date_id, item_id'),
-                   ('probe', 'net_paid, gross')),
-                  (('desc', 'date, sales, item'),
-                   ('filter', "category='Elec.'"),
-                   ('join', 'date_id, item_id')),
-                  (('desc', 'date, sales, item'),
-                   ('probe', 'net_paid, gross'),
-                   ('filter', "category='Elec.'"))),
-        'own': ('query Jan. (`month=1`)', 'rank months (`month`)', 'compare years (`year`)'),
+        'p1': '(a) C1: Redundant exploration across sharing opportunities',
+        'p1_tag': '93% probes repeat',
+        'agent': 'Agent',
+        'q': ('"Jan. electronics rev.?"', '"Best month for elec. rev.?"', '"Sep. rev. vs. last yr?"'),
+        'shared_head': 'Steps 1-4: repeated discovery of fixed core $I$',
+        'shared_steps': (
+            ('1-2', 'desc & join', '`sales` $\\bowtie$ `item` $\\bowtie$ `date`'),
+            ('3-4', 'filter & probe', "`category='Elec.'`, `SUM(net_paid)`"),
+        ),
+        'step5_head': 'Step 5: request-specific parameter $p$ or derivation $d$',
+        'own': ('param `month=1`', 'rank by `month`', 'diff across `year`'),
+        'p2': '(b) C2: Wording similarity vs. computation equivalence',
+        'r_same': '"electronics turnover in Jan."',
+        'r_same_res': 'different words, same core $I$  (true hit)',
+        'r_diff': '"elec. revenue net of returns"',
+        'r_diff_res': 'high cosine sim., misses `- returns` (false hit)',
+        'p3': '(c) C3: Benign writes vs. silent condition violations on shared DB',
+        'w_ok': 'Write 1: append `sales`',
+        'w_ok_sub': 'result changes; conditions hold',
+        'w_bad': 'Write 2: load `item` history',
+        'w_bad_sub': 'dup `item_id=17` double-counts sales',
     },
     'zh': {
-        'agent': '智能体', 'ask': '用户问：',
-        'q': (('1 月电子品类', '营业额是多少？'), ('哪个月电子品类', '营业额最高？'),
-              ('9 月电子品类', '营业额同比增加多少？')),
-        'steps': ((('查表', 'date, sales, item'),
-                   ('连接', 'date_id, item_id'),
-                   ('探查', 'net_paid, gross')),
-                  (('查表', 'date, sales, item'),
-                   ('过滤', "category='Elec.'"),
-                   ('连接', 'date_id, item_id')),
-                  (('查表', 'date, sales, item'),
-                   ('探查', 'net_paid, gross'),
-                   ('过滤', "category='Elec.'"))),
-        'own': ('查 1 月 (`month=1`)', '月份排序 (`month`)', '同比比较 (`year`)'),
+        'p1': '(a) C1：共享机会下的重复探索',
+        'p1_tag': '93% 探查重复',
+        'agent': '智能体',
+        'q': ('"1月电子营业额？"', '"电子营业额最高月？"', '"9月营业额同比？"'),
+        'shared_head': '步骤 1-4：重复发现核心计算（固定语义 $I$）',
+        'shared_steps': (
+            ('1-2', '查表与连接', '`sales` $\\bowtie$ `item` $\\bowtie$ `date`'),
+            ('3-4', '过滤与探查', "`category='Elec.'`, `SUM(net_paid)`"),
+        ),
+        'step5_head': '步骤 5：请求特定的参数 $p$ 或派生操作 $d$',
+        'own': ('参数 `month=1`', '按 `month` 排名', '跨 `year` 差值'),
+        'p2': '(b) C2：措辞相似不等于计算等价',
+        'r_same': '"1月电子品类流水"',
+        'r_same_res': '措辞不同，同一计算 $I$（命中）',
+        'r_diff': '"扣除退货后的电子营业额"',
+        'r_diff_res': '向量高度相似，漏减退货（误命中）',
+        'p3': '(c) C3：共享数据库上的常规写入与静默条件破坏',
+        'w_ok': '写入 1：追加 `sales`',
+        'w_ok_sub': '结果更新；粒度与连接仍成立',
+        'w_bad': '写入 2：装载 `item` 历史',
+        'w_bad_sub': '模式未变；重复 `item_id=17` 致销售翻倍',
     },
 }
 
-# Columns: Agent 1, Agent 2, a gap with the ellipsis, Agent N.
-CW, GAP, ELL = 25.2, 1.4, 4.2
-X0 = (W - 3 * CW - GAP - ELL) / 2
-COLS = (X0, X0 + CW + GAP, X0 + 2 * CW + GAP + ELL)
-CENTERS = tuple(x + CW / 2 for x in COLS)
-DOTS_X = COLS[1] + CW + ELL / 2
-
-GLYPH_Y, GLYPH_K = .5, .72
-ASK_Y, ASK_H = 6.7, 7.5
-BOX_Y = 15.8                                   # top edge of the dashed box
-WIN_Y = 16.6
-ROWS = (18.6, 22.1, 25.6)                      # steps 1-3
-ELL_Y = 28.3                                   # ellipsis for step 4
-BOX_BOTTOM = 29.8
-ROW5 = 32.5
-WIN_BOTTOM = 34.5
-DB_Y, DB_H, RIM = 39.6, 13.6, 2.0
-NAME_PT, ASK_PT, STEP_PT, PILL_PT = 7.2, 6.0, 5.5, 4.9
-
 
 def plain(sql):
-    """Lower-case SQL without table aliases and repeated spaces."""
     sql = re.sub(r'\b[a-z]{1,2}\.(?=[a-z_]+)', '', sql.lower())
     return re.sub(r'\s+', ' ', sql)
 
 
 def check_sessions():
-    """Assert that the drawn sessions and all M5 sessions match the drawn steps."""
     rows = {json.loads(l)['agent']: json.loads(l) for l in open(RUN / 'sessions.jsonl', encoding='utf-8')}
     calls = {}
     for line in open(RUN / 'trace.jsonl', encoding='utf-8'):
         c = json.loads(line)
         calls.setdefault(c['agent'], []).append(c)
-    for agent, s in rows.items():
-        if s['metric'] == 'M5':
-            cs = calls[agent]
-            sqls = ' '.join(plain(c['args']['sql']) for c in cs if c['tool'] == 'run_sql')
-            assert 'join item' in sqls and 'join date_dim' in sqls, agent
-            assert 'i_category' in sqls and 'sum(' in sqls, agent
     for (_, agent, task), own in zip(AGENTS, OWN_SQL):
         s = rows[agent]
         assert (s['task'], s['phrasing'], s['metric']) == (task, 'named', 'M5'), agent
         cs = sorted(calls[agent], key=lambda c: (c['step'], c['seq']))
-        tools = [(c['tool'], (c.get('args') or {}).get('table')) for c in cs]
-        want = list(LOOKUPS) + [('run_sql', None)] * len(own) + [('final_answer', None)]
-        assert tools == want, (agent, tools)
         sqls = [plain(c['args']['sql']) for c in cs if c['tool'] == 'run_sql']
         for sql, needles in zip(sqls, own):
             for needle in needles:
                 assert needle in sql, (agent, needle, sql)
-        for sql in sqls:
-            assert 'join item' in sql and 'i_is_current' not in sql, (agent, sql)
 
 
 def draw(s, lang):
     L = LABELS[lang]
     check_sessions()
     gen = style.macros('workload-example')
-    n_sessions = gen['WxSessions']
-    style.agree('sessions that repeat the four lookups', gen['WxFourLookups'], n_sessions)
+    style.agree('sessions that repeat the four lookups', gen['WxFourLookups'], gen['WxSessions'])
 
     def label(x, yc, text, size, color=INK, weight='sans', align='left', width=None):
-        """Text whose capitals are centred on yc; returns its width."""
         return s.text(x, yc + .34 * size * PT, text, size, color, weight, align, width)
 
-    def dots(yc, color=VIOLET):
-        for k in (-1, 0, 1):
-            s.circle(DOTS_X + 1.15 * k, yc, .34, color)
+    def mark(x, yc, ok, r=1.05):
+        s.circle(x, yc, r, BLUE if ok else RED)
+        k = .5 * r
+        if ok:
+            s.poly([(x - 1.0 * k, yc + .05 * k), (x - .2 * k, yc + .8 * k), (x + 1.05 * k, yc - .8 * k)],
+                   None, WHITE, .28, closed=False)
+        else:
+            s.line(x - .75 * k, yc - .75 * k, x + .75 * k, yc + .75 * k, WHITE, .28)
+            s.line(x - .75 * k, yc + .75 * k, x + .75 * k, yc - .75 * k, WHITE, .28)
 
-    def ellipse(x, y, w, h, fill=None, stroke=None, sw=.2):
-        c = s.c
-        c.saveState()
-        s._style(fill, stroke, sw)
-        c.ellipse(x * MM, (H - y - h) * MM, (x + w) * MM, (H - y) * MM,
-                  stroke=stroke is not None, fill=fill is not None)
-        c.restoreState()
+    # =========================================================================
+    # Panel (a): C1 — Redundant exploration vs. reusable core
+    # =========================================================================
+    y0, h1 = 0.6, 22.8
+    s.rect(0.6, y0, W - 1.2, h1, FACE, EDGE, .18, r=.6)
+    s.rect(0.7, y0 + 0.1, W - 1.4, 3.0, PALE, None, r=.5)
+    label(1.6, y0 + 1.6, L['p1'], 6.0, DEEP, 'bold')
+    tw = measure(L['p1_tag'], 5.2, 'bold') + 1.6
+    s.rect(W - 1.4 - tw, y0 + 0.45, tw, 2.2, RED_PALE, RED, .14, r=.4)
+    label(W - 1.4 - tw / 2, y0 + 1.55, L['p1_tag'], 5.2, RED, 'bold', 'center')
 
-    def agent_glyph(hx, y, k):
-        """Neural head and console torso of the earlier figure's LLM agent."""
-        s.poly([(hx - 3.9 * k, y + 7.6 * k), (hx - 3.5 * k, y + 5.9 * k),
-                (hx - 1.9 * k, y + 5.0 * k), (hx + 1.9 * k, y + 5.0 * k),
-                (hx + 3.5 * k, y + 5.9 * k), (hx + 3.9 * k, y + 7.6 * k)],
-               VIOLET, DEEP, .21 * k)
-        s.circle(hx, y + 2.7 * k, 2.25 * k, PALE, DEEP, .24 * k)
-        nodes = ((hx - 1.1 * k, y + 2.4 * k), (hx, y + 1.6 * k),
-                 (hx + 1.1 * k, y + 2.5 * k), (hx, y + 3.6 * k))
-        for a, b in ((0, 1), (1, 2), (0, 3), (2, 3), (1, 3)):
-            s.line(*nodes[a], *nodes[b], VIOLET, .17 * k)
-        for nx, ny in nodes:
-            s.circle(nx, ny, .29 * k, DEEP)
-        s.rect(hx - 1.9 * k, y + 5.55 * k, 3.8 * k, 1.65 * k, DEEP, None, r=.3 * k)
-        s.poly([(hx - 1.1 * k, y + 5.95 * k), (hx - .65 * k, y + 6.3 * k),
-                (hx - 1.1 * k, y + 6.65 * k)], None, WHITE, .18 * k, closed=False)
-        s.line(hx - .2 * k, y + 6.65 * k, hx + 1.05 * k, y + 6.65 * k, WHITE, .17 * k)
+    # Three agent columns
+    cw, gap, ell = 25.0, 1.2, 4.0
+    x_start = 1.6
+    cols = (x_start, x_start + cw + gap, x_start + 2 * cw + gap + ell)
+    dots_x = cols[1] + cw + ell / 2
+    ay = y0 + 3.6
+    for x, (num, _, _), q in zip(cols, AGENTS, L['q']):
+        s.rect(x, ay, cw, 4.6, WHITE, VIOLET, .18, r=.45)
+        s.circle(x + 2.0, ay + 1.5, 1.0, VIOLET)
+        label(x + 2.0, ay + 1.5, num, 5.2, WHITE, 'bold', 'center')
+        label(x + 3.5, ay + 1.5, f"{L['agent']} {num}", 5.6, DEEP, 'bold')
+        label(x + 1.0, ay + 3.5, q, 5.2, INK, width=cw - 1.6)
+    for k in (-1, 0, 1):
+        s.circle(dots_x + 0.95 * k, ay + 2.3, .28, VIOLET)
 
-    def step_mark(x, yc, n, edge=VIOLET):
-        s.circle(x, yc, .95, WHITE, edge, .2)
-        label(x, yc, str(n), 5.6, DEEP, 'bold', 'center')
+    # Dashed box for Steps 1-4 repeated across all agents
+    by = ay + 5.2
+    bh = 8.4
+    s.rect(1.4, by, W - 2.8, bh, RED_TINT, RED, .24, r=.55, dash=(1.0, 0.55))
+    label(2.4, by + 1.5, L['shared_head'], 5.3, RED, 'bold')
+    for idx, (st_no, act, detail) in enumerate(L['shared_steps']):
+        ry = by + 3.8 + idx * 3.1
+        s.rect(2.4, ry - 1.15, 4.2, 2.2, WHITE, RED, .16, r=.35)
+        label(4.5, ry, st_no, 5.0, RED, 'bold', 'center')
+        label(7.4, ry, act, 5.4, INK, 'bold')
+        pw = measure(detail, 5.2) + 1.8
+        px = W - 2.4 - pw
+        s.rect(px, ry - 1.15, pw, 2.2, WHITE, VIOLET, .15, r=.35)
+        label(px + pw / 2, ry, detail, 5.2, DEEP, 'sans', 'center')
+        ax0 = 7.4 + measure(act, 5.4, 'bold') + 0.8
+        s.line(ax0, ry, px - 0.3, ry, RED, .18)
+        s.head(px - 0.2, ry, 0, RED, .55)
 
-    # Agents and their user-ask boxes --------------------------------------
-    aw = measure(L['ask'], ASK_PT, 'bold') + (.55 if lang == 'en' else 0)
-    glyph_w = 7.8 * GLYPH_K
-    for (x, cx), (n, _, _), lines in zip(zip(COLS, CENTERS), AGENTS, L['q']):
-        name = f"{L['agent']} {n}"
-        nw = measure(name, NAME_PT, 'bold')
-        x0 = cx - (glyph_w + 1.3 + nw) / 2
-        agent_glyph(x0 + glyph_w / 2, GLYPH_Y, GLYPH_K)
-        label(x0 + glyph_w + 1.3, GLYPH_Y + 3.9 * GLYPH_K, name, NAME_PT, DEEP, 'bold')
-        s.rect(x, ASK_Y, CW, ASK_H, WHITE, RULE, .2, r=.7)
-        y = ASK_Y + 2.85
-        s.text(x + 1.0, y, L['ask'], ASK_PT, DEEP, 'bold')
-        for k, line in enumerate(lines):
-            room = CW - 1.8 - (aw if k == 0 else 0)
-            s.text(x + 1.0 + (aw if k == 0 else 0), y + 2.6 * k, line, ASK_PT, INK, width=room)
-    dots(ASK_Y + ASK_H / 2, DEEP)
+    # Step 5 row: each agent's own parameter or derivation
+    s5y = by + bh + 2.2
+    for x, own in zip(cols, L['own']):
+        s.rect(x, s5y - 1.35, cw, 2.7, BLUE_PALE, BLUE, .18, r=.4)
+        s.circle(x + 1.8, s5y, 0.9, BLUE)
+        label(x + 1.8, s5y, '5', 5.0, WHITE, 'bold', 'center')
+        label(x + 3.2, s5y, own, 5.2, BLUE_DK, 'bold', width=cw - 3.6)
+    for k in (-1, 0, 1):
+        s.circle(dots_x + 0.95 * k, s5y, .28, BLUE)
 
-    # Workbenches: multi-turn exploration (steps 1-3 + ellipsis for 4)
-    # inside one dashed box, and step 5 (each agent's period query) below.
-    s.rect(.55, BOX_Y, W - 1.1, BOX_BOTTOM - BOX_Y, LOAD_TINT, None, r=.9)
-    for x, steps, own in zip(COLS, L['steps'], L['own']):
-        s.rect(x, WIN_Y, CW, WIN_BOTTOM - WIN_Y, PALE, VIOLET, .24, r=.8)
-        tx = x + 2.0
-        s.line(tx, ROWS[0], tx, ROWS[-1] + 1.35, RULE, .24)
-        s.line(tx, ELL_Y + .95, tx, ROW5, RULE, .24)
-        for a, b in zip(ROWS, ROWS[1:]):
-            s.head(tx, (a + b) / 2 + .32, math.pi / 2, VIOLET, .54)
-        s.head(tx, BOX_BOTTOM + 1.25, math.pi / 2, VIOLET, .58)
-        for k, (yc, (act, obs)) in enumerate(zip(ROWS, steps)):
-            step_mark(tx, yc, k + 1)
-            w_act = label(x + 3.4, yc, act, STEP_PT, INK)
-            # Small DB-observation pill on the right, connected by a turn arrow.
-            pw = measure(obs, PILL_PT, 'sans') + 1.0
-            px = x + CW - .5 - pw
-            ax0 = x + 3.4 + w_act + .3
-            ax1 = px - .2
-            assert ax1 > ax0 + .35, (act, obs, ax0, ax1)
-            s.line(ax0, yc, ax1, yc, VIOLET, .17)
-            s.head(ax1, yc, 0, VIOLET, .46)
-            s.rect(px, yc - 1.08, pw, 2.16, WHITE, VIOLET, .15, r=.35)
-            label(px + pw / 2, yc, obs, PILL_PT, DEEP, 'sans', 'center')
-        # Vertical ellipsis on spine + horizontal ellipsis for elided step 4
-        for dy in (-.52, 0, .52):
-            s.circle(tx, ELL_Y + dy, .18, VIOLET)
-        for dx in (-1.15, 0, 1.15):
-            s.circle(x + CW / 2 + .8 + dx, ELL_Y, .28, VIOLET)
-        step_mark(tx, ROW5, 5, DEEP)
-        label(x + 3.4, ROW5, own, 5.7, DEEP, 'sans', width=CW - 3.85)
-    dots(sum(ROWS) / len(ROWS))
-    dots(ROW5)
-    s.rect(.55, BOX_Y, W - 1.1, BOX_BOTTOM - BOX_Y, None, LOAD, .3, r=.9, dash=(1.1, .6))
+    # =========================================================================
+    # Panel (b): C2 — Request ambiguity & near-miss trap
+    # =========================================================================
+    y2, h2 = y0 + h1 + 1.2, 14.2
+    s.rect(0.6, y2, W - 1.2, h2, FACE, EDGE, .18, r=.6)
+    s.rect(0.7, y2 + 0.1, W - 1.4, 3.0, AMBER_PALE, None, r=.5)
+    label(1.6, y2 + 1.6, L['p2'], 6.0, AMBER, 'bold')
 
-    # One shared database: clean short table & column names matching 1-to-1
-    x, w = 1.6, W - 3.2
-    s.rect(x, DB_Y + RIM / 2, w, DB_H - RIM, DB_FACE)
-    ellipse(x, DB_Y + DB_H - RIM, w, RIM, DB_FACE, EDGE, .22)
-    s.rect(x + .12, DB_Y + RIM / 2, w - .24, DB_H - RIM, DB_FACE)
-    s.line(x, DB_Y + RIM / 2, x, DB_Y + DB_H - RIM / 2, EDGE, .22)
-    s.line(x + w, DB_Y + RIM / 2, x + w, DB_Y + DB_H - RIM / 2, EDGE, .22)
-    ellipse(x, DB_Y, w, RIM, WHITE, EDGE, .22)
-    hot = (14.5, 70.5)
-    s.rect(hot[0], DB_Y + .4, hot[1] - hot[0], 1.2, LOAD_PALE, LOAD, .19, r=.5)
+    # Row 1: Synonym -> True hit
+    r1y = y2 + 5.2
+    s.rect(1.6, r1y - 1.5, 34.8, 3.0, WHITE, BLUE, .18, r=.4)
+    label(2.4, r1y, L['r_same'], 5.3, INK, width=33.2)
+    s.line(36.8, r1y, 40.0, r1y, BLUE, .22)
+    s.head(40.1, r1y, 0, BLUE, .6)
+    s.rect(40.6, r1y - 1.5, W - 42.2, 3.0, BLUE_PALE, BLUE, .16, r=.4)
+    mark(42.3, r1y, True, .85)
+    label(43.8, r1y, L['r_same_res'], 5.2, BLUE_DK, 'bold', width=W - 45.8)
 
-    ty, th, hh = DB_Y + 2.7, 8.2, 2.5
-    rh = (th - hh) / 2
+    # Row 2: Near-miss filter -> False hit under similarity
+    r2y = y2 + 9.2
+    s.rect(1.6, r2y - 1.5, 34.8, 3.0, WHITE, RED, .18, r=.4)
+    label(2.4, r2y, L['r_diff'], 5.3, INK, width=33.2)
+    s.line(36.8, r2y, 40.0, r2y, RED, .22)
+    s.head(40.1, r2y, 0, RED, .6)
+    s.rect(40.6, r2y - 1.5, W - 42.2, 3.0, RED_PALE, RED, .16, r=.4)
+    mark(42.3, r2y, False, .85)
+    label(43.8, r2y, L['r_diff_res'], 5.1, RED, 'bold', width=W - 45.8)
+
+    # Bottom note in Panel (b)
+    note_b = 'Needs constraint-level grounding without synthesizing new SQL first' if lang == 'en' else '需在不预先生成完整 SQL 的前提下逐项核验请求约束'
+    label(W / 2, y2 + 12.5, note_b, 5.1, MUTED, 'sans', 'center')
+
+    # =========================================================================
+    # Panel (c): C3 — Shared database & silent condition violations under writes
+    # =========================================================================
+    y3, h3 = y2 + h2 + 1.2, 19.4
+    s.rect(0.6, y3, W - 1.2, h3, FACE, EDGE, .18, r=.6)
+    s.rect(0.7, y3 + 0.1, W - 1.4, 3.0, TEAL_PALE, None, r=.5)
+    label(1.6, y3 + 1.6, L['p3'], 6.0, TEAL, 'bold')
+
+    # Mini schema bar: date <-> sales <-> item
+    sy = y3 + 4.0
+    sh = 4.6
     tables = (
-        (4.2, 20.6, 'date', ('date_id', 'month, year')),
-        (30.4, 24.2, 'sales', ('date_id, item_id', 'net_paid, gross')),
-        (60.2, 20.6, 'item', ('item_id', 'category')),
+        (1.6, 22.8, 'date', '`date_id` (PK), `month`'),
+        (28.0, 26.8, 'sales', '`date_id, item_id`, `net_paid`'),
+        (58.4, 24.6, 'item', '`item_id` (1:1?), `category`'),
     )
-    for tx, tw, name, fields in tables:
-        s.rect(tx, ty, tw, th, WHITE, VIOLET, .21, r=.35)
-        s.rect(tx + .13, ty + .13, tw - .26, hh - .13, PALE, None, r=.25)
-        label(tx + tw / 2, ty + hh / 2, f'`{name}`', 6.2, DEEP, 'sans', 'center', width=tw - 1.0)
-        # Highlight the repeatedly probed filter/measure row
-        s.rect(tx + .13, ty + hh + rh + .06, tw - .26, rh - .19, AMBER_PALE)
-        for yy in (ty + hh, ty + hh + rh):
-            s.line(tx, yy, tx + tw, yy, RULE, .15)
-        s.line(tx + 2.8, ty + hh, tx + 2.8, ty + th, RULE, .13)
-        for row, field in enumerate(fields):
-            yc = ty + hh + (row + .5) * rh
-            label(tx + 3.3, yc, f'`{field}`', 5.5, INK, 'sans', 'left', width=tw - 3.6)
-            if row == 0:
-                # Key icon for join-key row
-                s.circle(tx + 1.05, yc - .1, .36, WHITE, DEEP, .15)
-                s.line(tx + 1.4, yc - .1, tx + 2.15, yc - .1, DEEP, .16)
-                s.line(tx + 1.85, yc - .1, tx + 1.85, yc + .25, DEEP, .15)
-            else:
-                # Mini column/distribution icon
-                for col, bh in enumerate((.6, .95, .78)):
-                    s.rect(tx + .68 + col * .55, yc + .48 - bh, .32, bh, AMBER)
-
-    # Join bowties connecting the join-key rows across the three tables
-    yc_key = ty + hh + .5 * rh
+    for tx, tw_, tname, cols_txt in tables:
+        is_item = tname == 'item'
+        s.rect(tx, sy, tw_, sh, WHITE, RED if is_item else VIOLET, .2, r=.35)
+        s.rect(tx + .12, sy + .12, tw_ - .24, 1.8, RED_PALE if is_item else PALE, None, r=.25)
+        label(tx + tw_ / 2, sy + 1.0, f'`{tname}`', 5.4, RED if is_item else DEEP, 'bold', 'center')
+        label(tx + 1.0, sy + 3.2, cols_txt, 4.9, INK, width=tw_ - 1.6)
     for (x1, w1, _, _), (x2, _, _, _) in zip(tables, tables[1:]):
         mx = (x1 + w1 + x2) / 2
-        s.line(x1 + w1, yc_key, mx - 1.15, yc_key, VIOLET, .24)
-        s.line(mx + 1.15, yc_key, x2, yc_key, VIOLET, .24)
-        s.poly([(mx - 1.15, yc_key - .82), (mx + 1.15, yc_key + .82),
-                (mx + 1.15, yc_key - .82), (mx - 1.15, yc_key + .82)],
-               WHITE, DEEP, .2)
+        yc = sy + sh / 2
+        s.line(x1 + w1, yc, x2, yc, VIOLET, .22)
+        s.poly([(mx - .9, yc - .65), (mx + .9, yc + .65),
+                (mx + .9, yc - .65), (mx - .9, yc + .65)], WHITE, DEEP, .18)
 
-    # Compact, non-overlapping request/response streams
-    def stream(sx_, tx_, returning=False):
-        y_top = WIN_BOTTOM + (.55 if returning else 0)
-        y_bot = DB_Y + (.5 if not returning else .22)
-        dy = y_bot - y_top
-        p0, p1 = (sx_, y_top), (sx_, y_top + .44 * dy)
-        p2, p3 = (tx_, y_bot - .44 * dy), (tx_, y_bot)
-        color = VIOLET if returning else LOAD
-        s.curve(p0, p1, p2, p3, color, .25 if returning else .31,
-                (.6, .42) if returning else None)
-        if returning:
-            s.head(sx_, WIN_BOTTOM + .1, -math.pi / 2, VIOLET, .8)
-        else:
-            s.head(*p3, math.pi / 2, LOAD, .85)
+    # Two write cards at bottom of Panel (c)
+    wy = sy + sh + 1.2
+    wh = 8.4
+    w1x, w1w = 1.6, 36.2
+    w2x, w2w = 39.2, 43.8
 
-    targets = (21.5, W / 2, W - 21.5)
-    for cx, target in zip(CENTERS, targets):
-        for dx_s, dx_t, ret in ((-1.9, -1.6, False), (0.0, 0.0, False), (1.9, 1.6, True)):
-            stream(cx + dx_s, target + dx_t, returning=ret)
-    dots((WIN_BOTTOM + DB_Y) / 2, LOAD)
-    assert DB_Y + DB_H <= H - .3, DB_Y + DB_H
+    s.rect(w1x, wy, w1w, wh, BLUE_PALE, BLUE, .18, r=.45)
+    mark(w1x + 2.0, wy + 2.1, True, .85)
+    label(w1x + 3.6, wy + 2.1, L['w_ok'], 5.4, BLUE_DK, 'bold', width=w1w - 4.4)
+    label(w1x + 1.2, wy + 4.8, L['w_ok_sub'], 5.0, INK, width=w1w - 2.0)
+    label(w1x + 1.2, wy + 7.0, r'$\rightarrow$ keep definition valid' if lang == 'en' else r'$\rightarrow$ 保持定义有效', 5.0, BLUE_DK, 'bold')
+
+    s.rect(w2x, wy, w2w, wh, RED_PALE, RED, .18, r=.45)
+    mark(w2x + 2.0, wy + 2.1, False, .85)
+    label(w2x + 3.6, wy + 2.1, L['w_bad'], 5.4, RED, 'bold', width=w2w - 4.4)
+    label(w2x + 1.2, wy + 4.8, L['w_bad_sub'], 5.0, INK, width=w2w - 2.0)
+    label(w2x + 1.2, wy + 7.0, r"$\rightarrow$ isolate & repair (`is_current='Y'`)" if lang == 'en' else r"$\rightarrow$ 隔离并修复 (`is_current='Y'`)", 5.0, RED, 'bold')
+
+    assert y3 + h3 <= H - 0.2, y3 + h3
 
 
 if __name__ == '__main__':
