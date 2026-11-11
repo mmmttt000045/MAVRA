@@ -1902,7 +1902,8 @@ async fn sustained_writes(url: &str, out: &str) -> Result<Value> {
         )
     };
     let base = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("缺少 M1")?.1;
-    let rates: [(u32, u32); 4] = [(0, 1), (1, 8), (1, 2), (2, 1)]; // λ = 分子 / 分母
+    // SW_OVERHEAD_ONLY=1：只测触发器开销（各写入频率的格子已有结果时补测）
+    let rates: Vec<(u32, u32)> = if std::env::var_os("SW_OVERHEAD_ONLY").is_some() { vec![] } else { vec![(0, 1), (1, 8), (1, 2), (2, 1)] }; // λ = 分子 / 分母
     let (agents, rounds) = (8usize, 8usize);
     let mut cells = vec![];
     for (num, den) in rates {
@@ -1986,7 +1987,7 @@ async fn sustained_writes(url: &str, out: &str) -> Result<Value> {
             admin.query(QKind::Meta, "drop trigger if exists mavra_bump on sv_wt").await?;
         }
         let t0 = Instant::now();
-        admin.query(QKind::Meta, &insert("sv_wt", 5000 + i)).await?;
+        admin.query(QKind::Meta, &insert("sv_wt", 300 + i)).await?;
         let ms = t0.elapsed().as_secs_f64() * 1000.0;
         if trig {
             with.push(ms)
