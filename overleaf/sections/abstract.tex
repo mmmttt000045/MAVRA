@@ -10,8 +10,5 @@ On PostgreSQL, against 8 baselines across 5 workloads, \system\ reduces token us
 }
 {数据智能体能够自动完成企业数据库上的复杂分析，但同一数据库上的智能体会反复重新发现相同的计算。把一个智能体的发现交给下一个智能体是一个缓存问题，而缓存的两个判定在数据场景下都很难：请求必须匹配到它所指的已存计算，然而不同说法可能指同一个计算，同一个名字也可能对应几个计算；数据不再满足计算的假设时，已存计算会悄然出错。本文提出面向数据智能体的共享层 \system{}，用于提取、查找并维护可执行的数据库知识。\system{} 从核验会话中提取参数化的指标与特征定义，只有当编译出的 SQL 复现核验答案时才发布，从而在复用之前拦截有损提取。在查找上，目录自己给训练数据打标签：从定义的结构化口径枚举请求意图，由 LLM 一次性写成多种说法，再按一致性规则打标签，在其上训练的小型交叉编码器判断请求与定义是否一致。\system{} 只在判别器有把握时直接回答，否则返回相互竞争的定义及其区别，每次查找都不调用 LLM。为了高效维护有效性，\system{} 从定义结构与智能体的探查中推导数据条件，筛掉写入不可能影响的定义，并修复或弃用受影响的定义。在 PostgreSQL 上与 8 种基线、5 类工作负载的对比中，\system{} 将 token 用量与端到端延迟分别最多降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，并以 98.6\% 的准确率直接回答 77\% 的首次查找。}
 \end{abstract}
-
-\begin{IEEEkeywords}
-\bt{data agents, agent memory, semantic caching, knowledge reuse}
-{数据智能体，智能体记忆，语义缓存，知识复用}
-\end{IEEEkeywords}
+% The PVLDB template has no keyword block (ICDE keywords were: data agents, agent memory,
+% semantic caching, knowledge reuse).

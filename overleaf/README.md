@@ -1,21 +1,24 @@
-# MAVRA：ICDE 稿件
+# MAVRA：VLDB 2027（PVLDB Vol. 20）稿件
 
-`main.tex` 是唯一编译入口（英文投稿稿，IEEEtran conference，pdfLaTeX），只 `\input{paper}`。中文译文与英文并列写在源码中：`\bi{英文}{中文}`、`\bt`、`\bh`、`\bhl`、`\bid` 只排版第一个参数，第二个参数供作者阅读，从不编译。2026-11-08 起删除双语入口 `main-bilingual.tex` 及全部 `\ifbilingual` 分支。
+`main.tex` 是唯一编译入口（英文投稿稿，PVLDB 官方模板：`acmart` sigconf + `pvldb.sty`，pdfLaTeX），只 `\input{paper}`。中文译文与英文并列写在源码中：`\bi{英文}{中文}`、`\bt`、`\bh`、`\bhl`、`\bid` 只排版第一个参数，第二个参数供作者阅读，从不编译。2026-11-08 起删除双语入口 `main-bilingual.tex` 及全部 `\ifbilingual` 分支。
 
 2026-10-31 起目录按投稿规范整理：原 `main-en.tex` 改名为 `main.tex`，原双语 `main.tex` 改名为 `main-bilingual.tex`；`latex/preamble.tex` 移到根目录 `preamble.tex`；章节文件连续编号为 `01-introduction` … `07-conclusion`（原 `04-sharing`、`07-evaluation`、`08-related-work`、`10-conclusion`）；原 `sections/evaluation/` 下各小节按原顺序并入 `05-evaluation.tex`（展开后正文逐字相同），未使用的 `memory-pilot.tex`、`quality.tex` 删除；`references.tex` 并入 `paper.tex`；删除不再使用的 SIGMOD `acmart` 文件。下方历史记录保留当时的文件名。
 
 | 目录／文件 | 内容 |
 | --- | --- |
-| `main.tex` | 编译入口 |
+| `main.tex` | 编译入口（PVLDB 元数据：DOI、页码、Artifact 链接） |
+| `acmart.cls`、`pvldb.sty`、`ACM-Reference-Format.bst` | PVLDB 官方模板固定副本（[vldbproceedings/VLDB-Template](https://github.com/vldbproceedings/VLDB-Template) 39c95f5，acmart v2.19），勿改 |
 | `paper.tex`、`preamble.tex` | 标题、作者、章节顺序；宏包与共用宏 |
 | `sections/` | 摘要、六个章节（每章一个文件）、AI 声明 |
 | `figures/`、`tables/`、`algorithms/` | 图（`.tex` 图环境 + 矢量 PDF；`-zh` 中文版 PDF 仍由绘图脚本生成，但不再被正文引用）、表、算法 |
 | `gen/` | 由 `tools/` 生成的数值宏，勿手改 |
-| `references.bib` | 参考文献库（IEEEtran 样式，在 `paper.tex` 末尾调用） |
+| `references.bib` | 参考文献库（ACM-Reference-Format 样式，在 `paper.tex` 末尾调用） |
 
 本目录还保留未进入正文的历史图表源文件；独立论文仓库只接收编译实际依赖的文件（见下文“独立论文仓库”）。
 
-根据 [ICDE 2027 Research CFP](https://icde2027.github.io/cf-research-papers)，正文最多 12 页，参考文献和 AI 生成内容声明不计入，不能附加附录。研究论文采用单盲评审，首页列出 Tai Ming 和 Zhanhao Zhao，单位同为 Renmin University of China。最终以投稿编译环境生成的 PDF 为准。
+2026-11-11 起改投 VLDB 2027（PVLDB Vol. 20 研究轨，Regular Research Paper）。按 PVLDB Vol. 20 投稿指南：除参考文献外的全部内容（含附录、致谢与 AI 声明）不超过 12 页，只有参考文献可以超出；必须严格使用官方模板，缺少版权、PVLDB Reference Format、Artifact 等必备块可被直接拒稿；单盲评审，首页列出 Tai Ming 和 Zhanhao Zhao，单位同为 Renmin University of China（Beijing, China）。截稿为每月 1 日 17:00（美国太平洋时间），须在上月 25 日前提交摘要；CMT 于上月 20 日开放。须提供公开存档的补充材料链接（代码、数据与运行说明，如公开 GitHub 仓库），否则须说明理由；`main.tex` 中 `\vldbavailabilityurl` 目前是占位符。最终以投稿编译环境生成的 PDF 为准。
+
+原 ICDE 2027 版本（IEEEtran，12 页不含参考文献与 AI 声明）见主仓库提交 bf98eee 及论文仓库 01a40dc。
 
 ## 编译与上传
 
@@ -27,11 +30,11 @@
 bash build.sh       # build/main.pdf（投稿稿，等同 bash build.sh en）
 ```
 
-构建优先使用 latexmk，亦支持 Tectonic。TeX 环境须提供 IEEEtran 类与参考文献样式及标准宏包，`build.sh` 会预检这些依赖。
+构建优先使用 latexmk，亦支持 Tectonic。模板类与样式随稿件提供；TeX 环境须提供 Libertine、newtxmath、textcase 等 acmart 依赖及标准宏包，`build.sh` 会预检这些依赖。
 
-从 GitHub 论文仓库导入或拉取至 Overleaf 后，选择 `main.tex` / pdfLaTeX（Overleaf 默认）。同步直接读取输入与图形依赖，包含 `references.bib`；不需要实验服务器、原始数据或 ZIP 包即可编译。
+从 GitHub 论文仓库导入或拉取至 Overleaf 后，选择 `main.tex` / pdfLaTeX（Overleaf 默认）。同步直接读取输入与图形依赖，包含 `references.bib` 与稿件目录内的模板类、样式和参考文献样式文件；不需要实验服务器、原始数据或 ZIP 包即可编译。
 
-`paper.tex` 末尾调用 `IEEEtran.bst` 与 BibTeX（原 `references.tex` 已并入）：只输出正文引用的条目，按首次引用排序。正文中的多篇引用统一在一组方括号内逐一列出，逗号后留空格，例如 `[7, 8, 9, 10]`，不压缩为编号区间。`references.bib` 保留原稿全部元数据；未引用条目不占参考文献版面。此次转换未对每条文献重新做出版信息核验。
+`paper.tex` 末尾调用模板的 `ACM-Reference-Format.bst` 与 BibTeX（原 `references.tex` 已并入）：只输出正文引用的条目，按作者排序，多篇引用按模板默认合并为编号区间（如 [7–10]）。ICDE 版本用 IEEEtran 按首次引用排序、逐一列出编号，改投 VLDB 后遵循模板。`references.bib` 保留原稿全部元数据；未引用条目不占参考文献版面。此次转换未对每条文献重新做出版信息核验。
 
 ## 2026-11-08 图 3–5 第三版：少字，用有含义的图形
 

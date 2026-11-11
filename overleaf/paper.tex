@@ -1,25 +1,40 @@
 \input{preamble}
 % \title{\system: Shared Memory That Saves Data Agents Time and Tokens} % 为数据智能体省下时间和 token 的共享记忆
 
+\begin{document}
 \title{\system: Sharing and Maintaining Executable Knowledge for Data Agents}
 
-\author{\IEEEauthorblockN{Tai Ming and Zhanhao Zhao}
-\IEEEauthorblockA{Renmin University of China}}
-\begin{document}
-\maketitle
-% Keep the first-column top slot for the abstract; Fig.1 can use the next column.
-\suppressfloats[t]
+% VLDB is single-blind: names and affiliations must appear on the first page.
+\author{Tai Ming}
+\affiliation{%
+  \institution{Renmin University of China}
+  \city{Beijing}
+  \country{China}
+}
+\author{Zhanhao Zhao}
+\affiliation{%
+  \institution{Renmin University of China}
+  \city{Beijing}
+  \country{China}
+}
 
+% acmart places the abstract in the title block, so it precedes \maketitle.
 \input{sections/abstract}
+
+\maketitle
+
+%%% do not modify the following VLDB block %%
+%%% VLDB block start %%%
+\vldbtopmatter
+%%% VLDB block end %%%
+
 \input{sections/01-introduction}
 \input{sections/02-background}
 \input{sections/03-overview}
 \input{sections/04-design}
 \input{sections/05-evaluation}
 \input{sections/06-conclusion}
-\clearpage
 \input{sections/ai-statement}
-\IEEEtriggeratref{37}
-\bibliographystyle{IEEEtran}
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
 \end{document}

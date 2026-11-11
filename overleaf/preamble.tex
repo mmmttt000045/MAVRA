@@ -1,32 +1,20 @@
-% Preserve IEEE's Times fonts with pdfLaTeX.
+% acmart (PVLDB template) already loads amsmath, amssymb, amsthm with its proposition, lemma,
+% definition and example environments, natbib, booktabs, hyperref and the Libertine fonts.
 \usepackage[T1]{fontenc}
-\usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage{pifont}
-\usepackage{amsthm}
-\newtheorem{proposition}{Proposition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{definition}{Definition}
-\usepackage{balance}
-% List each citation number inside one pair of brackets: [7, 8, 9, 10].
-\usepackage[nocompress]{cite}
-\renewcommand{\citepunct}{,\penalty\citepunctpenalty\ }
 \usepackage{url}
-\providecommand{\Description}[1]{}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \algnewcommand{\IfThen}[2]{\State \algorithmicif\ #1\ \algorithmicthen\ #2}
-\usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{xcolor}
 \usepackage{colortbl}
 \usepackage{graphicx}
 \usepackage{placeins}
-\usepackage[hidelinks]{hyperref}
 \makeatletter
 \providecommand*{\toclevel@algorithm}{0}
 \makeatother
-% Preserve IEEEtran's native float spacing, paragraph spacing, and float limits.
+% Keep the template's float spacing, paragraph spacing, and float limits (deviations risk desk rejection).
 % Method colors, fixed across every figure and table; the figures (tools/figures/) read these
 % definitions, so a method has the same color in a figure and in a table swatch. Six slots in the
 % CVD-validated order (blue, orange, aqua, yellow, magenta, green), assigned in reverse along the
@@ -107,19 +95,8 @@
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 
-\newtheoremstyle{myexamplestyle}
-  {0.5\baselineskip plus 0.25\baselineskip minus 0.1\baselineskip} % Space above
-  {0.5\baselineskip plus 0.25\baselineskip minus 0.1\baselineskip} % Space below
-  {}          % Body font
-  {}          % Indent amount
-  {\bfseries} % Theorem head font
-  {.}         % Punctuation after theorem head
-  {.5em}      % Space after theorem head
-  {}          % Theorem head spec (can be left empty)
-% 2. 将 example 环境的样式设置为我们上面定义的样式
-\theoremstyle{myexamplestyle}
-\newtheorem{example}{Example}
+% Let TeX stretch a tight narrow-column line rather than overflow into the margin (line breaking only).
+\setlength{\emergencystretch}{1em}
+% example, definition, proposition and lemma come from acmart; problem uses acmart's definition style.
+\theoremstyle{acmdefinition}
 \newtheorem{problem}{Problem}
-% 我们可以把它改小一点，比如改为一行的高度
-\setlength{\floatsep}{0.85\baselineskip plus 0.35\baselineskip minus 0.2\baselineskip}
-\setlength{\textfloatsep}{1.35\baselineskip plus 0.35\baselineskip minus 0.2\baselineskip}
