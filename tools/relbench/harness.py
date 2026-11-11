@@ -996,26 +996,39 @@ Shared memory: agents on this database publish verified feature definitions and 
             finally:
                 work["audit_seconds"] += time.time() - ta
             work["audit"] = audited.get("result")
+            kept_sql, kept_xtr, kept_xva, dropped = prev[1], xtr, xva, []
             if audited.get("result") == "leak":
                 bad = set(audited.get("all_columns_differing") or [])
                 keep = [c for c in xtr if c not in bad]
                 if not bad or not keep:
                     return {"val": None, "why": "incumbent has no identified clean output subset"}
-                # Preserve the benchmark's retraining-goal rule; these values
-                # are not supplied as an executable candidate without a fresh
-                # check of the projected SQL in the regular selection path.
-                prediction, _, _ = fit(xtr[keep], xva[keep])
-                return {"val": score(e["task_type"], seeds["val"][yc], prediction), "from_cutoff": prev[0],
-                        "dropped_leaking": sorted(bad), "cache_rejected": "source SQL was not clean"}
-            if audited.get("result") != "clean":
+                headers, seconds = read_sql(self.url, f"SELECT * FROM ({prev[1].strip().rstrip(';').replace('{seeds}', f'task.{tname(t)}_val')}) q LIMIT 0")
+                work["sql_seconds"] += seconds
+                kept_sql = select_columns_sql(prev[1], list(headers.columns[:2]), keep)
+                check = {"sql_seconds": 0.0}
+                self.check_columns(t, k, kept_sql, seeds, xva[keep], check, timeout_s=SELECT_CHECK_TIMEOUT_S)
+                work["sql_seconds"] += check["sql_seconds"]
+                ta = time.time()
+                try:
+                    projected_audit = self.audit(t, k, kept_sql, seeds)
+                finally:
+                    work["audit_seconds"] += time.time() - ta
+                work["projection_audit"] = projected_audit.get("result")
+                if projected_audit.get("result") != "clean":
+                    return {"val": None, "why": "projected incumbent did not pass a fresh audit",
+                            "audit_error": projected_audit.get("why")}
+                kept_xtr, kept_xva, dropped = xtr[keep], xva[keep], sorted(bad)
+                prediction, importance, _ = fit(kept_xtr, kept_xva)
+                val = score(e["task_type"], seeds["val"][yc], prediction)
+            elif audited.get("result") != "clean":
                 return {"val": None, "why": "incumbent audit did not pass", "audit_error": audited.get("why")}
             aligned = [ec, "seed_time", yc]
-            self.incumbent_frames[(t, k)] = {"previous": prev, "sql": prev[1], "val": val, "importance": importance,
-                                             "train": xtr, "valid": xva,
+            self.incumbent_frames[(t, k)] = {"previous": prev, "sql": kept_sql, "val": val, "importance": importance,
+                                             "train": kept_xtr, "valid": kept_xva, "dropped_leaking": dropped,
                                              "train_seeds": seeds["train_sample"][aligned].copy(),
                                              "valid_seeds": seeds["val"][aligned].copy(), "audit": "clean"}
             work["cached"] = True
-            return {"val": val, "from_cutoff": prev[0], "current_refit_retained": True}
+            return {"val": val, "from_cutoff": prev[0], "current_refit_retained": True, "dropped_leaking": dropped}
         except Exception as err:
             return {"val": None, "why": f"incumbent preparation failed: {str(err)[:200]}"}
         finally:
@@ -1053,7 +1066,7 @@ Shared memory: agents on this database publish verified feature definitions and 
         xtr, xva, sql = cached["train"], cached["valid"], cached["sql"]
         original = {"name": "program", "sql": sql, "val": cached["val"], "columns": list(xtr),
                     "importance": cached["importance"], "from_cutoff": e["cutoffs"][k - 2]["test_timestamp"],
-                    "source": "current audited refit", "dropped_leaking": []}
+                    "source": "current audited refit", "dropped_leaking": cached.get("dropped_leaking", [])}
         choice, candidates = original, [original]
         rec = {"audit_seconds": 0.0, "sql_seconds": 0.0, "train_seconds": 0.0, "cached_current_refit": True,
                "definitions_offered": 0, "extension_skipped": "reuse the complete audited incumbent; agent may compose a refinement",

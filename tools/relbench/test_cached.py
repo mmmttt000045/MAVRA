@@ -103,6 +103,35 @@ class CurrentRefitTests(unittest.TestCase):
         self.assertEqual(record['agent_seconds'], charged)
         self.assertEqual(len(record['feature_fits']), 1)
 
+    def test_explicitly_bad_columns_are_removed_only_after_fresh_checks(self):
+        with patch.object(harness, 'features', return_value=(self.values, 25.)), \
+             patch.object(harness, 'train_predict', side_effect=self.fit), \
+             patch.object(harness, 'read_sql', return_value=(pd.DataFrame(columns=['id', 'seed_time']), 0.)), \
+             patch.object(self.run, 'check_columns') as reproduce, \
+             patch.object(self.run, 'audit', side_effect=[{'result': 'leak', 'all_columns_differing': ['other']},
+                                                        {'result': 'clean'}]) as audit:
+            goal = self.run.incumbent('t', 2, self.seeds)
+        reproduce.assert_called_once()
+        self.assertEqual(audit.call_count, 2)
+        cached = self.run.current_incumbent('t', 2, self.seeds)
+        self.assertEqual(list(cached['train']), ['good'])
+        self.assertEqual(cached['previous'], (1, self.sql))
+        self.assertNotEqual(cached['sql'], self.sql)
+        self.assertEqual(goal['dropped_leaking'], ['other'])
+        self.assertEqual(len(self.run.incumbent_work[('t', 2)]['feature_fits']), 2)
+
+    def test_a_failed_projection_audit_never_becomes_a_cached_start(self):
+        with patch.object(harness, 'features', return_value=(self.values, 25.)), \
+             patch.object(harness, 'train_predict', side_effect=self.fit), \
+             patch.object(harness, 'read_sql', return_value=(pd.DataFrame(columns=['id', 'seed_time']), 0.)), \
+             patch.object(self.run, 'check_columns'), \
+             patch.object(self.run, 'audit', side_effect=[{'result': 'leak', 'all_columns_differing': ['other']},
+                                                        {'result': 'error', 'why': 'missing seed'}]):
+            goal = self.run.incumbent('t', 2, self.seeds)
+        self.assertIsNone(goal['val'])
+        self.assertIsNone(self.run.current_incumbent('t', 2, self.seeds))
+        self.assertFalse(self.run.incumbent_work[('t', 2)]['cached'])
+
 
 if __name__ == '__main__':
     unittest.main()

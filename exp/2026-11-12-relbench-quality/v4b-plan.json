@@ -1,0 +1,10 @@
+{
+  "status": "prelaunch correctness revision of the cached candidate",
+  "method": "mavra-cached",
+  "revision": "v4b",
+  "basis": "Review found that an incumbent with a few explicitly identified leaking columns was refitted after dropping them but its remaining complete program was not retained. The later 45-second selection could still degrade it to incomplete definitions.",
+  "change": "Project only the explicitly identified bad outputs, reproduce remaining validation values, run a fresh complete leakage audit, then refit and retain those exact matrices and the projected SQL. Keep the original prior SQL as provenance, record dropped columns, reject failed or unknown projection audits, and charge all extra work.",
+  "preparation": "Both v4 queue processes were stopped before either experiment cell started; zero model calls. All original frozen sources, SHA manifest and superseded launch records remain in quality-20261112-v4. The revised full run uses quality-20261112-v4b in a separate source worktree.",
+  "unchanged": "Cold search, model, data, learner, cost accounting and all quality/cost gates; the three running variants stay frozen. No v4 test results exist or have informed this revision.",
+  "history_component": "The separate historical-outcome feature hypothesis did not improve validation on any of six tasks and is not added to this candidate."
+}
