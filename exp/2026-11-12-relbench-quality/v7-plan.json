@@ -1,0 +1,14 @@
+{
+  "method": "mavra-early",
+  "revision": "v7",
+  "status": "prospective_workflow_revision_before_code_and_model_calls",
+  "planned_at": "2026-11-12T07:04:00+08:00",
+  "parent": "mavra-refine (v6)",
+  "evidence": "The saved v5 progress snapshot at06:52:31 showed site-success k1 attempt1 at30 model responses and zero agent feature validations. A forty-response budget spent mostly on probes leaves little room for validation feedback. Existing prompts ask for early validation but do not enforce it.",
+  "change": "In each cold attempt, request a simple working feature SQL by response8. Before that response, when no validate_features attempt has occurred, expose only validate_features. After the first attempt, including a failed one, restore the normal tools so errors can be investigated and repaired. Warm policy stays exactly v6:4 responses and6 tools.",
+  "unchanged": "No extra model calls or validations:40 responses and8 agent validations per existing cold attempt, the same two independent attempts and their full charges; same learner, sample, data, audits, SQL timeouts, cache and selection. No task-name condition, known program or held-out label enters the rule.",
+  "checks": "Exercise the actual exploration loop with a mock agent that keeps probing: the eighth decision must receive validation-only tools, a subsequent decision must regain normal tools. Check that an attempted failed validation releases the gate and that warm and old arms are unchanged.",
+  "execution": "Freeze after checks; queue each new cell after the matching v5 cell to retain at most4 concurrent cells. Keep the announced25 CNY aggregate study guard. Start from empty memory; never borrow the prior run's program or matrices. Preserve every result and preparation record.",
+  "acceptance": "Unchanged exact cohorts, all15 valid per database, every one of12 cost checks preserved and every one of6 mean qualities at least the strongest reported result. First-iteration and full costs remain visible; no spliced task winners.",
+  "development_disclosure": "Post-hoc after v1-v4 results; v5/v6 submission tests have not started. This workflow defect is identified from training/validation activity, not their test scores. No quality improvement is assumed before full evaluation."
+}
