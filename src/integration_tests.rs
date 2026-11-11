@@ -829,12 +829,14 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
 }
 
 /// 条件级与定义级维护下，每个场景对 M1 / M2 / M3 / M5 的预期：valid0 = 刷新后原修订可用，valid1 = 修复后新修订可用，
-/// unavailable = 撤销且不在修复范围或修复失败。金额单位变化不被任何条件覆盖（漏检边界）。
+/// unavailable = 撤销且不在修复范围或修复失败。金额单位变化由度量尺度条件发现。
 fn expected(c: Change) -> [&'static str; 4] {
     const V0: &str = "valid0";
     const V1: &str = "valid1";
     match c {
-        Change::Append | Change::Backfill | Change::Correct | Change::AddColumn | Change::Unit => [V0, V0, V0, V0],
+        Change::Append | Change::Backfill | Change::Correct | Change::AddColumn => [V0, V0, V0, V0],
+        // 金额改以分记录：读门店销售金额的三个定义月中位数跳变 100 倍，度量尺度条件不成立，暂停提供（需业务确认）
+        Change::Unit => ["unavailable", V0, "unavailable", "unavailable"],
         Change::Status => [V0, V1, V1, V0],
         Change::Revision => [V1, V0, V1, V1],
         // 重复装载的行与原行完全相同：去重修复，三个读门店销售的定义发布新修订

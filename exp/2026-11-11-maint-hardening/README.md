@@ -112,3 +112,53 @@ Report: share of published definitions exact on all 39 bindings; per-binding acc
 G7-rejected draft, the share of bindings it would have answered wrongly (the counterfactual
 without G7). If a published definition fails on some binding, report it and its cause; a
 multi-binding replay gate is then a candidate change for a later, separately registered run.
+
+## Results
+
+### E. Unseen-binding accuracy (2026-11-11, noctis, HEAD 89322f2, `binding-report.json`)
+
+68 MAVRA-family cells of `scen-20260930` and `scen-20261010`; synthetic retail, 1M store-sales rows, v1 data;
+39 bindings per definition (36 single months 2000-01..2002-12 and three full years); task precision (2 decimals).
+
+| Class | distinct definitions | publications / sessions | exact on all 39 bindings | wrong binding checks |
+|---|---:|---:|---:|---:|
+| Published (Valid) | 100 | 445 | 100 | 0 of 3,900 |
+| G7-rejected drafts | 7 | 8 | 0 | 273 of 273 |
+
+- Published definitions are diverse (46 distinct M3 return-rate formulations alone; COALESCE, qualified and
+  unqualified columns, ratio orders), and every one matches the hand-written reference on every binding.
+- Every G7-rejected draft is wrong on every binding: M5 drafts that drop the Electronics filter return about
+  5x the reference (e.g. 12.66M vs 2.58M for 2000-02); M3 drafts that use the wrong denominator return about
+  60% instead of about 24%; one M3 draft does not execute. Without G7 these drafts would have been published
+  and served to every later agent.
+- Scope: one synthetic schema with five metrics, period bindings only (no attribute slices), unchanged data.
+  The result shows that, on this workload, G7's single-binding test did not let a lossy extraction through;
+  it does not prove equivalence in general.
+
+### Review point 4: lookup in one metric, with the confirmation turn (`lookup-confirm/`)
+
+Input: the end-to-end first-ask replies of `exp/2026-11-10-lookup-facets/results-ft/serve-ens3/responses-first.jsonl`.
+`confirm.py` lets deepseek-flash (official API) read each reply that needs confirmation (18 refer, 4 similar) and
+name the definition(s) it means; nothing else changes.
+
+- First response, set-exact (references counted as the returned set): 88/96 (91.7%). Refer replies carry 1.6
+  candidates on average; 16 of 18 contain the gold set, the other 2 are absent requests.
+- After confirmation: 22/22 confirmations correct; final set-exact 95/96 (99.0%), equal to the full-catalog LLM judge
+  (190/192); all 17 absent requests end rejected. The remaining error (f12) is a direct answer (D13+D14 for D13).
+- Cost per request, confirmation included: 0.53 s and 89 LLM tokens (56 prompt + 33 completion), against 2.16 s and
+  1,534 tokens for the full-catalog judge.
+- Repeated phrasing (alias table): first response set-exact 94/96 in 33 ms.
+
+### Review point 6: lookup training cost (`lookup-confirm/measure_gen.py`, `measure-gen.out`)
+
+Six generation calls re-issued with the pilot's prompt and settings (PER=15, thinking on, effort low): 246 prompt and
+3,423 completion tokens per call. The training set took about 510 calls (five batches of 98 intents + 4 absent-metric
+calls), so about 1.9M tokens. Training: 1,912 s per judge, three judges (1.6 GPU-hours, shared RTX 5880 Ada).
+Against the full-catalog judge (1,534 tokens per lookup) MAVRA saves 1,445 tokens per lookup: payback after about 1.3k lookups.
+
+### Review point 5: RelBench per cutoff (`exp/2026-10-20-relbench/paper-sessions.json`, no new runs)
+
+user-badge AUC, MAVRA vs No memory, cutoffs 1-5: 0.8195/0.8458, 0.8205/0.8501, 0.8375/0.8550, 0.8569/0.8800,
+0.8379/0.8632 (behind at every cutoff, by 0.018-0.030). study-adverse MAE: 35.51/35.07, 50.74/48.76, 44.55/43.54,
+41.77/39.46, 38.16/37.43 (1-6% higher at every cutoff). study-outcome is mixed. Both systematic gaps start in the
+cutoff-1 learning session whose program later sessions retrain.
