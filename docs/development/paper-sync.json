@@ -4,12 +4,13 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (merge remote ff75375, then forward sync f9b2765: re-center thesis around structured definitions and eliminate circular phrasing)",
-  "previous_head": "ff75375619799e378772ee16ce844ec9962bee45",
-  "remote_commit": "b9a8f792ed0facc927b3646604b2ab5dd092d09b",
+  "direction": "main repo overleaf/ -> paper repo (merge remote f66f1a3 redrawn Figure 2 & Overview, then forward sync a84c395: SELIX-modeled 7-section restructuring within 12-page PVLDB limit)",
+  "previous_head": "f66f1a35c38cd552a801a46ae76069215c41357e",
+  "remote_commit": "ff4bc71d334e06aab9fd8f8a48857f1ee9a8ff60",
   "pending_payload": null,
   "changed_paths": [
-    "figures/lookup.tex",
+    "algorithms/maintenance.tex",
+    "paper.tex",
     "sections/01-introduction.tex",
     "sections/02-background.tex",
     "sections/03-overview.tex",
@@ -17,20 +18,20 @@
     "sections/05-evaluation.tex",
     "sections/06-conclusion.tex",
     "sections/abstract.tex",
-    "sections/ai-statement.tex",
-    "tables/lookup.tex"
+    "tables/lookup.tex",
+    "sections/implementation.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "this workstation",
-    "status": "tectonic overleaf/main.tex clean (13 pages, 0 Overfull/Underfull warnings, 0 undefined references)",
-    "identical_to_remote": "overleaf/ dependency closure matches icde-2027-paper main @ b9a8f792ed0facc927b3646604b2ab5dd092d09b",
-    "content": "Merged remote ff75375 (algorithms/maintenance.tex and references.bib), re-centered manuscript thesis around structured executable computation definitions across C1-C3, fixed Example 1 electronics filter consistency, eliminated repetitive cross-section phrasing, and polished PVLDB prose"
+    "status": "tectonic overleaf/main.tex clean (12-page body + Conclusion + Acknowledgment before References on p.12, 14 pages total, 0 Overfull \\hbox warnings, 0 undefined references)",
+    "identical_to_remote": "overleaf/ dependency closure matches icde-2027-paper main @ ff4bc71d334e06aab9fd8f8a48857f1ee9a8ff60 (preserving redrawn Figure 2 from f66f1a3)",
+    "content": "Merged remote f66f1a3 (redrawn figures/architecture.pdf, figures/architecture.tex, and Knowledge Base / Check and run / Stage 1-2 terminology), reorganized full manuscript into 7-section SELIX structure (Abstract, 6+4 Introduction, Background & Problem, System Overview, Design 4.1-4.5, Implementation, Evaluation 6.1-6.6, Conclusion), and verified 12-page PVLDB fit"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/b9a8f792ed0facc927b3646604b2ab5dd092d09b",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: optimize paper logic, re-center thesis, and polish expression).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/ff4bc71d334e06aab9fd8f8a48857f1ee9a8ff60",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: reorganize paper following SELIX blueprint and merge remote Figure 2 before pushing).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "f9b2765c5abd3344cc6e1da265adb26c1b91406a"
+  "source_commit": "a84c39526a9d0ef874298daab0d86f49fb511f78"
 }
