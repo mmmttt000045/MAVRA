@@ -1,0 +1,14 @@
+{
+ "reviewer": "Claude (read all 182 rewrites against the original request and its stated choices)",
+ "dropped": {
+  "n13-a": "让利减免：折扣额变成可能含优惠券",
+  "n13-b": "优惠让利：同上",
+  "s14-a": "加了按金额（比率口径）",
+  "s19-a": "退回商品比例：倾向按件数",
+  "f12-a": "丢了当月发生（按退货日期）",
+  "f12-b": "丢了当月发生（按退货日期）",
+  "w04-a": "含糊的优惠写成折扣",
+  "m02-a": "优惠活动：折扣额扩大到优惠券"
+ },
+ "kept": 174
+}

@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "candidate_arm": "mavra-push",
+  "candidate_run": 1,
+  "used_for_selection": false,
+  "panels": {
+    "rel-stack": {
+      "candidate_path": "results/gate-self-check/mavra-push-rel-stack-r1",
+      "sessions": 15,
+      "expected_sessions": 15,
+      "complete": true,
+      "valid_sessions": 15,
+      "reuse_cost": {
+        "tokens": 1203618,
+        "token_ratio": 0.2793534304185713,
+        "llm_calls": 52,
+        "tool_calls": 74,
+        "agent_seconds": 3186.731157064438,
+        "usd": 0.17121858599999998
+      },
+      "original_mavra_cost": {
+        "tokens": 1203618,
+        "token_ratio": 0.2793534304185713,
+        "llm_calls": 52,
+        "tool_calls": 74,
+        "agent_seconds": 3186.731157064438,
+        "usd": 0.17121858599999998
+      },
+      "cost_pass": {
+        "tokens": true,
+        "token_ratio": true,
+        "llm_calls": true,
+        "tool_calls": true,
+        "agent_seconds": true,
+        "usd": true
+      },
+      "end_to_end_tokens": 2004518,
+      "quality": {
+        "post-votes": {
+          "higher": false,
+          "candidate": 0.06439223346241725,
+          "best_reported_arm": "ace",
+          "best_reported_score": 0.06368830278308386,
+          "all_reported_scores": {
+            "none": 0.06454176835830355,
+            "ace": 0.06368830278308386,
+            "gmemory": 0.06429119246127868,
+            "awm": 0.06420385498773679,
+            "tecod": 0.06437215189897431,
+            "featpilot": 0.06539816938269699,
+            "mavra-push": 0.06439223346241725
+          },
+          "first_or_tied": false
+        },
+        "user-badge": {
+          "higher": true,
+          "candidate": 0.8344683672443363,
+          "best_reported_arm": "gmemory",
+          "best_reported_score": 0.8600680693221491,
+          "all_reported_scores": {
+            "none": 0.8588115098025881,
+            "ace": 0.8553720769226648,
+            "gmemory": 0.8600680693221491,
+            "awm": 0.8599572064500334,
+            "tecod": 0.8344583451742935,
+            "featpilot": 0.8295968439020507,
+            "mavra-push": 0.8344683672443363
+          },
+          "first_or_tied": false
+        },
+        "user-engagement": {
+          "higher": true,
+          "candidate": 0.8888124096912877,
+          "best_reported_arm": "mavra-push",
+          "best_reported_score": 0.8888124096912877,
+          "all_reported_scores": {
+            "none": 0.8843190100944827,
+            "ace": 0.8192511348323805,
+            "gmemory": 0.8851934441573788,
+            "awm": 0.8828045517709453,
+            "tecod": 0.8862843155607312,
+            "featpilot": 0.877397687977767,
+            "mavra-push": 0.8888124096912877
+          },
+          "first_or_tied": true
+        }
+      },
+      "all_costs_preserved": true,
+      "all_qualities_first": false,
+      "accepted": false
+    },
+    "rel-trial": {
+      "candidate_path": "results/gate-self-check/mavra-push-rel-trial-r1",
+      "sessions": 15,
+      "expected_sessions": 15,
+      "complete": true,
+      "valid_sessions": 15,
+      "reuse_cost": {
+        "tokens": 3553289,
+        "token_ratio": 0.44303559307579093,
+        "llm_calls": 123,
+        "tool_calls": 209,
+        "agent_seconds": 1481.6380257606506,
+        "usd": 0.20001659400000002
+      },
+      "original_mavra_cost": {
+        "tokens": 3553289,
+        "token_ratio": 0.44303559307579093,
+        "llm_calls": 123,
+        "tool_calls": 209,
+        "agent_seconds": 1481.6380257606506,
+        "usd": 0.20001659400000002
+      },
+      "cost_pass": {
+        "tokens": true,
+        "token_ratio": true,
+        "llm_calls": true,
+        "tool_calls": true,
+        "agent_seconds": true,
+        "usd": true
+      },
+      "end_to_end_tokens": 6405489,
+      "quality": {
+        "site-success": {
+          "higher": false,
+          "candidate": 0.41021256564567804,
+          "best_reported_arm": "gmemory",
+          "best_reported_score": 0.40742616679508387,
+          "all_reported_scores": {
+            "none": 0.42449867292415255,
+            "ace": 0.41879125096486186,
+            "gmemory": 0.40742616679508387,
+            "awm": 0.4275767928863257,
+            "tecod": 0.4146313328065869,
+            "featpilot": 0.4266792186381206,
+            "mavra-push": 0.41021256564567804
+          },
+          "first_or_tied": false
+        },
+        "study-adverse": {
+          "higher": false,
+          "candidate": 42.144023645909726,
+          "best_reported_arm": "gmemory",
+          "best_reported_score": 39.6006608212398,
+          "all_reported_scores": {
+            "none": 40.84950444278163,
+            "ace": 39.64480390405827,
+            "gmemory": 39.6006608212398,
+            "awm": 39.993577864806255,
+            "tecod": 39.865516877206,
+            "featpilot": 44.16023670316044,
+            "mavra-push": 42.144023645909726
+          },
+          "first_or_tied": false
+        },
+        "study-outcome": {
+          "higher": true,
+          "candidate": 0.6691927075685121,
+          "best_reported_arm": "ace",
+          "best_reported_score": 0.6752552587974704,
+          "all_reported_scores": {
+            "none": 0.6731981719166402,
+            "ace": 0.6752552587974704,
+            "gmemory": 0.6658321924899284,
+            "awm": 0.666408039636325,
+            "tecod": 0.6733512659789824,
+            "featpilot": 0.6388269147775131,
+            "mavra-push": 0.6691927075685121
+          },
+          "first_or_tied": false
+        }
+      },
+      "all_costs_preserved": true,
+      "all_qualities_first": false,
+      "accepted": false
+    }
+  },
+  "accepted": false
+}

@@ -21,7 +21,9 @@ from statistics import mean, median
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 P = json.loads((HERE / 'protocol.json').read_text())
-NAMES = {'ace': 'ACE', 'awm': 'AWM', 'gmemory': 'G-Memory', 'mavra': 'MAVRA', 'tecod': 'TeCoD'}
+NAMES = {'ace': 'ACE', 'awm': 'AWM', 'gmemory': 'G-Memory', 'mavra': 'MAVRA', 'tecod': 'TeCoD', 'recheck': 'Shared recheck'}
+# MAVRA ablation-style controls are reported on their own, not inside the published-method baseline ranges
+CONTROLS = {'mavra', 'recheck'}
 # the protocol's methods, plus any method that only --arm-results supplies (TeCoD, added 2026-11-06)
 ARMS = list(P['arms'])
 GROUPS = {**P['groups'], 'all': ['holdout', *P['changes']]}
@@ -156,7 +158,7 @@ def main():
         return
     g = stats['groups']
     mac = {}
-    tag = {'ace': 'Ace', 'awm': 'Awm', 'gmemory': 'Gmem', 'mavra': 'Mavra', 'tecod': 'Tecod'}
+    tag = {'ace': 'Ace', 'awm': 'Awm', 'gmemory': 'Gmem', 'mavra': 'Mavra', 'tecod': 'Tecod', 'recheck': 'Recheck'}
     gt = {'holdout': 'Hold', 'non_breaking': 'Benign', 'covered_breaks': 'Break', 'outside_conditions': 'Outside', 'all': 'All'}
     st = {'synthetic': 'Syn', 'tpch': 'Tpch', 'both': ''}
     for gname, gtag in gt.items():
@@ -168,10 +170,11 @@ def main():
                     mac[f'Cs{gtag}{stag}{tag[arm]}Min'] = f"{x['min']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}Max'] = f"{x['max']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}Wrong'] = f"{x['wrong_pct']:.1f}"
+                    mac[f'Cs{gtag}{stag}{tag[arm]}Clarify'] = f"{x['clarify_pct']:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}TokK'] = f"{x['tokens']/1000:.1f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}S'] = f"{x['seconds']:.0f}"
                     mac[f'Cs{gtag}{stag}{tag[arm]}MedS'] = f"{x['median_seconds']:.0f}"
-            base = {arm: g[gname][scope][arm] for arm in ARMS if arm != 'mavra' and arm in g[gname][scope]}
+            base = {arm: g[gname][scope][arm] for arm in ARMS if arm not in CONTROLS and arm in g[gname][scope]}
             if base and 'mavra' in g[gname][scope]:
                 m = g[gname][scope]['mavra']
                 best = max(base.values(), key=lambda x: x['accuracy'])
@@ -202,7 +205,7 @@ def main():
         mac['CsTpchLatekeyClarify'] = str(lk['clarify'])
         mac['CsTpchLatekeyN'] = str(lk['n'])
     # the text claims MAVRA uses the fewest tokens in every group of every schema: check it
-    fewest = all(g[gn][sc]['mavra']['tokens'] <= min(g[gn][sc][a]['tokens'] for a in ARMS if a != 'mavra')
+    fewest = all(g[gn][sc]['mavra']['tokens'] <= min(g[gn][sc][a]['tokens'] for a in ARMS if a not in CONTROLS)
                  for gn in GROUPS for sc in [*P['datasets'], 'both'])
     stats['mavra_fewest_tokens_every_group'] = fewest
     (HERE / 'study-stats.json').write_text(json.dumps(stats, indent=2, ensure_ascii=False) + '\n')

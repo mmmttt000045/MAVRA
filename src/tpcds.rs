@@ -25,6 +25,7 @@ pub enum Change {
     LateKey,
     Unit,
     Mirror,
+    Reclass,
 }
 
 /// 补录批次的小票号偏移（TPC-DS SF1 的小票号在 24 万以内）。
@@ -47,6 +48,7 @@ impl Change {
             scenario::Change::LateKey => Change::LateKey,
             scenario::Change::Unit => Change::Unit,
             scenario::Change::Mirror => Change::Mirror,
+            scenario::Change::Reclass => Change::Reclass,
             scenario::Change::Rekey => anyhow::bail!("TPC-DS 上没有日期键重编号场景"),
         })
     }
@@ -65,6 +67,7 @@ impl Change {
             Change::LateKey => scenario::Change::LateKey,
             Change::Unit => scenario::Change::Unit,
             Change::Mirror => scenario::Change::Mirror,
+            Change::Reclass => scenario::Change::Reclass,
         }
     }
 
@@ -166,7 +169,7 @@ impl Change {
                 )
                 .await
             }
-            Change::AddColumn | Change::Status | Change::Duplicate | Change::DimHistory | Change::Unit => Ok(0),
+            Change::AddColumn | Change::Status | Change::Duplicate | Change::DimHistory | Change::Unit | Change::Reclass => Ok(0),
         }
     }
 
@@ -193,6 +196,28 @@ impl Change {
                     ),
                 )
                 .await
+            }
+            Change::Reclass => {
+                let c = cols(db, "item", &["i_is_current"]).await?;
+                let n = write(
+                    db,
+                    "item",
+                    "商品改类：原类别保留为历史版本",
+                    &format!(
+                        "insert into item ({cs}, i_is_current) select {cs}, 'N' from item where i_item_sk % 3 = 0 and i_is_current = 'Y'",
+                        cs = c.join(", ")
+                    ),
+                )
+                .await?;
+                write(
+                    db,
+                    "item",
+                    "商品改类：当前行换成另一类别",
+                    "update item set i_category = case when i_category = 'Books' then 'Music' else 'Books' end \
+                     where i_item_sk % 3 = 0 and i_is_current = 'Y'",
+                )
+                .await?;
+                Ok(n)
             }
             Change::DimHistory => {
                 let c = cols(db, "item", &["i_is_current"]).await?;
@@ -337,6 +362,17 @@ impl Change {
             }
             Change::DimHistory => {
                 write(db, "item", "撤回商品历史版本", "delete from item where i_is_current = 'N'").await?;
+            }
+            Change::Reclass => {
+                write(
+                    db,
+                    "item",
+                    "撤回商品改类：当前行恢复原类别",
+                    "update item c set i_category = h.i_category from item h \
+                     where h.i_is_current = 'N' and c.i_is_current = 'Y' and c.i_item_sk = h.i_item_sk",
+                )
+                .await?;
+                write(db, "item", "撤回商品改类：删除历史版本", "delete from item where i_is_current = 'N'").await?;
             }
             Change::Mirror => {
                 write(db, "store_returns", "删除退货备份副本", "delete from store_returns where sr_source = 'backup'").await?;

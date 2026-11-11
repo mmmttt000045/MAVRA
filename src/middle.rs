@@ -139,6 +139,10 @@ pub struct MiddleConfig {
     pub optimize_min_saving: f64,
     /// 特征定义（RelBench）：find_features、compose_features 与 find_program 工具，学习接口 /v1/learn_features
     pub feature_memory: bool,
+    /// 条件不成立时尝试受限修复；关闭时定义失效即撤下，由使用者自行探查（“共享定义、全量重检、失败即失效”对照组）
+    pub repair: bool,
+    /// 修复准入的 G9：替代修订不得改变事实行未变的时间桶上的历史答案（需要学习时快照）
+    pub history_check: bool,
 }
 
 impl Default for MiddleConfig {
@@ -171,6 +175,8 @@ impl Default for MiddleConfig {
             optimize: false,
             optimize_min_saving: 0.10,
             feature_memory: false,
+            repair: true,
+            history_check: true,
         }
     }
 }
@@ -441,6 +447,12 @@ fn outcome_text(c: &Check, o: &Outcome) -> String {
         Check::DateCoverage { .. } => {
             format!("{} 行中 {} 行有日期（{:.2}%）", o.metrics["n_rows"], o.metrics["n_dated"], metric(o, "join_ratio") * 100.0)
         }
+        Check::NotNull { .. } => {
+            format!("{} 行中 {} 行非空（{:.2}%）", o.metrics["n_rows"], o.metrics["n_nonnull"], metric(o, "join_ratio") * 100.0)
+        }
+        Check::MeasureScale { .. } => {
+            format!("{} 个月的 |值| 中位数在 [{}, {}]", o.metrics["n_months"], o.metrics["lo"], o.metrics["hi"])
+        }
         Check::PathCoverage { .. } | Check::KeyAliasCoverage { .. } => {
             format!(
                 "到达的 {} 个事实行中 {} 行关联得上（{:.2}%）",
@@ -625,6 +637,28 @@ impl Middle {
         json!({"trajectories": scored.iter().map(|(s, t)| json!({
             "similarity": (s * 100.0).round() / 100.0, "question": t.question, "sql": t.sqls, "derivation": t.derivation,
         })).collect::<Vec<_>>()})
+    }
+
+    /// 开场投递的示例检索对照（`traj-push`）：在会话开始时交给智能体、不占查找次数。相似度取两个方向的较大者：题面的二元组
+    /// 出现在已存题目中的比例（`find_trajectory` 的检索），以及已存题目的题干（“口径”之前）的二元组出现在题面中的比例——
+    /// 后者让题面提到同一指标、但另加维度条件的题也能取到学习会话，与 MAVRA 按指标名投递对等。不低于 0.3，
+    /// 只留与最高者相差不超过 0.05 的，至多 3 条。
+    pub fn deliver_trajectories(&self, query: &str) -> Vec<Value> {
+        let score = |t: &TrajMemo| {
+            let stem = t.question.split("口径").next().unwrap_or_default();
+            bigram_containment(query, &t.question).max(bigram_containment(stem, query))
+        };
+        let mut scored: Vec<(f64, TrajMemo)> = self.trajs.lock().iter().map(|t| (score(t), t.clone())).filter(|(s, _)| *s >= 0.3).collect();
+        scored.sort_by(|a, b| b.0.total_cmp(&a.0));
+        let best = scored.first().map_or(0.0, |x| x.0);
+        scored.retain(|x| x.0 >= best - 0.05);
+        scored.truncate(3);
+        scored
+            .iter()
+            .map(|(s, t)| {
+                json!({"similarity": (s * 100.0).round() / 100.0, "question": t.question, "sql": t.sqls, "derivation": t.derivation})
+            })
+            .collect()
     }
 
     /// 当前已提交的事务性版本（`catalog::install_tx_versions` 之后）。
@@ -1607,7 +1641,14 @@ impl Middle {
             "run_sql" => self.run_sql_with(ctx, s("sql")?, &metric_refs(args)?).await?,
             "run_metric" => {
                 let refs = metric_refs(&json!({"metrics":[{"key":s("key")?,"revision":args["revision"]}]}))?;
-                let ask: crate::metric::Ask = serde_json::from_value(args["ask"].clone())?;
+                // 维度问法按整年提问时常给 year 而不给 period：按全年期间处理
+                let mut ask_v = args["ask"].clone();
+                if matches!(ask_v["kind"].as_str(), Some("slice" | "slice_diff" | "rank_by")) && ask_v.get("period").is_none() {
+                    if let Some(y) = ask_v.get("year").and_then(Value::as_i64) {
+                        ask_v["period"] = json!({"year": y, "m1": 1, "m2": 12});
+                    }
+                }
+                let ask: crate::metric::Ask = serde_json::from_value(ask_v)?;
                 Box::pin(self.run_metric(ctx, &refs[0].0, refs[0].1, &ask)).await?
             }
             "find_trajectory" if self.cfg.traj_memory => self.find_trajectory(ctx, s("query")?),
@@ -1751,12 +1792,16 @@ pub fn tool_specs_with(middle_tools: bool, metric_tools: bool) -> Vec<ToolSpec> 
             "m2":{"type":"integer","minimum":1,"maximum":12}},"required":["year","m1","m2"]});
         v.push(ToolSpec {
             name:"run_metric",
-            description:"执行 find_metric 返回的可用口径。服务端按结构化定义生成 SQL，保留业务粒度、度量与时间归属，并核对修订和当前数据条件。返回 ref，可直接用于 final_answer。ask: single 使用 period；diff 使用 a 和 b（前者减后者）；rank_month、peak_rise、above_mean 使用 year。",
+            description:"执行 find_metric 返回的可用口径。服务端按结构化定义生成 SQL，保留业务粒度、度量、口径过滤与时间归属，并核对修订和当前数据条件。返回 ref，可直接用于 final_answer。ask: single 使用 period；diff 使用 a 和 b（前者减后者）；rank_month、peak_rise、above_mean 使用 year；\
+                         按维度属性提问时：slice 使用 period、attr（维度属性，写成 表.列）与 value，只算该属性等于 value 的部分；slice_diff 另加 other，返回 value 的结果减 other 的结果；rank_by 使用 period 与 attr，返回取值最高的属性值（不计属性为空的行，并列取最小者）。\
+                         属性所在的表不在口径中时，服务端从事实表沿已验证的多对一关联接入（不放大事实行），找不到这样的关联时拒绝并说明原因。",
             schema:json!({"type":"object","properties":{
                 "key":{"type":"string"},"revision":{"type":"integer","minimum":0},
                 "ask":{"type":"object","properties":{
-                    "kind":{"type":"string","enum":["single","diff","rank_month","peak_rise","above_mean"]},
-                    "period":period.clone(),"a":period.clone(),"b":period,"year":{"type":"integer","minimum":1,"maximum":9999}},
+                    "kind":{"type":"string","enum":["single","diff","rank_month","peak_rise","above_mean","slice","slice_diff","rank_by"]},
+                    "period":period.clone(),"a":period.clone(),"b":period,"year":{"type":"integer","minimum":1,"maximum":9999},
+                    "attr":{"type":"string","description":"维度属性，写成 表.列，如 item.i_category"},
+                    "value":{"type":"string"},"other":{"type":"string"}},
                     "required":["kind"]}},"required":["key","revision","ask"]}),
         });
     }

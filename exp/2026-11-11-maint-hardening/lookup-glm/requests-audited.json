@@ -1,0 +1,2284 @@
+{
+ "note": "GLM paraphrases of the 96 test requests; stated choices copied from the originals. Audited 2026-11-11: 8 rewrites that add or drop a metric choice removed (audit.json).",
+ "requests": [
+  {
+   "id": "n01-a",
+   "kind": "name",
+   "text": "我们正在复盘2005年5月各渠道的表现，需要知道当月线下实体店铺的销售总额是多少，麻烦帮我查一下。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n01"
+  },
+  {
+   "id": "n01-b",
+   "kind": "name",
+   "text": "帮我看看2023年11月店里一共卖了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n01"
+  },
+  {
+   "id": "n02-a",
+   "kind": "name",
+   "text": "我们季度复盘要看2002年各月份店铺的退货情况，帮我找一下这一年里退货占比最高的月份是哪个？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "n02"
+  },
+  {
+   "id": "n02-b",
+   "kind": "name",
+   "text": "In 2002, which month saw the highest return rate at our stores?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "n02"
+  },
+  {
+   "id": "n03-a",
+   "kind": "name",
+   "text": "我在做2001年3月份各渠道销售复盘，需要拉一下这个月线下实体店的退回货款总额数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "n03"
+  },
+  {
+   "id": "n03-b",
+   "kind": "name",
+   "text": "What was the total refund amount at store locations in August 2000?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "n03"
+  },
+  {
+   "id": "n04-a",
+   "kind": "name",
+   "text": "我在帮公司做一份历史经营回顾，需要看一下邮购这条线在2002年9月实现的收入规模，麻烦帮我查一下。",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n04"
+  },
+  {
+   "id": "n04-b",
+   "kind": "name",
+   "text": "What was the sales figure for the catalogue channel back in September of 2002?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n04"
+  },
+  {
+   "id": "n05-a",
+   "kind": "name",
+   "text": "最近要给老板汇报线上渠道的经营情况，麻烦帮我查一下2001年5月我们电商平台的销售总额。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n05"
+  },
+  {
+   "id": "n05-b",
+   "kind": "name",
+   "text": "What was the online store's revenue for May 2001?",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n05"
+  },
+  {
+   "id": "n06-a",
+   "kind": "name",
+   "text": "我们正在复盘早年数码电器类商品在线下实体渠道的月度销售表现，想看一下2002年9月这个类目在门店渠道卖了多少钱。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "n06"
+  },
+  {
+   "id": "n06-b",
+   "kind": "name",
+   "text": "What was the in-store revenue for electronics in Sep 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "n06"
+  },
+  {
+   "id": "n07-a",
+   "kind": "name",
+   "text": "我们正在做一份年度经营复盘报告，需要看一下2001年各个零售网点平均每位顾客的消费金额水平，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "客单价"
+    ]
+   },
+   "orig": "n07"
+  },
+  {
+   "id": "n07-b",
+   "kind": "name",
+   "text": "帮我看看01年店里每个客人平均花多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "客单价"
+    ]
+   },
+   "orig": "n07"
+  },
+  {
+   "id": "n08-a",
+   "kind": "name",
+   "text": "我们财务这边在做历史复盘，需要看一下2002年4月到6月期间线下实体店实现的净收益情况，麻烦帮我查一下这个数值。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "n08"
+  },
+  {
+   "id": "n08-b",
+   "kind": "name",
+   "text": "What was the net profit earned by our stores in Q2 of 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "n08"
+  },
+  {
+   "id": "n09-a",
+   "kind": "name",
+   "text": "我们老板在做年度经营复盘，需要看一下2001年12个月合计的实体店铺margin总共做了多少，麻烦帮我查一下。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "n09"
+  },
+  {
+   "id": "n09-b",
+   "kind": "name",
+   "text": "线下店那一年总共赚了多少毛利啊？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "n09"
+  },
+  {
+   "id": "n10-a",
+   "kind": "name",
+   "text": "我在做一份二十年前年底的经营复盘，想看一下2000年12月各家门店一共卖出了多少件货。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "n10"
+  },
+  {
+   "id": "n10-b",
+   "kind": "name",
+   "text": "门店在2000年12月卖出去多少件商品？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "n10"
+  },
+  {
+   "id": "n11-a",
+   "kind": "name",
+   "text": "我们正在做一份历史经营复盘报告，需要看一下2002年1月各线下店铺一共成交了多少笔订单，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "订单数"
+    ]
+   },
+   "orig": "n11"
+  },
+  {
+   "id": "n11-b",
+   "kind": "name",
+   "text": "How many orders did the stores get in January 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "订单数"
+    ]
+   },
+   "orig": "n11"
+  },
+  {
+   "id": "n12-a",
+   "kind": "name",
+   "text": "我们正在复盘2001年线下渠道的促销投入情况，想了解一下当年各家店铺发放的券类优惠总额大概是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "优惠券金额"
+    ]
+   },
+   "orig": "n12"
+  },
+  {
+   "id": "n12-b",
+   "kind": "name",
+   "text": "2001年店里用掉的coupon总共折了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "优惠券金额"
+    ]
+   },
+   "orig": "n12"
+  },
+  {
+   "id": "n14-a",
+   "kind": "name",
+   "text": "我在做一份上半年门店经营损耗的分析报告，需要核对各渠道的售后成本，麻烦帮我查一下2001年6月各实体店铺因顾客退回商品而蒙受的实际亏损金额。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货净损失"
+    ]
+   },
+   "orig": "n14"
+  },
+  {
+   "id": "n14-b",
+   "kind": "name",
+   "text": "What was the net loss from in-store returns in June 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货净损失"
+    ]
+   },
+   "orig": "n14"
+  },
+  {
+   "id": "n15-a",
+   "kind": "name",
+   "text": "我们在做年度经营复盘，想了解02年线上线下加总的销售规模大概是什么水平，麻烦帮我查一下当年这一块的总收入。",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n15"
+  },
+  {
+   "id": "n15-b",
+   "kind": "name",
+   "text": "What was the total sales across all channels for 2002?",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "n15"
+  },
+  {
+   "id": "n16-a",
+   "kind": "name",
+   "text": "我们在复盘线上渠道的经营质量，想看2003年电商店铺订单中被顾客退回的占比大概是什么水平，麻烦帮我查一下。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "n16"
+  },
+  {
+   "id": "n16-b",
+   "kind": "name",
+   "text": "2002年你们线上店卖出去的东西里有多大比例被退回来的？",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "n16"
+  },
+  {
+   "id": "n17-a",
+   "kind": "name",
+   "text": "我们今年要做供应链复盘，想了解2003年度仓库里平均压了多少货（平均存货水平），麻烦帮我查一下这个数。",
+   "stated": {
+    "subject": [
+     "库存量"
+    ]
+   },
+   "orig": "n17"
+  },
+  {
+   "id": "n17-b",
+   "kind": "name",
+   "text": "hey, what was the average inventory level for the year 2004?",
+   "stated": {
+    "subject": [
+     "库存量"
+    ]
+   },
+   "orig": "n17"
+  },
+  {
+   "id": "n18-a",
+   "kind": "name",
+   "text": "我们正在复盘线下渠道的历史表现，需要查看一下2001年11月女装类商品在实体店铺的销售收入数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "女装"
+    ]
+   },
+   "orig": "n18"
+  },
+  {
+   "id": "n18-b",
+   "kind": "name",
+   "text": "Hey, what were the sales for women's apparel in physical stores back in November 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "女装"
+    ]
+   },
+   "orig": "n18"
+  },
+  {
+   "id": "n19-a",
+   "kind": "name",
+   "text": "去年国庆大促我们门店端退货压力比较大，今年想提前做备货和人员安排的调整，麻烦帮我查一下2021年10月线下实体店被退回的商品数量是多少件。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货件数"
+    ]
+   },
+   "orig": "n19"
+  },
+  {
+   "id": "n19-b",
+   "kind": "name",
+   "text": "帮我看下05年5月店里退了多少货？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货件数"
+    ]
+   },
+   "orig": "n19"
+  },
+  {
+   "id": "n22-a",
+   "kind": "name",
+   "text": "我在做一份2001年初的渠道复盘报告，需要拉一下数据：1999年11月经由邮购/目录这条线卖出去的商品总量大概是多少？",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "n22"
+  },
+  {
+   "id": "n22-b",
+   "kind": "name",
+   "text": "hey, what was the total number of items sold through the catalog channel in November 1998?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "n22"
+  },
+  {
+   "id": "s01-a",
+   "kind": "synonym",
+   "text": "去年10月线下门店渠道的销售额情况怎么样？我们正在给运营团队准备一份渠道表现回顾材料，需要用到线下渠道的销售数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s01"
+  },
+  {
+   "id": "s01-b",
+   "kind": "synonym",
+   "text": "2020年8月线下渠道卖了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s01"
+  },
+  {
+   "id": "s02-a",
+   "kind": "synonym",
+   "text": "上季度我们实体店的营业额大概是多少？我这边在做季度的经营复盘，需要拉一下这个数。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s02"
+  },
+  {
+   "id": "s02-b",
+   "kind": "synonym",
+   "text": "咱们实体渠道最近30天收入有多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s02"
+  },
+  {
+   "id": "s03-a",
+   "kind": "synonym",
+   "text": "我这边在复盘线下渠道的历史经营情况，想了解一下02年9月实体店铺的营收规模大概是多少，麻烦帮我查一下",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s03"
+  },
+  {
+   "id": "s03-b",
+   "kind": "synonym",
+   "text": "how much revenue did our physical stores bring in for September 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s03"
+  },
+  {
+   "id": "s04-a",
+   "kind": "synonym",
+   "text": "我想看一下各年度线下实体渠道的整体经营规模，方便跟管理层汇报年度业绩情况，麻烦帮我把2001年全年门店产生的销售总额汇总出来。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s04"
+  },
+  {
+   "id": "s04-b",
+   "kind": "synonym",
+   "text": "Hey, what's the total revenue from our stores for the year 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s04"
+  },
+  {
+   "id": "s05-a",
+   "kind": "synonym",
+   "text": "我们正在回顾历史门店表现，准备给管理层做一份各年度同期的对比材料，麻烦帮我查一下 2001年3月 门店销售额是多少。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s05"
+  },
+  {
+   "id": "s05-b",
+   "kind": "synonym",
+   "text": "Hey, how much did the stores bring in in sales for March 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s05"
+  },
+  {
+   "id": "s06-a",
+   "kind": "synonym",
+   "text": "我们正在做线下渠道的历史业绩复盘，麻烦帮我看一下2002年线下门店这一块的进账规模大概是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s06"
+  },
+  {
+   "id": "s06-b",
+   "kind": "synonym",
+   "text": "What was the total income from offline stores in 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s06"
+  },
+  {
+   "id": "s07-a",
+   "kind": "synonym",
+   "text": "我在给管理层准备一份历年各渠道业绩回顾的材料，需要知道2002年邮购业务这条线总共做了多少钱的营业额，麻烦帮我查一下。",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s07"
+  },
+  {
+   "id": "s07-b",
+   "kind": "synonym",
+   "text": "What was the total revenue from our catalog channel back in 2002?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s07"
+  },
+  {
+   "id": "s08-a",
+   "kind": "synonym",
+   "text": "我们在盘点电商渠道的整体经营情况，想了解一下2023年度通过电子商城实现的营业额大概是什么水平。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s08"
+  },
+  {
+   "id": "s08-b",
+   "kind": "synonym",
+   "text": "How much revenue did the online store generate in 2023?",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s08"
+  },
+  {
+   "id": "s09-a",
+   "kind": "synonym",
+   "text": "做年度经营复盘时需要看整体盘子：2005年整个企业把三条销售通路合并后的营业收入合计值是多少？",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s09"
+  },
+  {
+   "id": "s09-b",
+   "kind": "synonym",
+   "text": "What was the combined revenue across all three of our sales channels in 2003?",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s09"
+  },
+  {
+   "id": "s10-a",
+   "kind": "synonym",
+   "text": "我们正在做一份历史经营回顾报告，需要拉一下2002年全年全公司层面的销售总收入数据，麻烦帮我查一下。",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s10"
+  },
+  {
+   "id": "s10-b",
+   "kind": "synonym",
+   "text": "02年那一年咱们总共卖了多少钱？",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s10"
+  },
+  {
+   "id": "s11-a",
+   "kind": "synonym",
+   "text": "我们季度复盘要看各门店的销售表现，帮我查一下2001年门店卖出去的商品数量是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "s11"
+  },
+  {
+   "id": "s11-b",
+   "kind": "synonym",
+   "text": "How many items did the stores sell in 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "s11"
+  },
+  {
+   "id": "s12-a",
+   "kind": "synonym",
+   "text": "我们团队在复盘线下渠道的历史表现，想拉一下02年3月份实体零售门店的订单总量数据，麻烦帮我查一下。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "订单数"
+    ]
+   },
+   "orig": "s12"
+  },
+  {
+   "id": "s12-b",
+   "kind": "synonym",
+   "text": "门店那年三月份卖出去多少笔啊？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "订单数"
+    ]
+   },
+   "orig": "s12"
+  },
+  {
+   "id": "s13-a",
+   "kind": "synonym",
+   "text": "我们最近在做门店运营复盘，想看下2024年各门店的客单价表现如何，能帮我查一下各店的平均客单价吗？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "客单价"
+    ]
+   },
+   "orig": "s13"
+  },
+  {
+   "id": "s13-b",
+   "kind": "synonym",
+   "text": "how much does the average customer spend per transaction at each store?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "客单价"
+    ]
+   },
+   "orig": "s13"
+  },
+  {
+   "id": "s14-b",
+   "kind": "synonym",
+   "text": "What percentage of sales were returned in offline stores in 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "s14"
+  },
+  {
+   "id": "s15-a",
+   "kind": "synonym",
+   "text": "我在做连锁门店的售后运营复盘，想看一下2003年5月各门店退货涉及的资金规模，麻烦帮我查一下。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "s15"
+  },
+  {
+   "id": "s15-b",
+   "kind": "synonym",
+   "text": "2003年5月我们店退了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "s15"
+  },
+  {
+   "id": "s16-a",
+   "kind": "synonym",
+   "text": "我们最近在做线下门店的库存复盘，想看一下去年有多少件货是被顾客退回来的？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货件数"
+    ]
+   },
+   "orig": "s16"
+  },
+  {
+   "id": "s16-b",
+   "kind": "synonym",
+   "text": "门店退货的件数有多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货件数"
+    ]
+   },
+   "orig": "s16"
+  },
+  {
+   "id": "s17-a",
+   "kind": "synonym",
+   "text": "我们正在复盘线下渠道的经营质量，想了解2001年各个实体销售终端因顾客退回商品而实际亏掉的钱是多少，麻烦帮我查一下这个数。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货净损失"
+    ]
+   },
+   "orig": "s17"
+  },
+  {
+   "id": "s17-b",
+   "kind": "synonym",
+   "text": "What did we actually lose on returned goods across our brick-and-mortar outlets in 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货净损失"
+    ]
+   },
+   "orig": "s17"
+  },
+  {
+   "id": "s18-a",
+   "kind": "synonym",
+   "text": "我们正在复盘各销售渠道的历史表现，想了解2002年通过商品目录这条线发生的顾客退回款项合计是多少，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "s18"
+  },
+  {
+   "id": "s18-b",
+   "kind": "synonym",
+   "text": "In 2002, how much money did we refund through the mail-order catalog channel?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "s18"
+  },
+  {
+   "id": "s19-b",
+   "kind": "synonym",
+   "text": "那年网上买东西退回来的多不多，2003年的线上退货占比是多少？",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "s19"
+  },
+  {
+   "id": "s20-a",
+   "kind": "synonym",
+   "text": "为了评估线下渠道的品类表现，帮我查一下01年9月实体门店的电子数码类目卖出了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "s20"
+  },
+  {
+   "id": "s20-b",
+   "kind": "synonym",
+   "text": "2001年9月实体店那边的电子产品收入啥数字？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "s20"
+  },
+  {
+   "id": "s21-a",
+   "kind": "synonym",
+   "text": "我在做线下渠道的销售复盘，想查一下2002年实体店铺卖女式服装那一块的进账总共是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "女装"
+    ]
+   },
+   "orig": "s21"
+  },
+  {
+   "id": "s21-b",
+   "kind": "synonym",
+   "text": "帮我看看02年female apparel这块在实体店渠道的sales是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "女装"
+    ]
+   },
+   "orig": "s21"
+  },
+  {
+   "id": "s22-a",
+   "kind": "synonym",
+   "text": "我们正在复盘2002年各渠道的促销投入情况，其中涉及折扣券这部分，想查一下当年门店通过发券承担的让利金额是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "优惠券金额"
+    ]
+   },
+   "orig": "s22"
+  },
+  {
+   "id": "s22-b",
+   "kind": "synonym",
+   "text": "2002年店里发的优惠券，商家自己贴进去的钱有多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "优惠券金额"
+    ]
+   },
+   "orig": "s22"
+  },
+  {
+   "id": "s23-a",
+   "kind": "synonym",
+   "text": "我们正在做门店盘点，需要看一下所有在店商品按吊牌价折算的整体价值是多少",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "标价总额"
+    ]
+   },
+   "orig": "s23"
+  },
+  {
+   "id": "s23-b",
+   "kind": "synonym",
+   "text": "how much are all the items in our stores worth if we count them at full price?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "标价总额"
+    ]
+   },
+   "orig": "s23"
+  },
+  {
+   "id": "s24-a",
+   "kind": "synonym",
+   "text": "我在做库存效率分析，需要了解2001年公司的平均存货水平大概是多少？",
+   "stated": {
+    "subject": [
+     "库存量"
+    ]
+   },
+   "orig": "s24"
+  },
+  {
+   "id": "s24-b",
+   "kind": "synonym",
+   "text": "how much stock did we typically hold on hand during 2003, on average?",
+   "stated": {
+    "subject": [
+     "库存量"
+    ]
+   },
+   "orig": "s24"
+  },
+  {
+   "id": "s25-a",
+   "kind": "synonym",
+   "text": "我们想复盘一下线上店铺在2001全年的整体盈利表现，方便向管理层汇报经营成果，麻烦帮我们查一下这一年线上店铺最终落袋的利润规模是多少。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "s25"
+  },
+  {
+   "id": "s25-b",
+   "kind": "synonym",
+   "text": "Hey, do you know how much money our online store actually made back in 2001?",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "s25"
+  },
+  {
+   "id": "s26-a",
+   "kind": "synonym",
+   "text": "我们团队正在复盘历史渠道表现，想了解一下2002年通过目录这一渠道一共出了多少货（销售数量）？",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "s26"
+  },
+  {
+   "id": "s26-b",
+   "kind": "synonym",
+   "text": "Hey, how many units did the catalog channel move back in 2002?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "s26"
+  },
+  {
+   "id": "s27-a",
+   "kind": "synonym",
+   "text": "我在准备线下门店的月度经营复盘，请帮我查一下2003年8月门店渠道的销售收入。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s27"
+  },
+  {
+   "id": "s27-b",
+   "kind": "synonym",
+   "text": "随口问下，2001年5月咱们店里总共卖了多少钱来着？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ]
+   },
+   "orig": "s27"
+  },
+  {
+   "id": "f01-a",
+   "kind": "facet",
+   "text": "我们正在做一份月度经营回顾，需要核对一下2005年7月各线下实体店铺顾客实际支付的钱加总起来是多少，麻烦帮我查一下。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f01"
+  },
+  {
+   "id": "f01-b",
+   "kind": "facet",
+   "text": "08年11月店里实际收的钱一共多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f01"
+  },
+  {
+   "id": "f02-a",
+   "kind": "facet",
+   "text": "我们正在复盘各门店的经营质量，需要看剔除优惠抵扣影响后的店铺销售收入，帮忙查一下2002年这一项的数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f02"
+  },
+  {
+   "id": "f02-b",
+   "kind": "facet",
+   "text": "Hey, do you know what the stores' net sales were in 2002, after coupon deductions?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f02"
+  },
+  {
+   "id": "f03-a",
+   "kind": "facet",
+   "text": "我们团队在做历史经营复盘，需要拉一下2001年门店层面不含优惠核销的营业收入数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "f03"
+  },
+  {
+   "id": "f03-b",
+   "kind": "facet",
+   "text": "Stores' revenue before coupon deductions in 2001 — what was it?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "f03"
+  },
+  {
+   "id": "f04-a",
+   "kind": "facet",
+   "text": "我们在复盘线下实体店铺的规模表现，需要看未剔除优惠券影响（即核销前的口径）的销售额，帮我把2002年10月这个数据拉出来。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "f04"
+  },
+  {
+   "id": "f04-b",
+   "kind": "facet",
+   "text": "Hey, what was the gross revenue for brick-and-mortar shops before coupon deductions in August 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "f04"
+  },
+  {
+   "id": "f05-a",
+   "kind": "facet",
+   "text": "我们最近在复盘线下渠道的库存周转情况，需要看一下2003年以销售量为分母计算的店铺退货占比是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "f05"
+  },
+  {
+   "id": "f05-b",
+   "kind": "facet",
+   "text": "05年那会儿门店那边按卖出去的件数来算，退回来的比例大概多少呀？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "f05"
+  },
+  {
+   "id": "f06-a",
+   "kind": "facet",
+   "text": "我们最近在复盘门店层面的销售质量，想了解2002年6月各门店的退货行为，按销售额口径衡量的退货占比当时是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "f06"
+  },
+  {
+   "id": "f06-b",
+   "kind": "facet",
+   "text": "What was the store return rate in June 2002, measured by sales amount?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "f06"
+  },
+  {
+   "id": "f07-a",
+   "kind": "facet",
+   "text": "我们目前在做2001年度的门店经营复盘，需要看一下各门店顾客退回的商品数量相对于售出数量的占比情况，麻烦帮我查一下这个比率。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "f07"
+  },
+  {
+   "id": "f07-b",
+   "kind": "facet",
+   "text": "2001年店里卖出去的东西里，被退回来多少件啊？退的件数占卖出的比例是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "f07"
+  },
+  {
+   "id": "f08-a",
+   "kind": "facet",
+   "text": "我们要评估各渠道销售回款质量，需要看一下实体零售点顾客退款金额在实际支付金额里所占的比重，2002 年的数据是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f08"
+  },
+  {
+   "id": "f08-b",
+   "kind": "facet",
+   "text": "02 年店里退掉的钱占顾客实际付了的钱多大比重啊？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f08"
+  },
+  {
+   "id": "f09-a",
+   "kind": "facet",
+   "text": "我们正在复盘线下渠道的售后情况，需要看一下以退货发生时间为准、各门店退回商品的金额在2003年6月合计是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "f09"
+  },
+  {
+   "id": "f09-b",
+   "kind": "facet",
+   "text": "store refund amounts booked by return date for May 2005 — what's the total?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "f09"
+  },
+  {
+   "id": "f10-a",
+   "kind": "facet",
+   "text": "我们正在复盘2001年第二季度初的销售质量，想了解4月份卖出的货品事后被退回部分涉及多少退款金额，麻烦帮我查一下。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ],
+    "date": [
+     "按销售日期"
+    ]
+   },
+   "orig": "f10"
+  },
+  {
+   "id": "f10-b",
+   "kind": "facet",
+   "text": "2001年4月那批卖出去的东西，最后退回来的是多少钱啊？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ],
+    "date": [
+     "按销售日期"
+    ]
+   },
+   "orig": "f10"
+  },
+  {
+   "id": "f11-a",
+   "kind": "facet",
+   "text": "我们正在复盘线下渠道的经营质量，需要看实体店铺被退回商品所产生的退款金额，以实际销售发生的那天作为归属时间，请问2002年这一块是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ],
+    "date": [
+     "按销售日期"
+    ]
+   },
+   "orig": "f11"
+  },
+  {
+   "id": "f11-b",
+   "kind": "facet",
+   "text": "2002年店铺那边客户退单的款项，按卖出那天算的话，总共是多少钱呀？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ],
+    "date": [
+     "按销售日期"
+    ]
+   },
+   "orig": "f11"
+  },
+  {
+   "id": "f13-a",
+   "kind": "facet",
+   "text": "我们正在复盘促销活动对收入的实际影响，需要看一下2001年11月各门店在优惠核销之后实际到账的销售额，帮我查一下总额。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f13"
+  },
+  {
+   "id": "f13-b",
+   "kind": "facet",
+   "text": "01年12月店里扣掉优惠券之后真正收进来的钱有多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f13"
+  },
+  {
+   "id": "f14-a",
+   "kind": "facet",
+   "text": "我们在复盘2001年门店经营情况，需要看剔除进货成本和券补贴之后的实际赚了多少，麻烦帮我查一下这一年的数值。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "f14"
+  },
+  {
+   "id": "f14-b",
+   "kind": "facet",
+   "text": "What did the stores actually earn in 2001 after taking out the cost of goods and coupon discounts?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "f14"
+  },
+  {
+   "id": "f16-a",
+   "kind": "facet",
+   "text": "我们团队正在复盘2001年春季门店的实际收款表现，麻烦帮我查一下当年3月份各店铺扣除后的实付总额是多少。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f16"
+  },
+  {
+   "id": "f16-b",
+   "kind": "facet",
+   "text": "What was the net amount actually paid at stores for March 2001?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "f16"
+  },
+  {
+   "id": "f17-a",
+   "kind": "facet",
+   "text": "我们正在复盘千禧年前后各门店的运营质量，想以销售发生时间为准，看一下2001年门店层面的退换货比例是多少。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "date": [
+     "按销售日期"
+    ]
+   },
+   "orig": "f17"
+  },
+  {
+   "id": "f17-b",
+   "kind": "facet",
+   "text": "What was the rate of returns at store level for 2001, based on the sale date?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "date": [
+     "按销售日期"
+    ]
+   },
+   "orig": "f17"
+  },
+  {
+   "id": "f18-a",
+   "kind": "facet",
+   "text": "我们在复盘线上渠道的售后表现，想了解2005年电商店铺按销售额口径统计的退货占比大概是多少？",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "f18"
+  },
+  {
+   "id": "f18-b",
+   "kind": "facet",
+   "text": "网上商城那年按钱算的退货比例有多高，帮我查下2002年的",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "f18"
+  },
+  {
+   "id": "w01-a",
+   "kind": "ambiguous_word",
+   "text": "我们门店这边2003年的盈利情况怎么样，想看看赚了多少钱，用来做经营复盘。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ]
+   },
+   "orig": "w01"
+  },
+  {
+   "id": "w01-b",
+   "kind": "ambiguous_word",
+   "text": "hey, what was the store profit for 1999?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ]
+   },
+   "orig": "w01"
+  },
+  {
+   "id": "w03-a",
+   "kind": "ambiguous_word",
+   "text": "我们正在复盘历年门店的经营表现，需要查看一下2001年各门店的利润情况。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ]
+   },
+   "orig": "w03"
+  },
+  {
+   "id": "w03-b",
+   "kind": "ambiguous_word",
+   "text": "门店在2001年总共赚了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ]
+   },
+   "orig": "w03"
+  },
+  {
+   "id": "w04-b",
+   "kind": "ambiguous_word",
+   "text": "店里的优惠减免一年下来总共多少钱？看2015年的。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "优惠券金额",
+     "折扣额"
+    ]
+   },
+   "orig": "w04"
+  },
+  {
+   "id": "m01-a",
+   "kind": "nearmiss",
+   "text": "我在做3月份门店经营复盘，需要看一下2001年3月各实体渠道被退回商品涉及的销售金额总共有多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "m01"
+  },
+  {
+   "id": "m01-b",
+   "kind": "nearmiss",
+   "text": "咱店2001年那个3月，顾客退掉的货一共值多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "m01"
+  },
+  {
+   "id": "m02-b",
+   "kind": "nearmiss",
+   "text": "how much money did the physical outlets lose due to markdowns last quarter?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "折扣额"
+    ]
+   },
+   "orig": "m02"
+  },
+  {
+   "id": "m03-a",
+   "kind": "nearmiss",
+   "text": "我们正在复盘线下渠道的历史经营情况，需要拉一下2001年全年实体店一共卖出了多少件商品。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "m03"
+  },
+  {
+   "id": "m03-b",
+   "kind": "nearmiss",
+   "text": "In 2001, how many items did the brick-and-mortar stores move in total?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "m03"
+  },
+  {
+   "id": "m04-a",
+   "kind": "nearmiss",
+   "text": "我们部门在做近几年的品类结构复盘，想先看一下2002年全年，电子这个品类在所有门店的销售收入合计大概是多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "m04"
+  },
+  {
+   "id": "m04-b",
+   "kind": "nearmiss",
+   "text": "Hey, how much did stores make from electronics in 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "m04"
+  },
+  {
+   "id": "m05-a",
+   "kind": "nearmiss",
+   "text": "我们最近在做历史运营复盘，想看看2002年各实体店被退回来的商品总量有多少，麻烦帮我查一下这个数。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货件数"
+    ]
+   },
+   "orig": "m05"
+  },
+  {
+   "id": "m05-b",
+   "kind": "nearmiss",
+   "text": "how many items were returned to physical stores in 2003?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货件数"
+    ]
+   },
+   "orig": "m05"
+  },
+  {
+   "id": "m06-a",
+   "kind": "nearmiss",
+   "text": "我需要做一份关于早期经营质量的分析报告，想了解一下2001年我们各家店铺因顾客退回商品而发生的退款总额，相对于当年总的销售收入大概处于什么水平？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "m06"
+  },
+  {
+   "id": "m06-b",
+   "kind": "nearmiss",
+   "text": "帮我看下01年店里退掉的钱占了销售的多大比重？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "m06"
+  },
+  {
+   "id": "m07-a",
+   "kind": "nearmiss",
+   "text": "我们正在复盘2001年各门店的经营表现，想了解当年门店层面的毛利情况，即门店销售金额扣除进货成本后的数值，优惠券部分不做扣除，请帮我查一下这个指标。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "m07"
+  },
+  {
+   "id": "m07-b",
+   "kind": "nearmiss",
+   "text": "What was the gross margin at store level for the year 2001, meaning store sales revenue minus the cost of goods purchased, without adjusting for coupons?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "m07"
+  },
+  {
+   "id": "a01-a",
+   "kind": "absent",
+   "text": "我们要评估各渠道的投入产出情况，老板想了解2001年单店每平方米面积能创造多少销售额，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "坪效"
+    ]
+   },
+   "orig": "a01"
+  },
+  {
+   "id": "a01-b",
+   "kind": "absent",
+   "text": "2001年平均每平米卖场能做多少营业额？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "坪效"
+    ]
+   },
+   "orig": "a01"
+  },
+  {
+   "id": "a02-a",
+   "kind": "absent",
+   "text": "我们正在复盘2002年度线上渠道的整体经营情况，想了解当年每位顾客平均每笔订单的消费金额大概处于什么水平，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "客单价"
+    ]
+   },
+   "orig": "a02"
+  },
+  {
+   "id": "a02-b",
+   "kind": "absent",
+   "text": "what was the average spend per order on our online store back in 2002?",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "客单价"
+    ]
+   },
+   "orig": "a02"
+  },
+  {
+   "id": "a03-a",
+   "kind": "absent",
+   "text": "我们想评估世纪初那几年各销售通路的运营质量，其中通过产品目录这个渠道完成的销售，在零一年产生的退货占比大概是多少？",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "a03"
+  },
+  {
+   "id": "a03-b",
+   "kind": "absent",
+   "text": "2001年catalog这条渠道的退回比例怎么样？",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "a03"
+  },
+  {
+   "id": "a04-a",
+   "kind": "absent",
+   "text": "我们最近在做年度经营回顾，需要看一下线上店铺在2002年一共卖出去多少货。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "a04"
+  },
+  {
+   "id": "a04-b",
+   "kind": "absent",
+   "text": "帮我查一下02年网店一共出货多少？",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销量"
+    ]
+   },
+   "orig": "a04"
+  },
+  {
+   "id": "a05-a",
+   "kind": "absent",
+   "text": "我正在给线下团队做年度复盘，需要拉一下家用商品类实体店铺2005年的销售总额数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "家居"
+    ]
+   },
+   "orig": "a05"
+  },
+  {
+   "id": "a05-b",
+   "kind": "absent",
+   "text": "hey，帮我看下05年家居类店铺卖了多少钱？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "家居"
+    ]
+   },
+   "orig": "a05"
+  },
+  {
+   "id": "a06-a",
+   "kind": "absent",
+   "text": "我们在做年度经营复盘，想了解2002年老客户回头消费的比例大概是什么水平，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "复购率"
+    ]
+   },
+   "orig": "a06"
+  },
+  {
+   "id": "a06-b",
+   "kind": "absent",
+   "text": "What percentage of our customers in 2002 came back and bought again?",
+   "stated": {
+    "subject": [
+     "复购率"
+    ]
+   },
+   "orig": "a06"
+  },
+  {
+   "id": "a07-a",
+   "kind": "absent",
+   "text": "我们正在做一份年度经营复盘，需要看一下2001年全渠道口径下的净利情况大概是多少，麻烦帮我查一下这个数。",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "a07"
+  },
+  {
+   "id": "a07-b",
+   "kind": "absent",
+   "text": "What was the overall net profit across all channels for 2001?",
+   "stated": {
+    "channel": "全渠道",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "a07"
+  },
+  {
+   "id": "a08-a",
+   "kind": "absent",
+   "text": "我们正在复盘2002年第一季度的门店经营情况，需要看一下当年3月份各门店的含税销售额是多少。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "含税"
+    ]
+   },
+   "orig": "a08"
+  },
+  {
+   "id": "a08-b",
+   "kind": "absent",
+   "text": "Hey, what was the store-level taxable revenue for March 2002?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "含税"
+    ]
+   },
+   "orig": "a08"
+  },
+  {
+   "id": "a09-a",
+   "kind": "absent",
+   "text": "我们这边在复盘线上渠道的售后情况，麻烦帮我查一下2001年度电商店铺被退回商品的金额总共有多少。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "a09"
+  },
+  {
+   "id": "a09-b",
+   "kind": "absent",
+   "text": "What was the total refund amount for the online store in 2001?",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "退货金额"
+    ]
+   },
+   "orig": "a09"
+  },
+  {
+   "id": "a10-a",
+   "kind": "absent",
+   "text": "我想看一下门店端的退货情况，准备做渠道复盘报告，需要2003年以退货发生时间为准统计的退货比例。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "a10"
+  },
+  {
+   "id": "a10-b",
+   "kind": "absent",
+   "text": "store那个退货占比，按退货时间算的话，2001年大概多少？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "退货率"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "a10"
+  },
+  {
+   "id": "a11-a",
+   "kind": "absent",
+   "text": "我们年底要做一份线下渠道经营回顾报告，想看一下2005年各实体店进店人数的总体情况，麻烦帮我查一下当年到店顾客人次的数据。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "客流量"
+    ]
+   },
+   "orig": "a11"
+  },
+  {
+   "id": "a11-b",
+   "kind": "absent",
+   "text": "Hey, how many visitors did the brick-and-mortar stores get in 2003?",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "客流量"
+    ]
+   },
+   "orig": "a11"
+  },
+  {
+   "id": "a12-a",
+   "kind": "absent",
+   "text": "我们团队在复盘线上渠道的历史表现，想看一下电子类目那个网上店铺2002年的销售额情况。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "a12"
+  },
+  {
+   "id": "a12-b",
+   "kind": "absent",
+   "text": "02年电子产品的网店卖了多少钱？",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "电子"
+    ]
+   },
+   "orig": "a12"
+  },
+  {
+   "id": "a13-a",
+   "kind": "absent",
+   "text": "我们在做供应链的历史复盘，想了解早年仓储出库环节的整体规模，麻烦帮我查一下2003年这一项的数据。",
+   "stated": {
+    "subject": [
+     "发货量"
+    ]
+   },
+   "orig": "a13"
+  },
+  {
+   "id": "a13-b",
+   "kind": "absent",
+   "text": "哎，顺便问下，03年咱们库房那边总共出了多少货来着？",
+   "stated": {
+    "subject": [
+     "发货量"
+    ]
+   },
+   "orig": "a13"
+  },
+  {
+   "id": "a14-a",
+   "kind": "absent",
+   "text": "我们在做历史经营复盘，想看当年门店的存货变现速度，麻烦查一下2001年门店的库存周转一次平均要多少天。",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "库存周转天数"
+    ]
+   },
+   "orig": "a14"
+  },
+  {
+   "id": "a14-b",
+   "kind": "absent",
+   "text": "店里那批货2001年大概多少天能转一圈啊？",
+   "stated": {
+    "channel": "门店",
+    "subject": [
+     "库存周转天数"
+    ]
+   },
+   "orig": "a14"
+  },
+  {
+   "id": "a15-a",
+   "kind": "absent",
+   "text": "我正在分析世纪初邮购业务的售后表现，想看一下目录渠道的商品退回比例在2001年的情况，麻烦帮我查一下。",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "a15"
+  },
+  {
+   "id": "a15-b",
+   "kind": "absent",
+   "text": "How often did customers send back items from the catalog channel back in 2001?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "退货率"
+    ]
+   },
+   "orig": "a15"
+  },
+  {
+   "id": "a16-a",
+   "kind": "absent",
+   "text": "我们最近在梳理各业务线的盈利情况，想看看2002年通过产品目录这种邮购方式做下来，公司最终到底赚了多少钱？",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "a16"
+  },
+  {
+   "id": "a16-b",
+   "kind": "absent",
+   "text": "What was the bottom line profit for the catalog channel in 2002?",
+   "stated": {
+    "channel": "目录",
+    "subject": [
+     "利润"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "a16"
+  },
+  {
+   "id": "a17-a",
+   "kind": "absent",
+   "text": "我们团队在复盘线上渠道促销投入情况，想了解2001年电商店铺发放的折扣券总额是多少。",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "优惠券金额"
+    ]
+   },
+   "orig": "a17"
+  },
+  {
+   "id": "a17-b",
+   "kind": "absent",
+   "text": "网店01年发了多少coupon？",
+   "stated": {
+    "channel": "网店",
+    "subject": [
+     "优惠券金额"
+    ]
+   },
+   "orig": "a17"
+  }
+ ]
+}

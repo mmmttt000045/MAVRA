@@ -13,6 +13,83 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
+async fn feature_scan_fusion(url: &str) -> Result<Value> {
+    let db = Db::connect(url, 2, false)?;
+    db.query(
+        QKind::Meta,
+        "create table events (id int, entity_id int, occurred timestamp, amount numeric, kind text); \
+         create table seeds (id int, seed_time timestamp); \
+         insert into events values (1,1,'2020-01-01',10,'a'),(2,1,'2020-01-20',null,'b'), \
+         (3,1,'2020-01-25',20,'a'),(4,2,'2019-01-01',7,'a'),(5,1,'2021-01-01',999,'a'); \
+         insert into seeds values (1,'2020-02-01'),(2,'2020-02-01'),(3,'2020-02-01'),(1,'2020-01-15')",
+    )
+    .await?;
+    let base: Metric = serde_json::from_value(json!({"name":"count", "definition":"event count", "fact":"events",
+        "measure":"count(*)", "grain":["id"], "time":{"role":"event time","fact_col":"occurred","strategy":"column","grain":"day"},
+        "entity":{"table":"entities","key":"id","via":"entity_id"}, "empty":"zero"}))?;
+    let mut defs = vec![base.clone()];
+    for (name, measure) in [
+        ("sum", "sum(amount)"),
+        ("avg", "avg(amount)"),
+        ("distinct", "count(distinct kind)"),
+        ("recency", "extract(epoch from (seed_time - max(occurred))) / 86400"),
+        ("ratio", "sum(amount) / nullif(count(*),0)"),
+    ] {
+        let mut m = base.clone();
+        m.name = name.into();
+        m.measure = measure.into();
+        m.empty = EmptyRule::Null;
+        defs.push(m);
+    }
+    let mut recent = base.clone();
+    recent.name = "recent".into();
+    recent.entity.as_mut().unwrap().window_days = Some(31);
+    defs.push(recent);
+    let mut filtered = base;
+    filtered.name = "only_a".into();
+    filtered.filters.insert("events".into(), "kind = 'a'".into());
+    defs.push(filtered);
+    let refs: Vec<&Metric> = defs.iter().collect();
+    let (fused, columns) = metric::compose_features(&refs, "id")?;
+    let mut projection = vec!["s.id".to_string(), "s.seed_time".to_string()];
+    let mut joins = vec![];
+    for (i, m) in defs.iter().enumerate() {
+        projection.push(format!("f{i}.v as {}", columns[i]));
+        joins.push(metric::feature_lateral(m, &format!("f{i}"), "id")?);
+    }
+    let independent = format!("select {} from seeds s {} order by s.id,s.seed_time", projection.join(","), joins.join(" "));
+    let compiled = format!("{} order by s.id,s.seed_time", fused.replace("{seeds}", "seeds"));
+    let expected = db.query(QKind::Meta, &independent).await?.to_json(20);
+    let actual = db.query(QKind::Meta, &compiled).await?.to_json(20);
+    ensure!(actual == expected, "fused SQL must preserve nulls, ratios, windows, and duplicate-entity seed times: {actual} vs {expected}");
+    ensure!(actual["rows"][1][2] == "3", "the February seed must count three past events: {actual}");
+    ensure!(actual["rows"][3][3].is_null(), "an empty nullable sum must remain NULL: {actual}");
+    db.query(QKind::Meta, "insert into events values (6,1,'2022-01-01',1000000,'b')").await?;
+    let after = db.query(QKind::Meta, &compiled).await?.to_json(20);
+    ensure!(after == actual, "future rows must not affect any fused feature");
+    Ok(json!({"status":"passed","features":columns.len(),"independent_scans":defs.len(),
+              "fused_scans":fused.matches("left join lateral").count(),"rows":actual["row_count"]}))
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
+async fn postgres_feature_scan_fusion() -> Result<()> {
+    let _ = dotenvy::dotenv();
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_featurefusion_{}_{stamp}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let result = tokio::time::timeout(Duration::from_secs(90), feature_scan_fusion(test_url.as_str())).await;
+    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
+    cleanup.context("feature fusion test database cleanup failed")?;
+    let report = result.context("feature fusion test timed out")??;
+    println!("{}", serde_json::to_string(&report)?);
+    Ok(())
+}
+
 async fn tool(http: &reqwest::Client, base: &str, name: &str, args: Value) -> Result<Value> {
     let response = http
         .post(format!("{base}/v1/tools/{name}"))
@@ -119,7 +196,7 @@ async fn scoped_admission(url: &str) -> Result<Value> {
     .await?;
     let exec_ctx = Ctx::new("A", "compiled-metric", "execute");
     let ask = Ask::Single { period: Period::month(1997, 9) };
-    let seeded = executor.seed_metric(&exec_ctx, promo, ask, 2, &compiled).await?;
+    let seeded = executor.seed_metric(&exec_ctx, promo, ask.clone(), 2, &compiled).await?;
     ensure!(seeded["promoted"] == true, "shared-column metric must pass publication: {seeded}");
     let request = json!({"key":seeded["key"],"revision":seeded["revision"],"ask":ask});
     let initial = executor.call_tool(&exec_ctx, "run_metric", &request).await?;
@@ -179,7 +256,7 @@ async fn date_key_repair(url: &str) -> Result<Value> {
         "time":{"role":"sale","fact_col":"f_date_sk","dim":"ds","dim_col":"d_date_sk","grain":"day"}}))?;
     let learn = Ask::Single { period: Period::month(2002, 8) };
     let judge = metric::compile(&m, &learn)?;
-    let seeded = mid.seed_metric(&ctx, m, learn, 2, &judge).await?;
+    let seeded = mid.seed_metric(&ctx, m, learn.clone(), 2, &judge).await?;
     ensure!(seeded["promoted"] == true, "metric must pass publication: {seeded}");
     let sep = Ask::Single { period: Period::month(2002, 9) };
     let request = json!({"key":seeded["key"],"revision":seeded["revision"],"ask":sep});
@@ -382,7 +459,7 @@ async fn orientation_counterexample(url: &str) -> Result<Value> {
     ensure!(metric::compile(&m, &ask).is_err(), "反向引用必须被规范编译拒绝");
     // The seeding harness compiles before its gates; production extraction checks the same
     // orientation in G3 before canonical compilation. Both paths must refuse publication.
-    let rejection = mid.seed_metric(&ctx, m, ask, 2, "select sum(f_amount) from facts").await.unwrap_err();
+    let rejection = mid.seed_metric(&ctx, m, ask.clone(), 2, "select sum(f_amount) from facts").await.unwrap_err();
     ensure!(rejection.to_string().contains("反向"), "反向引用必须被拒绝：{rejection}");
     let admission = json!({"rejected": true, "stage": "seed compilation", "reason": rejection.to_string()});
     admin.query(QKind::Meta, "insert into details values (2, 10)").await?;
@@ -409,7 +486,7 @@ async fn orientation_counterexample(url: &str) -> Result<Value> {
             "measure": "sum(f_amount)", "grain": ["f_id"], "filters": {"facts": filter},
             "time": {"role": "event date", "fact_col": "f_date", "dim": "date_dim", "dim_col": "d_date_sk", "grain": "day"}
         }))?;
-        let v = mid.seed_metric(&ctx, candidate, ask, 2, &format!("select sum(f_amount) from facts where {filter}")).await?;
+        let v = mid.seed_metric(&ctx, candidate, ask.clone(), 2, &format!("select sum(f_amount) from facts where {filter}")).await?;
         ensure!(v["promoted"] == should_promote, "不同字面量不能复用另一总体的唯一性结论：{v}");
         if !should_promote {
             ensure!(v["failed_gate"] == "G4", "重复键必须由 G4 拒绝：{v}");
@@ -810,6 +887,8 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
         basis: Basis::None,
         entity: None,
         dedup: false,
+        null_base: Default::default(),
+        scale_base: Default::default(),
     };
     let sales = ["ss_ticket_number", "ss_item_sk"];
     let mut m1 = base("门店营业额", "store_sales", "sum(ss_net_paid)", &sales);
@@ -827,12 +906,14 @@ fn seeded_metrics() -> Vec<(&'static str, Metric)> {
 }
 
 /// 条件级与定义级维护下，每个场景对 M1 / M2 / M3 / M5 的预期：valid0 = 刷新后原修订可用，valid1 = 修复后新修订可用，
-/// unavailable = 撤销且不在修复范围或修复失败。金额单位变化不被任何条件覆盖（漏检边界）。
+/// unavailable = 撤销且不在修复范围或修复失败。金额单位变化由度量尺度条件发现。
 fn expected(c: Change) -> [&'static str; 4] {
     const V0: &str = "valid0";
     const V1: &str = "valid1";
     match c {
-        Change::Append | Change::Backfill | Change::Correct | Change::AddColumn | Change::Unit => [V0, V0, V0, V0],
+        Change::Append | Change::Backfill | Change::Correct | Change::AddColumn => [V0, V0, V0, V0],
+        // 金额改以分记录：读门店销售金额的三个定义月中位数跳变 100 倍，度量尺度条件不成立，暂停提供（需业务确认）
+        Change::Unit => ["unavailable", V0, "unavailable", "unavailable"],
         Change::Status => [V0, V1, V1, V0],
         Change::Revision => [V1, V0, V1, V1],
         // 重复装载的行与原行完全相同：去重修复，三个读门店销售的定义发布新修订
@@ -843,6 +924,8 @@ fn expected(c: Change) -> [&'static str; 4] {
         Change::Mirror => [V0, V1, V1, V0],
         // 未优化的定义不依赖日期键连续：各条件都成立
         Change::Rekey => [V0, V0, V0, V0],
+        // 改类：M5 的商品关联不再唯一，候选修复取当前行，但会改变事实未变日期上的历史答案（G9），不自动发布
+        Change::Reclass => [V0, V0, V0, "unavailable"],
     }
 }
 
@@ -1716,7 +1799,7 @@ async fn sv_seed(mid: &Middle, base: &Metric) -> Result<Vec<String>> {
                 .trim_end_matches(';'),
             i + 1
         );
-        let r = mid.seed_metric(&ctx, m, ask, 2, &gold).await?;
+        let r = mid.seed_metric(&ctx, m, ask.clone(), 2, &gold).await?;
         ensure!(r["promoted"] == true, "定义未通过发布：{r}");
         keys.push(r["key"].as_str().unwrap_or_default().to_string());
     }
@@ -1863,6 +1946,168 @@ async fn shared_validation(url: &str, out: &str) -> Result<Value> {
     Ok(json!({"cells": cells, "design": "16 definitions on 4 fact/date pairs (sharing factor 4), 200k rows per fact, \
                append of new business keys to every fact table, date tables unchanged; 1-32 agents each use all 16 \
                definitions once after the update; three randomized blocks"}))
+}
+
+/// 持续读写（2026-11-11，审稿第 6 点）：16 个共享定义，8 个智能体 × 8 轮共 64 次会话依次各用全部定义；会话之间按写入频率
+/// λ（每次会话之后的追加写入次数：0、1/8、1/2、2）向 4 个事实表轮流追加一小批新业务键（约 0.1% 的行）。比较 MAVRA
+/// （条件级、跨定义共享结论）与 full-recheck（定义级全部重跑）的检查次数、复用与使用阶段的数据库时间。另测版本触发器
+/// 给追加写入带来的额外耗时（同一批插入，装与不装语句级触发器交替执行）。
+async fn sustained_writes(url: &str, out: &str) -> Result<Value> {
+    let admin = Db::connect(url, 2, false)?;
+    admin.query(QKind::Meta, &metricbench::fixture(200_000)).await?;
+    etl::setup(&admin).await?;
+    scenario::setup(&admin).await?;
+    let sv_cols: Vec<String> = {
+        let r = admin
+            .query(
+                QKind::Meta,
+                "select column_name from information_schema.columns where table_name = 'store_sales' order by ordinal_position",
+            )
+            .await?;
+        (0..r.rows.len()).filter_map(|i| r.cell(i, 0).map(str::to_string)).collect()
+    };
+    let insert = |table: &str, batch: i64| {
+        format!(
+            "insert into {table} ({cols}) select {sel} from store_sales where ss_ticket_number % 1000 = {k}",
+            cols = sv_cols.join(", "),
+            sel = sv_cols
+                .iter()
+                .map(|c| if c == "ss_ticket_number" { format!("{c} + {}", SV_OFFSET + batch * 1_000_000) } else { c.clone() })
+                .collect::<Vec<_>>()
+                .join(", "),
+            k = batch % 1000
+        )
+    };
+    let base = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("缺少 M1")?.1;
+    // SW_OVERHEAD_ONLY=1：只测触发器开销（各写入频率的格子已有结果时补测）
+    let rates: Vec<(u32, u32)> = if std::env::var_os("SW_OVERHEAD_ONLY").is_some() { vec![] } else { vec![(0, 1), (1, 8), (1, 2), (2, 1)] }; // λ = 分子 / 分母
+    let (agents, rounds) = (8usize, 8usize);
+    let mut cells = vec![];
+    for (num, den) in rates {
+        for policy in ["full-recheck", "mavra"] {
+            for p in 0..SV_PAIRS {
+                admin
+                    .query(
+                        QKind::Meta,
+                        &format!(
+                            "drop table if exists sv_fact{p}; drop table if exists sv_date{p}; \
+                                                  create table sv_fact{p} as table store_sales; create table sv_date{p} as table date_dim; \
+                                                  analyze sv_fact{p}; analyze sv_date{p}; select pg_stat_force_next_flush()"
+                        ),
+                    )
+                    .await?;
+            }
+            tokio::time::sleep(Duration::from_millis(1200)).await;
+            let db = Arc::new(Db::connect(url, 8, true)?);
+            let cfg = MiddleConfig {
+                name: policy.into(),
+                metric_maint: if policy == "full-recheck" { Maint::Definition } else { Maint::Condition },
+                cond_reuse: policy != "full-recheck",
+                result_cache: false,
+                version_ttl_ms: 0,
+                ..Default::default()
+            };
+            let mid = Middle::new(db.clone(), cfg).await?;
+            let keys = sv_seed(&mid, &base).await?;
+            mid.take_metric_events();
+            let before = db.meter.snap();
+            let (mut writes, mut write_ms, mut unavailable, mut uses) = (0i64, 0f64, 0usize, 0usize);
+            let start = Instant::now();
+            for session in 0..agents * rounds {
+                unavailable += sv_uses(&mid, &keys, session % agents, 100 + session as u64).await?;
+                uses += keys.len();
+                // 本次会话之后的写入次数：λ = num/den，按会话序号均匀摊开
+                let due = ((session as u32 + 1) * num / den) as i64 - (session as u32 * num / den) as i64;
+                for _ in 0..due {
+                    let t = format!("sv_fact{}", writes as usize % SV_PAIRS);
+                    let w0 = Instant::now();
+                    admin.query(QKind::Meta, &format!("{}; select pg_stat_force_next_flush()", insert(&t, writes + 1))).await?;
+                    write_ms += w0.elapsed().as_secs_f64() * 1000.0;
+                    metricbench::log_batch(&admin, &t, "sustained append").await?;
+                    writes += 1;
+                }
+                if due > 0 {
+                    tokio::time::sleep(Duration::from_millis(1200)).await;
+                    mid.invalidate_versions();
+                }
+            }
+            let wall = start.elapsed().as_secs_f64();
+            let meter = crate::db::diff(&before, &db.meter.snap());
+            let mut actions: BTreeMap<String, u64> = BTreeMap::new();
+            for c in mid
+                .take_metric_events()
+                .iter()
+                .filter(|e| e["event"] == "maintenance")
+                .flat_map(|e| e["conditions"].as_array().cloned().unwrap_or_default())
+            {
+                *actions.entry(c["action"].as_str().unwrap_or("unknown").into()).or_default() += 1;
+            }
+            let row = json!({"policy": policy, "rate": format!("{num}/{den}"), "rate_value": num as f64 / den as f64,
+                             "sessions": agents * rounds, "uses": uses, "writes": writes, "write_ms": write_ms,
+                             "wall_seconds": wall, "db": meter, "unavailable": unavailable, "condition_actions": actions});
+            eprintln!(
+                "sustained {policy} λ={num}/{den}: writes {writes}, {:.0} ms DB, actions {:?}",
+                meter.db_ms, row["condition_actions"]
+            );
+            std::fs::write(format!("{out}/cell-{policy}-{num}-{den}.json"), serde_json::to_string_pretty(&row)?)?;
+            cells.push(row);
+        }
+    }
+    // 版本触发器的写入开销：同一批 200 行插入，装与不装触发器各 60 次交替执行
+    admin.query(QKind::Meta, "drop table if exists sv_wt; create table sv_wt as table store_sales with no data").await?;
+    let (mut with, mut without) = (vec![], vec![]);
+    for i in 0..120i64 {
+        let trig = i % 2 == 0;
+        if trig {
+            catalog::install_tx_versions(&admin, &["sv_wt"]).await?;
+        } else {
+            admin.query(QKind::Meta, "drop trigger if exists mavra_bump on sv_wt").await?;
+        }
+        let t0 = Instant::now();
+        admin.query(QKind::Meta, &insert("sv_wt", 300 + i)).await?;
+        let ms = t0.elapsed().as_secs_f64() * 1000.0;
+        if trig {
+            with.push(ms)
+        } else {
+            without.push(ms)
+        }
+    }
+    let med = |v: &mut Vec<f64>| {
+        v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        v[v.len() / 2]
+    };
+    let overhead = json!({"inserts_each": with.len(), "rows_per_insert": 200,
+                          "median_ms_with_trigger": med(&mut with), "median_ms_without": med(&mut without)});
+    eprintln!("trigger overhead: {overhead}");
+    Ok(json!({"cells": cells, "trigger_overhead": overhead,
+              "design": "16 shared definitions on 4 fact/date pairs, 200k rows per fact; 64 sessions (8 agents x 8 rounds) each use all 16 definitions; after each session lambda appends (0, 1/8, 1/2, 2) of ~200 new-key rows to the fact tables in turn"}))
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
+async fn postgres_sustained_writes() -> Result<()> {
+    let _ = dotenvy::dotenv();
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_sustained_{}_{stamp}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    let out = format!("results/sustained-writes-{stamp}");
+    std::fs::create_dir_all(&out)?;
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let result = tokio::time::timeout(Duration::from_secs(4 * 3600), sustained_writes(test_url.as_str(), &out)).await;
+    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
+    let report = match &result {
+        Ok(Ok(r)) => r.clone(),
+        Ok(Err(e)) => json!({"error": format!("{e:#}")}),
+        Err(_) => json!({"error": "timeout"}),
+    };
+    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&json!({"report": report, "cleaned_up": cleanup.is_ok()}))?)?;
+    eprintln!("saved {out}/report.json");
+    cleanup?;
+    result.context("sustained-writes timeout")??;
+    Ok(())
 }
 
 #[tokio::test]

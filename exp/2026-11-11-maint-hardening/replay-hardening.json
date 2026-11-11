@@ -1,0 +1,1117 @@
+{
+  "table": {
+    "revoke": {
+      "Benign": {
+        "R": 534,
+        "n": 534
+      },
+      "Break": {
+        "R": 840,
+        "n": 840
+      },
+      "Outside": {
+        "R": 432,
+        "n": 432
+      }
+    },
+    "schema": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "W": 636,
+        "n": 840,
+        "C": 204
+      },
+      "Outside": {
+        "W": 259,
+        "n": 432,
+        "C": 173
+      }
+    },
+    "tabletest": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "R": 840,
+        "n": 840
+      },
+      "Outside": {
+        "R": 228,
+        "n": 432,
+        "W": 115,
+        "C": 89
+      }
+    },
+    "condition": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "C": 804,
+        "n": 840,
+        "R": 36
+      },
+      "Outside": {
+        "R": 231,
+        "n": 432,
+        "C": 201
+      }
+    }
+  },
+  "old_mavra_on_archived_changes": {
+    "Benign": {
+      "C": 534,
+      "n": 534
+    },
+    "Break": {
+      "C": 804,
+      "n": 840,
+      "R": 33,
+      "W": 3
+    },
+    "Outside": {
+      "W": 115,
+      "n": 267,
+      "C": 89,
+      "R": 63
+    }
+  },
+  "new_mavra_on_archived_changes": {
+    "Benign": {
+      "C": 534,
+      "n": 534
+    },
+    "Break": {
+      "C": 804,
+      "n": 840,
+      "R": 36
+    },
+    "Outside": {
+      "R": 222,
+      "n": 267,
+      "C": 45
+    }
+  },
+  "per_change": {
+    "financial/addcol": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 6
+      },
+      "tabletest": {
+        "C": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/append": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/backfill": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 6
+      },
+      "tabletest": {
+        "C": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/correct": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/dimhist": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 6,
+        "W": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/dupload": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 4,
+        "W": 5
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/latekey": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 4,
+        "W": 5
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    },
+    "financial/mirror": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 4,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "R": 6
+      }
+    },
+    "financial/reclass": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 6,
+        "W": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/revision": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/status": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 4,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/unit": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 3,
+        "C": 6
+      },
+      "tabletest": {
+        "W": 3,
+        "C": 6
+      },
+      "condition": {
+        "R": 3,
+        "C": 6
+      }
+    },
+    "ssb/addcol": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/append": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/backfill": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/correct": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/dimhist": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 9,
+        "W": 6
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "ssb/dupload": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 30,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/latekey": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 31,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/mirror": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 22,
+        "C": 11
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "R": 33
+      }
+    },
+    "ssb/reclass": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 9,
+        "W": 6
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "R": 6,
+        "C": 9
+      }
+    },
+    "ssb/revision": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 21,
+        "C": 12
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/status": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 22,
+        "C": 11
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/unit": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 29,
+        "C": 4
+      },
+      "tabletest": {
+        "W": 29,
+        "C": 4
+      },
+      "condition": {
+        "R": 33
+      }
+    },
+    "tpcds/addcol": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/append": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "C": 135
+      },
+      "tabletest": {
+        "C": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/backfill": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/correct": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "C": 135
+      },
+      "tabletest": {
+        "C": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/dimhist": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 91,
+        "C": 44
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/dupload": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 122,
+        "C": 13
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/latekey": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 122,
+        "C": 13
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/mirror": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    },
+    "tpcds/reclass": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 91,
+        "C": 44
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/revision": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 90,
+        "C": 45
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/status": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/unit": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 72,
+        "C": 63
+      },
+      "tabletest": {
+        "W": 72,
+        "C": 63
+      },
+      "condition": {
+        "R": 108,
+        "C": 27
+      }
+    },
+    "tpch/addcol": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 15
+      },
+      "tabletest": {
+        "C": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/append": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 27
+      },
+      "tabletest": {
+        "C": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/backfill": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 15
+      },
+      "tabletest": {
+        "C": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/correct": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 27
+      },
+      "tabletest": {
+        "C": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/dimhist": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 2,
+        "C": 4
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "tpch/dupload": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 18,
+        "C": 9
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/latekey": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 24,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "R": 27
+      }
+    },
+    "tpch/mirror": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "W": 10,
+        "C": 5
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "R": 15
+      }
+    },
+    "tpch/reclass": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 2,
+        "C": 4
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 3,
+        "R": 3
+      }
+    },
+    "tpch/revision": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 18,
+        "C": 9
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/status": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "W": 10,
+        "C": 5
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/unit": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 16,
+        "W": 11
+      },
+      "tabletest": {
+        "C": 16,
+        "W": 11
+      },
+      "condition": {
+        "C": 12,
+        "R": 15
+      }
+    }
+  },
+  "ablation_no_g9": {
+    "financial/dimhist": {
+      "C": 9
+    },
+    "financial/reclass": {
+      "C": 9
+    },
+    "ssb/dimhist": {
+      "C": 15
+    },
+    "ssb/reclass": {
+      "W": 6,
+      "C": 9
+    },
+    "tpcds/dimhist": {
+      "C": 135
+    },
+    "tpcds/reclass": {
+      "C": 135
+    },
+    "tpch/dimhist": {
+      "C": 6
+    },
+    "tpch/reclass": {
+      "C": 3,
+      "W": 3
+    }
+  },
+  "g9_events": {
+    "financial/dimhist/pass": 3,
+    "financial/dupload/pass": 3,
+    "financial/reclass/pass": 3,
+    "financial/revision/pass": 3,
+    "financial/status/pass": 2,
+    "ssb/dimhist/pass": 5,
+    "ssb/dupload/pass": 11,
+    "ssb/latekey/pass": 11,
+    "ssb/reclass/moved": 2,
+    "ssb/reclass/pass": 3,
+    "ssb/revision/pass": 11,
+    "ssb/status/pass": 11,
+    "tpcds/dimhist/pass": 45,
+    "tpcds/dupload/implied": 45,
+    "tpcds/latekey/pass": 45,
+    "tpcds/reclass/pass": 45,
+    "tpcds/revision/pass": 45,
+    "tpcds/status/pass": 3,
+    "tpch/dimhist/pass": 2,
+    "tpch/dupload/pass": 9,
+    "tpch/reclass/moved": 1,
+    "tpch/reclass/pass": 1,
+    "tpch/revision/pass": 9,
+    "tpch/status/pass": 5
+  },
+  "audit": {
+    "tpcds": {
+      "common": 1116,
+      "mavra_class_changes": {
+        "unit: correct -> unavailable_unneeded": 36,
+        "unit: served_wrong -> unavailable_needed": 72
+      },
+      "examples": [
+        {
+          "change": "unit",
+          "entry": "query3_b0_store_sales",
+          "task": "query3_b0_store_sales-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "304366.81",
+          "old_value": "30436681.00",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "query3_b0_store_sales",
+          "task": "query3_b0_store_sales-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "175610.35",
+          "old_value": "30307924.54",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "query3_b0_store_sales",
+          "task": "query3_b0_store_sales-T2",
+          "old": "correct",
+          "new": "unavailable_unneeded",
+          "gold": "12",
+          "old_value": "12",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "query4_b1_store_sales",
+          "task": "query4_b1_store_sales-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "85201148.93500000000000000000",
+          "old_value": "8520114893.50000000000000000000",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "query4_b1_store_sales",
+          "task": "query4_b1_store_sales-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "47318555.80500000000000000000",
+          "old_value": "8482232300.37000000000000000000",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "query4_b1_store_sales",
+          "task": "query4_b1_store_sales-T2",
+          "old": "correct",
+          "new": "unavailable_unneeded",
+          "gold": "12",
+          "old_value": "12",
+          "new_value": null
+        }
+      ]
+    },
+    "tpch": {
+      "common": 234,
+      "mavra_class_changes": {
+        "latekey: served_wrong -> unavailable_needed": 3,
+        "unit: correct -> unavailable_unneeded": 4,
+        "unit: served_wrong -> unavailable_needed": 11
+      },
+      "examples": [
+        {
+          "change": "latekey",
+          "entry": "q12_b0_lineitem",
+          "task": "q12_b0_lineitem-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "6107",
+          "old_value": "4149",
+          "new_value": null
+        },
+        {
+          "change": "latekey",
+          "entry": "q12_b0_lineitem",
+          "task": "q12_b0_lineitem-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "1949",
+          "old_value": "-9",
+          "new_value": null
+        },
+        {
+          "change": "latekey",
+          "entry": "q12_b0_lineitem",
+          "task": "q12_b0_lineitem-T2",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "10",
+          "old_value": "3",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q03_b0_lineitem",
+          "task": "q03_b0_lineitem-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "550979108.6525",
+          "old_value": "55097910865.2500",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q03_b0_lineitem",
+          "task": "q03_b0_lineitem-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "-13251758.8755",
+          "old_value": "54533679997.7220",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q03_b0_lineitem",
+          "task": "q03_b0_lineitem-T2",
+          "old": "correct",
+          "new": "unavailable_unneeded",
+          "gold": "8",
+          "old_value": "8",
+          "new_value": null
+        }
+      ]
+    },
+    "ssb": {
+      "common": 360,
+      "mavra_class_changes": {
+        "unit: correct -> unavailable_unneeded": 4,
+        "unit: served_wrong -> unavailable_needed": 29
+      },
+      "examples": [
+        {
+          "change": "unit",
+          "entry": "q1_1_b0_lineorder",
+          "task": "q1_1_b0_lineorder-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "36511041374.00",
+          "old_value": "3651104137400.00",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q1_1_b0_lineorder",
+          "task": "q1_1_b0_lineorder-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "-967925610.00",
+          "old_value": "3613625170416.00",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q1_1_b0_lineorder",
+          "task": "q1_1_b0_lineorder-T2",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "5",
+          "old_value": "8",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q1_2_b0_lineorder",
+          "task": "q1_2_b0_lineorder-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "92341723232.00",
+          "old_value": "9234172323200.00",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q1_2_b0_lineorder",
+          "task": "q1_2_b0_lineorder-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "-1860213150.00",
+          "old_value": "9139970386818.00",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "q1_2_b0_lineorder",
+          "task": "q1_2_b0_lineorder-T2",
+          "old": "correct",
+          "new": "unavailable_unneeded",
+          "gold": "10",
+          "old_value": "10",
+          "new_value": null
+        }
+      ]
+    },
+    "financial": {
+      "common": 96,
+      "mavra_class_changes": {
+        "unit: served_wrong -> unavailable_needed": 3
+      },
+      "examples": [
+        {
+          "change": "unit",
+          "entry": "bird145_b1_trans",
+          "task": "bird145_b1_trans-P1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "6021.6037129137369233",
+          "old_value": "602160.371291373692",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "bird145_b1_trans",
+          "task": "bird145_b1_trans-T1",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "-1451.5253396515762652",
+          "old_value": "594687.2422388083788115",
+          "new_value": null
+        },
+        {
+          "change": "unit",
+          "entry": "bird145_b1_trans",
+          "task": "bird145_b1_trans-T2",
+          "old": "served_wrong",
+          "new": "unavailable_needed",
+          "gold": "6",
+          "old_value": "12",
+          "new_value": null
+        }
+      ]
+    }
+  }
+}

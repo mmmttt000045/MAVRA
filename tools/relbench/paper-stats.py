@@ -9,8 +9,8 @@ by (task, cutoff); an arm that has not finished yet is printed as "--", and so a
 zeros would otherwise read as free or infinitely cheap. A session that ends without a valid solution
 (every validation leaked or failed, or no solution) is scored as the entity-table reference, the model a team keeps
 when feature work fails, and counted in Rb<db><arm>Unsolved; the same for every arm. The table also reports valid
-solutions out of all 15 sessions and tasks meeting the prespecified quality tolerance out of all three tasks; bold marks
-each column's best value.
+solutions out of all 15 sessions; bold marks each column's best value. Tasks within the prespecified quality tolerance
+(Rb<db><arm>NotWorse) are written as macros only: the table and the text give the task means themselves (11-09).
 
   python3 tools/relbench/paper-stats.py --out overleaf/gen
 """
@@ -224,7 +224,7 @@ def main():
             best_scores[t] = score_text((max if higher else min)(scores)) if scores else None
         table.append(r"\RbPanelHeader{" + db + "}{" + "}{".join(headings) + "}")
         # bold marks each column's best printed value, ties included: the fewest in every cost column, the best
-        # score, and the most valid solutions and tasks within tolerance
+        # score, and the most valid solutions
         cells = {arm: cost_cells(arm, r) for arm, r in rows.items() if r}
         best_cost = [min((c[i] for c in cells.values() if c[i] is not None), key=float, default=None) for i in range(6)]
         best_solved = max((r["solved"] for r in rows.values() if r), default=None)

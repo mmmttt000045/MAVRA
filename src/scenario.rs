@@ -40,6 +40,10 @@ pub enum Change {
     /// 优化前提：日期维度重装载，2002-02 的日期换成新的代理键（接在最大键之后），三张事实表的日期键同步改指向新键。
     /// 所有日期键仍存在、关联仍唯一、完整性不变，只有日期键按月连续不再成立；不在 ALL 中，需显式指定
     Rekey,
+    /// 口径选择（2026-11-11，修复准入 G9 的留出测试）：商品键能被 3 整除的商品改类，旧类别保留为历史版本行（i_is_current = 'N'），
+    /// 当前行换成另一类别。按销售时类别归属的答案不变（标准答案），按当前类别归属的答案改变；数据区分不了业务要哪一种。
+    /// 不在 ALL 中，需显式指定
+    Reclass,
 }
 
 pub const ALL: [Change; 10] = [
@@ -83,6 +87,9 @@ impl Change {
         if s == "rekey" {
             return Ok(Change::Rekey);
         }
+        if s == "reclass" {
+            return Ok(Change::Reclass);
+        }
         match NAMES.iter().position(|n| *n == s) {
             Some(i) => Ok(ALL[i]),
             None => bail!("未知场景：{s}（可选 {}）", NAMES.join(" / ")),
@@ -93,6 +100,7 @@ impl Change {
         match self {
             Change::Mirror => "mirror",
             Change::Rekey => "rekey",
+            Change::Reclass => "reclass",
             _ => NAMES[ALL.iter().position(|c| *c == self).unwrap_or(0)],
         }
     }
@@ -112,6 +120,7 @@ impl Change {
             Change::Unit => "金额单位变化",
             Change::Mirror => "备份副本",
             Change::Rekey => "日期键重编号",
+            Change::Reclass => "维度改类",
         }
     }
 
@@ -122,7 +131,7 @@ impl Change {
             Change::Status | Change::Revision | Change::Duplicate | Change::Mirror => "粒度",
             Change::DimHistory => "连接放大",
             Change::LateKey => "覆盖",
-            Change::Unit => "未建模",
+            Change::Unit | Change::Reclass => "未建模",
             Change::Rekey => "优化前提",
         }
     }
@@ -137,6 +146,7 @@ impl Change {
             Change::Revision => "2001 年起小票号尾数为 7 的销售：旧金额保留为 ss_is_current = 0 的行，当前行金额改为九折",
             Change::Duplicate => "2002-06-01 至 2002-09-30 的门店销售整批再装载一次（完全相同的行）",
             Change::DimHistory => "商品键能被 3 整除的商品增加一条旧版本行（i_is_current = 'N'，类别为旧类别）",
+            Change::Reclass => "商品键能被 3 整除的商品改类：原类别保留为历史版本行（i_is_current = 'N'），当前行换成另一类别",
             Change::LateKey => "先按“正常追加”补录 2002-09 销售，再把这批行的日期键改为 yyyymmdd",
             Change::Unit => "2002-07-01 起门店销售的价格与金额列乘以 100",
             Change::Mirror => {
@@ -152,7 +162,7 @@ impl Change {
     pub fn tables(self) -> &'static [&'static str] {
         match self {
             Change::Backfill | Change::AddColumn | Change::Status | Change::Mirror => &["store_returns"],
-            Change::DimHistory => &["item"],
+            Change::DimHistory | Change::Reclass => &["item"],
             Change::Rekey => &["date_dim", "store_sales", "store_returns", "catalog_sales"],
             _ => &["store_sales"],
         }
@@ -220,7 +230,13 @@ impl Change {
                 )
                 .await
             }
-            Change::AddColumn | Change::Status | Change::Duplicate | Change::DimHistory | Change::Unit | Change::Rekey => Ok(0),
+            Change::AddColumn
+            | Change::Status
+            | Change::Duplicate
+            | Change::DimHistory
+            | Change::Unit
+            | Change::Rekey
+            | Change::Reclass => Ok(0),
         }
     }
 
@@ -259,6 +275,25 @@ impl Change {
                      from item where i_item_sk % 3 = 0 and i_is_current = 'Y'",
                 )
                 .await
+            }
+            Change::Reclass => {
+                let n = write(
+                    db,
+                    "item",
+                    "商品改类：原类别保留为历史版本",
+                    "insert into item (i_item_sk, i_category, i_current_price, i_is_current) \
+                     select i_item_sk, i_category, i_current_price, 'N' from item where i_item_sk % 3 = 0 and i_is_current = 'Y'",
+                )
+                .await?;
+                write(
+                    db,
+                    "item",
+                    "商品改类：当前行换成另一类别",
+                    "update item set i_category = (array['家居','服装','电子','食品','运动'])[1 + (i_item_sk + 1) % 5] \
+                     where i_item_sk % 3 = 0 and i_is_current = 'Y'",
+                )
+                .await?;
+                Ok(n)
             }
             Change::LateKey => {
                 write(
@@ -389,6 +424,18 @@ impl Change {
             }
             Change::DimHistory => {
                 write(db, "item", "撤回商品历史版本", "delete from item where i_is_current = 'N'").await?;
+                Ok(())
+            }
+            Change::Reclass => {
+                write(
+                    db,
+                    "item",
+                    "撤回商品改类：当前行恢复原类别",
+                    "update item c set i_category = h.i_category from item h \
+                     where h.i_is_current = 'N' and c.i_is_current = 'Y' and c.i_item_sk = h.i_item_sk",
+                )
+                .await?;
+                write(db, "item", "撤回商品改类：删除历史版本", "delete from item where i_is_current = 'N'").await?;
                 Ok(())
             }
             Change::Mirror => {

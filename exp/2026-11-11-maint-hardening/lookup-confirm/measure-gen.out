@@ -1,0 +1,2 @@
+{'seconds': 13.794978618621826, 'prompt': 234, 'completion': 2292}
+{"calls": 6, "prompt_mean": 245.5, "completion_mean": 3423, "seconds_mean": 20.406607508659363, "model": "deepseek-flash", "extra": {"max_tokens": 8192, "reasoning_effort": "low", "thinking": {"type": "enabled"}}}

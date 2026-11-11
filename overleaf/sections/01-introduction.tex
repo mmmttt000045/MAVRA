@@ -46,11 +46,11 @@ Online, \system\ serves unambiguous matches directly, returns competing definiti
 {由于每份已发布定义均显式记录了语义口径选择，针对 C2 的检索不再依赖表层向量相似度，而是围绕这些结构化选择判定新请求与定义是否一致。我们利用目录记录的口径选择离线枚举请求意图、合成多样化表述并确定性自动打标，训练紧凑的交叉编码器匹配器。在线阶段，\system{} 直接返回明确匹配，在请求未指明区分口径时一并返回竞争定义及其结构差异供确认，并将已确认表述沉淀至别名表，无需在线调用 LLM。}
 
 \bi{
-As tables evolve, \system\ addresses C3 by maintaining the structural and probe-derived data conditions attached to each definition.
+As tables evolve, \system\ addresses C3 by maintaining data conditions derived from each definition: structural conditions on grain, joins, and dates, plus value conditions on what the compiled query reads (nulls in filter and measure columns, measure scale).
 We filter affected conditions via transactional table dependency versions, reuse validation results across definitions and agents sharing the same condition and versions, and check append batches incrementally.
-When a condition fails, we search a restricted single-edit space and publish a new revision only if a unique edit restores all conditions and reproduces the source answer, or mark the definition pending confirmation when new domain values require business interpretation; at runtime, validation and query execution bind to the same database snapshot.
+When a condition fails, we search a restricted single-edit space and publish a new revision only if a unique edit restores all conditions, reproduces the source answer on the learning snapshot, and leaves every answer on untouched history unchanged; an edit that would move such answers encodes a business choice and is withheld, as is a definition whose measure changes scale. At runtime, validation and query execution bind to the same database snapshot.
 }
-{随着底层数据更新，\system{} 围绕定义附带的结构与探查数据条件解决 C3。我们依据事务级表依赖版本筛选受影响条件，在共享同一条件与依赖版本的定义和智能体之间复用验证结果，并对追加批次执行增量检查。当某项条件失效时，我们在受限单步编辑空间内搜索修复方案，仅当唯一修改恢复全部条件并复现源答案时发布新版本；若新增值域取值需业务解释则转为待确认状态；执行阶段将验证与查询绑定于同一数据库快照。}
+{随着底层数据更新，\system{} 维护由每个定义推导的数据条件来解决 C3：粒度、连接与日期上的结构条件，以及编译查询所读数据上的取值条件（过滤列与度量列的空值、度量尺度）。我们依据事务级表依赖版本筛选受影响条件，在共享同一条件与依赖版本的定义和智能体之间复用验证结果，并对追加批次执行增量检查。当某项条件失效时，我们在受限单步编辑空间内搜索修复方案，仅当唯一修改恢复全部条件、在学习时快照上复现源答案、且不改变任何未受写入影响的历史答案时发布新版本；会改动这类答案的修改实际是在做业务选择，度量尺度发生跳变的定义同样需要确认，二者都暂停提供。执行阶段将验证与查询绑定于同一数据库快照。}
 
 \bi{In summary, we make the following contributions:}
 {综上所述，本文的主要贡献如下：}
@@ -62,9 +62,9 @@ When a condition fails, we search a restricted single-edit space and publish a n
 \item \bi{We formalize request--definition consistency over structured choices so the catalog self-labels synthetic pairs for an LLM-free cross-encoder matcher covering paraphrases, homonyms, ambiguity, and absent metrics.}
 {我们基于结构化口径形式化一致性，由目录自动标注合成样本训练免在线 LLM 的交叉编码器匹配器，覆盖同义、同名、含糊与缺失请求。}
 
-\item \bi{We derive data conditions with proven sufficiency bounds, share incremental check outcomes across definitions and agents, repair unambiguous breaks, and enforce snapshot-consistent execution.}
-{我们推导具充分性保证的数据条件，按依赖版本跨定义与智能体共享增量检查结果，修复无歧义违例并保证快照一致执行。}
+\item \bi{We derive structural and value conditions with proven sufficiency bounds, share check outcomes across definitions and agents, admit only answer-preserving repairs, and enforce snapshot-consistent execution.}
+{我们推导具充分性保证的结构条件与取值条件，跨定义与智能体共享检查结果，只准入不改变历史答案的修复，并保证快照一致执行。}
 
-\item \bi{We implement \system\ on PostgreSQL and evaluate it against eight baselines across five analytical schemas and RelBench. \system\ cuts token use by \PpMavraLateTokXNone$\times$ and latency by \PpMavraLateSpeedupNone$\times$, reaches 98.6\% direct-lookup precision, and achieves \CsBreakMavra\% accuracy with zero wrong answers under condition-breaking updates.}
-{我们在 PostgreSQL 上实现 \system{}，并在五种分析模式与 RelBench 上对比八种基线。\system{} 将 token 与延迟分别降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，首次直接检索准确率达 98.6\%，并在破坏条件的更新下以零错答取得 \CsBreakMavra\% 准确率。}
+\item \bi{We implement \system\ on PostgreSQL and evaluate it against eight baselines across five analytical schemas and RelBench. \system\ cuts token use by \PpMavraLateTokXNone$\times$ and latency by \PpMavraLateSpeedupNone$\times$, reaches 98.6\% direct-lookup precision, serves no wrong answer across \RpTotal{} replayed update instances, and beats a shared-definition recheck baseline by \CsBreakMavraGainRecheck{} points on condition-breaking updates at less than half its tokens.}
+{我们在 PostgreSQL 上实现 \system{}，并在五种分析模式与 RelBench 上对比八种基线。\system{} 将 token 与延迟分别降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，首次直接检索准确率达 98.6\%，在 \RpTotal{} 个回放的更新实例上没有给出错误答案，并在条件破坏更新上以不到一半的 token 比共享定义全量重检基线高 \CsBreakMavraGainRecheck{} 个百分点。}
 \end{itemize}

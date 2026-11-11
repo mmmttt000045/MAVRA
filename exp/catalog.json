@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-11-01",
+  "reviewed_on": "2026-11-12",
   "experiments": [
     {
       "id": "2026-09-29-maint-share",
@@ -705,6 +705,59 @@
       ],
       "raw_data": "cells-final.tgz：最终二进制 108 格（results/shared-validation-1793508134275611）；cells.tgz：旧二进制 108 格（results/shared-validation-1793471974128556）。",
       "code_record": "src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。"
+    },
+    {
+      "id": "2026-11-09-structural-reuse",
+      "title": "结构变化下的跨智能体复用",
+      "status": "supporting",
+      "scope": "维度过滤、差值与排名的结构化复用协议及冒烟记录；独立于旧版只改变时间的群体实验。",
+      "evidence": [
+        "exp/2026-11-09-structural-reuse/tpcds-defs.json"
+      ],
+      "analysis": [
+        "exp/2026-11-09-structural-reuse/analyse.py"
+      ],
+      "outputs": [],
+      "raw_data": "noctis results/structural-reuse-smoke；后续范围以本目录运行记录为准。",
+      "code_record": "原目录 README 记录 run_metric 维度问法与 v3 题集实现；不以本次整理提交替代运行版本。"
+    },
+    {
+      "id": "2026-11-11-maint-hardening",
+      "title": "值条件、历史保持修复与查找补证",
+      "status": "current",
+      "scope": "当前稿件新增值条件、G9 修复准入、共享重验对照、查找确认与持续写入证据；各子实验的范围见协议。",
+      "evidence": [
+        "exp/2026-11-11-maint-hardening/binding-report.json",
+        "exp/2026-11-11-maint-hardening/replay-hardening.json",
+        "exp/2026-11-11-maint-hardening/served-split.json"
+      ],
+      "analysis": [
+        "exp/2026-11-11-maint-hardening/analyse-replay.py",
+        "exp/2026-11-11-maint-hardening/served-split.py"
+      ],
+      "outputs": [
+        "overleaf/gen/binding.tex",
+        "overleaf/gen/served-split.tex",
+        "overleaf/gen/sustained.tex"
+      ],
+      "raw_data": "原始位置、时间、源码校验与失败记录见本目录 README；归档 JSON 不代表所有原始输出均已下载。",
+      "code_record": "9334549、89322f2、65f13fe、66c2181 等；各子实验版本按原 README 核对。"
+    },
+    {
+      "id": "2026-11-12-relbench-quality",
+      "title": "RelBench 质量与代价联合优化",
+      "status": "supporting",
+      "scope": "开发候选 mavra-budgeted；保留旧结果，完成全部成本和质量检查前不替换论文。",
+      "evidence": [
+        "exp/2026-11-12-relbench-quality/protocol.json"
+      ],
+      "analysis": [
+        "tools/relbench/diagnose-quality.py",
+        "tools/relbench/feature_selection.py"
+      ],
+      "outputs": [],
+      "raw_data": "noctis 独立目录 /root/agentdb-quality-20261112/results；既有 369 个会话的只读诊断记录另存并逐文件哈希。",
+      "code_record": "从主仓库 b60a84b 和论文 ec8d755 开始；运行前冻结源码及校验，命令与接纳规则见本目录 README。"
     }
   ]
 }

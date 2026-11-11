@@ -3,27 +3,31 @@
 %   results-ft/ft/base-dc-xl-s1{3,4,5}/summary.json (single judge, 82/83/85 of 96),
 %   results-ft/serve-ens3/serve-summary.json (three judges end to end: first ask and repeated wording),
 %   results-ft/recall-latency.json (bge-m3 recall, 17 ms).
+% Unified metrics (review point 4, 2026-11-11): first-response set-exact, final set-exact after the consuming agent's
+% confirmation turn (exp/2026-11-11-maint-hardening/lookup-confirm: deepseek-flash reads MAVRA's references and picks),
+% absent requests rejected, LLM tokens (prompt + completion) and seconds per request including confirmation.
 \begin{table}[htbp]
-\caption{\bt{Lookup accuracy and latency on 96 requests over 26 TPC-DS definitions.}{26 条 TPC-DS 定义上 96 个请求的查找准确率与延迟。}}
+\caption{\bt{Lookup on 96 requests over 26 TPC-DS definitions, in one metric for all methods.}{26 条 TPC-DS 定义上 96 个请求的查找结果（所有方法统一口径）。}}
 \label{tab:lookup}
 \footnotesize
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabularx}{\columnwidth}{@{}L r r r r@{}}
+\setlength{\tabcolsep}{3.0pt}
+\begin{tabularx}{\columnwidth}{@{}L r r r r r@{}}
 \toprule
-\textbf{\bt{Method}{方法}} & \textbf{\bt{Exact}{完全一致}} & \textbf{\bt{Direct (prec.)}{直接响应（准确率）}} & \textbf{\bt{Usable}{可用率}} & \textbf{\bt{Time}{耗时}}\\
+\textbf{\bt{Method}{方法}} & \textbf{\bt{Exact}{一致}} & \textbf{\bt{Final}{确认后}} & \textbf{\bt{Absent}{拒识}} & \textbf{\bt{LLM tok.}{LLM token}} & \textbf{\bt{Time}{耗时}}\\
 \midrule
-\bt{Exact name match}{精确名称匹配} & 42\% & -- & -- & --\\
-\bt{Embedding top-1 (oracle threshold)}{向量相似度 top-1（最优阈值）} & 62\% & -- & -- & 17\,ms\\
-\bt{Full-catalog LLM judge}{全目录 LLM 判别} & 99\% & -- & -- & 2.2\,s\\
-\bt{Top-8 recall + LLM judge}{Top-8 召回 + LLM 判别} & 98\% & -- & -- & 2.0\,s\\
-\bt{LLM choice parser + Def.~\ref{def:consistency}}{LLM 口径解析 + 定义~\ref{def:consistency}} & 90\% & -- & -- & 5.2\,s\\
+\bt{Exact name match}{精确名称匹配} & 42\% & 42\% & 14/17 & 0 & --\\
+\bt{Embedding top-1 (oracle thr.)}{向量 top-1（最优阈值）} & 62\% & 62\% & 6/17 & 0 & 17\,ms\\
+\bt{Full-catalog LLM judge}{全目录 LLM 判别} & 99\% & 99\% & 17/17 & 1{,}534 & 2.2\,s\\
+\bt{Top-8 recall + LLM judge}{Top-8 召回 + LLM 判别} & 98\% & 98\% & 16/17 & 760 & 2.0\,s\\
+\bt{LLM choice parser + Def.~\ref{def:consistency}}{LLM 口径解析 + 定义~\ref{def:consistency}} & 90\% & 90\% & 16/17 & 971 & 5.2\,s\\
+\bt{TeCoD template matcher (NLI)}{TeCoD 模板匹配（NLI）} & 26\% & 26\% & 17/17 & 0 & 60\,s$^{*}$\\
 \midrule
-\bt{Single cross-encoder judge}{单交叉编码器判别器} & 85--89\% & -- & -- & 33\,ms\\
-\textbf{\system{}}, \bt{first-time phrasing}{首次表述查询} & -- & 77\% (98.6\%) & 99\% & 0.18\,s\\
-\textbf{\system{}}, \bt{repeated phrasing}{同表述换参重查} & -- & 96\% (100\%) & 100\% & 33\,ms\\
+\bt{Single cross-encoder judge}{单交叉编码器判别器} & 85--89\% & -- & -- & 0 & 33\,ms\\
+\textbf{\system{}}, \bt{first-time phrasing}{首次表述} & 92\% & \textbf{99\%} & 17/17 & 89 & 0.53\,s\\
+\textbf{\system{}}, \bt{repeated phrasing}{同表述再查} & 98\% & -- & 13/13 & 0 & 33\,ms\\
 \bottomrule
 \end{tabularx}
 \par\smallskip
 {\raggedright
-\bt{Exact: predicted set equals $A(\rho)$. Direct: fraction resolved without references, with precision in parentheses. Usable: resolved directly and correctly, or $A(\rho)$ is contained in returned references. Latency is per lookup (shared GPU for judges; API for LLMs).}{完全一致：返回集合等于 $A(\rho)$。直接响应：无需参考直接返回的比例（括号内为准确率）。可用率：直接答对，或 $A(\rho)$ 完整包含于返回参考中。耗时为单次查找延迟（判别器运行于共享 GPU，LLM 经 API 调用）。}\par}
+\bt{Exact: the first response (direct answer, or the references returned) equals $A(\rho)$. Final: after the consuming agent (\llmmodel{}) picks among \system{}'s references on the 23\% of requests that receive them. Absent: out-of-catalog requests finally rejected (per run). Tokens and time are means per request, confirmation included (shared GPU for judges; API for LLMs). $^{*}$Released 4B embedding and NLI models in float32 on a shared CPU; pool of 6 phrasings per definition from the same catalog-generated data.}{一致：首次响应（直接答案，或返回的参考集合）等于 $A(\rho)$。确认后：对收到参考的 23\% 请求，由使用方智能体（\llmmodel{}）在参考中选择之后的结果。拒识：目录外请求最终被拒识的数量（每轮）。token 与耗时为每请求均值，含确认（判别器运行于共享 GPU，LLM 经 API 调用）。$^{*}$TeCoD 发布的 4B 嵌入与 NLI 模型以 float32 运行于共享 CPU；模板池为每个定义 6 条取自同一份目录生成数据的问法。}\par}
 \end{table}

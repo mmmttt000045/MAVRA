@@ -1,0 +1,46 @@
+{
+  "condition_actions": {},
+  "db": {
+    "by_kind": {
+      "check": [
+        0,
+        0.0
+      ],
+      "exec": [
+        0,
+        0.0
+      ],
+      "guard": [
+        0,
+        0.0
+      ],
+      "meta": [
+        1024,
+        2710.305
+      ],
+      "metric": [
+        0,
+        0.0
+      ],
+      "probe": [
+        0,
+        0.0
+      ],
+      "repair": [
+        0,
+        0.0
+      ]
+    },
+    "db_ms": 2710.3049999999985,
+    "queries": 1024
+  },
+  "policy": "full-recheck",
+  "rate": "0/1",
+  "rate_value": 0.0,
+  "sessions": 64,
+  "unavailable": 0,
+  "uses": 1024,
+  "wall_seconds": 2.837859954,
+  "write_ms": 0.0,
+  "writes": 0
+}

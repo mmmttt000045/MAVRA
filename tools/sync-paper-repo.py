@@ -2,7 +2,8 @@
 """Mirror the manuscript (overleaf/ of the main repo) into the paper repo icde-2027-paper.
 
 overleaf/ is the single source. Read the entry main.tex and its \\input / \\includegraphics
-dependencies directly, along with references.bib and build.sh. No ZIP is generated or read.
+dependencies directly, along with references.bib, build.sh, and any class, style, or
+bibliography-style file that main.tex loads from overleaf/ itself. No ZIP is generated or read.
 The paper repo's own README.md, .gitignore, .gitattributes, and remote-only files are retained.
 Text files are written with LF.
 
@@ -64,6 +65,15 @@ def manuscript_files() -> dict[str, bytes]:
             collect(checked(name, ".tex"), (*stack, path))
         for name in re.findall(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}", source):
             files.add(checked(name, ".pdf"))
+        # Pinned local class, style and bibliography-style files (e.g. the PVLDB template's
+        # acmart.cls, pvldb.sty, ACM-Reference-Format.bst); packages from TeX Live are skipped.
+        local = [(n, ".cls") for n in re.findall(r"\\documentclass(?:\[[^]]*\])?\{([^}]+)\}", source)]
+        local += [(n.strip(), ".sty") for group in
+                  re.findall(r"\\usepackage(?:\[[^]]*\])?\{([^}]+)\}", source) for n in group.split(",")]
+        local += [(n, ".bst") for n in re.findall(r"\\bibliographystyle\{([^}]+)\}", source)]
+        for name, extension in local:
+            if (SRC / (name + extension)).is_file():
+                files.add(checked(name, extension))
 
     collect(checked("main.tex", ".tex"))
     return {path.as_posix(): lf(path.as_posix(), (SRC / path).read_bytes())

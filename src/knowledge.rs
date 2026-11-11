@@ -99,6 +99,12 @@ pub struct Metric {
     /// 规范 SQL 以 `select distinct *` 读事实表；粒度条件相应换成去重后的键唯一性
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub dedup: bool,
+    /// 准入时的空值占比基线（`表.列` → 空值占比）：过滤与度量读到的列（条件 `Check::NotNull`）
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub null_base: BTreeMap<String, f64>,
+    /// 准入时的度量尺度范围（`表.列` → 各月 |值| 中位数的最小与最大值，条件 `Check::MeasureScale`）
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub scale_base: BTreeMap<String, (f64, f64)>,
 }
 
 /// 特征定义的实体与回看窗口。编译出的 SQL 按种子表逐行聚合，`时间列 <= seed_time` 与窗口下界写在 SQL 里。

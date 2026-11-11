@@ -14,8 +14,8 @@
   \For{each $c \in \Delta C(x)$}
     \If{$\neg\Call{EvalCond}{c, D, V, \Delta T, \mathcal H}$}
       \Statex \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textit{// Repair or Retire}
-      \IfThen{$c\text{ checks }\operatorname{Dom}$}{\Return $\text{Pending}(x, c, \text{vals})$}
-      \State $\mathcal E_{\mathrm{ok}} \gets \{e \in \mathcal E(x, c) \mid C(x \oplus e)\text{ on }D \wedge \operatorname{Repro}(x \oplus e, E_x)\}$
+      \IfThen{$c\text{ checks scale}$}{\Return $\text{Pending}(x, c, \text{vals})$}
+      \State $\mathcal E_{\mathrm{ok}} \gets \{e \in \mathcal E(x, c) \mid x \oplus e\text{ passes }C, \operatorname{Repro}, \operatorname{Hist}\}$
       \IfThen{$\lvert\mathcal E_{\mathrm{ok}}\rvert = 1$}{\Return published revision $x' \gets x \oplus e^*$}
       \State \Return $\bot$
     \EndIf
