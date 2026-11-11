@@ -4,25 +4,24 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> paper main: clarify RelBench agent-phase timing and scope of single-run quality evidence; numerical results unchanged",
-  "previous_head": "ec8d7559b6406c92800dd50e56d14d864b2bf9c6",
-  "remote_commit": "46a88cad081999399e9cc2ab94133bab4e582ba2",
+  "direction": "overleaf/ -> paper main: make agent-call and timing scope explicit; numerical results unchanged",
+  "previous_head": "46a88cad081999399e9cc2ab94133bab4e582ba2",
+  "remote_commit": "cdf6d0ed1faa04123608115a7baf336db510c2b2",
   "pending_payload": null,
   "changed_paths": [
-    "sections/05-evaluation.tex",
     "tables/relbench.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, TeX Live 2026, latexmk/pdfLaTeX; manuscript dependency closure only",
-    "status": "bash build.sh en succeeded: 14 pages, body ends on page 12, references on 13-14. No undefined or multiply-defined references. Changed pages 9-10 and body/reference endpoints 12/14 visually checked. Three small existing box warnings exactly match the untouched remote baseline; no new warnings.",
-    "content": "Only sections/05-evaluation.tex and tables/relbench.tex changed. Table numbers untouched. Ongoing new candidates are not publication evidence.",
-    "remote_checked": "origin/main matched recorded ec8d755 before sync. Six remote-only files preserved; ls-remote independently confirmed 46a88cad081999399e9cc2ab94133bab4e582ba2 after push."
+    "built_on": "noctis, TeX Live2026, latexmk/pdfLaTeX;69-file main.tex dependency closure",
+    "status": "14 pages, body ends on12 and references start on13. References resolved, unchanged three existing small box warnings. Changed table page10 rendered and visually inspected; no clipping or overlap.",
+    "content": "Only the RelBench table note changed in this delivery: agent calls and time versus memory-inclusive tokens and fees. All numerical rows are unchanged; no failed candidate results published.",
+    "remote_checked": "origin/main matched46a88cad before sync. Six remote-only files preserved. Independent ls-remote confirmed cdf6d0ed1faa04123608115a7baf336db510c2b2 after push."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/46a88cad081999399e9cc2ab94133bab4e582ba2",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/cdf6d0ed1faa04123608115a7baf336db510c2b2",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "4ef9247f8b9b8b00beaff72816adb60e68b04d65"
+  "source_commit": "6f75b0b5d3372ad228ab4e4a70ae27705769955d"
 }
