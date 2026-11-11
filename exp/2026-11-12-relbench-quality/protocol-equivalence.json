@@ -1,0 +1,80 @@
+{
+  "purpose": "metadata-only protocol audit; no feature/label/quality input",
+  "settings_groups": {
+    "05f9413a6ec12332919085c0e9869eeb16b91d3ef9011e778c4a126b506abe02": {
+      "settings": {
+        "SAMPLE_SIZE": 50000,
+        "LGB_PARAMS": {
+          "n_estimators": 300,
+          "learning_rate": 0.05,
+          "num_leaves": 63,
+          "min_child_samples": 20,
+          "colsample_bytree": 0.8,
+          "subsample": 0.8,
+          "subsample_freq": 1,
+          "random_state": 42,
+          "deterministic": true,
+          "force_row_wise": true,
+          "n_jobs": 8,
+          "verbose": -1
+        },
+        "model": "deepseek-flash",
+        "llm": "deepseek",
+        "reasoning_effort": "low",
+        "thinking": "enabled"
+      },
+      "runs": [
+        "/root/agentdb-mid/results/relbench-pilot3/ace-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-pilot3/awm-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-pilot3/gmemory-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-pilot3/mavra-push-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-pilot3/none-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-pilot3/tecod-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/ace-rel-trial-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/awm-rel-trial-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/gmemory-rel-trial-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/mavra-push-rel-trial-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/tecod-rel-trial-r1/run.json",
+        "/root/agentdb-quality-20261112/results/quality-20261112-v1/mavra-budgeted-rel-stack-r1/run.json",
+        "/root/agentdb-quality-20261112/results/quality-20261112-v1/mavra-budgeted-rel-trial-r1/run.json",
+        "/root/agentdb-quality-portfolio-20261112/results/quality-20261112-v2/mavra-portfolio-rel-stack-r1/run.json",
+        "/root/agentdb-quality-portfolio-20261112/results/quality-20261112-v2/mavra-portfolio-rel-trial-r1/run.json",
+        "/root/agentdb-quality-directed-20261112/results/quality-20261112-v3b/mavra-directed-rel-stack-r1/run.json",
+        "/root/agentdb-quality-directed-20261112/results/quality-20261112-v3b/mavra-directed-rel-trial-r1/run.json",
+        "/root/agentdb-quality-cached-safe-20261112/results/quality-20261112-v4b/mavra-cached-rel-stack-r1/run.json",
+        "/root/agentdb-quality-cached-safe-20261112/results/quality-20261112-v4b/mavra-cached-rel-trial-r1/run.json"
+      ]
+    },
+    "ce256290a70aaef3653e3230b44beffa9ccbb9c719b5918707571329e12d94ce": {
+      "settings": {
+        "SAMPLE_SIZE": 50000,
+        "LGB_PARAMS": {
+          "n_estimators": 300,
+          "learning_rate": 0.05,
+          "num_leaves": 63,
+          "min_child_samples": 20,
+          "colsample_bytree": 0.8,
+          "subsample": 0.8,
+          "subsample_freq": 1,
+          "random_state": 42,
+          "deterministic": true,
+          "force_row_wise": true,
+          "n_jobs": 8,
+          "verbose": -1
+        },
+        "model": null,
+        "llm": null,
+        "reasoning_effort": null,
+        "thinking": null
+      },
+      "runs": [
+        "/root/agentdb-mid/results/relbench-pilot3/featpilot-rel-stack-r1/run.json",
+        "/root/agentdb-mid/results/relbench-main/featpilot-rel-trial-r1/run.json"
+      ]
+    }
+  },
+  "order_mismatches": [],
+  "all_available_dispatch_orders_match": true,
+  "non_llm_model_fields": "FeatPilot has no language-model settings; its learner parameters are compared normally."
+}

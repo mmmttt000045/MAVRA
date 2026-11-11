@@ -1,0 +1,604 @@
+{
+  "purpose": "post-hoc diagnosis of the already published TPC-DS population table; no optimizer input",
+  "pairs": 280,
+  "source_sha256": {
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r1-metric-global-snap/metric-1791870928824653/cell-pop-r1-metric-global-snap.json": "14134a8417e5f061fd13f971a469f2e279a31705ccd5a885806e4ef1376e51fb",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r1-traj-global/metric-1791871053379814/cell-pop-r1-traj-global.json": "798db59444f26bd0db34cbf9b544292fbd7a881f0f4aab5eb53fcb1c0837b911",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r2-metric-global-snap/metric-1791883291541985/cell-pop-r2-metric-global-snap.json": "42847750a7122f03acdc0ab6554e34f6005695df6609415506aab430d1ea2c19",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r2-traj-global/metric-1791888072082417/cell-pop-r2-traj-global.json": "66d2b034e6d133a5001bc1b6c139c9eb83c02df61c5ae9fdbe0be623d71b6cb6",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r3-metric-global-snap/metric-1791885304746302/cell-pop-r3-metric-global-snap.json": "fdc8aacd71a395fe4d8f3eafca428f1c5d21ade5ff22131f70b4f445e46f05f9",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r3-traj-global/metric-1791888134250877/cell-pop-r3-traj-global.json": "1747e80b193012bfad5c875515c254759a4a7e3e0677cc8d9f803ebe5879f232",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r4-metric-global-snap/metric-1791886357390842/cell-pop-r4-metric-global-snap.json": "0a27c7623eef5d88e9a1c5fcf564437a6f2b8f60f1a0b9de555abb900838a919",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r4-traj-global/metric-1791888766713395/cell-pop-r4-traj-global.json": "f21d6a003eeeb9ec9d9e2c7daaa80c58b5c5224d956c1cdc16f83051112aabb2",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r5-metric-global-snap/metric-1791887349713437/cell-pop-r5-metric-global-snap.json": "533a5e3e09a84d86b2238449e94264ea4fdcd66a4400b29fde3ed39a101d9cf3",
+    "/root/agentdb-mid/results/pop-tpcds-20261013/r5-traj-global/metric-1791889279171806/cell-pop-r5-traj-global.json": "780dc6d3f841240954368b8c9a8d503003ed17e7d959a78f78e8652048762c1e"
+  },
+  "methods": {
+    "mavra": {
+      "tokens": 10040.039285714285,
+      "input_tokens": 9255.260714285714,
+      "output_tokens": 748.9035714285715,
+      "agent_tokens": 10004.164285714285,
+      "learning_tokens": 35.875,
+      "correct": 275
+    },
+    "examples": {
+      "tokens": 9260.382142857143,
+      "input_tokens": 8526.685714285713,
+      "output_tokens": 733.6964285714286,
+      "agent_tokens": 9260.382142857143,
+      "learning_tokens": 0,
+      "correct": 279
+    }
+  },
+  "by_metric": {
+    "M1": {
+      "pairs": 56,
+      "mean_excess_tokens": -1024.642857142857,
+      "mavra_correct": 52,
+      "examples_correct": 55
+    },
+    "M2": {
+      "pairs": 57,
+      "mean_excess_tokens": 1928.7894736842106,
+      "mavra_correct": 56,
+      "examples_correct": 57
+    },
+    "M3": {
+      "pairs": 51,
+      "mean_excess_tokens": 2372.3137254901962,
+      "mavra_correct": 51,
+      "examples_correct": 51
+    },
+    "M4": {
+      "pairs": 65,
+      "mean_excess_tokens": 556.4615384615385,
+      "mavra_correct": 65,
+      "examples_correct": 65
+    },
+    "M5": {
+      "pairs": 51,
+      "mean_excess_tokens": 168.33333333333334,
+      "mavra_correct": 51,
+      "examples_correct": 51
+    }
+  },
+  "mavra_failures": [
+    {
+      "repeat": 3,
+      "agent": "U12",
+      "order": 2,
+      "metric": "M2",
+      "question": "2002 年 9 月的登记顾客门店销售额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+      "mavra": {
+        "correct": false,
+        "input_tokens": 48119,
+        "output_tokens": 10052,
+        "learning_tokens": 0,
+        "finds": 6,
+        "found": [],
+        "agent_tokens": 58171,
+        "tokens": 58171
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 6968,
+        "output_tokens": 747,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 7715,
+        "tokens": 7715
+      },
+      "excess_tokens": 50456
+    },
+    {
+      "repeat": 4,
+      "agent": "U9",
+      "order": 0,
+      "metric": "M1",
+      "question": "2002 年哪个月的一号经理商品门店销售额比上一个月增加最多？只回答月份数字（2–12）。",
+      "mavra": {
+        "correct": false,
+        "input_tokens": 12300,
+        "output_tokens": 1620,
+        "learning_tokens": 0,
+        "finds": 3,
+        "found": [
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 13920,
+        "tokens": 13920
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 20678,
+        "output_tokens": 1585,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 22263,
+        "tokens": 22263
+      },
+      "excess_tokens": -8343
+    },
+    {
+      "repeat": 4,
+      "agent": "U11",
+      "order": 1,
+      "metric": "M1",
+      "question": "2002 年 9 月的一号经理商品门店销售额是多少？保留两位小数。",
+      "mavra": {
+        "correct": false,
+        "input_tokens": 6930,
+        "output_tokens": 840,
+        "learning_tokens": 0,
+        "finds": 2,
+        "found": [
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 7770,
+        "tokens": 7770
+      },
+      "examples": {
+        "correct": false,
+        "input_tokens": 167306,
+        "output_tokens": 18857,
+        "learning_tokens": 0,
+        "finds": 5,
+        "found": [],
+        "agent_tokens": 186163,
+        "tokens": 186163
+      },
+      "excess_tokens": -178393
+    },
+    {
+      "repeat": 4,
+      "agent": "U11",
+      "order": 2,
+      "metric": "M1",
+      "question": "2002 年哪个月的一号经理商品门店销售额最高？只回答月份数字（1–12）。",
+      "mavra": {
+        "correct": false,
+        "input_tokens": 18985,
+        "output_tokens": 3956,
+        "learning_tokens": 0,
+        "finds": 3,
+        "found": [
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 22941,
+        "tokens": 22941
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 25915,
+        "output_tokens": 2408,
+        "learning_tokens": 0,
+        "finds": 2,
+        "found": [],
+        "agent_tokens": 28323,
+        "tokens": 28323
+      },
+      "excess_tokens": -5382
+    },
+    {
+      "repeat": 4,
+      "agent": "U11",
+      "order": 5,
+      "metric": "M1",
+      "question": "2002 年 9 月的一号经理商品门店销售额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+      "mavra": {
+        "correct": false,
+        "input_tokens": 16079,
+        "output_tokens": 1880,
+        "learning_tokens": 0,
+        "finds": 2,
+        "found": [
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 17959,
+        "tokens": 17959
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 22202,
+        "output_tokens": 2648,
+        "learning_tokens": 0,
+        "finds": 3,
+        "found": [],
+        "agent_tokens": 24850,
+        "tokens": 24850
+      },
+      "excess_tokens": -6891
+    }
+  ],
+  "largest_excess": [
+    {
+      "repeat": 3,
+      "agent": "U12",
+      "order": 2,
+      "metric": "M2",
+      "question": "2002 年 9 月的登记顾客门店销售额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+      "mavra": {
+        "correct": false,
+        "input_tokens": 48119,
+        "output_tokens": 10052,
+        "learning_tokens": 0,
+        "finds": 6,
+        "found": [],
+        "agent_tokens": 58171,
+        "tokens": 58171
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 6968,
+        "output_tokens": 747,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 7715,
+        "tokens": 7715
+      },
+      "excess_tokens": 50456
+    },
+    {
+      "repeat": 5,
+      "agent": "U12",
+      "order": 0,
+      "metric": "M1",
+      "question": "2002 年有几个月的一号经理商品门店销售额高于当年 12 个月一号经理商品门店销售额的平均值？只回答月份个数（0–12）。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 34920,
+        "output_tokens": 2654,
+        "learning_tokens": 0,
+        "finds": 3,
+        "found": [
+          [
+            "metric:一号经理商品门店销售额#2",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 37574,
+        "tokens": 37574
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 9428,
+        "output_tokens": 847,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 10275,
+        "tokens": 10275
+      },
+      "excess_tokens": 27299
+    },
+    {
+      "repeat": 2,
+      "agent": "U10",
+      "order": 4,
+      "metric": "M1",
+      "question": "2002 年 9 月的一号经理商品门店销售额比2001 年 6 月高多少？（用前者减去后者，结果可以为负数）保留两位小数。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 29955,
+        "output_tokens": 2127,
+        "learning_tokens": 0,
+        "finds": 2,
+        "found": [
+          [
+            "metric:一号经理商品门店销售额",
+            0
+          ],
+          [
+            "metric:一号经理商品门店销售额#2",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 32082,
+        "tokens": 32082
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 6756,
+        "output_tokens": 460,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 7216,
+        "tokens": 7216
+      },
+      "excess_tokens": 24866
+    },
+    {
+      "repeat": 1,
+      "agent": "U15",
+      "order": 1,
+      "metric": "M3",
+      "question": "2000 年 11 月的中型门店优惠券金额是多少？口径：中型门店优惠券金额 = 员工数（store.s_number_employees）在 200 到 295 之间的门店上、关联得上家庭人口信息（household_demographics）且 hd_dep_count = 0 或 hd_vehicle_count > -1 的门店销售行的优惠券金额（store_sales.ss_coupon_amt）之和；按销售日期（ss_sold_date_sk）归属期间；每个销售行计一次。保留两位小数。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 23861,
+        "output_tokens": 1642,
+        "learning_tokens": 5531,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 25503,
+        "tokens": 31034
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 7411,
+        "output_tokens": 449,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 7860,
+        "tokens": 7860
+      },
+      "excess_tokens": 23174
+    },
+    {
+      "repeat": 4,
+      "agent": "U13",
+      "order": 3,
+      "metric": "M1",
+      "question": "2000 年 11 月的一号经理商品门店销售额是多少？口径：一号经理商品门店销售额 = 品类经理编号为 1（item.i_manager_id = 1）的商品的门店销售行的扩展售价（store_sales.ss_ext_sales_price）之和；销售行经商品键（ss_item_sk）关联商品表，按销售日期（ss_sold_date_sk）归属期间；每个销售行计一次。保留两位小数。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 15747,
+        "output_tokens": 1782,
+        "learning_tokens": 4514,
+        "finds": 1,
+        "found": [
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 17529,
+        "tokens": 22043
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 6939,
+        "output_tokens": 578,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 7517,
+        "tokens": 7517
+      },
+      "excess_tokens": 14526
+    },
+    {
+      "repeat": 2,
+      "agent": "U15",
+      "order": 0,
+      "metric": "M3",
+      "question": "2002 年有几个月的中型门店优惠券金额高于当年 12 个月中型门店优惠券金额的平均值？只回答月份个数（0–12）。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 20534,
+        "output_tokens": 1862,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [
+          [
+            "metric:中型门店优惠券金额",
+            0
+          ]
+        ],
+        "agent_tokens": 22396,
+        "tokens": 22396
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 10078,
+        "output_tokens": 1044,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 11122,
+        "tokens": 11122
+      },
+      "excess_tokens": 11274
+    },
+    {
+      "repeat": 3,
+      "agent": "U16",
+      "order": 1,
+      "metric": "M1",
+      "question": "2002 年有几个月的一号经理商品门店销售额高于当年 12 个月一号经理商品门店销售额的平均值？只回答月份个数（0–12）。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 15650,
+        "output_tokens": 1614,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [
+          [
+            "metric:一号经理商品门店销售额",
+            0
+          ],
+          [
+            "metric:一号经理商品门店销售额#2",
+            0
+          ]
+        ],
+        "agent_tokens": 17264,
+        "tokens": 17264
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 6208,
+        "output_tokens": 489,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 6697,
+        "tokens": 6697
+      },
+      "excess_tokens": 10567
+    },
+    {
+      "repeat": 4,
+      "agent": "U16",
+      "order": 4,
+      "metric": "M1",
+      "question": "2002 年有几个月的一号经理商品门店销售额高于当年 12 个月一号经理商品门店销售额的平均值？只回答月份个数（0–12）。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 19775,
+        "output_tokens": 1547,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [
+          [
+            "metric:一号经理商品门店销售额",
+            0
+          ],
+          [
+            "metric:登记顾客门店销售额",
+            0
+          ]
+        ],
+        "agent_tokens": 21322,
+        "tokens": 21322
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 10444,
+        "output_tokens": 1084,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 11528,
+        "tokens": 11528
+      },
+      "excess_tokens": 9794
+    },
+    {
+      "repeat": 5,
+      "agent": "U12",
+      "order": 6,
+      "metric": "M3",
+      "question": "2002 年有几个月的中型门店优惠券金额高于当年 12 个月中型门店优惠券金额的平均值？只回答月份个数（0–12）。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 19372,
+        "output_tokens": 1766,
+        "learning_tokens": 0,
+        "finds": 2,
+        "found": [
+          [
+            "metric:中型门店优惠券金额",
+            0
+          ],
+          [
+            "metric:中型门店优惠券金额#2",
+            0
+          ],
+          [
+            "metric:中型门店优惠券金额",
+            0
+          ],
+          [
+            "metric:中型门店优惠券金额#2",
+            0
+          ]
+        ],
+        "agent_tokens": 21138,
+        "tokens": 21138
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 10262,
+        "output_tokens": 1262,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 11524,
+        "tokens": 11524
+      },
+      "excess_tokens": 9614
+    },
+    {
+      "repeat": 2,
+      "agent": "U13",
+      "order": 5,
+      "metric": "M3",
+      "question": "2002 年有几个月的中型门店优惠券金额高于当年 12 个月中型门店优惠券金额的平均值？只回答月份个数（0–12）。",
+      "mavra": {
+        "correct": true,
+        "input_tokens": 19659,
+        "output_tokens": 1193,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [
+          [
+            "metric:中型门店优惠券金额",
+            0
+          ]
+        ],
+        "agent_tokens": 20852,
+        "tokens": 20852
+      },
+      "examples": {
+        "correct": true,
+        "input_tokens": 10570,
+        "output_tokens": 1375,
+        "learning_tokens": 0,
+        "finds": 1,
+        "found": [],
+        "agent_tokens": 11945,
+        "tokens": 11945
+      },
+      "excess_tokens": 8907
+    }
+  ],
+  "excess_tokens_mean": 779.6571428571428,
+  "excess_on_mavra_failures": -148553
+}
