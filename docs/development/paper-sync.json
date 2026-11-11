@@ -4,26 +4,40 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (4a42300: start contribution bullets directly with We)",
-  "previous_head": "1509efe41a3f17758470bfd3be292e62ed00b8aa",
-  "remote_commit": "9805863b680840f10d69267495bb82c724a7ca25",
+  "direction": "main repo overleaf/ -> paper repo (b14f56a: prioritize the main comparison and organize figures/algorithms)",
+  "previous_head": "9805863b680840f10d69267495bb82c724a7ca25",
+  "remote_commit": "4793f9e42af41f6c2ff54d0d32bef50aff4903e8",
   "pending_payload": null,
   "changed_paths": [
-    "sections/01-introduction.tex"
+    "algorithms/maintenance.tex",
+    "figures/extraction.tex",
+    "figures/fixed-sharing.tex",
+    "figures/lookup.tex",
+    "figures/maintenance-algorithm.tex",
+    "figures/maintenance.tex",
+    "figures/population.tex",
+    "figures/publication-lookup.tex",
+    "preamble.tex",
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/implementation.tex",
+    "tables/lookup.tex",
+    "tables/population-cost.tex",
+    "tables/replay-policies.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "this workstation",
-    "status": "Tectonic build succeeded: conclusion and references start on p.12; 14 pages total; 0 undefined references/citations, 0 overfull boxes, and 0 missing-glyph warnings.",
-    "identical_to_remote": "All 64 main.tex dependency files match the verified remote tree 3741ad0110ba0e2ea5e0b2f1f8cf09935decdd3e on icde-2027-paper main @ 9805863b680840f10d69267495bb82c724a7ca25; all 9 files outside the dependency closure preserved byte-for-byte. Remote main verified after updating with an expected-head check and without force.",
-    "content": "Removed the lead-in headings from all four contribution bullets. English bullets now begin We propose, We formalize, We derive, and We implement; Chinese source aligned. Contribution content, PostgreSQL implementation claim, and evaluation figures retained.",
-    "layout": "Rendered and inspected pages 2 and 12; all four contribution bullets begin directly with We, with no visible overlap or clipping. Conclusion and references still start on p.12; 14 pages total.",
-    "pdf_sha256": "8bdb4f827fe72013abc2b650dc07329389bea93b52f55d22d2153614eeeef1da"
+    "status": "Tectonic build succeeded: 12 pages of content plus 2 pages of references (14 total); conclusion on p.12, references start on p.13; 0 undefined references/citations, overfull boxes, missing-glyph warnings, or caption-type warnings.",
+    "identical_to_remote": "All 66 main.tex dependency files match verified remote tree 622468e39f4f5f756412d5ff4f9ad8a9c904ce48 on icde-2027-paper main @ 4793f9e42af41f6c2ff54d0d32bef50aff4903e8; all 9 files outside the dependency closure preserved byte-for-byte. Remote main verified after updating with an expected-head check and without force.",
+    "content": "RelBench main comparison moved to the first results subsection and its table is now the first experimental visual (Table 3, p.10). All experimental-number macro counts match the previous version. Figures 3/4 share an aligned row; Figure 5 and Algorithm 1 share a row. Supporting floats follow their discussions, constrained section headings stay with text, and all results finish before the conclusion. Template fonts, margins, and global float spacing retained.",
+    "layout": "Rendered all 14 pages and inspected final layout, including revised pages 6-12: no visible overlap or clipping. Figures 3/4 on p.7 with aligned captions; Figure 5 / Algorithm 1 on p.8; main Table 3 and predictive Figures 6/7 on p.10; controlled sharing and lookup on p.11; update and mechanism evidence on p.12.",
+    "pdf_sha256": "40c3555111b1678d90963582c26c4f96222ef6fd9b8247293aeb3a3c6fcbe69c"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/9805863b680840f10d69267495bb82c724a7ca25",
-  "sync_authorization": "AGENTS.md standing authorization and user 2026-11-11: remove contribution subheadings and begin each bullet directly with We; compile, verify, and push the paper repository.",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4793f9e42af41f6c2ff54d0d32bef50aff4903e8",
+  "sync_authorization": "AGENTS.md standing authorization and user 2026-11-11: improve float layout throughout the paper and make the main experiment table the first experimental visual; compile, verify, and push the paper repository.",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "4a4230089f203a1c25b399fadf11bf39c5801a70"
+  "source_commit": "b14f56abd59223987348898800c514c4297f033d"
 }
