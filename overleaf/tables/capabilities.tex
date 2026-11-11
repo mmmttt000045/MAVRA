@@ -10,7 +10,7 @@
 \toprule
 \multicolumn{4}{c}{\textbf{\bt{Reuse}{复用}}} & \multicolumn{3}{c}{\textbf{\bt{Validity}{有效性}}}\\
 \cmidrule(lr){1-4}\cmidrule(lr){5-7}
-\textbf{\bh{Design}{设计}} & \textbf{\bh{Reusable object}{复用对象}} & \textbf{\bh{Knowledge\\extraction}{知识提取}} & \textbf{\bh{Verified\\lookup}{可验证查找}} & \textbf{\bh{Derived\\data checks}{派生数据检查}} & \textbf{\bh{Shared\\check results}{共享检查结果}} & \textbf{\bh{Data-update\\handling}{数据更新处理}}\\
+\textbf{\bh{Design}{设计}} & \textbf{\bh{Reusable object}{复用对象}} & \textbf{\bh{Knowledge\\extraction}{知识提取}} & \textbf{\bh{Accurate\\lookup}{准确查找}} & \textbf{\bh{Derived\\data checks}{派生数据检查}} & \textbf{\bh{Shared\\check results}{共享检查结果}} & \textbf{\bh{Data-update\\handling}{数据更新处理}}\\
 \midrule
 AgentSM~\cite{biswal2026agentsm} & \bhl{Trajectories; tools}{轨迹；工具} & \capyes & \capno & \capno & \capno & \capno\\
 G-Memory~\cite{zhang2025gmemory} & \bhl{Trajectories; insights}{轨迹；洞见} & \capyes & \capno & \capno & \capno & \capno\\
@@ -27,5 +27,5 @@ TxCache~\cite{ports2010txcache} & \bhl{Computation results}{计算结果} & \cap
 \end{tabularx}
 \par\smallskip
 \bt{\capyes: supported; \capno: not supported in the cited design. Data checks concern grain/join predicates.}{\capyes：支持；\capno：所引设计不支持。数据检查指粒度／连接谓词。}
-\bt{$^{a}$With declarative caching. $^{b}$With unaggregated materialization and scheduled refresh. $^{c}$Metrics are requested by declared name. $^{d}$Statistical error bound on response text. $^{e}$Matches given queries or calls, not natural-language requests.}{$^{a}$启用声明式缓存。$^{b}$启用非聚合物化与定时刷新。$^{c}$按声明的名称请求指标。$^{d}$对回答文本的统计错误率上界。$^{e}$匹配给定的查询或调用，而非自然语言请求。}
+\bt{$^{a}$With declarative caching. $^{b}$With unaggregated materialization and scheduled refresh. $^{c}$Metrics are requested by their declared name. $^{d}$Statistical error bound on response text. $^{e}$Matches given queries or calls, not natural-language requests.}{$^{a}$启用声明式缓存。$^{b}$启用非聚合物化与定时刷新。$^{c}$按声明的名称请求指标。$^{d}$对回答文本的统计错误率上界。$^{e}$匹配给定的查询或调用，而非自然语言请求。}
 \end{table*}

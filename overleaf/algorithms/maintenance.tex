@@ -1,21 +1,23 @@
 \begin{algorithm}[t]
-\caption{\bt{Validation with shared maintenance}{带共享维护的验证}}
+\caption{\bt{Two-stage validation and maintenance}{两级验证与维护}}
 \label{alg:maintenance}
 \small
 \begin{algorithmic}[1]
-\Require Revision $x$; state $D$; version stamps $V$; outcome store $\mathcal H$
-\Ensure Available revision $x'$ with current evidence, or $\bot$
-\Function{EvalCond}{$c, D, V, \mathcal H$}
-  \IfThen{$k(c, V) \notin \mathcal H$}{$\mathcal H[k(c, V)] \gets Q_c(D)$}
+\Require Revision $x$; state $D$; stamps $V$; insert batch $\Delta T$; outcome store $\mathcal H$
+\Ensure Validated revision $x'$, a pending revision, or $\bot$
+\Function{EvalCond}{$c, D, V, \Delta T, \mathcal H$}
+  \If{key $k(c, V)$ is not in $\mathcal H$}
+    \State $\mathcal H[k(c, V)] \gets \operatorname{DeltaCheck}(c, \Delta T)$ if $\Delta T$ is insert-only, else $Q_c(D)$ \Comment{Stage 2}
+  \EndIf
   \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
 \EndFunction
-\Function{Validate}{$x, D, V, \mathcal H$}
-  \IfThen{$x$ is invalid}{\Return $\bot$} \Comment{invalid}
-  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{valid (step 3)}
+\Function{Validate}{$x, D, V, \Delta T, \mathcal H$}
+  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{Stage 1}
   \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
-  \For{each $c \in \Delta C(x)$ (base conditions first)} \Comment{pending}
-    \If{$\neg\Call{EvalCond}{c, D, V, \mathcal H}$}
-      \State Invalidate $x$; \Return $\operatorname{Recover}(x, c)$
+  \For{each $c \in \Delta C(x)$}
+    \If{$\neg\Call{EvalCond}{c, D, V, \Delta T, \mathcal H}$}
+      \IfThen{$c$ is a domain assumption}{\Return $\text{Pending}(x, c, \text{new values})$}
+      \State \Return $\operatorname{Repair}(x, c, D, \mathcal H)$ \Comment{unique single edit, or $\bot$}
     \EndIf
   \EndFor
   \State $V_x(\operatorname{dep}(x)) \gets V(\operatorname{dep}(x))$; \Return $x$
