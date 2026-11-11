@@ -4,27 +4,28 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync of main, Fig. 1 restoration)",
-  "previous_head": "745edb940c295494e50035556804e89f72ab975d",
-  "remote_commit": "5fd76d24d902bc58ad3b53a374f53d18f844c299",
+  "direction": "main repo overleaf/ -> paper repo (C1 lossy-extraction framing; text only, Fig. 1 unchanged)",
+  "previous_head": "5fd76d24d902bc58ad3b53a374f53d18f844c299",
+  "remote_commit": "01a40dc84645dfe5f9ec5f5ffade8a3d2fb9cc92",
   "pending_payload": null,
   "changed_paths": [
-    "figures/metric-record.pdf",
-    "figures/metric-record.tex",
     "sections/01-introduction.tex",
-    "sections/04-design.tex"
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/06-conclusion.tex",
+    "sections/abstract.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
     "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh en: main.pdf 13 pages (body ends on page 11), 0 overfull boxes, no undefined references",
-    "identical_to_remote": "origin/main was 745edb9 (the recorded sync); no edits since",
-    "content": "User 11-11: do not change Fig. 1; the versions before 11-09 were good. figures/metric-record.pdf and .tex and the introduction's example paragraph (the advisor's text) are restored byte for byte from main 1fd8319 (= paper repo 50e7682); Section IV-C drops its citation of a Fig. 1 panel (b)."
+    "status": "bash build.sh en: main.pdf 13 pages (body ends on page 11), no undefined references; Section IV-B, intro, abstract, conclusion, evaluation gate text updated in English and Chinese",
+    "identical_to_remote": "origin/main was 5fd76d2 (the recorded sync); no edits since; each changed file cmp-equal to overleaf/",
+    "content": "User 11-11: keep C1 largely as is, but state how it works and make lossy extraction the central point. Lossy extraction is defined; the verified answer is the oracle (G6 validates it, G7 tests the compiled I); the boundary (a loss that leaves p0's answer unchanged passes G7) is stated. Fig. 1 and its example paragraph untouched."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/5fd76d24d902bc58ad3b53a374f53d18f844c299",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: keep the earlier Fig. 1).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/01a40dc84645dfe5f9ec5f5ffade8a3d2fb9cc92",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: C1 wording focuses on lossy extraction).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "aa51684e00f29185ba2901845468283b8699cbdb"
+  "source_commit": "9f1425af12826461f041af702a3e39df4228fe76"
 }
