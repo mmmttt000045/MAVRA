@@ -1,6 +1,6 @@
 """MAVRA system overview (Figure 2): shared knowledge base and four runtime components.
 
-Double column (178.0 mm wide, 95.0 mm high).
+Double column (178.0 mm wide, 90.0 mm high).
 Balances visual abstraction with concrete technical mechanisms across all modules:
   - Top row: Concurrent data agents (Agent 1 learning session, Agent 2 before write,
     ..., Agent N after write, and Predictive agent P at cutoff t_i).
@@ -28,7 +28,6 @@ Balances visual abstraction with concrete technical mechanisms across all module
      2. Delta-Scoped Index Probe on Delta T -> 3. Guarded Single-Edit Repair & Replay),
     bidirectional (<->) stamps/probes arrow with PostgreSQL Database, and write-back (step 6).
 """
-import math
 import sys
 from pathlib import Path
 
@@ -36,7 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from vecfig import PT, measure  # noqa: E402
 import style  # noqa: E402
 from style import (ACC, ACC_DK, ACC_PALE, AMBER, AMBER_PALE, EDGE, FACE, FIELD, INK, MUTED,  # noqa: E402
-                   RED, RULE, SIDE, SLATE, TOP, WHITE)
+                   RED, RULE, SLATE, TOP, WHITE)
 
 NAME = 'architecture'
 W, H = style.TEXTWIDTH, 90.0
@@ -106,26 +105,6 @@ def draw(s, lang):
     def person_icon(x, yc, c='#8A867E'):
         s.circle(x, yc - .62, .64, c)
         rect(x - 1.0, yc + .16, 2.0, 1.12, c, None, r=.54)
-
-    def sparkle_icon(cx, cy, r, c):
-        pts = []
-        for k in range(8):
-            a = math.pi / 4 * k - math.pi / 2
-            rr = r if k % 2 == 0 else .30 * r
-            pts.append((cx + rr * math.cos(a), cy + rr * math.sin(a)))
-        s.poly(pts, c, None)
-
-    def shield_icon(cx, cy, r, fill_c, stroke_c):
-        pts = [
-            (cx, cy - r),
-            (cx + .88 * r, cy - .62 * r),
-            (cx + .78 * r, cy + .28 * r),
-            (cx, cy + 1.02 * r),
-            (cx - .78 * r, cy + .28 * r),
-            (cx - .88 * r, cy - .62 * r),
-        ]
-        s.poly(pts, fill_c, stroke_c, .18)
-        check_mark(cx, cy + .05 * r, True, stroke_c, k=.68)
 
     def key_icon(x, yc, c=ACC_DK):
         s.circle(x + .5, yc, .44, None, c, .19)
@@ -218,14 +197,12 @@ def draw(s, lang):
     lx, lw = px + 1.15, pw - 2.3
     mid_px = px + pw / 2
 
-    # Card P1: Agent 1 Session Log UI Window
+    # Card P1: Agent 1 Session Log
     ly, lh = py + 4.15, 11.35
     rect(lx, ly, lw, lh, '#FAF9FC', '#B5ACD2', .16, r=.48)
     rect(lx + .1, ly + .1, lw - .2, 2.35, '#E9E4F4', None, r=.38)
     rect(lx + .1, ly + 1.2, lw - .2, 1.25, '#E9E4F4', None)
-    for idx_d, dc in enumerate(('#D98276', '#E0B25B', '#68A884')):
-        s.circle(lx + 1.0 + idx_d * 1.1, ly + 1.25, .32, dc)
-    label(lx + 4.5, ly + 1.25, 'Agent 1 session log' if en else '智能体 1 会话日志', 4.8, LEARN_DK, 'bold')
+    label(lx + .95, ly + 1.25, 'Agent 1 session log' if en else '智能体 1 会话日志', 4.85, LEARN_DK, 'bold')
     pill(lx + lw - (9.2 if en else 8.1), ly + 1.25,
          'verified' if en else '已核验', LEARN, WHITE, size=4.35, pad=.7, h=1.55)
 
@@ -250,9 +227,8 @@ def draw(s, lang):
     # Card P2: Decompose Core vs Slot + Static Condition Synthesis
     ex_y, ex_h = ly + lh + 1.05, 9.65
     rect(lx, ex_y, lw, ex_h, WHITE, LEARN, .16, r=.48)
-    sparkle_icon(lx + 1.75, ex_y + 1.65, 1.05, LEARN)
-    label(lx + 3.25, ex_y + 1.65,
-          'Extract & Derive $C$' if en else '结构提取与条件推导 $C$', 5.05, INK, 'bold')
+    label(lx + .95, ex_y + 1.65,
+          '1. Extract & Derive $C$' if en else '1. 结构提取与条件推导 $C$', 5.0, INK, 'bold')
     label(lx + lw - .9, ex_y + 1.65,
           'AST + probes' if en else '语法树 + 探针', 4.45, MUTED, 'sans', 'right')
 
@@ -285,9 +261,8 @@ def draw(s, lang):
     # Card P3: Admission Gates G1-G7 & Answer-Reproduction Replay
     vy, vh = ex_y + ex_h + 1.05, 9.0
     rect(lx, vy, lw, vh, WHITE, LEARN, .16, r=.48)
-    shield_icon(lx + 1.85, vy + 1.65, 1.05, ACC_PALE, ACC_DK)
-    label(lx + 3.35, vy + 1.65,
-          'Admission Gates G1–G7' if en else '准入门禁 G1–G7 与重放', 5.05, INK, 'bold')
+    label(lx + .95, vy + 1.65,
+          '2. Admission Gates G1–G7' if en else '2. 准入门禁 G1–G7 与重放', 5.0, INK, 'bold')
     label(lx + lw - .9, vy + 1.65,
           'replay oracle' if en else '源答案核验', 4.45, ACC_DK, 'bold', 'right')
 
@@ -328,7 +303,6 @@ def draw(s, lang):
     # -------------------------------------------------------------------------
     KB = (46.8, 16.8, 81.8, 41.4)
     kx, ky, kw, kh = KB
-    rect(kx + .75, ky + .75, kw, kh, SIDE, EDGE, .12, r=.7)
     box(KB, WHITE, ACC, .22, r=.65)
     rect(kx, ky, kw, 3.5, ACC, None, r=.65)
     rect(kx, ky + 1.75, kw, 1.75, ACC, None)
@@ -635,7 +609,7 @@ def draw(s, lang):
     vcx, vcy = t1_x + 4.35, t_y + 5.65
     s.circle(vcx, vcy, 2.75, WHITE, '#8AB4E2', .15)
     s.circle(vcx, vcy, 1.78, '#EDF5FE', '#79A8DF', .12)
-    sparkle_icon(vcx - .2, vcy, .75, EXEC_C)
+    s.circle(vcx - .15, vcy, .42, EXEC_C)
     for dx_v, dy_v, col_v in ((-.9, -.7, ACC), (.85, -.6, ACC), (.62, .8, ACC),
                               (-1.85, 1.28, '#B8C8DC'), (1.95, .28, '#B8C8DC')):
         s.circle(vcx + dx_v, vcy + dy_v, .27, col_v)
@@ -745,8 +719,7 @@ def draw(s, lang):
     # Sub-card 1: Snapshot Condition Gate via H(c, V_s)
     st1_y, st1_h = sy_in + 2.55, 6.15
     rect(sx_in + .85, st1_y, sw_in - 1.7, st1_h, WHITE, '#E2BE8E', .15, r=.38)
-    shield_icon(sx_in + 2.65, st1_y + 1.8, 1.02, EXEC_PALE, EXEC_DK)
-    label(sx_in + 4.25, st1_y + 1.78,
+    label(sx_in + 1.55, st1_y + 1.78,
           '1. Validate $C(m^r)$ at $V_s$' if en else '1. 快照条件门禁 $C(m^r)$', 4.7, INK, 'bold')
     check_mark(sx_in + sw_in - 2.0, st1_y + 1.78, True, ACC, k=.7)
     pill(sx_in + 1.5, st1_y + 4.45,
@@ -767,9 +740,8 @@ def draw(s, lang):
     # Sub-card 2: Relational & Leak-Free Query Compiler
     st2_y, st2_h = st1_y + st1_h + .8, 10.4
     rect(sx_in + .85, st2_y, sw_in - 1.7, st2_h, WHITE, '#E2BE8E', .15, r=.38)
-    pill(sx_in + 1.5, st2_y + 1.68, 'SQL', EXEC_PALE, EXEC_DK, edge_c=EXEC_C, size=4.05, pad=.5, h=1.58)
-    label(sx_in + 6.2, st2_y + 1.68,
-          '2. Bind & Compile on $D_s$' if en else '2. 绑定参数并编译查询', 4.7, INK, 'bold')
+    label(sx_in + 1.55, st2_y + 1.68,
+          '2. Bind & Compile SQL on $D_s$' if en else '2. 绑定参数并编译 SQL', 4.7, INK, 'bold')
 
     # Track M: Analytical Metric
     tm_y = st2_y + 4.35
