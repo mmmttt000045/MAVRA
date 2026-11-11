@@ -21,6 +21,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 root = Path.cwd()
 files = {
     Path('README.md'), Path('build.sh'), Path('references.bib'),
+    Path('acmart.cls'), Path('pvldb.sty'), Path('ACM-Reference-Format.bst'),
 }
 
 def collect(path, stack=()):
@@ -47,7 +48,7 @@ def collect(path, stack=()):
 
 collect(Path('main.tex'))
 
-archive = Path('build/mavra-icde.zip')
+archive = Path('build/mavra-pvldb.zip')
 archive.parent.mkdir(parents=True, exist_ok=True)
 with ZipFile(archive, 'w', compression=ZIP_DEFLATED) as bundle:
     for path in sorted(files):
@@ -72,7 +73,8 @@ fi
 check_dependencies() {
   local dependency
   local -a required_files=(
-    IEEEtran.cls IEEEtran.bst cite.sty balance.sty amsmath.sty amssymb.sty amsthm.sty pifont.sty
+    acmart.cls pvldb.sty ACM-Reference-Format.bst textcase.sty libertine.sty newtxmath.sty
+    zi4.sty natbib.sty amsmath.sty amssymb.sty amsthm.sty pifont.sty
     url.sty hyperref.sty graphicx.sty xcolor.sty booktabs.sty tabularx.sty
     colortbl.sty algorithm.sty algpseudocode.sty placeins.sty
   )

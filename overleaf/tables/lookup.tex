@@ -1,0 +1,28 @@
+% Lookup study (Section V-C). Sources: exp/2026-11-10-lookup-facets/
+%   results-baselines/summary.json (name match, embedding, LLM methods; LLM methods two runs each),
+%   results-ft/ft/base-dc-xl-s1{3,4,5}/summary.json (single judge, 82/83/85 of 96),
+%   results-ft/serve-ens3/serve-summary.json (three judges end to end: first ask and repeated wording),
+%   results-ft/recall-latency.json (bge-m3 recall, 17 ms).
+\begin{table}[t]
+\caption{\bt{Lookup on 96 requests over 26 TPC-DS definitions.}{26 条 TPC-DS 定义上 96 个请求的查找结果。}}
+\label{tab:lookup}
+\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabularx}{\columnwidth}{@{}X r r r r@{}}
+\toprule
+\textbf{\bt{Method}{方法}} & \textbf{\bt{Exact}{完全答对}} & \textbf{\bt{Direct (prec.)}{直接回答（准确率）}} & \textbf{\bt{Usable}{可用}} & \textbf{\bt{Time}{耗时}}\\
+\midrule
+\bt{Name match}{名字匹配} & 42\% & -- & -- & --\\
+\bt{Embedding top-1 (best threshold)}{向量相似度 top-1（最优阈值）} & 62\% & -- & -- & 17\,ms\\
+\bt{LLM reads the whole catalog}{LLM 读整个目录} & 99\% & -- & -- & 2.2\,s\\
+\bt{Recall 8 + LLM reads them}{召回 8 条 + LLM 读原文} & 98\% & -- & -- & 2.0\,s\\
+\bt{LLM parses choices + Definition~\ref{def:consistency}}{LLM 解析口径 + 定义~\ref{def:consistency}} & 90\% & -- & -- & 5.2\,s\\
+\midrule
+\bt{One judge}{单个判别器} & 85--89\% & -- & -- & 33\,ms\\
+\textbf{\system{}}, \bt{first ask}{首次查询} & -- & 77\% (98.6\%) & 99\% & 0.18\,s\\
+\textbf{\system{}}, \bt{same wording again}{同一说法再问} & -- & 96\% (100\%) & 100\% & 33\,ms\\
+\bottomrule
+\end{tabularx}
+\par\smallskip
+\bt{Exact: the answer equals $A(\rho)$. Direct: share answered without references, with its precision. Usable: answered correctly, or the correct definitions are among the references. Times are per lookup; judges run on a shared GPU, LLMs through an API.}{完全答对：答案等于 $A(\rho)$。直接回答：不给参考直接回答的比例及其准确率。可用：答对，或正确定义都在参考之中。耗时为每次查找；判别器在共享 GPU 上运行，LLM 经 API 调用。}
+\end{table}

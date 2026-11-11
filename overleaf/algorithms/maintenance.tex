@@ -1,26 +1,23 @@
 \begin{algorithm}[t]
-\caption{\bt{Two-stage validation and dual maintenance of $G$ and definitions}{两级验证及证据图 $G$ 与定义的双重维护}}
+\caption{\bt{Two-stage validation and maintenance}{两级验证与维护}}
 \label{alg:maintenance}
 \small
 \begin{algorithmic}[1]
-\Require Revision $x$; state $D$; stamps $V$; batch $\Delta T$; stores $\mathcal H, G$
-\Ensure Validated revision $x'$, pending diff, or $\bot$
+\Require Revision $x$; state $D$; stamps $V$; insert batch $\Delta T$; outcome store $\mathcal H$
+\Ensure Validated revision $x'$, a pending revision, or $\bot$
 \Function{EvalCond}{$c, D, V, \Delta T, \mathcal H$}
   \If{key $k(c, V)$ is not in $\mathcal H$}
-    \State $\mathcal H[k(c, V)] \gets \operatorname{DeltaCheck}(c, \Delta T)$ if $\Delta T$ else $Q_c(D)$
+    \State $\mathcal H[k(c, V)] \gets \operatorname{DeltaCheck}(c, \Delta T)$ if $\Delta T$ is insert-only, else $Q_c(D)$ \Comment{Stage 2}
   \EndIf
   \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
 \EndFunction
-\Function{ValidateAndMaintain}{$x, D, V, \Delta T, \mathcal H, G$}
-  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{Stage 1 hit}
+\Function{Validate}{$x, D, V, \Delta T, \mathcal H$}
+  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$} \Comment{Stage 1}
   \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
-  \For{each $c \in \Delta C(x)$ (base checks before rewrite premises)}
+  \For{each $c \in \Delta C(x)$}
     \If{$\neg\Call{EvalCond}{c, D, V, \Delta T, \mathcal H}$}
-      \For{each $(u, m, P) \in G$ with $c \in P$} \Comment{C2 revoke}
-        \State Suspend $(u,m,P)$; revert $\Phi(m)$; roll back rewrite
-      \EndFor
-      \IfThen{$c$ is a probe check}{\Return $\text{Pending}(x, c, \Delta\text{vals})$}
-      \State \Return $\operatorname{SingleEditRepair}(x, c, D, \mathcal H)$ \Comment{C3 repair}
+      \IfThen{$c$ is a domain assumption}{\Return $\text{Pending}(x, c, \text{new values})$}
+      \State \Return $\operatorname{Repair}(x, c, D, \mathcal H)$ \Comment{unique single edit, or $\bot$}
     \EndIf
   \EndFor
   \State $V_x(\operatorname{dep}(x)) \gets V(\operatorname{dep}(x))$; \Return $x$

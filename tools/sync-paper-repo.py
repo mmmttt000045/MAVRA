@@ -40,6 +40,9 @@ def lf(rel: str, data: bytes) -> bytes:
 def manuscript_files() -> dict[str, bytes]:
     """Collect the compilation dependency closure without an archive."""
     files = {Path("references.bib"), Path("build.sh")}
+    for extra in ("acmart.cls", "pvldb.sty", "ACM-Reference-Format.bst"):
+        if (SRC / extra).is_file():
+            files.add(Path(extra))
 
     def checked(name: str, extension: str) -> Path:
         path = Path(name if Path(name).suffix else name + extension)

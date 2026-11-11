@@ -1,6 +1,20 @@
 % !TeX program = pdflatex
-% ICDE 2027 submission (English). Compile with pdfLaTeX.
-% IEEE conference template; 12 pages excluding references and the AI-content acknowledgement.
+% PVLDB Vol. 20 (VLDB 2027) research-track submission (English). Compile with pdfLaTeX.
+% Official PVLDB template (github.com/vldbproceedings/VLDB-Template, 39c95f5): acmart.cls v2.19,
+% pvldb.sty and ACM-Reference-Format.bst are pinned copies; do not edit them.
+% Regular research paper: 12 pages for all content except the references.
 % Chinese text sits beside the English in the source (second argument of \bi, \bt, ...) and is not compiled.
-\documentclass[conference]{IEEEtran}
+\documentclass[sigconf, nonacm]{acmart}
+
+%%% do not modify the following VLDB block %%
+%%% VLDB block start %%%
+\usepackage{pvldb}% VLDB/PVLDB formatting overrides, see pvldb.sty for details.
+%%% VLDB block end %%%
+
+%% Paper-specific values. DOI and pages are assigned in production; placeholders are fine for submission.
+\renewcommand\vldbdoi{XX.XX/XXX.XX}
+\renewcommand\vldbpages{XXX-XXX}
+% Public artifact repository (code, data, instructions); tentative choice of the authors (2026-11-11).
+\renewcommand\vldbavailabilityurl{https://github.com/mmmttt000045/MAVRA}
+
 \input{paper}
