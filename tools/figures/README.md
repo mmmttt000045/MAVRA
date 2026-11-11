@@ -40,6 +40,8 @@ make deck-figures                  # PPT 的六幅图，生成 PDF 并转 PNG
 
 具体哪些图进入稿件，由 `overleaf/sections/` 和图形包装 `.tex` 的引用决定；不使用固定图号来标识脚本。`baselines.py` 是保留的辅助图，不包含在 `make figures` 中；早期外部记忆基线的采用范围以 RelBench 协议为准。
 
+技术图按阅读关系成组排版：`overleaf/figures/publication-lookup.tex` 将抽取图与检索图置于同一通栏行，并按等高图像区对齐独立图注；`maintenance-algorithm.tex` 将维护示例与算法并排。对应单图包装与算法源是组内片段，不再各自创建浮动环境。实验先展示 RelBench 主结果表，再解释累计复用、工具调用组成及受控共享；编号由编译结果生成，不手写固定图表号。全局模板的字号、页边距与浮动间距不作调整。
+
 ## 汇报图
 
 `build.py --deck` 绘制 `structure`、`definition`、`process` 三张机制图，以及 `run-publish`、`run-use`、`run-maintain` 三张过程图，只生成中文版。共用组件在 `parts.py`、`deckparts.py`，配色在 `deckpal.py`。这些脚本和论文绘图共用工具，输出到 `slides/figures/`；PPT 生成与版本说明见 [slides/README.md](../../slides/README.md)。

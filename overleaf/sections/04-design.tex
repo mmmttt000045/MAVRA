@@ -29,7 +29,6 @@ q_0(D_s, p)=\mathrm{AGG}_{e}\bigl(\sigma_{\tau\in p}(J_I(D_s))\bigr), \;\; q(D_s
 
 \subsection{\bt{Verification-Guided Extraction and Publication}{验证引导的抽取与发布}}
 \label{sec:publication}
-\input{figures/extraction}
 \bi{Publication follows the source--extraction--replay path in Figure~\ref{fig:extraction}a--c. From a verified session's question and SQL/probe trace, an LLM extracts fixed $(B,I)$ separately from period $p_0$ and derivation $d_0$; the server derives $C(m^0)$ (Section~\ref{sec:maintenance}). Seven checks enforce three admission stages:
 (1)~\emph{Source support}: $B$ cites schema or probe evidence (G1), and the arithmetic trace matches the verified answer (G2).
 (2)~\emph{Structural admissibility}: tables, columns, expressions, many-to-one joins $\mathcal J$, filters $\varphi$, and period-literal lifting are valid (G3), grain keys are unique (G4), and the source answer comes from one read-only SQL query (G5).
@@ -41,10 +40,10 @@ q_0(D_s, p)=\mathrm{AGG}_{e}\bigl(\sigma_{\tau\in p}(J_I(D_s))\bigr), \;\; q(D_s
 
 \bi{\emph{Scope of replay evidence.} G7 tests only $(D_{s_0},p_0,d_0)$: accidental agreement on that binding can hide an omission on other slices. It filters observed extraction errors without proving equivalence for every parameter; G3 complements replay with static checks on literal lifting and join structure.}
 {\emph{回放证据的边界。}G7 仅检验 $(D_{s_0},p_0,d_0)$，该绑定上的偶然一致可能掩盖其他切片的遗漏。它过滤已暴露的抽取错误，并非所有参数下的等价证明；G3 对字面量提升和连接结构的静态检查形成互补。}
+\input{figures/publication-lookup}
 
 \subsection{\bt{Catalog-Trained Lookup}{以目录为监督来源的语义检索}}
 \label{sec:lookup}
-\input{figures/lookup}
 \bi{Once definitions are published, \emph{Lookup} must select the stored definitions that match a new natural-language request $\rho$ without synthesizing SQL. Surface similarity fails when distinct phrasings describe one calculation, when homonymous definitions such as \code{D01} and \code{D02} in Figure~\ref{fig:lookup} share the name \emph{store revenue} while differing in post-coupon versus pre-coupon basis, or when $\rho$ requests an unstored metric. We ground lookup in the structured \emph{semantic choices} recorded in $(B,I)$: business process ($F$), quantity and basis ($e,\mathrm{AGG}$), date attribution ($\tau$), and scope ($\varphi$).}
 {定义发布入库后，\emph{检索}模块需在不生成目标 SQL 的前提下选出与新自然语言请求 $\rho$ 匹配的已存定义。当不同措辞指向同一计算、同名异义定义（如图~\ref{fig:lookup} 中同名为\emph{门店营业额}但分别采用扣券后与扣券前基准的 \code{D01} 与 \code{D02}）并存，或 $\rho$ 请求目录未收录指标时，表层文本相似度均难以胜任。我们将检索建立在 $(B,I)$ 显式记录的\emph{语义口径选择}（choices）之上：业务过程（$F$）、统计对象及金额／比率基准（$e,\mathrm{AGG}$）、日期归属（$\tau$）与范围限定（$\varphi$）。}
 
@@ -63,13 +62,12 @@ q_0(D_s, p)=\mathrm{AGG}_{e}\bigl(\sigma_{\tau\in p}(J_I(D_s))\bigr), \;\; q(D_s
 \bi{\emph{Online matching and new definitions.} We serialize each candidate definition with its description, structured choices, and pairwise structural differences from same-name and same-group definitions (e.g., ``\code{D02}: before coupons; \code{D01}: after coupons''), and score consistency probability $p\in[0,1]$ using a cross-encoder ensemble (Section~\ref{sec:implementation}). Online (Figure~\ref{fig:lookup}, top), \system{} strips runtime parameters from $\rho$ and first checks the \emph{alias table}. On a miss, dense recall retrieves top-$K$ candidates for cross-encoder scoring under fixed thresholds $(\tau_{\mathrm{low}}, \tau_{\mathrm{high}})$: when no candidate falls in $[\tau_{\mathrm{low}}, \tau_{\mathrm{high}})$, a single accepted match ($p\ge\tau_{\mathrm{high}}$) returns a direct \emph{hit} and multiple accepted matches return all competing definitions with their differences (\emph{same name}); when any candidate falls in $[\tau_{\mathrm{low}}, \tau_{\mathrm{high}})$, accepted and uncertain candidates are returned as differentiating \emph{references} (\emph{refer}) for agent confirmation; when all score below $\tau_{\mathrm{low}}$, only a high-cosine neighbor is offered as reference and otherwise lookup returns \emph{none} to trigger exploration. Because candidate inputs explicitly carry structured choices and computed group differences, newly published definitions and technical revisions $m^{r+1}$ participate in lookup immediately without retraining, while confirmed phrasings update the alias table and training pool.}
 {\emph{在线分级匹配与新定义接入。}我们将每份候选定义序列化为其描述、结构化口径以及同组／同名定义间的成对结构差异（如``\code{D02}：扣券前；\code{D01}：扣券后''），由交叉编码器集成预测一致概率 $p\in[0,1]$（第~\ref{sec:implementation} 节）。在线阶段（图~\ref{fig:lookup} 上），系统剥离 $\rho$ 中的运行期参数后先查询\emph{别名表}；未命中时经稠密召回取回 top-$K$ 候选打分，并按固定阈值 $(\tau_{\mathrm{low}}, \tau_{\mathrm{high}})$ 执行四路决策：若无候选落入不确定区间 $[\tau_{\mathrm{low}}, \tau_{\mathrm{high}})$，唯一高置信项（$p\ge\tau_{\mathrm{high}}$）直接返回\emph{命中}（hit），多项接受则并列返回竞争定义及其结构差异（same name）；若有候选落入 $[\tau_{\mathrm{low}}, \tau_{\mathrm{high}})$，则将接受项与不确定项附差异作为\emph{参考}返回供确认（refer）；若全部低于 $\tau_{\mathrm{low}}$，仅在高余弦近邻下提供参考，否则返回\emph{未命中}（none）转入探查。由于候选输入显式携带口径与动态计算的组内差异，新发布的定义与技术修订版 $m^{r+1}$ 无需重训即可立即参与检索，经确认的表述则同步写入别名表与训练池。}
 
+\Needspace{8\baselineskip}
 \subsection{\bt{Shared Validation and Maintenance}{共享验证与更新维护}}
 \label{sec:sufficiency}
 \label{sec:maintenance}
 \label{sec:execution}
 \label{sec:snapshot}
-\input{figures/maintenance}
-\input{algorithms/maintenance}
 \bi{\emph{Data conditions.} Database writes frequently violate relational assumptions without changing table schemas. We therefore attach executable predicates $c\in C(m^r)$ over dependency tables $\operatorname{dep}(c)$, each evaluated by summary query $Q_c$ and acceptance rule $\operatorname{Accept}(c,\cdot)$. From $I$, \system{} automatically derives five structural conditions (markers 1--5 in Figure~\ref{fig:extraction}):
 (1)~\emph{filtered fact-grain uniqueness} $\operatorname{KeyUnique}(F,K,\varphi)$ on $\sigma_\varphi(F)$;
 (2)~\emph{join cardinality}, requiring at most one dimension match per left row along every edge of $\mathcal J$;
@@ -94,6 +92,7 @@ k(c,V)=\bigl(\operatorname{id}(c),V(\operatorname{dep}(c))\bigr),
 
 \bi{Stage~1 returns $x=m^r$ when dependency stamps are unchanged; otherwise it selects stale conditions $\Delta C(x)$ and shares outcomes $k(c,V)\in\mathcal H$ across definitions and agents (lines~2--5, 15). Figure~\ref{fig:maintenance}a illustrates 7 outcomes serving 15 references: an \code{item} load needs 2 new checks versus 5 under full rechecking of the affected definition; a sales append needs 3 versus 12 across affected definitions. On an insert-only cache miss, Stage~2 probes new keys against existing indexes, skips dimension-cardinality checks for fact appends, updates join-loss counts incrementally, and scans only $\Delta T.a$ for domain assumptions (line~16). Figure~\ref{fig:maintenance}b detects duplicate item key~17 from the inserted history row alone.}
 {第一级在依赖版本戳未变时返回 $x=m^r$，否则筛出过期条件 $\Delta C(x)$，跨定义与智能体共享 $k(c,V)\in\mathcal H$ 的结果（第 2--5、15 行）。图~\ref{fig:maintenance}a 中 7 项结果服务 15 条引用：\code{item} 装载仅需 2 次新检查，受影响定义全检需 5 次；销售追加仅需 3 次，受影响定义逐份全检需 12 次。对纯追加且未命中的条件，第二级用现有索引比对新增键，跳过事实追加下的维表基数检查，增量更新连接丢行计数，并仅扫描 $\Delta T.a$ 检验值域假设（第 16 行）。图~\ref{fig:maintenance}b 仅凭新增历史行便检出商品键 17 重复。}
+\input{figures/maintenance-algorithm}
 
 \bi{\emph{Repair admission.} A domain-condition failure returns $\text{Pending}(x,c,\text{vals})$ for business confirmation (line~6). Structural failures trigger single-edit candidates $\mathcal E(x,c)$: exact-row deduplication, equality filters on columns with $\le20$ values, or standard date-key re-encoding. Figure~\ref{fig:maintenance}b separates row-count pruning from admission: selecting 1,000 current rows merely retains \code{i\_is\_current = 'Y'} as a candidate. Each retained edit must restore \emph{all} $C(x\oplus e)$ on current $D$ \emph{and} reproduce the source answer from $E_x$; key uniqueness alone is insufficient. Exactly one passing edit publishes $m^{r+1}$; zero or multiple passing edits retire $x$ (lines~7--9). With no failure, line~12 advances $V_x$ and returns $x$.}
 {\emph{修复准入。}值域条件失败返回 $\text{Pending}(x,c,\text{vals})$ 交由业务确认（第 6 行）。结构违例触发受限单步候选 $\mathcal E(x,c)$：精确整行去重、至多 20 种取值列上的等值过滤，或标准日期键重编码。图~\ref{fig:maintenance}b 区分行数剪枝与最终准入：选出 1,000 条当前行仅使 \code{i\_is\_current = 'Y'} 保留为候选。每个保留修改必须同时恢复当前 $D$ 上\emph{全部} $C(x\oplus e)$，并复现 $E_x$ 中的源核验答案；键唯一性本身不足以决定发布。仅有一个候选通过时发布 $m^{r+1}$，无候选或多个候选通过均退役 $x$（第 7--9 行）。若无条件失败，第 12 行推进 $V_x$ 并返回 $x$。}
