@@ -1,0 +1,14 @@
+{
+  "method": "mavra-refine",
+  "revision": "v6",
+  "status": "prospective_plan_before_code_or_model_calls",
+  "planned_at": "2026-11-12T05:57:00+08:00",
+  "parent": "mavra-signal (v5)",
+  "evidence": "The three-response reuse cap is below the old reported Stack average (52/12). Several warm attempts use their final response for the first decision. Completed variants preserve cost headroom but do not lead all quality tasks. This is a small budget ablation, not a new learner or task-specific template.",
+  "change": "Increase only the warm model response limit from 3 to 4. Retain 6 executed agent tools, the same cold algorithm, cache, audits, feature selection, SQL limits, fixed learner and sample. The existing budget reminders and final decision-slot restriction adapt to this configured limit.",
+  "counter_bounds": "For the table's existing agent-call definitions, 12 reuse sessions x4 responses=48 LLM calls <=52 old Stack calls, and 12x6 tools=72 <=74. Old Trial ceilings are looser. These bounds do not make token, time or dollar work free; those four costs still require the same measured gate. Memory extraction tokens and fees remain included as before.",
+  "input_boundary": "Both datasets start from empty memory. No program, feature matrix, label or checkpoint is borrowed from earlier candidate arms. No test score is used for search or selection. Candidate-submission test scoring follows all training cutoffs; the unchanged common entity-reference evaluation is benchmark machinery and not optimizer input.",
+  "schedule": "Freeze after checks and wait until both v5 cells complete successfully before starting the pair, preserving current runs and the shared initial study cap of20 CNY. Do not raise the cap silently. Require enough remaining budget to start the pair; otherwise retain a not-started record rather than truncating a quality claim.",
+  "acceptance": "Same exact 15-session cohorts per database, all clean, all12 unrounded reuse-cost checks no worse than original MAVRA, and all6 mean test qualities at least the strongest reported baseline. Preserve all negative results and all cold/all-cutoff costs; do not splice taskwise winners.",
+  "development_disclosure": "Post-hoc development after v1/v2 full results, v3 Stack and v4b Trial summaries. V5 submission tests have not started at design time. Independent LLM cold outcomes may vary; one full run alone does not isolate the effect of a fourth response or establish a general quality guarantee."
+}
