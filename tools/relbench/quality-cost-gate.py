@@ -96,7 +96,14 @@ def check(source, candidates, arm, run):
             val = statistics.mean(current[key]["test"] for key in keys) if all(current[key]["test"] is not None for key in keys) else None
             report["quality"][task] = {"higher": higher, "candidate": val, "best_reported_arm": best_arm,
                                         "best_reported_score": scores[best_arm], "all_reported_scores": scores,
-                                        "first_or_tied": val is not None and (val >= scores[best_arm] if higher else val <= scores[best_arm])}
+                                        "first_or_tied": val is not None and (val >= scores[best_arm] if higher else val <= scores[best_arm]),
+                                        "per_cutoff": [{"cutoff": key[1], "candidate_test": current[key]["test"],
+                                                        "candidate_validation": current[key].get("val"),
+                                                        "candidate_valid": current[key]["valid"],
+                                                        "reported_winner_test": old[best_arm][key]["test"],
+                                                        "reported_winner_valid": old[best_arm][key]["valid"],
+                                                        "original_mavra_test": old["mavra-push"][key]["test"]}
+                                                       for key in keys]}
         report["all_costs_preserved"] = all(report["cost_pass"].values())
         report["all_qualities_first"] = all(r["first_or_tied"] for r in report["quality"].values())
         report["accepted"] = (report["all_costs_preserved"] and report["all_qualities_first"]
