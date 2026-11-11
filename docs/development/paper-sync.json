@@ -4,24 +4,28 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync c6afe7a: remove decorative window dots and clip-art icons in Figure 2)",
-  "previous_head": "574ab8ca11a52bc6b1b5d4d231be5cb348065917",
-  "remote_commit": "f008170156bd01383213f226ff4601a0eaf229f2",
+  "direction": "main repo overleaf/ -> paper repo (868d4a5: remove AI-generated content acknowledgment section)",
+  "previous_head": "f008170156bd01383213f226ff4601a0eaf229f2",
+  "remote_commit": "705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
   "pending_payload": null,
   "changed_paths": [
-    "figures/architecture.pdf"
+    "paper.tex"
   ],
   "preserve_remote_only": true,
-  "deletions": [],
+  "deletions": [
+    "sections/ai-statement.tex"
+  ],
   "validation": {
     "built_on": "this workstation",
-    "status": "tectonic overleaf/main.tex clean (12-page body + Conclusion + Acknowledgment before References on p.12, 14 pages total, 0 undefined references)",
-    "identical_to_remote": "overleaf/ dependency closure matches icde-2027-paper main @ f008170156bd01383213f226ff4601a0eaf229f2",
-    "content": "Removed decorative macOS traffic-light window dots in Agent 1 session log, decorative sparkle/shield clip-art icons, and Knowledge base drop shadow in Figure 2 (figures/architecture.pdf), replacing them with clean academic numbering and geometric query points"
+    "status": "Tectonic build succeeded: conclusion and reference start on p.12; 14 pages total; 0 undefined references.",
+    "identical_to_remote": "All 64 main.tex dependency files match icde-2027-paper main @ 705748ec9fc6cc8cd837ea09b4d2798abd0c2c36; sections/ai-statement.tex deleted; unrelated remote files preserved.",
+    "content": "Removed the AI-generated content acknowledgment input and section source; verified the heading and statement are absent from the compiled PDF.",
+    "layout": "Rendered and inspected pages 12 and 14; no visible overlap or clipping. One 1.24957pt vertical-box warning remains in final reference balancing.",
+    "pdf_sha256": "457956264d5d913dca9a9144fc5edee9ab053a7bc335d3189687f780f9dc2541"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/f008170156bd01383213f226ff4601a0eaf229f2",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: remove decorative UI elements in Figure 2).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
+  "sync_authorization": "AGENTS.md and user 2026-11-11: remove ACKNOWLEDGMENT OF AI-GENERATED CONTENT and directly push verified paper changes.",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "c6afe7a398f6b7565c56d2c2c496f12784771835"
+  "source_commit": "868d4a56d45238869b9d659bee0d8efb8667b869"
 }
