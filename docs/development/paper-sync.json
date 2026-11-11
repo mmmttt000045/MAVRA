@@ -4,38 +4,41 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pulled",
-  "direction": "paper repo -> main repo overleaf/ (pull only, nothing pushed): 5 syncs from another checkout of agent4db-adapter (a84c395, 773860a, 2ba3fd6, 261e4c7, c6afe7a; not in this repo) and a direct commit removing the AI statement",
-  "previous_head": "f66f1a35c38cd552a801a46ae76069215c41357e",
-  "remote_commit": "705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
+  "direction": "paper repo -> main repo overleaf/ (pull only, nothing pushed): 3 commits from another checkout (1509efe Fig. 3/5 repair admission, 9805863 contribution bullets, 4793f9e main comparison first, new figure wrappers)",
+  "previous_head": "705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
+  "remote_commit": "4793f9e42af41f6c2ff54d0d32bef50aff4903e8",
   "pending_payload": null,
   "changed_paths": [
     "algorithms/maintenance.tex",
-    "figures/architecture.pdf",
-    "figures/architecture.tex",
-    "paper.tex",
+    "figures/extraction.pdf",
+    "figures/extraction.tex",
+    "figures/fixed-sharing.tex",
+    "figures/lookup.tex",
+    "figures/maintenance-algorithm.tex",
+    "figures/maintenance.pdf",
+    "figures/maintenance.tex",
+    "figures/population.tex",
+    "figures/publication-lookup.tex",
+    "preamble.tex",
     "sections/01-introduction.tex",
-    "sections/02-background.tex",
-    "sections/03-overview.tex",
     "sections/04-design.tex",
     "sections/05-evaluation.tex",
-    "sections/06-conclusion.tex",
-    "sections/abstract.tex",
     "sections/implementation.tex",
-    "tables/lookup.tex"
+    "tables/lookup.tex",
+    "tables/population-cost.tex",
+    "tables/replay-policies.tex"
   ],
   "preserve_remote_only": true,
-  "deletions": [
-    "sections/ai-statement.tex"
-  ],
+  "deletions": [],
   "validation": {
     "built_on": "this workstation, TeX Live 2026 in ~/.local/texlive",
-    "status": "bash build.sh en: main.pdf 13 pages; no undefined references; one overfull hbox (8.0 pt) in the Background paragraph starting 'On lookup, embedding caches', which the pulled edits rewrote; left as pulled",
-    "identical_to_remote": "overleaf/ equalled f66f1a3 before the pull; after copying the 13 changed files and deleting sections/ai-statement.tex, a --force dry run against a fresh clone at 705748e reports 0 changed, 0 added, 6 remote-only files preserved",
-    "content": "User asked to pull the latest version. figures/architecture.pdf was redrawn in the other checkout; tools/figures/architecture.py here still produces the 016fb59 drawing, so rerunning it would revert Fig. 2."
+    "status": "bash build.sh en: main.pdf 13 pages; no undefined references, no overfull boxes",
+    "identical_to_remote": "overleaf/ equalled 705748e before the pull; after copying the 18 changed files, a --force dry run against a fresh clone at 4793f9e reports 0 changed, 0 added, 6 remote-only files preserved",
+    "content": "User asked to pull the latest version before planning method work."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/705748ec9fc6cc8cd837ea09b4d2798abd0c2c36",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/4793f9e42af41f6c2ff54d0d32bef50aff4903e8",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "e78c12be5db6cc6b99311e984d63bf548581576e"
+  "source_commit": "f3ab05d35f6fde80138fe961d138f814aaea918d"
 }
