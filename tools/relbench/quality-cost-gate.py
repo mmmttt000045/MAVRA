@@ -52,8 +52,13 @@ def check(source, candidates, arm, run):
         path = candidates / f"{arm}-{db}-r{run}"
         current = load(path, reference)
         expected = set(old["none"])
+        if len(expected) != 15 or any(set(data) != expected for data in old.values()):
+            raise ValueError(f"{db}: reported source arms do not cover the same complete 15-session cohort")
+        metadata_path = path / "run.json"
+        metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
         report = {"candidate_path": str(path), "sessions": len(current), "expected_sessions": len(expected),
-                  "complete": set(current) == expected,
+                  "finished": bool(metadata.get("finished")), "run_error": metadata.get("error"),
+                  "complete": set(current) == expected and bool(metadata.get("finished")) and not metadata.get("error"),
                   "valid_sessions": sum(r["valid"] for r in current.values())}
         if not report["complete"]:
             report["missing"] = sorted(expected - set(current))

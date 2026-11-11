@@ -1,0 +1,10 @@
+{
+  "source": "v2 user-engagement k1 rejected validation",
+  "selection_used": false,
+  "sql_sha256": "074b0e029e59d25c1c44e6ae8db50c11327daa50801ec3963738bd70e5f5c7fa",
+  "diagnostic_statement_limit_seconds": 30,
+  "audit": {
+    "result": "error",
+    "why": "returned 3544 rows for 3545 seeds (1 seeds missing); return one row per seed"
+  }
+}

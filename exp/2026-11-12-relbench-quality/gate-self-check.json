@@ -5,9 +5,11 @@
   "used_for_selection": false,
   "panels": {
     "rel-stack": {
-      "candidate_path": "results/gate-self-check/mavra-push-rel-stack-r1",
+      "candidate_path": "/root/agentdb-quality-20261112/results/gate-self-check/mavra-push-rel-stack-r1",
       "sessions": 15,
       "expected_sessions": 15,
+      "finished": true,
+      "run_error": null,
       "complete": true,
       "valid_sessions": 15,
       "reuse_cost": {
@@ -90,9 +92,11 @@
       "accepted": false
     },
     "rel-trial": {
-      "candidate_path": "results/gate-self-check/mavra-push-rel-trial-r1",
+      "candidate_path": "/root/agentdb-quality-20261112/results/gate-self-check/mavra-push-rel-trial-r1",
       "sessions": 15,
       "expected_sessions": 15,
+      "finished": true,
+      "run_error": null,
       "complete": true,
       "valid_sessions": 15,
       "reuse_cost": {
