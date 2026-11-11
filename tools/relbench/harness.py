@@ -133,7 +133,7 @@ ARMS = {
                        "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
                        "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
                        "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
-                       "budget_guidance": True, "reuse_validation_timeout": 45},
+                       "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True},
     # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
     # No feature tools, extraction, definition publication or composition are used.
     "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
@@ -895,6 +895,14 @@ Shared memory: agents on this database publish verified feature definitions and 
                 and (calls_used >= self.arm["reuse_llm_limit"] - 1 or tools_used >= self.arm["reuse_tool_limit"] - 1)):
             return [s for s in specs if s["function"]["name"] in ("validate_features", "submit")]
         return specs
+
+    def audit_rejection_feedback(self, audit):
+        if self.arm.get("audit_diagnostics") and audit.get("result") not in ("clean", "leak"):
+            return {"audit_error": {"counted": False, "reason": audit.get("why") or "audit did not finish cleanly",
+                                    "note": "Correct this SQL or seed-row error and validate again. Preserve every seed row "
+                                            "even when related rows are hidden. An audit error is not evidence of safety."}}
+        return {"leak": {"counted": False, "columns_reading_data_after_seed_time": audit.get("columns_differing"),
+                         "note": "these columns change when rows after seed_time are hidden; this validation does not count"}}
 
     def incumbent(self, t, k, seeds):
         """Refit the previous cutoff's final feature SQL on cutoff k and score it on the validation seeds (no LLM)."""
@@ -1792,6 +1800,8 @@ Shared memory: agents on this database publish verified feature definitions and 
                                                    "audit_result": leak.get("result"),
                                                    "leaking_columns": leak.get("columns_differing"), "n_features": xtr.shape[1],
                                                    "sql": sql, "importance": [c for c, _ in imp[:30]], "columns": list(xtr.columns)})
+                        if self.arm.get("audit_diagnostics") and leak.get("result") not in ("clean", "leak"):
+                            rec["validations"][-1]["audit_error"] = leak.get("why")
                         if sanitized:
                             rec["validations"][-1]["sanitization"] = sanitized
                             rec["validations"][-1]["requested_sql"] = requested_sql
@@ -1806,8 +1816,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                                                 "note": "Only the remaining outputs passed fresh value reproduction and leakage checks. "
                                                         "Submit without sql to keep the best checked candidate; do not reintroduce these columns."}
                         if leaking:
-                            out["leak"] = {"counted": False, "columns_reading_data_after_seed_time": leak.get("columns_differing"),
-                                           "note": "these columns change when rows after seed_time are hidden; this validation does not count"}
+                            out.update(self.audit_rejection_feedback(leak))
                         entry.update(sql_seconds=s1 + s2, train_seconds=tt, audit_seconds=audit_s)
                     except Exception as err:  # noqa: BLE001 - contract errors and anything unexpected go back to the agent
                         # a failed validation uses one of the validations but does not count as "no improvement"

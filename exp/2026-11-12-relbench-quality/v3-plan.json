@@ -3,21 +3,25 @@
   "parent": "mavra-portfolio",
   "design_date": "2026-11-12",
   "recorded_at_utc": "2026-11-11 18:27:40 UTC",
+  "audit_feedback_amendment_at_utc": "2026-11-11 18:35:20 UTC",
   "status": "prospective development candidate; not paper evidence",
   "observed_without_new_test_scores": [
     "The budgeted arms enforce three model calls and six agent tools on warm sessions, but system_prompt still advertises forty calls, and select_message says five calls after reaching the goal.",
     "Several completed v1 warm sessions used the enforced budget without validating a changed feature program. Both frozen runs remain untouched.",
-    "The memory-start program is bounded to forty-five seconds per statement, but agent validation still permits six-hundred-second statements. This can lose the time advantage when an attempted improvement is expensive."
+    "The memory-start program is bounded to forty-five seconds per statement, but agent validation still permits six-hundred-second statements. This can lose the time advantage when an attempted improvement is expensive.",
+    "Before any directed cell launched, a separate SQL-only replay of a v2 rejected validation reproduced an audit error: returned 3544 rows for 3545 seeds. Existing feedback mislabels unknown/error audits as leakage with no bad-column names and drops the actual error reason."
   ],
   "changes": [
     "Advertise the actual warm-session model and tool budget and the SQL statement limit.",
     "Remind the agent of remaining calls and tools after each response. On the last call or with only one tool slot left, expose validation and submit only, so exploration leaves a final decision opportunity.",
-    "Apply the forty-five-second statement limit to warm agent validations. Retain the already audited incumbent on failure."
+    "Apply the forty-five-second statement limit to warm agent validations. Retain the already audited incumbent on failure.",
+    "In this candidate, report the concrete audit-error reason to the agent and record it separately. Keep the same rejection and fresh-audit requirements. Actual detected leakage still reports the identified columns."
   ],
   "unchanged": [
     "All v2 cold-start search, union, projection, feature selection, learning and test boundary rules.",
     "Three warm model calls, six executed agent tools, original fixed learner, data, seeds, service and benchmark scoring.",
     "Both prior arms and their in-flight frozen sources and all outcomes."
   ],
-  "acceptance": "Same strict unrounded six cost columns and six task quality gates as v2. Full from-empty run; all extra work accounted. No claim before complete tests."
+  "acceptance": "Same strict unrounded six cost columns and six task quality gates as v2. Full from-empty run; all extra work accounted. No claim before complete tests.",
+  "zero_call_preparation": "The first frozen v3 preparation was superseded before either experiment cell launched; both queue processes were stopped and all initial frozen sources, manifests and launch records retained in quality-20261112-v3. The actual revised study will use quality-20261112-v3b."
 }

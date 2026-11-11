@@ -111,5 +111,7 @@
     "refit_after_projection": true
   },
   "fit_accounting": "feature_fits records every learner fit in the measured search, including rejected validations, reference starts, pruning, sanitization and the complementary union; both cold attempts are charged. Internal memory fitting is additional work and does not claim the same total fit count as eight agent validations.",
-  "design_timing": "Budget guidance and warm validation timeout correction recorded before any v1 or v2 candidate test scores were inspected; prior runs remain frozen."
+  "design_timing": "Budget guidance and warm validation timeout correction recorded before any v1 or v2 candidate test scores were inspected; prior runs remain frozen.",
+  "audit_feedback": "New arm returns concrete audit-error reasons; actual leaks still return identified columns. Unknown/error audits remain rejected and need a fresh complete audit.",
+  "preparation_revision": "v3b; initial v3 source freeze retained, superseded before either experiment launched (zero model calls)"
 }

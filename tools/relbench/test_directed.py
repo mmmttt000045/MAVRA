@@ -56,6 +56,17 @@ class DirectedBudgetTests(unittest.TestCase):
         self.assertEqual(self.run.post_goal_window(2, 2), 1)
         self.assertEqual(self.run.post_goal_window(2, 3), 0)
 
+    def test_failed_audit_reports_the_error_without_claiming_a_detected_leak(self):
+        feedback = self.run.audit_rejection_feedback({'result': 'error', 'why': '1 seed missing'})
+        self.assertIn('1 seed missing', feedback['audit_error']['reason'])
+        self.assertFalse(feedback['audit_error']['counted'])
+        self.assertNotIn('leak', feedback)
+        leak = self.run.audit_rejection_feedback({'result': 'leak', 'columns_differing': ['future']})
+        self.assertEqual(leak['leak']['columns_reading_data_after_seed_time'], ['future'])
+        self.assertFalse(leak['leak']['counted'])
+        self.run.arm = harness.ARMS['mavra-portfolio']
+        self.assertIn('leak', self.run.audit_rejection_feedback({'result': 'error', 'why': '1 seed missing'}))
+
 
 if __name__ == '__main__':
     unittest.main()
