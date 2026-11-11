@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo overleaf/ -> paper repo (forward sync 2ba3fd6: enrich Figure 2 architecture.pdf with structured technical micro-diagrams while preserving all 6 visual review fixes)",
-  "previous_head": "9d7a85d723a50a5542fc255a96ebc2ff3165dd10",
-  "remote_commit": "5ebcaca7fa87e8fa046e2f7a0fd7f474148b7d71",
+  "direction": "main repo overleaf/ -> paper repo (forward sync 261e4c7: compact Maintain strip in Figure 2 by 34% and clarify 3-stage left-to-right visual flow)",
+  "previous_head": "5ebcaca7fa87e8fa046e2f7a0fd7f474148b7d71",
+  "remote_commit": "574ab8ca11a52bc6b1b5d4d231be5cb348065917",
   "pending_payload": null,
   "changed_paths": [
     "figures/architecture.pdf",
@@ -18,12 +18,12 @@
   "validation": {
     "built_on": "this workstation",
     "status": "tectonic overleaf/main.tex clean (12-page body + Conclusion + Acknowledgment before References on p.12, 14 pages total, 0 undefined references)",
-    "identical_to_remote": "overleaf/ dependency closure matches icde-2027-paper main @ 5ebcaca7fa87e8fa046e2f7a0fd7f474148b7d71",
-    "content": "Enriched Figure 2 (figures/architecture.pdf) technical depth and visual density across all modules (session-log UI + Core/slot separation + G1-G7 replay oracle; 4-band (B,I,C,E) tuple card + compositional join wire + 8-row shared H table; bge-m3 recall ring + XLM-R x3 matcher + calibrated .1/.9 threshold bar; One Read-Only Snapshot D_s with metric compilation and point-in-time <= t_i feature window + bidirectional DB arrow; Version Filter 2/5 bar + Delta Probe schematic + Single-Edit Repair card + PostgreSQL trigger metadata) and aligned figures/architecture.tex and sections/03-overview.tex"
+    "identical_to_remote": "overleaf/ dependency closure matches icde-2027-paper main @ 574ab8ca11a52bc6b1b5d4d231be5cb348065917",
+    "content": "Compacted Maintain height in Figure 2 (figures/architecture.pdf) from 16.4mm to 10.8mm (overall figure 95.6mm -> 90.0mm) and replaced unintroduced symbols/acronyms with self-explanatory 3-stage left-to-right visual cards (1. Skip Unchanged Tables -> 2. Probe New Rows Delta T -> 3. Repair or Withhold), aligned with figures/architecture.tex and sections/03-overview.tex"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/5ebcaca7fa87e8fa046e2f7a0fd7f474148b7d71",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: balance Figure 2 visual abstraction with richer technical depth).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/574ab8ca11a52bc6b1b5d4d231be5cb348065917",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11: make Maintain lower in height and clearer in visual meaning).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "2ba3fd6d35a6d465e37f3d67c0f7534be498b0f8"
+  "source_commit": "261e4c748cf8e2891c420686e00f4c629a9dd306"
 }
