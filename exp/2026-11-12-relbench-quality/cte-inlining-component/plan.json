@@ -1,0 +1,12 @@
+{
+  "status": "isolated execution component; seven formal candidates remain frozen",
+  "recorded_at_utc": "2026-11-11 23:58:13 UTC",
+  "basis": "V5 Trial k3 incumbent preparation ran repeated long queries. Read-only AST inspection of own v5 study-adverse k1 found a default-materialized grouped CTE ae, reused by correlated feature reads. No test scores select a rewrite.",
+  "hypothesis": "For eligible nonrecursive aggregate CTEs referenced multiple times, requesting PostgreSQL inlining may allow entity/time predicates and source indexes to avoid repeated scans of a large materialized intermediate result.",
+  "scope": "Use pglast already present in the unchanged server environment. Only a single SELECT, grouped CTEs, read-only bodies, default materialization, and a conservative aggregate-function allowlist qualify. Preserve explicit materialization, recursive clauses, all expressions, joins, filters, grouping and time bounds. No hints selected from test metrics.",
+  "check": "In a separate first-cutoff Trial database, replay own archived v5 adverse feature SQL only as a diagnostic control. Compare original and rewritten values on a fixed training-only audit seed subset. Bound each control query to45s. Measure rewritten full train/validation SQL and refit the unchanged learner; compare its validation score to the archived same-program score and perform a fresh native future-row audit. Do not read held-out label files, use another arm's program to initialize an optimizer, or change the running seven methods.",
+  "admission": "Require exact sampled matrix equality, clean native audit, full rewritten validation-score reproduction within1e-8, rewritten train/validation SQL <=45s total, and at least2x sampled execution speedup. A timed-out control is retained as an incomplete comparison and cannot count as exact equivalence evidence. Otherwise retain the negative result and do not integrate on this evidence.",
+  "execution": "Wait for the typed-attribute component and an available evaluation slot; at most four formal/component compute cells concurrently. Zero model-service calls. Preserve queries, timings, failures, source hashes and preparation records. Aggregate model-spend cap remains25CNY.",
+  "reference": "https://www.postgresql.org/docs/current/queries-with.html#QUERIES-WITH-CTE-MATERIALIZATION",
+  "limits": "A database execution component is not six-task quality evidence, a full cost gate or a universal inlining speedup. Existing test data is already post-hoc development data."
+}
