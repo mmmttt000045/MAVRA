@@ -5,6 +5,7 @@ This is reporting after a run, never an optimization input. It keeps the paper's
 fixed pricing, failed-session fallback and cutoff definitions unchanged.
 """
 import argparse
+import hashlib
 import json
 import statistics
 from pathlib import Path
@@ -32,17 +33,23 @@ def load(path, reference):
     return data
 
 
-def aggregate(data, denominator):
-    late = [r for (_, k), r in data.items() if k >= 2]
+def aggregate(data, denominator, cutoffs=(2, 3, 4, 5)):
+    late = [r for (_, k), r in data.items() if k in cutoffs]
     tokens = sum(r["tokens"] for r in late)
     return {"tokens": tokens, "token_ratio": tokens / denominator, "llm_calls": sum(r["llm"] for r in late),
             "tool_calls": sum(r["tools"] for r in late), "agent_seconds": sum(r["agent_s"] for r in late),
             "usd": sum(r["cost"]["offpeak"] for r in late)}
 
 
+def session_hashes(path):
+    files = [p for p in (path / "sessions").glob("*.json") if not p.name.endswith(".partial.json")]
+    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(files)}
+
+
 def check(source, candidates, arm, run):
     output = {"schema_version": 1, "candidate_arm": arm, "candidate_run": run,
-              "used_for_selection": False, "panels": {}}
+              "used_for_selection": False, "panels": {},
+              "reporting_code_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     for db, directory in DIRECTORIES.items():
         base_dir = source / "results" / directory
         none = base_dir / f"none-{db}-r1"
@@ -71,6 +78,14 @@ def check(source, candidates, arm, run):
         report["original_mavra_cost"] = baseline_cost
         report["cost_pass"] = {name: cost[name] <= baseline_cost[name] for name in COSTS}
         report["end_to_end_tokens"] = sum(r["tokens"] for r in current.values())
+        all_denominator = sum(r["tokens"] for r in old["none"].values())
+        cold_denominator = sum(r["tokens"] for (_, k), r in old["none"].items() if k == 1)
+        report["all_cutoff_cost"] = aggregate(current, all_denominator, (1, 2, 3, 4, 5))
+        report["original_all_cutoff_cost"] = aggregate(old["mavra-push"], all_denominator, (1, 2, 3, 4, 5))
+        report["cold_start_cost"] = aggregate(current, cold_denominator, (1,))
+        report["original_cold_start_cost"] = aggregate(old["mavra-push"], cold_denominator, (1,))
+        report["candidate_session_sha256"] = session_hashes(path)
+        report["reported_session_sha256"] = {a: session_hashes(base_dir / f"{a}-{db}-r1") for a in ARMS}
         report["quality"] = {}
         for task in sorted({t for t, _ in expected}):
             keys = [key for key in expected if key[0] == task]

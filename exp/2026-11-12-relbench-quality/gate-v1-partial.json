@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "candidate_arm": "mavra-budgeted",
+  "candidate_run": 1,
+  "used_for_selection": false,
+  "panels": {
+    "rel-stack": {
+      "candidate_path": "/root/agentdb-quality-20261112/results/quality-20261112-v1/mavra-budgeted-rel-stack-r1",
+      "sessions": 15,
+      "expected_sessions": 15,
+      "finished": true,
+      "run_error": null,
+      "complete": true,
+      "valid_sessions": 15,
+      "reuse_cost": {
+        "tokens": 359429,
+        "token_ratio": 0.08342158736568966,
+        "llm_calls": 34,
+        "tool_calls": 65,
+        "agent_seconds": 1068.6846795082092,
+        "usd": 0.08485435799999999
+      },
+      "original_mavra_cost": {
+        "tokens": 1203618,
+        "token_ratio": 0.2793534304185713,
+        "llm_calls": 52,
+        "tool_calls": 74,
+        "agent_seconds": 3186.731157064438,
+        "usd": 0.17121858599999998
+      },
+      "cost_pass": {
+        "tokens": true,
+        "token_ratio": true,
+        "llm_calls": true,
+        "tool_calls": true,
+        "agent_seconds": true,
+        "usd": true
+      },
+      "end_to_end_tokens": 1595998,
+      "all_cutoff_cost": {
+        "tokens": 1595998,
+        "token_ratio": 0.32394125776643035,
+        "llm_calls": 111,
+        "tool_calls": 190,
+        "agent_seconds": 2859.4770448207855,
+        "usd": 0.18360203999999997
+      },
+      "original_all_cutoff_cost": {
+        "tokens": 2004518,
+        "token_ratio": 0.40685895730160654,
+        "llm_calls": 93,
+        "tool_calls": 142,
+        "agent_seconds": 5123.593461036682,
+        "usd": 0.25696743
+      },
+      "cold_start_cost": {
+        "tokens": 1236569,
+        "token_ratio": 2.0001827804628713,
+        "llm_calls": 77,
+        "tool_calls": 125,
+        "agent_seconds": 1790.7923653125763,
+        "usd": 0.098747682
+      },
+      "original_cold_start_cost": {
+        "tokens": 800900,
+        "token_ratio": 1.2954767496781123,
+        "llm_calls": 41,
+        "tool_calls": 68,
+        "agent_seconds": 1936.8623039722443,
+        "usd": 0.08574884399999999
+      },
+      "candidate_session_sha256": {
+        "post_votes-k1.json": "03102885273c6c2e9623d070df7ebb7249bc73f1e2f0a4cc12d65192ce498409",
+        "post_votes-k2.json": "f205158397d0dd690fa777e59ae97ad05ad70ff839d2ccc893bb5a1e8c273b91",
+        "post_votes-k3.json": "f6f485dee9445fd08b20d104b54e1f3db5c30a1f483d62977de6c1f787e9798e",
+        "post_votes-k4.json": "98be49431d2ca8d5b4bc25235e94665db2045d7f55c8f9346e47544f4224a84d",
+        "post_votes-k5.json": "a4c35fc2fc73900c95993e4dd4e5fadfe9d170d614949d71511f79d40713b58e",
+        "user_badge-k1.json": "5020585fc4fd9ccc0c761dc3561270a2d9e373dcd187453281f5eaf50ff5dce6",
+        "user_badge-k2.json": "a04a006580b5860ad419fa6d463b163ae5ba9995ac7684e65d9690beaa62e5a8",
+        "user_badge-k3.json": "70369069d3cd16e2ffe0a1b47b2fa2295e17237b22a5038e6be04fc51bc224f8",
+        "user_badge-k4.json": "989f1405d863ed191f8c29df7c954a7927d5070928115b179be8ab789b864dcb",
+        "user_badge-k5.json": "5f58e8f3d011f5133b8e205acaaf9c78cce199c9eddde039feee56d854bde92e",
+        "user_engagement-k1.json": "b82732e89ae11a761b9b0900e47566621a2a4a51846f637187fdc80bb3a286a7",
+        "user_engagement-k2.json": "ff38ae009d9acacdd76d3e9cea9dc05e104bf3319cd7d1026448cbce5837e8b9",
+        "user_engagement-k3.json": "d9ff4f8821add09b678476928439286a8b16c545bd8aa78b24cc96e1b03422a8",
+        "user_engagement-k4.json": "6fb11e5aac9b5cbcefb40b25af19e1036d24c7d5af086432a3b96022ab5012b0",
+        "user_engagement-k5.json": "d57365e85e17b34f74d7f61a3ccac0ab8d9e233d8ea4af7ac333900c05a9b7fc"
+      },
+      "reported_session_sha256": {
+        "none": {
+          "post_votes-k1.json": "0cdd98537172c715ecbdc1c89803d00688d5b7f1b72b2d0278f62ab1ca6929bb",
+          "post_votes-k2.json": "837f3b0ef81ff46908a384849ad0cb44766a46c064e9e51702eec546d252f06e",
+          "post_votes-k3.json": "0f512a7e017bf04113898fc651dafaecee5fbe17fc55aa12a3e9f7144c1d2940",
+          "post_votes-k4.json": "767a97764cff3e7cb20be0988d74340587804699d97147fec3a23b54dc79d856",
+          "post_votes-k5.json": "5c488eb943685fe9fc05f15a9f4c8afa605531f5381f0bcb526cd4d20aae5943",
+          "user_badge-k1.json": "396b1c77f441f1949b0323490a4313c76c381ae6bf7fb7b0c8b1c8f8c99b0f32",
+          "user_badge-k2.json": "41756e33bb2cf897851871975ecc3d049dd2a3adb4450afc93675938eb1a6da8",
+          "user_badge-k3.json": "647380418992da261ede6dcef923fd724b1d34204d2a0231998f4362861847df",
+          "user_badge-k4.json": "df193a5b94d6f647d6684c50c00efe24b39499a2c2d82ceb7f7938d3a4b60bca",
+          "user_badge-k5.json": "e40cf31364f44551c37caa7b4d7d11a3ff50766bb026da1c4ea887b95d463fc3",
+          "user_engagement-k1.json": "58d7a8f50bf825d8499f754c4c1bbcdba4b914e17376e173c138dc0493cd057e",
+          "user_engagement-k2.json": "3df88d1129a012468dfe3274f2b8691bf15a30a6d22a4c6d72d7d143fced9247",
+          "user_engagement-k3.json": "c123015457f434954218aa3c02276bda7b27912eb3719384ade9c1c1cda9df85",
+          "user_engagement-k4.json": "0cb715dcaf4a6ff97f4618ab8e48f66ab73b5db66a2dee0fe74e176ef92e4861",
+          "user_engagement-k5.json": "7b5215bd94274aaaef10ac1f8e6d3d53997f9c81f2fb2b0ee09ef9d09c69bb55"
+        },
+        "ace": {
+          "post_votes-k1.json": "a83e7b7bb2f97254b4843155e6803b8c0da312c2955c71541c204ad069d333a9",
+          "post_votes-k2.json": "5a7ef4ef7f8b604a3a72725bee60985abc5ee83ac3e7294038becd1cd5cde9de",
+          "post_votes-k3.json": "46439effbd6d5a4cf3fece9f46c2a5161da06677d3dbbd9b9d3af2db63eee5a4",
+          "post_votes-k4.json": "6a6229c1ae75ec4ae5a108912215cac1145bbdc3773ac7bb89d8cbc862557b7d",
+          "post_votes-k5.json": "fa149f06a62d05b1fc13f8a6268b0de9246b668f45845bd981d53acfc6768192",
+          "user_badge-k1.json": "25a8eae90b005267d733deb29defc86c326b18a9896a3f98328ffe9943f4d863",
+          "user_badge-k2.json": "70c46acc2d8e602b7b2e15618397eedce665c0c8a17632b4a75a8aa0fdd52967",
+          "user_badge-k3.json": "cd90596acfc409eb53a2172d8f94c793e63e0c86860114acac8f5145e9dacd1e",
+          "user_badge-k4.json": "a4ea16938d6be439a991c9c3e77979d54a281c0a7ddae510e29ae5ae1947dd2f",
+          "user_badge-k5.json": "8bc34725dc046f5eefe36473bea92d67cf36cbab501535e923d076e472ab94a1",
+          "user_engagement-k1.json": "ea79c4367b6ae5f515a922dbc980cc6a424389ad3341a6d4020834f064a8b360",
+          "user_engagement-k2.json": "ed78dc0a94cbff30166224892a930972ebc842f6c9c4e420e70181944ca88c0d",
+          "user_engagement-k3.json": "af41aedb4a4741e5bd36767742aa443bce6f6ae90cd92bec321705c80f0ce937",
+          "user_engagement-k4.json": "c6010136bf6a83cf1e6e4895f31d0064a29fe732a9c5099ce170a865a964fb12",
+          "user_engagement-k5.json": "6071fcd83de774ef6e4943c8d6b9c7b7fb4ba72c9ebea6c3165df4c5d2edccdd"
+        },
+        "gmemory": {
+          "post_votes-k1.json": "a831854e78055edbf7e74f3a3d0fcaec0d14b31bc5bb1c87f1d639aebb9a2fb9",
+          "post_votes-k2.json": "c9d1f1ad64e292a3cfbef952727fa9a347e82042b4e88056d51957f2e22098f9",
+          "post_votes-k3.json": "28a471c76a2959bd36f5bbf31b91d4b864e3271829e160360d66bdc7d390cc9f",
+          "post_votes-k4.json": "6c7ef0678991a269bb1e17c5477081354e7f72eeb9473a61297593a08bc6efe0",
+          "post_votes-k5.json": "4c4d72e828ce34eb57ee24fe608a2e7c205010a7024e224ba33ab3da7e933240",
+          "user_badge-k1.json": "f65708913ecddfff5934d101172d8e1ad91e48de0c1bdf38bd525026a63d2a5a",
+          "user_badge-k2.json": "0d3d727cca9224040cd0b64fe2bb14073c655deeb030e7c5c72c90c6a899762d",
+          "user_badge-k3.json": "c1af81e1d92667dd14655dba8b345466115f2bbfce1e4826a49a96b2d0fbc93c",
+          "user_badge-k4.json": "5a6b6b409404f4f79903a43329b96d00dfc3fedbe1165bac930f11d8dc4f74db",
+          "user_badge-k5.json": "e952ad0ee55a6b5ffbfa16aea6f8bef4fdf4e9b84ba4332c354d2230a69a99ba",
+          "user_engagement-k1.json": "243685038879daf14f3837585008ea67f0ec02437a27fbbb89a1dad20aba7a87",
+          "user_engagement-k2.json": "9c16a95cb78e4d6674aabe58981cd7b484f76419e6d994b1f3d7228e50b5459e",
+          "user_engagement-k3.json": "3392e416fcf2d8babf9f8ed3e00775ee5a625316a48e10fc0b7e158232a2b062",
+          "user_engagement-k4.json": "1239652cad3c6bf36cd91471fd5beb4774fbbd22c20e5ba7455bb8f7dbeb8e22",
+          "user_engagement-k5.json": "e52c2e9995cd6d26ac62c56a4f2456388a5e0615d64c59dd788ad0c9235ab92b"
+        },
+        "awm": {
+          "post_votes-k1.json": "91f2e6333fd79d7451b3640b8b1a52568ed1f2ad1e0ea0bf5620cb0aaab165e7",
+          "post_votes-k2.json": "790be774c83f0403802beedfdd704e4484fa07ec89c286c53c4c5f354b9de4cf",
+          "post_votes-k3.json": "11da1ab348d1bcaf982442a6b4befe64bf5755aba575a1c5e71161d55d0e563d",
+          "post_votes-k4.json": "cf94e424ee19e5863bcc1f99cf2fb47e2c4f688f6bad3149ea58287430b72d24",
+          "post_votes-k5.json": "bc897cdaefada7ad812ee84bba7d07ec2b4ea02dcb5ceba316431e1a0a977bd3",
+          "user_badge-k1.json": "40cda26770309ab873bb6057a24fc8bd1ac39ae23aad4f5342fdc9787ccb7ae1",
+          "user_badge-k2.json": "1f4a559cd0e3e00fd4e1b02a0ea93d097127ee53ade2f076f873d91beb88e0cc",
+          "user_badge-k3.json": "beb2a864624232a04c48fd888eeb068d2555858a410e4eb82d4a3141b1abb731",
+          "user_badge-k4.json": "cc4c89baa8b90c4f35d5959364dd3dfc42e52158bf1c25663248351214b32a78",
+          "user_badge-k5.json": "7047d0313c271a37b9a196e6d9fb077b2f275159cb0cf38535156f7d726947fd",
+          "user_engagement-k1.json": "0b084eea1d4c93657880a2880f0d952cda1414cb6e6e9f700c7b5880f8e0bf79",
+          "user_engagement-k2.json": "80dfe1693469b1459cf6ae1fbee0dc8ddc9224d9f8d39aba7919af5199ee94ed",
+          "user_engagement-k3.json": "769d27582a32cfce257d5554ff2a0d2ee9eb054ac3bcf808edc1804ab2b2dab9",
+          "user_engagement-k4.json": "653cdcb15927002fdf83315e6d1bdb70318ecb983a58ef78c5801dd39d46cef6",
+          "user_engagement-k5.json": "25dc7d49ff23c3188c5bcfa2243616db940605f7fcc802834c0fe1fa5cacfb37"
+        },
+        "tecod": {
+          "post_votes-k1.json": "5bd882d278d43b9077c2ec26d48110c53a0a44e8e60e44acb533998b197a00ba",
+          "post_votes-k2.json": "e2cb93613ea5764968dd842394dff25bd449de7631098c9de487a9e0c7d9ebd3",
+          "post_votes-k3.json": "c50823ead3ca601ecbd7b9736d8300f5d1ceaa4c963b0e04886f4402efd959c7",
+          "post_votes-k4.json": "3ccc0c6c224aca924724387226e495583e9730617ea28c87a574f4060c107134",
+          "post_votes-k5.json": "1da7284a0b9b7ba013dccba2fe78cc5319ef459fead0d3d75ccced4e2fa77f4b",
+          "user_badge-k1.json": "8ed0ba38c22c463f76343b5df7451db8bffab767231f0170c98a1b98221d04b8",
+          "user_badge-k2.json": "92c10785a09f86b092d3f2d943219552d34ffa877f710ce36d425f2a79b9d823",
+          "user_badge-k3.json": "d1dbda65560263b22cd8909b83e655ba801716481e11da943a61a9a64ddcd174",
+          "user_badge-k4.json": "b9a06afe0d6a0169b3a1c2f2e6dc7234cca2f3001d6376975016781170cfb995",
+          "user_badge-k5.json": "bc46578847f090117f8fd77a318b975e5cd26dca6f7bf32a6562f2eaf3e3463a",
+          "user_engagement-k1.json": "c29b4c6511c7a1b2a1a0116adae1bea58792c7c1a8ea4050187018ac044a18a0",
+          "user_engagement-k2.json": "581657224ed1de72a92620d8c5a71cbfcc7fddc10602d870ebd0ec5bb9418a28",
+          "user_engagement-k3.json": "ba98570e6ec45871ae6bdd05b86a69590e67be12c4b89f4dfda7599086c00120",
+          "user_engagement-k4.json": "3a2f38adff47742e42c5ea05d3440e9462f490c43d13f249fabb1259c030b221",
+          "user_engagement-k5.json": "7c813cd4e0711e106212be383da248f7fb07971c68334aeb22eeb3ab67bd5b45"
+        },
+        "featpilot": {
+          "post_votes-k1.json": "6eeb19b1dac18b2b3e00f19859399a014bee65869347e10eb4325eb1b18c829d",
+          "post_votes-k2.json": "be7fc76660d4e77afdd2fad983f61440df6f85c79584fe8676a5ab77abc607ed",
+          "post_votes-k3.json": "a7a0d2cf53732c895218d22ad24570182abb436f490c291c6019cd18d1f5aa04",
+          "post_votes-k4.json": "ba0db5bc9a417d72fce8ad61f97f80981b08856b26a2c37c70a6ed4fd7a3ef11",
+          "post_votes-k5.json": "01f1e03c7c6d929f6e38805231d694b8c9d2d1263047fa5dcf31db672627d2f6",
+          "user_badge-k1.json": "4711e95e5b06878d76333cff205b21a761f68af39de3aa8225c24396a07deef3",
+          "user_badge-k2.json": "1a89055b9448bafed13ab9aa1250ac9365d91859e83f838d00ef4003b9c2bb97",
+          "user_badge-k3.json": "1aefec93e7e185261dd303139c307c223dbbbd5d335e31aa7db3ad6b3862ed14",
+          "user_badge-k4.json": "e7c9650ea258e34c624b24a063ce0e626658144d8a2f6bc7e9b6d2afe102a84b",
+          "user_badge-k5.json": "01164ecc9c5d25f978e70fb0952ee5929f69f0161c920eeb2e4cef22866f7b07",
+          "user_engagement-k1.json": "8a6407b4ed694384dd8e924f5e68fc50ce9b7aefab4cc23b360019f50f6d4cb6",
+          "user_engagement-k2.json": "309608d567491118ce7a044115d5493b2b1e4d4832de719abe3065dcadb05a7c",
+          "user_engagement-k3.json": "cbf97331b65e1b52af55484917b0ff7a9430e06c5bb921c8aee502326aded1e2",
+          "user_engagement-k4.json": "292be26f7bf0acac91a4868b53be24236376685e775bfd820b76e877318ef504",
+          "user_engagement-k5.json": "b5c8921605a1bfc63be648e24e565bfb72cdbd050e8a216176ac39a5680bfba0"
+        },
+        "mavra-push": {
+          "post_votes-k1.json": "06545c1e6d949dbcae364ee78062db9b25198e97ee16f622be5da17896600753",
+          "post_votes-k2.json": "a874672d58a138d6ecd77c7064b73025536184456e0fb7f6273497719398528d",
+          "post_votes-k3.json": "e1f162aaa7ed252936188c4140875e048858190922085e14250331e66ee196a1",
+          "post_votes-k4.json": "fc7cb66cc9e7cb7d9524c06c0429326f6a3386732e6d98b7269dda2a6d11764a",
+          "post_votes-k5.json": "7ece30976a8495a2ba3f79fb6dd8e0130ec0a1ca90214adc7d8b79c8f285cd1e",
+          "user_badge-k1.json": "d673a4faffcfd83b862204a9850dd076274a3a46db87492a02b6b7caf358df54",
+          "user_badge-k2.json": "17eb65f59203a6b74654334e3cf0e23fd21fd00bfa69f2483790deabd385e089",
+          "user_badge-k3.json": "2d8998eeca0e2b154988c57e03f1f298c43a33f8e404123ba6b2373c20b5cf6a",
+          "user_badge-k4.json": "4a3d2c75556093bff618d255a5c3dcd134f5c01f47e8761888f6f883875dfe2f",
+          "user_badge-k5.json": "2334d2ab6f70a0324f22d496d58809e0b2b58920254fea1f37974733b24c77bb",
+          "user_engagement-k1.json": "dc044c54842e9c69092e4be8d385452bbfbd85dda0078f50bf3b27d3c0ba7f51",
+          "user_engagement-k2.json": "8c7edfa6091889b113142452d35caf420b5cf619a602973c9ff282bcd08624df",
+          "user_engagement-k3.json": "0f4c9ed448bbd84ce0ff7723223998c5dd141fbd271f038ae0738a707d67dff9",
+          "user_engagement-k4.json": "7e88fd8b4a1d0cb80669bbc7445ca0f6f117e3fd48961b7ddf4979172116e9d3",
+          "user_engagement-k5.json": "353dbdebdceff4916bae06df0d7c06cfccc5c65495a6f1115141a6360bafee93"
+        }
+      },
+      "quality": {
+        "post-votes": {
+          "higher": false,
+          "candidate": 0.06433950157505082,
+          "best_reported_arm": "ace",
+          "best_reported_score": 0.06368830278308386,
+          "all_reported_scores": {
+            "none": 0.06454176835830355,
+            "ace": 0.06368830278308386,
+            "gmemory": 0.06429119246127868,
+            "awm": 0.06420385498773679,
+            "tecod": 0.06437215189897431,
+            "featpilot": 0.06539816938269699,
+            "mavra-push": 0.06439223346241725
+          },
+          "first_or_tied": false
+        },
+        "user-badge": {
+          "higher": true,
+          "candidate": 0.832148113095664,
+          "best_reported_arm": "gmemory",
+          "best_reported_score": 0.8600680693221491,
+          "all_reported_scores": {
+            "none": 0.8588115098025881,
+            "ace": 0.8553720769226648,
+            "gmemory": 0.8600680693221491,
+            "awm": 0.8599572064500334,
+            "tecod": 0.8344583451742935,
+            "featpilot": 0.8295968439020507,
+            "mavra-push": 0.8344683672443363
+          },
+          "first_or_tied": false
+        },
+        "user-engagement": {
+          "higher": true,
+          "candidate": 0.8864384143608739,
+          "best_reported_arm": "mavra-push",
+          "best_reported_score": 0.8888124096912877,
+          "all_reported_scores": {
+            "none": 0.8843190100944827,
+            "ace": 0.8192511348323805,
+            "gmemory": 0.8851934441573788,
+            "awm": 0.8828045517709453,
+            "tecod": 0.8862843155607312,
+            "featpilot": 0.877397687977767,
+            "mavra-push": 0.8888124096912877
+          },
+          "first_or_tied": false
+        }
+      },
+      "all_costs_preserved": true,
+      "all_qualities_first": false,
+      "accepted": false
+    },
+    "rel-trial": {
+      "candidate_path": "/root/agentdb-quality-20261112/results/quality-20261112-v1/mavra-budgeted-rel-trial-r1",
+      "sessions": 8,
+      "expected_sessions": 15,
+      "finished": false,
+      "run_error": null,
+      "complete": false,
+      "valid_sessions": 0,
+      "missing": [
+        [
+          "site-success",
+          4
+        ],
+        [
+          "site-success",
+          5
+        ],
+        [
+          "study-adverse",
+          3
+        ],
+        [
+          "study-adverse",
+          4
+        ],
+        [
+          "study-adverse",
+          5
+        ],
+        [
+          "study-outcome",
+          4
+        ],
+        [
+          "study-outcome",
+          5
+        ]
+      ]
+    }
+  },
+  "reporting_code_sha256": "d15bea00ebe6410ec0f43e6587057ca50a4a4c0dde106699ee11fb1175b6c3d0",
+  "accepted": false
+}

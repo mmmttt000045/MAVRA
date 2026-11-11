@@ -1,0 +1,10 @@
+{
+  "src/metric.rs": "7c18211b408b17086e166d205cbcb3d9ec0f077f77d81cd74942c0c5c30afa2f",
+  "src/middle/metrics.rs": "6e5752f81b181261ede1c35f9b9936aaf462fc381d702ed901f22ccf44d5ffc3",
+  "src/middle/features.rs": "ed75b67128b0e295dab7eb63ac0a018ce04e97382d645a4a19138fda0f5c1a19",
+  "tools/relbench/harness.py": "60169c8b32a69e9040e1cdb3a8b0c65cddbcdd4c2e0716f1f660b78a6eff953b",
+  "tools/relbench/feature_selection.py": "d8935653cc86fa7ab9830e0daaf474e7fcfd2c532c1bfa37540d94321c197fca",
+  "exp/2026-11-12-relbench-quality/protocol-v4.json": "df3b169d0f452897750276cc396f70ec75035b9faf7c7bd54c7e787fb3d6a332",
+  "exp/2026-11-12-relbench-quality/v4-plan.json": "0189a4e568b674f6e59f6bf1a95333f612fca26ba9fba16e990127081d8f15db",
+  "binary": "734d38ea18b82c68b33bb3fbd4180db50fb806f399d26e0c3b76bf56f8be3c23"
+}
