@@ -25,7 +25,8 @@
     "awm": "paper-awm",
     "gmemory": "paper-gmemory",
     "mavra": "metric-global-full",
-    "tecod": "paper-tecod"
+    "tecod": "paper-tecod",
+    "recheck": "metric-global-recheck"
   },
   "metrics": [
     "M1",
@@ -83,5 +84,6 @@
   "pilot": "Run 1 is the pilot. If a defect is found in any method's harness, the run is stopped, the defect fixed, and the affected cells rerun; the earlier cells stay in the development record with their cost.",
   "reporting": "All completed runs are reported; no run is selected by outcome.",
   "budget_note": "Total authorization about CNY 40; the smoke test spent CNY 0.52 under its own ledger (results/change-study-20261101-smoke/budget), so the formal cap is 39.4.",
-  "addition_20261106": "User 2026-11-06: add TeCoD (SIGMOD 2026) as a fifth method after adding it to the RelBench comparison. Same banks, planner prompt, feedback, model and budget relay as the other methods; selection by tools/relbench/tecod_server.py (released TeCoD, one pool per cell; a pair joins the pool when its answer was correct); cells run with --arms tecod into results/change-study-20261106-tecod. The default arm list is unchanged, so earlier cells are never rerun."
+  "addition_20261106": "User 2026-11-06: add TeCoD (SIGMOD 2026) as a fifth method after adding it to the RelBench comparison. Same banks, planner prompt, feedback, model and budget relay as the other methods; selection by tools/relbench/tecod_server.py (released TeCoD, one pool per cell; a pair joins the pool when its answer was correct); cells run with --arms tecod into results/change-study-20261106-tecod. The default arm list is unchanged, so earlier cells are never rerun.",
+  "addition_20261111": "User 2026-11-11: add the closest simple baseline 'recheck' (shared definitions, the same derived conditions, definition-level recheck after every write, no cross-definition sharing of condition results, no repair: a failing definition is withheld and the agent explores on its own) and rerun MAVRA with the binary that adds the null and scale conditions and the history gate G9 (exp/2026-11-11-maint-hardening). Same banks, planner prompt, feedback (memory-service arm 'recheck' = MAVRA's feedback only), model and budget relay; cells run with --arms mavra,recheck into results/change-study-20261111. The default arm list is unchanged."
 }

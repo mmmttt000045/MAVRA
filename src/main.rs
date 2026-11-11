@@ -1,4 +1,5 @@
 mod agentmem;
+mod bindingbench;
 mod catalog;
 mod checks;
 mod db;
@@ -56,6 +57,8 @@ enum Cmd {
     MaintBench(maintbench::Options),
     /// 配对回放：场景评测中学到的指标库，在相同变化与留出题上比较各维护方式（不调用 LLM，独立数据库）
     ReplayBench(replaybench::Options),
+    /// 已发布定义在未见参数上的准确率：场景评测的定义编译到 39 个期间，与标准答案比较（不调用 LLM，独立数据库）
+    BindingBench(bindingbench::Options),
     /// 工作负载刻画：互不共享的 Agent 会话并发回答同一批分析题，逐次记录工具调用（真实模型，独立数据库）
     WorkloadBench(workloadbench::Options),
     /// 固定已学定义库的会话耗时分解：首次使用、热复用、更新后首次使用与突发并发（真实模型，独立数据库）
@@ -101,6 +104,7 @@ async fn main() -> Result<()> {
         Cmd::MetricBench(options) => metricbench::run(&cli.db, cli.pool, &cli.out, *options).await?,
         Cmd::MaintBench(options) => maintbench::run(&cli.db, cli.pool, &cli.out, options).await?,
         Cmd::ReplayBench(options) => replaybench::run(&cli.db, cli.pool, &cli.out, options).await?,
+        Cmd::BindingBench(options) => bindingbench::run(&cli.db, &cli.out, options).await?,
         Cmd::WorkloadBench(options) => workloadbench::run(&cli.db, cli.pool, &cli.out, options).await?,
         Cmd::SessionBench(options) => sessionbench::run(&cli.db, cli.pool, &cli.out, options).await?,
         Cmd::MemoryBench(options) => memorybench::run(&cli.db, cli.pool, &cli.out, options).await?,

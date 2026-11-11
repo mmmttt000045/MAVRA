@@ -35,7 +35,7 @@ pub struct Options {
     rows: u32,
     /// 维护方式；tabletest 为 dbt 式表级测试基线（不经中间层，见 `TABLE_TESTS`）
     #[arg(long, value_delimiter = ',', default_value = "condition,definition,definition-cache,schema,revoke,tabletest",
-          value_parser = ["condition", "definition", "definition-cache", "schema", "revoke", "tabletest"])]
+          value_parser = ["condition", "condition-nog9", "definition", "definition-cache", "schema", "revoke", "tabletest"])]
     policies: Vec<String>,
     /// G8 参照：第一个为各方法共用的主参照（准入与修复回归都用它）；其后的参照只对条件级再跑一遍
     #[arg(long, value_delimiter = ',', default_value = "snapshot,example,judge", value_parser = ["snapshot", "example", "judge"])]
@@ -266,6 +266,8 @@ fn config(policy: &str, oracle: &str) -> MiddleConfig {
         MiddleConfig { name: policy.into(), g8_snapshot: (oracle == "snapshot").then(|| LEARN_SCHEMA.to_string()), ..Default::default() };
     match policy {
         "condition" => MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, ..base },
+        // 消融：同 condition，但修复准入不做 G9（只靠学习时快照上的 G8）
+        "condition-nog9" => MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, history_check: false, ..base },
         "definition" => MiddleConfig { metric_maint: Maint::Definition, ..base },
         "definition-cache" => MiddleConfig { metric_maint: Maint::Definition, sql_cache: true, ..base },
         "schema" => MiddleConfig { metric_maint: Maint::Schema, ..base },
