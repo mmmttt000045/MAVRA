@@ -8,7 +8,8 @@ roots = [Path('/root/agentdb-quality-20261112/results/quality-20261112-v1'),
          Path('/root/agentdb-quality-directed-20261112/results/quality-20261112-v3b'),
          Path('/root/agentdb-quality-cached-safe-20261112/results/quality-20261112-v4b'),
          Path('/root/agentdb-quality-signal-20261112/results/quality-20261112-v5'),
-         Path('/root/agentdb-quality-refine-20261112/results/quality-20261112-v6')]
+         Path('/root/agentdb-quality-refine-20261112/results/quality-20261112-v6'),
+         Path('/root/agentdb-quality-early-20261112/results/quality-20261112-v7')]
 report = {}
 for output in roots:
     manifest = json.loads((output/'source-sha256.json').read_text())
