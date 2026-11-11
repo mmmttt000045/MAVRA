@@ -56,15 +56,15 @@ When a condition fails, we search a restricted single-edit space and publish a n
 {综上所述，本文的主要贡献如下：}
 
 \begin{itemize}
-\item \bi{\emph{Shared definitions and verification-guided publication.} We propose \system\ and introduce parameterized definitions unifying analytical metrics and predictive features, paired with answer-reproduction replay gates that prevent silent extraction loss.}
-{\emph{共享定义与验证引导发布。}提出 \system{} 及统一分析指标与预测特征的参数化定义，配合源答案回放门禁消除静默提取损失。}
+\item \bi{We propose \system\ and introduce parameterized definitions unifying analytical metrics and predictive features, paired with answer-reproduction replay gates that prevent silent extraction loss.}
+{我们提出 \system{} 及统一分析指标与预测特征的参数化定义，配合源答案回放门禁消除静默提取损失。}
 
-\item \bi{\emph{Catalog-supervised semantic lookup.} We formalize request--definition consistency over structured choices so the catalog self-labels synthetic pairs for an LLM-free cross-encoder matcher covering paraphrases, homonyms, ambiguity, and absent metrics.}
-{\emph{以目录为监督来源的语义检索。}基于结构化口径形式化一致性，由目录自动标注合成样本训练免在线 LLM 的交叉编码器匹配器，覆盖同义、同名、含糊与缺失请求。}
+\item \bi{We formalize request--definition consistency over structured choices so the catalog self-labels synthetic pairs for an LLM-free cross-encoder matcher covering paraphrases, homonyms, ambiguity, and absent metrics.}
+{我们基于结构化口径形式化一致性，由目录自动标注合成样本训练免在线 LLM 的交叉编码器匹配器，覆盖同义、同名、含糊与缺失请求。}
 
-\item \bi{\emph{Dependency-aware shared validation and maintenance.} We derive data conditions with proven sufficiency bounds, share incremental check outcomes across definitions and agents, repair unambiguous breaks, and enforce snapshot-consistent execution.}
-{\emph{依赖感知的共享验证与维护。}推导具充分性保证的数据条件，按依赖版本跨定义与智能体共享增量检查结果，修复无歧义违例并保证快照一致执行。}
+\item \bi{We derive data conditions with proven sufficiency bounds, share incremental check outcomes across definitions and agents, repair unambiguous breaks, and enforce snapshot-consistent execution.}
+{我们推导具充分性保证的数据条件，按依赖版本跨定义与智能体共享增量检查结果，修复无歧义违例并保证快照一致执行。}
 
-\item \bi{\emph{PostgreSQL implementation and evaluation.} Across five analytical schemas and RelBench against eight baselines, \system\ cuts token use by \PpMavraLateTokXNone$\times$ and latency by \PpMavraLateSpeedupNone$\times$, reaches 98.6\% direct-lookup precision, and achieves \CsBreakMavra\% accuracy with zero wrong answers under condition-breaking updates.}
-{\emph{PostgreSQL 实现与评估。}在五种分析模式与 RelBench 上对比八种基线，\system{} 将 token 与延迟分别降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，首次直接检索准确率达 98.6\%，并在破坏条件的更新下以零错答取得 \CsBreakMavra\% 准确率。}
+\item \bi{We implement \system\ on PostgreSQL and evaluate it against eight baselines across five analytical schemas and RelBench. \system\ cuts token use by \PpMavraLateTokXNone$\times$ and latency by \PpMavraLateSpeedupNone$\times$, reaches 98.6\% direct-lookup precision, and achieves \CsBreakMavra\% accuracy with zero wrong answers under condition-breaking updates.}
+{我们在 PostgreSQL 上实现 \system{}，并在五种分析模式与 RelBench 上对比八种基线。\system{} 将 token 与延迟分别降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，首次直接检索准确率达 98.6\%，并在破坏条件的更新下以零错答取得 \CsBreakMavra\% 准确率。}
 \end{itemize}
