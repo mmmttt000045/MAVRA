@@ -15,7 +15,10 @@ import os
 RUNS = {"rel-stack": "results/relbench-pilot3/{arm}-rel-stack-r1", "rel-trial": "results/relbench-main/{arm}-rel-trial-r1"}
 ARMS = ("none", "ace", "awm", "gmemory", "tecod", "mavra")
 KINDS = ("schema", "probe", "validate", "memory", "submit")
-RUN_FOLDER = {"mavra": "mavra-push"}  # as in paper-stats.py: MAVRA's 11-07 version
+REFUSED_KIND = {"run_sql": "probe", "list_tables": "schema", "describe_table": "schema", "join_path": "schema",
+                "check_join": "schema", "submit": "submit"}
+# as in paper-stats.py (11-12): MAVRA is the mean over three runs of the frozen v9 arm, the others their run 1
+MULTI_RUN = {"mavra": [f"results/quality-20261112-v9/mavra-delta-headers-{{db}}-r{i}" for i in (1, 2, 3)]}
 
 
 def main():
@@ -25,21 +28,34 @@ def main():
     work = {}
     for db, pattern in RUNS.items():
         for arm in ARMS:
-            folder = pattern.format(arm=RUN_FOLDER.get(arm, arm))
-            run = json.load(open(os.path.join(folder, "run.json")))
-            if not run.get("finished") or run.get("error"):
-                raise SystemExit(f"{folder}: run not finished")
-            sessions = [json.load(open(f)) for f in glob.glob(os.path.join(folder, "sessions", "*.json"))
-                        if not f.endswith(".partial.json")]
-            late = [s for s in sessions if s["k"] >= 2]
-            if len(late) != 12:
-                raise SystemExit(f"{folder}: {len(late)} reuse sessions, expected 12")
-            row = {k: sum(s["totals"]["tool_calls_by_category"].get(k, 0) for s in late) / len(late) for k in KINDS}
-            row["llm_calls"] = sum(s["totals"]["llm_calls"] for s in late) / len(late)
-            row["sessions"] = len(late)
+            folders = [f.format(db=db) for f in MULTI_RUN[arm]] if arm in MULTI_RUN else [pattern.format(arm=arm)]
+            rows = []
+            for folder in folders:
+                run = json.load(open(os.path.join(folder, "run.json")))
+                if not run.get("finished") or run.get("error"):
+                    raise SystemExit(f"{folder}: run not finished")
+                sessions = [json.load(open(f)) for f in glob.glob(os.path.join(folder, "sessions", "*.json"))
+                            if not f.endswith(".partial.json")]
+                late = [s for s in sessions if s["k"] >= 2]
+                if len(late) != 12:
+                    raise SystemExit(f"{folder}: {len(late)} reuse sessions, expected 12")
+                # a call the harness refused at that step (category "other": MAVRA's reuse offers only some tools per
+                # step) still counts in the table's tool calls, so it is drawn under the kind of the tool it asked for
+                counts = {k: sum(s["totals"]["tool_calls_by_category"].get(k, 0) for s in late) for k in KINDS}
+                for s in late:
+                    for x in s["tools"]:
+                        if x.get("category") == "other":
+                            counts[REFUSED_KIND.get(x["name"], "probe")] += 1
+                if sum(counts.values()) != sum(s["totals"]["tool_calls"] for s in late):
+                    raise SystemExit(f"{folder}: tool calls by kind do not add up to the table's tool calls")
+                row = {k: v / len(late) for k, v in counts.items()}
+                row["llm_calls"] = sum(s["totals"]["llm_calls"] for s in late) / len(late)
+                rows.append(row)
+            row = {k: sum(r[k] for r in rows) / len(rows) for k in rows[0]}  # mean over runs (one run for most arms)
+            row["sessions"], row["runs"] = 12, len(rows)
             work.setdefault(db, {})[arm] = row
     with open(a.out, "w") as f:
-        json.dump({"scope": "five-cutoff RelBench study (Table III runs), reuse sessions at cutoffs 2-5, failures included",
+        json.dump({"scope": "five-cutoff RelBench study (Table III runs), reuse sessions at cutoffs 2-5, failures included; MAVRA mean over three runs",
                    "work": work}, f, indent=1)
     print(json.dumps(work, indent=1))
 

@@ -1,0 +1,14 @@
+{
+  "recorded_at_utc": "2026-11-12T05:18:36Z",
+  "recorded_by": "Claude Code (took over after the user paused Codex)",
+  "v9_run1_test_scores_seen": false,
+  "final_method": "mavra-delta-headers (v9), source da42981, binary sha256 734d38ea..., frozen; no further method changes",
+  "runs": [1, 2, 3],
+  "inputs": "identical across runs: data, cutoffs, training samples, learner parameters, model service, reasoning effort low; --run only names the database and output folder",
+  "paper_row": "MAVRA row of Table III = mean over runs 1-3 of every cost and quality column; every run's values are kept in this directory and the range is stated in the text",
+  "baselines": "unchanged single run 1 from the existing table",
+  "no_selection": "all three runs are reported whatever their scores; no run is dropped or rerun for its score",
+  "infrastructure_failure": "a run that stops for an infrastructure reason (crash, API outage) before finishing is recorded and replaced by a fresh run with the next run number; the stopped run stays in the record",
+  "concurrency": "at most four cells at once, as in v1-v8",
+  "budget_guard": "budget-watch cap 15 CNY over all v9 cells from balance 115.83 CNY (2026-11-12 13:17 CST); replaces the earlier study guard 261035"
+}

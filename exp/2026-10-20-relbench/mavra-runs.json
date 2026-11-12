@@ -1,0 +1,110 @@
+{
+ "multi_run": {
+  "mavra": {
+   "rel-stack": [
+    "results/quality-20261112-v9/mavra-delta-headers-rel-stack-r1",
+    "results/quality-20261112-v9/mavra-delta-headers-rel-stack-r2",
+    "results/quality-20261112-v9/mavra-delta-headers-rel-stack-r3"
+   ],
+   "rel-trial": [
+    "results/quality-20261112-v9/mavra-delta-headers-rel-trial-r1",
+    "results/quality-20261112-v9/mavra-delta-headers-rel-trial-r2",
+    "results/quality-20261112-v9/mavra-delta-headers-rel-trial-r3"
+   ]
+  }
+ },
+ "runs": {
+  "rel-stack": {
+   "mavra": [
+    {
+     "tokens": 374536,
+     "token_ratio": 0.08692784289969908,
+     "llm_calls": 36,
+     "tool_calls": 52,
+     "agent_minutes": 26.479580239454904,
+     "usd": 0.10820222400000001,
+     "valid": 15,
+     "test": {
+      "post-votes": 0.0642824416724136,
+      "user-badge": 0.8549123451967656,
+      "user-engagement": 0.8879038403144622
+     }
+    },
+    {
+     "tokens": 388117,
+     "token_ratio": 0.09007992183048495,
+     "llm_calls": 35,
+     "tool_calls": 45,
+     "agent_minutes": 30.5702161749204,
+     "usd": 0.105323688,
+     "valid": 15,
+     "test": {
+      "post-votes": 0.06431144660653512,
+      "user-badge": 0.8639106940862555,
+      "user-engagement": 0.8889888685906986
+     }
+    },
+    {
+     "tokens": 409208,
+     "token_ratio": 0.09497503240623081,
+     "llm_calls": 36,
+     "tool_calls": 47,
+     "agent_minutes": 34.87161387602488,
+     "usd": 0.11374468799999998,
+     "valid": 15,
+     "test": {
+      "post-votes": 0.06422792572998771,
+      "user-badge": 0.8627433491441315,
+      "user-engagement": 0.885364017775548
+     }
+    }
+   ]
+  },
+  "rel-trial": {
+   "mavra": [
+    {
+     "tokens": 413764,
+     "token_ratio": 0.051589437035212043,
+     "llm_calls": 44,
+     "tool_calls": 61,
+     "agent_minutes": 19.93542484045029,
+     "usd": 0.11173359,
+     "valid": 15,
+     "test": {
+      "site-success": 0.4290609356245519,
+      "study-adverse": 38.947721408027505,
+      "study-outcome": 0.6516855114584291
+     }
+    },
+    {
+     "tokens": 373011,
+     "token_ratio": 0.04650822086489274,
+     "llm_calls": 41,
+     "tool_calls": 58,
+     "agent_minutes": 15.926105308532716,
+     "usd": 0.093166656,
+     "valid": 15,
+     "test": {
+      "site-success": 0.42321352194008427,
+      "study-adverse": 42.67764682913119,
+      "study-outcome": 0.6465292741873964
+     }
+    },
+    {
+     "tokens": 395520,
+     "token_ratio": 0.049314715964093224,
+     "llm_calls": 47,
+     "tool_calls": 61,
+     "agent_minutes": 22.995716706911722,
+     "usd": 0.09270596400000002,
+     "valid": 15,
+     "test": {
+      "site-success": 0.41515345742205756,
+      "study-adverse": 44.71851214405264,
+      "study-outcome": 0.6541880920582853
+     }
+    }
+   ]
+  }
+ }
+}

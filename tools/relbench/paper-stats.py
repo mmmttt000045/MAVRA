@@ -12,6 +12,12 @@ when feature work fails, and counted in Rb<db><arm>Unsolved; the same for every 
 solutions out of all 15 sessions; bold marks each column's best value. Tasks within the prespecified quality tolerance
 (Rb<db><arm>NotWorse) are written as macros only: the table and the text give the task means themselves (11-09).
 
+MAVRA is the mean of three runs of one frozen arm with identical inputs (11-12, MULTI_RUN); every other arm is its
+single run 1. Each run is checked and scored like a single-run arm, its failed sessions take the reference score, and
+then every session's tokens, calls, time, cost and test score are averaged over the runs; counts print with one
+decimal when the mean is not whole. Rb<db>Mavra<m>Lo/Hi give the range over the runs (token saving, task means), and
+--runs-json writes each run's summary.
+
   python3 tools/relbench/paper-stats.py --out overleaf/gen
 """
 import argparse
@@ -42,12 +48,38 @@ ARMS = [("none", "None", "No memory"), ("ace", "ACE", "ACE~\\cite{zhang2026ace}"
         ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}")]
 # run folder of an arm when it differs from its name: MAVRA is reported from its 11-07 version, which hands each session
 # its task program and definitions (arm mavra-push); the earlier mavra runs stay in results/
-RUN_FOLDER = {"mavra": "mavra-push"}
+# 11-12: MAVRA is reported from the frozen v9 arm mavra-delta-headers (exp/2026-11-12-relbench-quality), the mean of
+# three runs with identical inputs, every run kept (final-repeats-plan.json); the mavra-push runs stay in results/
+RUN_FOLDER = {}
+MULTI_RUN = {"mavra": {db: [f"results/quality-20261112-v9/mavra-delta-headers-{db}-r{i}" for i in (1, 2, 3)]
+                       for db in ("rel-stack", "rel-trial")}}
 TASK_SHORT = {"post-votes": "post-votes", "user-badge": "user-badge", "user-engagement": "user-engage.",
               "study-outcome": "study-outcome", "study-adverse": "study-adverse", "site-success": "site-success"}
 # arms with no LLM in the loop: their LLM-side cost metrics do not apply and print as "--", not 0
 NO_LLM = {"featpilot"}
 LETTERS = "ABC"
+
+
+def count_text(value):
+    """A count, or a mean count over runs: whole numbers print as integers, others with one decimal."""
+    return str(int(round(value))) if abs(value - round(value)) < 1e-9 else f"{value:.1f}"
+
+
+def average(runs):
+    """Per-session mean over runs of the same arm (same sessions, failed sessions already scored as the reference)."""
+    out = {}
+    for key in runs[0]:
+        rows = [r[key] for r in runs]
+        v = dict(rows[0])
+        for f in ("tokens", "agent_s", "llm", "tools"):
+            v[f] = statistics.mean(r[f] for r in rows)
+        v["cost"] = {n: statistics.mean(r["cost"][n] for r in rows) for n in rows[0]["cost"]}
+        cats = set().union(*(r["by_cat"] for r in rows))
+        v["by_cat"] = {c: statistics.mean(r["by_cat"].get(c, 0) for r in rows) for c in cats}
+        v["test"] = statistics.mean(r["test"] for r in rows) if all(r["test"] is not None for r in rows) else None
+        v["unsolved"] = statistics.mean(r["unsolved"] for r in rows)
+        out[key] = v
+    return out
 
 
 def score_text(value):
@@ -58,8 +90,8 @@ def cost_cells(arm, r):
     """Printed reuse-cost cells of one arm (tokens, token ratio, LLM calls, tool calls, minutes, USD); None where an arm
     has no LLM in the loop."""
     llm = arm not in NO_LLM
-    return [f"{r['tok'] / 1e6:.2f}" if llm else None, f"{r['tokx']:.2f}" if llm else None, str(r["llm"]) if llm else None,
-            str(r["tools"]), f"{r['min']:.0f}", f"{r['cost']:.2f}" if llm else None]
+    return [f"{r['tok'] / 1e6:.2f}" if llm else None, f"{r['tokx']:.2f}" if llm else None, count_text(r["llm"]) if llm else None,
+            count_text(r["tools"]), f"{r['min']:.0f}", f"{r['cost']:.2f}" if llm else None]
 
 
 def bold(text, best):
@@ -99,8 +131,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--sessions-json", help="also write every arm's sessions in arrival order (for the figure)")
+    ap.add_argument("--runs-json", help="also write each run's summary of the arms reported as a mean over runs")
     a = ap.parse_args()
-    series = {}
+    series, run_summaries = {}, {}
     macros, table = {}, []
     work = []
     # every macro exists from the start ("--" until its runs finish), so the paper compiles at any time
@@ -114,7 +147,12 @@ def main():
     for m in ("RbNoneMedLlm", "RbNoneMedTok", "RbSchemaProbe", "RbSchemaRepeat"):
         macros[m] = "--"
     for db, (pre, pattern) in RUNS.items():
-        paths = {arm: pattern.format(arm=RUN_FOLDER.get(arm, arm)) for arm, _, _ in ARMS}
+        paths = {arm: pattern.format(arm=RUN_FOLDER.get(arm, arm)) for arm, _, _ in ARMS if arm not in MULTI_RUN}
+        # an arm reported over several runs enters as one pseudo-arm per run (arm#1, arm#2, ...) until it is averaged,
+        # and only once all its runs have finished
+        for arm, by_db in MULTI_RUN.items():
+            if all(finished(p) for p in by_db[db]):
+                paths.update({f"{arm}#{i}": p for i, p in enumerate(by_db[db], 1)})
         done = {arm: p for arm, p in paths.items() if finished(p)}
         data = {arm: cs.load(p, prices=cs.USD_PRICES) for arm, p in done.items()}
         for arm, p in done.items():
@@ -148,6 +186,20 @@ def main():
                     v["unsolved"] = v["test"] is None
                     if v["unsolved"]:
                         v["test"] = ref.get(key)
+        for arm, by_db in MULTI_RUN.items():
+            ids = [f"{arm}#{i}" for i in range(1, len(by_db[db]) + 1)]
+            if not all(i in data for i in ids):
+                continue
+            runs = [data.pop(i) for i in ids]
+            for i in ids:
+                series.get(db, {}).pop(i, None)
+            data[arm] = average(runs)
+            run = json.load(open(os.path.join(done[ids[0]], "run.json")))
+            order = [(c["k"], t) for c in run["cutoffs"] for t in c["order"]]
+            series.setdefault(db, {})[arm] = [{"k": k, "task": t, "tokens": data[arm][(t, k)]["tokens"], "agent_s": data[arm][(t, k)]["agent_s"],
+                                               "cost": data[arm][(t, k)]["cost"]["offpeak"], "test": data[arm][(t, k)]["test"],
+                                               "runs": len(runs)} for k, t in order if (t, k) in data[arm]]
+            run_summaries.setdefault(db, {})[arm] = runs
         if "none" not in data:
             table.append(f"\\multicolumn{{11}}{{@{{}}l}}{{\\textit{{{db}}}: running}}\\\\")
             table.append("\\midrule")
@@ -178,7 +230,7 @@ def main():
                  "explore": explore, "explore_per": explore / len(late) if late else 0,
                  "min": sec / 60, "speed": base["agent_s"] / sec if sec else float("nan"),
                  "cost": sum(d[k]["cost"]["offpeak"] for k in late), "test": {},
-                 "solved": sum(not d[k]["unsolved"] for k in keys), "not_worse": 0}
+                 "solved": sum(1 - d[k]["unsolved"] for k in keys), "not_worse": 0}
             for t in tasks:
                 ks = [k for k in keys if k[0] == t and all(data[x][k]["test"] is not None for x in data)]
                 r["test"][t] = statistics.mean(d[k]["test"] for k in ks) if ks else None
@@ -195,16 +247,36 @@ def main():
                 macros[f"Rb{pre}{name}NotWorse"] = str(nw)
                 r["not_worse"] = nw
             macros.update({f"Rb{pre}{name}Tok": f"{tok / 1e6:.2f}", f"Rb{pre}{name}TokX": f"{r['tokx']:.2f}",
-                           f"Rb{pre}{name}Llm": str(r["llm"]), f"Rb{pre}{name}Tools": str(r["tools"]),
+                           f"Rb{pre}{name}Llm": count_text(r["llm"]), f"Rb{pre}{name}Tools": count_text(r["tools"]),
                            f"Rb{pre}{name}Min": f"{r['min']:.0f}", f"Rb{pre}{name}Speed": f"{r['speed']:.1f}",
                            f"Rb{pre}{name}Cost": f"{r['cost']:.2f}", f"Rb{pre}{name}TokSave": f"{100 * (1 - r['tokx']):.0f}",
                            f"Rb{pre}{name}Explore": f"{r['explore_per']:.1f}",
-                           f"Rb{pre}{name}Unsolved": str(sum(1 for k in keys if d[k]["unsolved"])),
-                           f"Rb{pre}{name}Solved": str(r["solved"]),
+                           f"Rb{pre}{name}Unsolved": count_text(sum(d[k]["unsolved"] for k in keys)),
+                           f"Rb{pre}{name}Solved": count_text(r["solved"]),
                            f"Rb{pre}{name}TokSaveAll": f"{100 * (1 - sum(d[k]['tokens'] for k in keys) / base_all):.0f}"})
             for i, t in enumerate(tasks):
                 v = r["test"][t]
                 macros[f"Rb{pre}{name}Q{LETTERS[i]}"] = "--" if v is None else (f"{v:.4f}" if v < 1 else f"{v:.2f}")
+            # range over the runs of an arm reported as a mean: reuse token saving and each task mean
+            runs = run_summaries.get(db, {}).get(arm)
+            if runs:
+                summary = []
+                for d1 in runs:
+                    tok1 = sum(d1[k]["tokens"] for k in late)
+                    summary.append({"tokens": tok1, "token_ratio": tok1 / base["tokens"],
+                                    "llm_calls": sum(d1[k]["llm"] for k in late), "tool_calls": sum(d1[k]["tools"] for k in late),
+                                    "agent_minutes": sum(d1[k]["agent_s"] for k in late) / 60,
+                                    "usd": sum(d1[k]["cost"]["offpeak"] for k in late),
+                                    "valid": sum(not d1[k]["unsolved"] for k in keys),
+                                    "test": {t: statistics.mean(d1[k]["test"] for k in keys if k[0] == t) for t in tasks}})
+                run_summaries[db][arm] = summary
+                macros[f"Rb{pre}{name}Runs"] = str(len(summary))
+                saves = [100 * (1 - x["token_ratio"]) for x in summary]
+                macros[f"Rb{pre}{name}TokSaveLo"], macros[f"Rb{pre}{name}TokSaveHi"] = f"{min(saves):.0f}", f"{max(saves):.0f}"
+                for i, t in enumerate(tasks):
+                    vals = [x["test"][t] for x in summary]
+                    lo, hi = min(vals), max(vals)
+                    macros[f"Rb{pre}{name}Q{LETTERS[i]}Lo"], macros[f"Rb{pre}{name}Q{LETTERS[i]}Hi"] = score_text(lo), score_text(hi)
         # MAVRA against the best baseline (fewest tokens among the published memories and TeCoD's shared templates)
         # the token comparison is against the agent memories (the methods built to save repeated work); FeatPilot
         # searches each task anew and is compared on quality and time
@@ -257,6 +329,9 @@ def main():
     if a.sessions_json:
         with open(a.sessions_json, "w") as f:
             json.dump(series, f, indent=1)
+    if a.runs_json:
+        with open(a.runs_json, "w") as f:
+            json.dump({"multi_run": MULTI_RUN, "runs": run_summaries}, f, indent=1)
     print(json.dumps(macros, indent=1))
 
 
