@@ -163,6 +163,9 @@ ARMS = {
 # Spend one additional response on refinement within the original reuse-call ceilings.
 ARMS["mavra-refine"] = {**ARMS["mavra-signal"], "reuse_llm_limit": 4}
 ARMS["mavra-early"] = {**ARMS["mavra-refine"], "cold_first_validation_by": 8}
+ARMS["mavra-delta"] = {**ARMS["mavra-refine"], "typed_reference": True, "delta_refinement": True,
+                       "cold_validation_timeout":45,"current_refit_timeout":45,
+                       "current_refit_attempts":1,"skip_failed_refit":True}
 GMEMORY_REPO = "results/ext/GMemory"
 GMEMORY_PYTHON = "results/ext/venv-gmem/bin/python"
 GMEMORY_OBS_CHARS = 2000
@@ -894,13 +897,19 @@ Shared memory: agents on this database publish verified feature definitions and 
         return POST_GOAL_LLM_CALLS
 
     def validation_timeout(self, k):
-        return self.arm.get("reuse_validation_timeout", FEATURE_SQL_TIMEOUT_S) if k > 1 else FEATURE_SQL_TIMEOUT_S
+        return (self.arm.get("reuse_validation_timeout", FEATURE_SQL_TIMEOUT_S) if k > 1
+                else self.arm.get('cold_validation_timeout',FEATURE_SQL_TIMEOUT_S))
 
     def remaining_budget_message(self, k, calls_used, tools_used):
         if not self.arm.get("budget_guidance") or k <= 1:
             return None
         remaining_calls = max(0, self.arm["reuse_llm_limit"] - calls_used)
         remaining_tools = max(0, self.arm["reuse_tool_limit"] - tools_used)
+        if self.arm.get("delta_refinement"):
+            return (f"Remaining session budget: {remaining_calls} model response(s), {remaining_tools} tool call(s). "
+                    "Use validate_additions for a small complementary feature query on the checked base. "
+                    "If no checked base is available, validate_features creates one. Repair a failed query within this budget; "
+                    "after a clean trial, submit without sql to keep the best checked result.")
         return (f"Remaining session budget: {remaining_calls} model response(s), {remaining_tools} executed tool call(s). "
                 "Validate a concrete feature refinement now, or submit without sql to retain the checked incumbent. "
                 "Exploration alone does not improve it. The SQL must still obey seed_time and the statement limit.")
@@ -922,6 +931,19 @@ Shared memory: agents on this database publish verified feature definitions and 
         if (self.arm.get("budget_guidance") and k > 1
                 and (calls_used >= self.arm["reuse_llm_limit"] - 1 or tools_used >= self.arm["reuse_tool_limit"] - 1)):
             return [s for s in specs if s["function"]["name"] in ("validate_features", "submit")]
+        return specs
+
+    def delta_step_tools(self, k, calls_used, tools_used, validations_used, has_base, clean_trial):
+        specs = self.step_tools(k,calls_used,tools_used,validations_used)
+        if not self.arm.get('delta_refinement'):
+            return specs
+        if k<=1 or not has_base:
+            return [s for s in specs if s['function']['name']!='validate_additions']
+        specs = [s for s in self.tool_specs() if s['function']['name']!='validate_features']
+        if not clean_trial:
+            specs = [s for s in specs if s['function']['name']!='submit']
+        if (calls_used>=self.arm['reuse_llm_limit']-1 or tools_used>=self.arm['reuse_tool_limit']-1):
+            specs = [s for s in specs if s['function']['name'] in ('validate_additions','submit')]
         return specs
 
     def audit_rejection_feedback(self, audit):
@@ -985,6 +1007,11 @@ Shared memory: agents on this database publish verified feature definitions and 
         started = time.time()
         work = {"audit_seconds": 0.0, "sql_seconds": 0.0, "feature_fits": [], "cached": False}
         self.incumbent_frames.pop((t, k), None)
+        if self.arm.get('skip_failed_refit'):
+            if not hasattr(self,'refit_inputs'):
+                self.refit_inputs = {}
+            aligned = [ec,'seed_time',yc]
+            self.refit_inputs[(t,k)] = (prev,seeds['train_sample'][aligned].copy(),seeds['val'][aligned].copy())
 
         def fit(xt, xv):
             ts, failed = time.time(), None
@@ -998,17 +1025,19 @@ Shared memory: agents on this database publish verified feature definitions and 
                                               "features": xt.shape[1], "seconds": time.time() - ts, "error": failed})
 
         try:
-            for attempt in (1, 2):
+            attempts = self.arm.get('current_refit_attempts',2)
+            options = {'timeout_s':self.arm['current_refit_timeout']} if self.arm.get('current_refit_timeout') else {}
+            for attempt in range(1,attempts+1):
                 try:
-                    xtr, s1 = features(self.url, prev[1], f"task.{tname(t)}_train_sample", seeds["train_sample"], ec)
+                    xtr, s1 = features(self.url, prev[1], f"task.{tname(t)}_train_sample", seeds["train_sample"], ec, **options)
                     work["sql_seconds"] += s1
-                    xva, s2 = features(self.url, prev[1], f"task.{tname(t)}_val", seeds["val"], ec)
+                    xva, s2 = features(self.url, prev[1], f"task.{tname(t)}_val", seeds["val"], ec, **options)
                     work["sql_seconds"] += s2
                     prediction, importance, _ = fit(xtr, xva)
                     val = score(e["task_type"], seeds["val"][yc], prediction)
                     break
                 except Exception as err:
-                    if attempt == 1 and "statement timeout" in str(err):
+                    if attempt < attempts and "statement timeout" in str(err):
                         continue
                     return {"val": None, "why": f"previous model failed: {str(err)[:200]}", "attempts": attempt}
             ta = time.time()
@@ -1161,6 +1190,16 @@ Shared memory: agents on this database publish verified feature definitions and 
         cached = self.current_incumbent(t, k, seeds)
         if cached and (prog.get("program_sql") or prog.get("sql")) == cached["sql"]:
             return self.cached_start(t, k, seeds, cached)
+        if self.arm.get('skip_failed_refit') and not cached:
+            bound = getattr(self,'refit_inputs',{}).get((t,k))
+            work = getattr(self,'incumbent_work',{}).get((t,k))
+            if bound and work and not work['cached']:
+                e = self.tasks[t]
+                cols = [e['entity_col'].lower(),'seed_time',e['target_col'].lower()]
+                if (bound[0]==self.prev_sql.get(t) and (prog.get('program_sql') or prog.get('sql'))==bound[0][1]
+                        and bound[1].equals(seeds['train_sample'][cols]) and bound[2].equals(seeds['val'][cols])):
+                    return {'chosen':None,'candidates':[],'audit_seconds':0.0,'sql_seconds':0.0,'train_seconds':0.0,
+                            'seconds':0.0,'skipped_failed_current_refit':True}
         made = []  # the probe schema, dropped at the end
         try:
             return self._select_start(t, k, seeds, prog, feats, middle, agent, sid, made)
@@ -1182,6 +1221,128 @@ Shared memory: agents on this database publish verified feature definitions and 
             if ledger is not None:
                 ledger.append({"purpose": purpose, "train_rows": len(xtrain), "features": xtrain.shape[1],
                                "seconds": time.time() - started, "error": failed})
+
+    def typed_reference_start(self, t, k, seeds):
+        """Method-owned entity views; the framework common reference stays unchanged."""
+        import pyarrow.parquet as pq
+        from typed_attributes import compile_view, schema_columns
+
+        started = time.time()
+        e = self.tasks[t]
+        spec = self.manifest['tables'][e['entity_table']]
+        columns = schema_columns(pq.read_schema(os.path.join(self.a.data,'db',e['entity_table']+'.parquet')))
+        ec,yc = e['entity_col'].lower(),e['target_col'].lower()
+        metric,higher = metric_of(e['task_type'])
+        record = {'candidates':[], 'audit_seconds':0.0,'sql_seconds':0.0,'train_seconds':0.0,
+                  'selection_split':'validation','framework_reference_changed':False}
+        best,seen = None,set()
+        for expanded,kind in ((False,'numeric_date'),(True,'typed')):
+            sql,_ = compile_view(e['entity_table'],spec['pkey'],ec,spec.get('time_col'),
+                                  list(spec.get('fkeys') or {}),columns,expanded,max_features=MAX_FEATURES)
+            item = {'kind':kind,'audit_seconds':0.0,'sql_seconds':0.0,'train_seconds':0.0}
+            record['candidates'].append(item)
+            if sql in seen:
+                item['duplicate_sql'] = True
+                continue
+            seen.add(sql)
+            began = time.time()
+            try:
+                xtr,s1 = features(self.url,sql,f'task.{tname(t)}_train_sample',seeds['train_sample'],ec,
+                                   timeout_s=self.validation_timeout(k))
+                item['sql_seconds'] += s1
+                xva,s2 = features(self.url,sql,f'task.{tname(t)}_val',seeds['val'],ec,
+                                   timeout_s=self.validation_timeout(k))
+                item['sql_seconds'] += s2
+                pred,imp,tt = self.fit_feature_model(e['task_type'],xtr,seeds['train_sample'][yc],xva,
+                                                    'reference_start_'+kind)
+                val = score(e['task_type'],seeds['val'][yc],pred)
+                item['train_seconds'] += tt
+                ta = time.time()
+                audit = self.audit(t,k,sql,seeds)
+                item['audit_seconds'] += time.time()-ta
+                sanitized,repaired = self.sanitize_candidate(t,k,seeds,sql,xtr,xva,audit)
+                if sanitized:
+                    item['sanitization'] = sanitized
+                    item['audit_seconds'] += sanitized['audit_seconds']
+                    item['train_seconds'] += sanitized['train_seconds']
+                    item['sql_seconds'] += sanitized['sql_seconds']
+                    if repaired:
+                        sql,xtr,xva,imp,val = repaired
+                        audit = {'result':'clean','source':'checked_projection'}
+                item.update(val=val,audit=audit.get('result'),columns=list(xtr),
+                            sql_sha256=hashlib.sha256(sql.encode()).hexdigest())
+                if audit.get('result')=='clean' and (best is None or (val>best[0] if higher else val<best[0])):
+                    best = (val,(sql,xtr,xva,imp),kind)
+            except Exception as err:
+                item['error'] = f'{type(err).__name__}: {str(err)[:300]}'
+            finally:
+                item['seconds'] = time.time()-began
+                for key in ('audit_seconds','sql_seconds','train_seconds'):
+                    record[key] += item[key]
+        record['seconds'] = time.time()-started
+        if best is None:
+            record.update(audit='error',error='no entity view passed a fresh audit')
+            return None,None,record
+        val,frames,kind = best
+        record.update(audit='clean',val=val,chosen={'kind':kind,'columns':list(frames[1]),
+                      'sql_sha256':hashlib.sha256(frames[0].encode()).hexdigest()})
+        return frames,val,record
+
+    def prepare_delta(self, t, k, seeds, base, sql, event):
+        """Read additions only, then reproduce their join with the checked base."""
+        from delta_features import delta_pool
+
+        if base is None:
+            raise FeatureError('no checked base is available; validate a complete feature SQL first')
+        started = time.time()
+        ec = self.tasks[t]['entity_col'].lower()
+        event.update(sql_seconds=0.0,queries=[],base_sql_sha256=hashlib.sha256(base[0].encode()).hexdigest())
+
+        def query(split):
+            row = {'split':split}
+            event['queries'].append(row)
+            began = time.time()
+            try:
+                frame,seconds = features(self.url,sql,f'task.{tname(t)}_{split}',seeds[split],ec,
+                                          timeout_s=self.validation_timeout(k))
+                event['sql_seconds'] += seconds
+                row.update(sql_seconds=seconds,columns=len(frame.columns))
+                return frame
+            except Exception as err:
+                row['error'] = str(err)[:300]
+                raise
+            finally:
+                row['seconds'] = time.time()-began
+
+        try:
+            added_train,added_valid = query('train_sample'),query('val')
+            psql,pxtr,pxva,importance = base
+            xt,xv,chosen = delta_pool(pxtr,pxva,importance,added_train,added_valid,
+                                      max_new=12,max_features=MAX_FEATURES)
+            event.update(chosen)
+            val_table = f'task.{tname(t)}_val'
+
+            def headers(body):
+                result,seconds = read_sql(self.url,
+                    f"SELECT * FROM ({body.strip().rstrip(';').replace('{seeds}',val_table)}) q LIMIT 0",
+                    timeout_s=min(5,self.validation_timeout(k)))
+                event['sql_seconds'] += seconds
+                return list(result.columns[:2])
+
+            pkeys,dkeys = headers(psql),headers(sql)
+            mapping = chosen['added_columns']
+            projection = ', '.join(f'q.{quote_ident(old)} AS {quote_ident(new)}' for old,new in mapping.items())
+            secondary = (f'SELECT q.{quote_ident(dkeys[0])},q.{quote_ident(dkeys[1])},{projection} '
+                         f"FROM ({sql.strip().rstrip(';')}) q")
+            combined = (union_sql(psql,pkeys,chosen['primary_columns'],secondary,dkeys,list(mapping.values()))
+                        if chosen['primary_columns'] else secondary)
+            check = {'sql_seconds':0.0}
+            self.check_columns(t,k,combined,seeds,xv,check,timeout_s=SELECT_CHECK_TIMEOUT_S)
+            event['sql_seconds'] += check['sql_seconds']
+            event['values_reproduced'] = True
+            return combined,xt,xv
+        finally:
+            event['seconds'] = time.time()-started
 
     def _select_start(self, t, k, seeds, prog, feats, middle, agent, sid, made):
         e = self.tasks[t]
@@ -1406,6 +1567,18 @@ Shared memory: agents on this database publish verified feature definitions and 
         metric = metric_of(e["task_type"])[0]
         entity = e["entity_table"].lower()
         ch = sel["chosen"]
+        if self.arm.get('delta_refinement') and k>1:
+            lines = [f"The memory holds a checked complete base for this cutoff: validation {metric}={ch['val']:.5f}.",
+                     'Checked feature columns: '+', '.join(ch['columns']),
+                     'Top training gains: '+', '.join(f'{c} ({g:g})' for c,g in ch['top']),
+                     'Use validate_additions to test at most 12 new numeric feature columns; the memory combines them with this base. '
+                     'Keep every seed row and respect seed_time. Prefer complementary signals that are absent from this inventory. '
+                     'The complete base stays checked and available; you need not copy its SQL. '
+                     'Complete one clean trial within the session budget before submitting without sql.']
+            defs = [f['key'] for f in looked.get('find_features',{}).get('features') or [] if f.get('key')]
+            if defs:
+                lines.append('Other verified definitions available through compose_features: '+', '.join(defs[:20]))
+            return '\n'.join(lines)
         lines = ["Prepared for you by the shared memory (validated on this cutoff's data; none of your validations were used):"]
         for c in sel["candidates"]:
             if c["name"].startswith("program"):
@@ -1530,7 +1703,13 @@ Shared memory: agents on this database publish verified feature definitions and 
         ] if self.arm.get("push_memory") else []) + ([
             fn("find_program", "The latest successful, audited feature program for this task from an earlier cutoff: "
                "its validation score and complete feature SQL when it still runs, ready for validate_features.", {}, []),
-        ] if self.arm.get("sql_memory") else []) + (self.asm.tool_specs() if self.asm else [])
+        ] if self.arm.get("sql_memory") else []) + ([
+            fn("validate_additions", "Propose at most 12 complementary numeric feature columns with a small SQL using {seeds}. "
+               "Compute additions from public tables and the seed keys/time. Return the entity key and seed_time first, "
+               "preserving every seed row and all time bounds. The memory joins "
+               "these columns with its complete checked base, fits the unchanged model, reproduces the joined SQL and audits it. "
+               "Keep this query focused on new signals; the base SQL is already held by the memory.", {"sql":s}, ["sql"]),
+        ] if self.arm.get("delta_refinement") else []) + (self.asm.tool_specs() if self.asm else [])
 
     def find_sql_program(self, t, k):
         """Match MAVRA's 50-seed executability check, without extraction or feature composition."""
@@ -1867,7 +2046,31 @@ Shared memory: agents on this database publish verified feature definitions and 
             rec["memory_push"] = {"seconds": time.time() - t0, "chars": len(msgs[1]["content"]) - len(task_line),
                                   "program": '"sql"' in pushed[0], "error": any('"error"' in x[:40] for x in pushed)}
 
-        if self.arm.get("subset_selection") and chosen is None and fallback is None:
+        checked_current = self.current_incumbent(t,k,seeds) if self.arm.get('typed_reference') else None
+        if self.arm.get('typed_reference') and (chosen is None or checked_current is None or best_sql!=checked_current['sql']):
+            ts = time.time()
+            try:
+                frames,rv,reference = self.typed_reference_start(t,k,seeds)
+                rec['memory_reference'] = reference
+                if frames is not None:
+                    if self.start_is_informative(frames[1]):
+                        if best is None or (rv>best if higher else rv<best):
+                            best,best_sql,best_frames = rv,frames[0],frames
+                            msgs[1]['content'] += (f'\n\nThe method selected a freshly audited entity view on validation ({metric}={rv:.5f}). '
+                                                   'Improve it with complementary task features; keep it when additions hurt validation.\n'
+                                                   + (', '.join(frames[1].columns) if k>1 else frames[0]))
+                        else:
+                            rec['memory_reference']['retained_existing_checked_start'] = True
+                    else:
+                        rec['memory_reference']['fallback_only'] = True
+                        if best is None and (fallback is None or (rv>fallback['val'] if higher else rv<fallback['val'])):
+                            fallback = {'val':rv,'frames':frames,'source':'entity_reference'}
+                            msgs[1]['content'] += '\n\n'+self.constant_start_message()
+            except Exception as err:
+                rec['memory_reference'] = {'error':str(err)[:300],'audit_seconds':0.0}
+            rec['memory_reference']['seconds'] = time.time()-ts
+
+        if self.arm.get("subset_selection") and not self.arm.get('typed_reference') and chosen is None and fallback is None:
             # A candidate search should never throw away a sound entity-table
             # model just because the agent's first relational SQL is weaker.
             # This refit and its audit are inside the measured session.
@@ -1907,6 +2110,25 @@ Shared memory: agents on this database publish verified feature definitions and 
                 rec["memory_reference"] = {"error": str(err)[:300], "audit_seconds": 0.0}
             rec["memory_reference"]["seconds"] = time.time() - ts
 
+        if self.arm.get('delta_refinement') and k>1:
+            base = best_frames if best_frames is not None else (fallback or {}).get('frames')
+            if base is not None and best_frames is None:
+                msgs[1]['content'] = (task_line+'\n\n'+self.constant_start_message()
+                                      +'\nChecked base columns: '+', '.join(base[1].columns)
+                                      +'\nUse validate_additions to create a varying feature view; no engineered best is preselected.')
+            elif base is not None:
+                inventory = {'chosen':{'val':best,'columns':list(base[1]),'top':base[3][:10]}}
+                msgs[1]['content'] = task_line+'\n\n'+self.select_message(t,k,inventory,looked,False)
+            if 'memory_push' in rec:
+                rec['memory_push']['chars'] = len(msgs[1]['content'])-len(task_line)
+                rec['memory_push']['view'] = 'compact checked inventory'
+            msgs[0]['content'] += ('\n\nWarm refinement workflow: when a checked base is available, use validate_additions '
+                'to test at most 12 new numeric feature columns. The memory joins them to its cached complete base and '
+                'keeps the best checked validation result. A clean trial has priority over immediate submission; '
+                'repair SQL or audit errors within the same response/tool budgets. If there is no checked base, '
+                'validate_features first creates one. Submit without sql after a clean trial, or let the budget '
+                'retain the checked fallback. Do not copy the complete base SQL into an addition query.')
+
         model_limit = self.arm.get("reuse_llm_limit", MAX_LLM_CALLS) if k > 1 else MAX_LLM_CALLS
         tool_limit = self.arm.get("reuse_tool_limit") if k > 1 else None
 
@@ -1927,7 +2149,15 @@ Shared memory: agents on this database publish verified feature definitions and 
                 early = self.early_validation_hint(k, len(rec["llm"]), len(rec["validations"]))
                 if early and rec["llm"] and len(rec["llm"]) >= self.arm["cold_first_validation_by"] - 2:
                     msgs.append({"role": "user", "content": early})
-                r = self.llm.chat(msgs, self.step_tools(k, len(rec["llm"]), len(rec["tools"]), len(rec["validations"])))
+                specs = self.step_tools(k,len(rec['llm']),len(rec['tools']),len(rec['validations']))
+                if self.arm.get('delta_refinement'):
+                    base = best_frames if best_frames is not None else (fallback or {}).get('frames')
+                    clean = any(v.get('source')=='agent_additions' and v.get('audit_result')=='clean'
+                                and not v.get('error') for v in rec['validations'])
+                    specs = self.delta_step_tools(k,len(rec['llm']),len(rec['tools']),len(rec['validations']),
+                                                   base is not None,clean)
+                available_names = {s['function']['name'] for s in specs}
+                r = self.llm.chat(msgs,specs)
             except LlmUnavailable as err:
                 rec["error"] = f"llm: {err}"
                 rec["stop"] = "llm_error"
@@ -1958,7 +2188,10 @@ Shared memory: agents on this database publish verified feature definitions and 
                     args = {}
                 t0 = time.time()
                 entry = {"i": len(rec["tools"]), "llm_i": len(rec["llm"]) - 1, "name": name, "args": args}
-                if stop:
+                if self.arm.get('delta_refinement') and k>1 and name not in available_names:
+                    out = {'error':'This tool is unavailable at this refinement step. Use the exposed validation tool before submit.'}
+                    entry['category'] = 'validate' if name.startswith('validate_') else 'submit' if name=='submit' else 'other'
+                elif stop:
                     out = {"error": "session already ended"}
                 elif name == "find_program" and self.arm.get("sql_memory"):
                     out = self.find_sql_program(t, k)
@@ -2001,17 +2234,29 @@ Shared memory: agents on this database publish verified feature definitions and 
                         except Exception as err:
                             out = {"error": f"{err}"}
                     entry["category"] = "probe" if name == "run_sql" else "schema"
-                elif name == "validate_features":
+                elif name in ("validate_features","validate_additions"):
                     entry["category"] = "validate"
                     sql = args.get("sql", "")
+                    added_sql = sql if name=='validate_additions' else None
+                    delta_event = {} if added_sql is not None else None
+                    if delta_event is not None:
+                        entry['delta'] = delta_event
                     if args.get("bullet_ids"):
                         rec["bullet_ids"] = [str(b) for b in args["bullet_ids"]]
                     try:
-                        xtr, s1 = features(self.url, sql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec,
-                                           timeout_s=self.validation_timeout(k))
-                        xva, s2 = features(self.url, sql, f"task.{tname(t)}_val", seeds["val"], ec,
-                                           timeout_s=self.validation_timeout(k))
-                        p, imp, tt = self.fit_feature_model(e["task_type"], xtr, seeds["train_sample"][yc], xva, "agent_validation")
+                        if added_sql is not None:
+                            if not self.arm.get('delta_refinement') or k<=1:
+                                raise FeatureError('validate_additions is available only during this method\'s warm refinement')
+                            base = best_frames if best_frames is not None else (fallback or {}).get('frames')
+                            sql,xtr,xva = self.prepare_delta(t,k,seeds,base,added_sql,delta_event)
+                            s1,s2 = delta_event['sql_seconds'],0.0
+                        else:
+                            xtr, s1 = features(self.url, sql, f"task.{tname(t)}_train_sample", seeds["train_sample"], ec,
+                                               timeout_s=self.validation_timeout(k))
+                            xva, s2 = features(self.url, sql, f"task.{tname(t)}_val", seeds["val"], ec,
+                                               timeout_s=self.validation_timeout(k))
+                        p, imp, tt = self.fit_feature_model(e["task_type"], xtr, seeds["train_sample"][yc], xva,
+                                                          'agent_additions' if added_sql is not None else 'agent_validation')
                         val = score(e["task_type"], seeds["val"][yc], p)
                         # leak check at validation time (README §1.2, 10-21): a leaking validation does not count, so that
                         # neither the goal nor the best score can be reached with data after seed_time
@@ -2065,10 +2310,14 @@ Shared memory: agents on this database publish verified feature definitions and 
                         msg = str(err) if isinstance(err, FeatureError) else f"validation failed: {type(err).__name__}: {str(err)[:300]}"
                         out = {"error": msg, "validations_left": MAX_VALIDATIONS - len(rec["validations"]) - 1}
                         rec["validations"].append({"tool_i": entry["i"], "error": msg[:500], "sql": sql})
+                    if delta_event is not None:
+                        rec['validations'][-1].update(source='agent_additions',delta_sql=added_sql,delta=delta_event)
                     goal = self.target(t, k)
                     if goal_hit is not None:
-                        # rule B (README §1.2, 10-21 user decision): the one validation allowed after the goal ends the session
-                        stop = "reached_previous"
+                        # Previous arms retain rule B. The delta workflow gives
+                        # failed attempts bounded repair before its one clean trial.
+                        if added_sql is None or rec['validations'][-1].get('audit_result')=='clean':
+                            stop = "reached_previous"
                     elif goal is not None and best is not None and (best >= goal if higher else best <= goal):
                         goal_hit = len(rec["llm"])
                         rec["goal_reached"] = {"validation": len(rec["validations"]), "llm_calls": goal_hit}
