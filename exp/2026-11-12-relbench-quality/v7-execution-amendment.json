@@ -1,0 +1,19 @@
+{
+  "changed_at_utc": "2026-11-12T00:31:16Z",
+  "scope": "execution scheduling only; frozen algorithms, data, model, accounting and test policy unchanged",
+  "old_queue_pid": 4174065,
+  "new_queue_pid": 56534,
+  "after_pid": 4148582,
+  "sequence": [
+    "refine Stack finishes",
+    "typed attribute component",
+    "CTE component",
+    "early Trial"
+  ],
+  "max_concurrent_compute_cells": 4,
+  "aggregate_model_spend_cap_cny": 25,
+  "new_trial_model_calls_before_change": 0,
+  "prior_queue_record": "/root/agentdb-quality-early-20261112/results/quality-20261112-v7/queue-history/trial-waiting-for-v5.json",
+  "reason": "use the released refine Stack position for short zero-model-call components, then early Trial, while slow signal Trial evaluation continues",
+  "queue_source_sha256": "0c675d0048d7107c6502fba637143c0a80cec5e549721f2daa9109d943371feb"
+}
