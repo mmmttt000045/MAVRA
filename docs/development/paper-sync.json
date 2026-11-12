@@ -4,9 +4,9 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> paper main: RelBench Table III, macros and Figs. 6-7 from the frozen v9 MAVRA arm averaged over three runs; Sec. 4.5 reuse description, setup reuse cap, Sec. 6.2 results text, abstract token claim",
-  "previous_head": "cdf6d0ed1faa04123608115a7baf336db510c2b2",
-  "remote_commit": "3210aedc6ee960efeac85b4f42728da3bc219931",
+  "direction": "overleaf/ -> paper main: merged remote edits 2c66571 (from cc743c6: wording pass on Secs. 1-6, abstract, implementation); RelBench Table III/macros/Figs. 6-7 from v10 MAVRA and No memory as three-run means; Sec. 6.2 explanation from the frozen-program analysis; Sec. 4.5 v10 reuse description",
+  "previous_head": "2c66571d3d2cd9914935e929b7def4302ce54dd6",
+  "remote_commit": "e92b98623027167fabf9bcf3b8b1267463234a85",
   "pending_payload": null,
   "changed_paths": [
     "figures/relbench-cumulative.pdf",
@@ -15,25 +15,25 @@
     "gen/relbench.tex",
     "sections/04-design.tex",
     "sections/05-evaluation.tex",
-    "sections/abstract.tex",
     "tables/relbench.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "local_build": "build.sh en with TeX Live 2026: 14 pages, 0 undefined references, the same 3 pre-existing overfull warnings (tables/capabilities.tex, algorithms/maintenance.tex, bibliography page)",
+    "local_build": "build.sh en with TeX Live 2026: 14 pages, body ends on page 12 and references start on page 13, 0 undefined references, 1 overfull box (pre-existing, tables/capabilities.tex)",
     "rendered_pages_checked": [
-      8,
       9,
-      10
+      10,
+      11,
+      12
     ],
-    "stats_regression": "paper-stats.py with the mavra-push run alone reproduces the previous relbench.tex/relbench-table.tex exactly; duplicated run averages to the same values; v8 run matches gate-v8.json",
-    "baselines_unchanged": true,
-    "figures": "relbench-cumulative and reuse-work redrawn; reuse-work kinds sum to the table's tool calls for every arm"
+    "remote_merge": "2c66571 merged three-way against 3210aed; a trial --force --apply on a copy of the clone changed only the 7 RelBench-related files, the 6 files only 2c66571 edited showed no diff",
+    "stats_regression": "paper-stats.py reproduces the original table exactly when given single runs (MAVRA and No memory); baseline single-run figure data unchanged",
+    "baselines_unchanged": "ACE, G-Memory, AWM, TeCoD, FeatPilot rows unchanged; No memory now a three-run mean (token ratios relative to it)"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/3210aedc6ee960efeac85b4f42728da3bc219931",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e92b98623027167fabf9bcf3b8b1267463234a85",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "64ab60712ebd235548c6d31f1bd0f554ac972ac2"
+  "source_commit": "46d6b611323e34915136a6bb706ca32ba9670c46"
 }
