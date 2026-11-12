@@ -1,0 +1,19 @@
+{
+  "requested_at_utc": "2026-11-12T01:46:51Z",
+  "pid": 59870,
+  "reason": "completed Stack misses all three quality gates, so this global candidate cannot pass the predefined joint acceptance; retain incomplete Trial and prioritize checked v8",
+  "completed_stack_sessions": 15,
+  "completed_stack_quality_first": 0,
+  "gate_sha256": "13d8c39e1825d9b6de35316f0d78ede6681656b2698b24291f07a3520a8a8ec1",
+  "trial_is_not_a_complete_quality_or_cost_result": true,
+  "method_source_modified": false,
+  "all_partial_artifacts_retained": true,
+  "process_stopped": true,
+  "observed_at_utc": "2026-11-12T01:46:57Z",
+  "final_artifact_sha256": {
+    "features.json": "e10904431db898fdbbc1488e955b1e56805b06985687167a4ed0bae80060700b",
+    "run.json": "52ae59bc24ca286cd650de24aea9f29bb3ea34d8fe9c601a8a7e23c0e3c28aa1",
+    "sessions/study_adverse-k1-a1.partial.json": "ab6ce84036e1bae6f8ae406d1874a73aaedef0646f64ce6abf23eccb98c12175",
+    "sessions/study_adverse-k1-a2.partial.json": "ba9818451cd03576d60403f55c69c456930b732aca6ac09a936eb0161f7acb95"
+  }
+}
