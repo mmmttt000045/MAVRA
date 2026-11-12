@@ -749,13 +749,16 @@
       "status": "supporting",
       "scope": "八个独立开发候选，逐项验证复用成本不退步和六项质量第一；保留全部结果与行政停止记录，尚无通过联合门槛的论文替换结果。",
       "evidence": [
-        "exp/2026-11-12-relbench-quality/protocol.json"
+        "exp/2026-11-12-relbench-quality/protocol.json",
+        "exp/2026-11-12-relbench-quality/protocol-v8.json",
+        "exp/2026-11-12-relbench-quality/input-verification.json"
       ],
       "analysis": [
         "tools/relbench/diagnose-quality.py",
         "tools/relbench/feature_selection.py",
         "tools/relbench/quality-cost-gate.py",
-        "exp/2026-11-12-relbench-quality/check_protocol_equivalence.py"
+        "exp/2026-11-12-relbench-quality/check_protocol_equivalence.py",
+        "exp/2026-11-12-relbench-quality/verify-inputs.py"
       ],
       "outputs": [],
       "raw_data": "noctis 八个独立冻结目录；各版位置、计划、源码哈希及未完成运行的停止原因见本目录 README 和 source-sha256-v*.json。既有会话与 TPC-DS 280 对题次的只读诊断保留来源哈希。",
