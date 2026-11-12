@@ -747,7 +747,7 @@
       "id": "2026-11-12-relbench-quality",
       "title": "RelBench 质量与代价联合优化",
       "status": "supporting",
-      "scope": "七个独立开发候选，逐项验证复用成本不退步和六项质量第一；保留全部结果，尚无通过联合门槛的论文替换结果。",
+      "scope": "八个独立开发候选，逐项验证复用成本不退步和六项质量第一；保留全部结果与行政停止记录，尚无通过联合门槛的论文替换结果。",
       "evidence": [
         "exp/2026-11-12-relbench-quality/protocol.json"
       ],
@@ -758,7 +758,7 @@
         "exp/2026-11-12-relbench-quality/check_protocol_equivalence.py"
       ],
       "outputs": [],
-      "raw_data": "noctis 七个独立冻结目录；各版位置、计划及源码哈希见本目录 README 和 source-sha256-v*.json。既有会话与 TPC-DS 280 对题次的只读诊断保留来源哈希。",
+      "raw_data": "noctis 八个独立冻结目录；各版位置、计划、源码哈希及未完成运行的停止原因见本目录 README 和 source-sha256-v*.json。既有会话与 TPC-DS 280 对题次的只读诊断保留来源哈希。",
       "code_record": "从主仓库 b60a84b 和论文 ec8d755 开始；运行前冻结源码及校验，命令与接纳规则见本目录 README。"
     }
   ]

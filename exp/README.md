@@ -40,7 +40,7 @@
 | [2026-10-30-published-scenarios](2026-10-30-published-scenarios/README.md)<br>修复前已发表记忆基线比较与失败分析 | 修复前两轮比较及逐例分析：发现共用 SQL 审查误拒绝、失效语义丢失及反馈条件差异；原始分数和费用保留。当前 Fig.6 采用 2026-11-01-change-study，旧结果不与其合并。 |
 | [2026-10-31-corrected-scenarios](2026-10-31-corrected-scenarios/README.md)<br>SQL 审查／语义保留修复与统一反馈比较 | SQL 审查／语义保留修复后的有效批次：232 任务、184 次计分；当前扩展比较复用其全部六个未变更基线格，旧 MAVRA 仅作历史结果。原始数值、492 文件及累计 14.30 元扣费记录保留。 |
 | [2026-11-09-structural-reuse](2026-11-09-structural-reuse/README.md)<br>结构变化下的跨智能体复用 | 维度过滤、差值与排名的结构化复用协议及冒烟记录；独立于旧版只改变时间的群体实验。 |
-| [2026-11-12-relbench-quality](2026-11-12-relbench-quality/README.md)<br>RelBench 质量与代价联合优化 | 七个独立开发候选，逐项验证复用成本不退步和六项质量第一；保留全部结果，尚无通过联合门槛的论文替换结果。 |
+| [2026-11-12-relbench-quality](2026-11-12-relbench-quality/README.md)<br>RelBench 质量与代价联合优化 | 八个独立开发候选，逐项验证复用成本不退步和六项质量第一；保留全部结果与行政停止记录，尚无通过联合门槛的论文替换结果。 |
 
 ## 历史批次
 
@@ -134,7 +134,7 @@
 | 2026-11-01-shared-validation | cells-final.tgz：最终二进制 108 格（results/shared-validation-1793508134275611）；cells.tgz：旧二进制 108 格（results/shared-validation-1793471974128556）。 | src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。 |
 | 2026-11-09-structural-reuse | noctis results/structural-reuse-smoke；后续范围以本目录运行记录为准。 | 原目录 README 记录 run_metric 维度问法与 v3 题集实现；不以本次整理提交替代运行版本。 |
 | 2026-11-11-maint-hardening | 原始位置、时间、源码校验与失败记录见本目录 README；归档 JSON 不代表所有原始输出均已下载。 | 9334549、89322f2、65f13fe、66c2181 等；各子实验版本按原 README 核对。 |
-| 2026-11-12-relbench-quality | noctis 七个独立冻结目录；各版位置、计划及源码哈希见本目录 README 和 source-sha256-v*.json。既有会话与 TPC-DS 280 对题次的只读诊断保留来源哈希。 | 从主仓库 b60a84b 和论文 ec8d755 开始；运行前冻结源码及校验，命令与接纳规则见本目录 README。 |
+| 2026-11-12-relbench-quality | noctis 八个独立冻结目录；各版位置、计划、源码哈希及未完成运行的停止原因见本目录 README 和 source-sha256-v*.json。既有会话与 TPC-DS 280 对题次的只读诊断保留来源哈希。 | 从主仓库 b60a84b 和论文 ec8d755 开始；运行前冻结源码及校验，命令与接纳规则见本目录 README。 |
 
 ## 维护索引
 
