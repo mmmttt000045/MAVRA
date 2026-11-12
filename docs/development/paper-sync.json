@@ -4,30 +4,43 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> paper main: formalize C_struct/C_null/C_scale separation and Proposition 4.3 exact aggregation proof, unify zero-wrong scope across 1,806 replays vs. 11-update study (fixing 5-error fallback breakdown), foreground C3 history-preserving maintenance and Algorithm 1 Hist gate, and clarify DeepSeek-vs-GLM lookup boundary",
-  "previous_head": "2f2e1ac2e9c31af75fe333f7ed6bcc952f7dc60d",
-  "remote_commit": "93c9aa9a98773f3d0dcf572e61e448c71b7438da",
+  "direction": "overleaf/ -> paper main: prune 17 unused macros/figures/algorithms/tables to exact 61-file PVLDB compilation closure while preserving all 93c9aa9 manuscript refinements and refreshing README.md",
+  "previous_head": "93c9aa9a98773f3d0dcf572e61e448c71b7438da",
+  "remote_commit": "2832156d1d04d32bc0a1254c73ffd97865731d52",
   "pending_payload": null,
   "changed_paths": [
-    "algorithms/maintenance.tex",
-    "sections/01-introduction.tex",
-    "sections/04-design.tex",
-    "sections/05-evaluation.tex",
-    "sections/06-conclusion.tex",
-    "sections/abstract.tex",
-    "sections/implementation.tex"
+    "README.md",
+    "preamble.tex"
   ],
-  "preserve_remote_only": true,
-  "deletions": [],
+  "preserve_remote_only": false,
+  "deletions": [
+    "algorithms/lookup.tex",
+    "algorithms/snapshot-execution.tex",
+    "figures/snapshot.pdf",
+    "figures/snapshot.tex",
+    "gen/external.tex",
+    "gen/generality.tex",
+    "gen/lifecycle.tex",
+    "gen/numbers-prev.tex",
+    "gen/numbers.tex",
+    "gen/official-numbers.tex",
+    "gen/opt.tex",
+    "gen/premise.tex",
+    "gen/published-scenarios.tex",
+    "gen/replay-safety.tex",
+    "gen/scen-ds.tex",
+    "gen/session-latency.tex",
+    "tables/external.tex"
+  ],
   "validation": {
-    "built_on": "noctis, TeX Live 2026, latexmk/pdfLaTeX; 69-file main.tex dependency closure",
-    "status": "14 pages, body ends cleanly at bottom of page 12 and references start at top of page 13. Zero undefined citations/references and zero Overfull hboxes across the body.",
-    "content": "Separated C(I) = C_struct U C_null U C_scale in Section 4.4 so Proposition 4.3 explicitly attributes duplicate prevention to checks (1,2,4), join/NULL loss bounds to checks (3,5,6), and exact business aggregation to b=eps_loss=0 across (3,5,6), while keeping measure-scale monitor (7) as an empirical guard for premise B2; formatted Algorithm 1 line 7 explicitly as C(x + e) ^ Repro ^ Hist; fixed Section 6.5 attribution of the 5 agent-fallback errors (1/114 on covered breaks + 4 on backup-copy premise shifts vs. 0/210 from stored definitions); unified Abstract/Intro/Conclusion scope between 1,806 policy replays and the 11-update agent study; and explicitly named DeepSeek-synthesized training vs. unseen GLM rewrites (88%).",
-    "remote_checked": "origin/main matched 2f2e1ac2e9c31af75fe333f7ed6bcc952f7dc60d before sync. Six remote-only files preserved. Independent ls-remote confirmed 93c9aa9a98773f3d0dcf572e61e448c71b7438da after push."
+    "built_on": "noctis, TeX Live, latexmk/pdfLaTeX; standalone 61-file main.tex closure",
+    "status": "14 pages, 7 CONCLUSION ends cleanly at bottom of page 12 and REFERENCES starts at top of page 13. Zero undefined citations/references, zero multiply-defined labels, and zero Overfull hboxes.",
+    "content": "Merged 93c9aa9 into overleaf/ without loss, pruned 11 zero-use gen/*.tex inputs from preamble.tex and 17 unused files from icde-2027-paper, and updated README.md section listing.",
+    "remote_checked": "origin/main matched 93c9aa9a98773f3d0dcf572e61e448c71b7438da before push; git ls-remote confirmed 2832156d1d04d32bc0a1254c73ffd97865731d52 after push."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/93c9aa9a98773f3d0dcf572e61e448c71b7438da",
-  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/2832156d1d04d32bc0a1254c73ffd97865731d52",
+  "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11 & 2026-11-13).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "cc743c6784b2d65f8355309f915b8f5faa4edab9"
+  "source_commit": "e5d0202ec149099af938d5f37fa22d1ed0953240"
 }
