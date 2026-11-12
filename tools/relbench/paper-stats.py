@@ -12,8 +12,9 @@ when feature work fails, and counted in Rb<db><arm>Unsolved; the same for every 
 solutions out of all 15 sessions; bold marks each column's best value. Tasks within the prespecified quality tolerance
 (Rb<db><arm>NotWorse) are written as macros only: the table and the text give the task means themselves (11-09).
 
-MAVRA is the mean of three runs of one frozen arm with identical inputs (11-12, MULTI_RUN); every other arm is its
-single run 1. Each run is checked and scored like a single-run arm, its failed sessions take the reference score, and
+MAVRA and No memory are means of three runs with identical inputs (11-12, MULTI_RUN); every other arm is its single
+run 1. Token ratios are relative to No memory's mean; failed sessions take the reference score of No memory's run 1,
+and the workload macros (RbNoneMedLlm ...) describe that run. Each run is checked and scored like a single-run arm, its failed sessions take the reference score, and
 then every session's tokens, calls, time, cost and test score are averaged over the runs; counts print with one
 decimal when the mean is not whole. Rb<db>Mavra<m>Lo/Hi give the range over the runs (token saving, task means), and
 --runs-json writes each run's summary.
@@ -48,11 +49,16 @@ ARMS = [("none", "None", "No memory"), ("ace", "ACE", "ACE~\\cite{zhang2026ace}"
         ("mavra", "Mavra", "\\textbf{\\system\\ (ours)}")]
 # run folder of an arm when it differs from its name: MAVRA is reported from its 11-07 version, which hands each session
 # its task program and definitions (arm mavra-push); the earlier mavra runs stay in results/
-# 11-12: MAVRA is reported from the frozen v9 arm mavra-delta-headers (exp/2026-11-12-relbench-quality), the mean of
-# three runs with identical inputs, every run kept (final-repeats-plan.json); the mavra-push runs stay in results/
+# 11-12: MAVRA is reported from arm mavra-retry (v10, exp/2026-11-12-relbench-quality/v10-plan.json), the mean of three
+# runs with identical inputs, every run kept; v9 (mavra-delta-headers, results/quality-20261112-v9) and the mavra-push
+# runs stay in results/
 RUN_FOLDER = {}
-MULTI_RUN = {"mavra": {db: [f"results/quality-20261112-v9/mavra-delta-headers-{db}-r{i}" for i in (1, 2, 3)]
-                       for db in ("rel-stack", "rel-trial")}}
+MULTI_RUN = {"mavra": {db: [f"results/quality-20261112-v10/mavra-retry-{db}-r{i}" for i in (1, 2, 3)]
+                       for db in ("rel-stack", "rel-trial")},
+             # No memory: the paper's run 1 plus runs 2-3 with the same settings (results/quality-20261112-v10-none/plan.json)
+             "none": {db: [RUNS[db][1].format(arm="none")] +
+                          [f"results/quality-20261112-v10-none/none-{db}-r{i}" for i in (2, 3)]
+                      for db in ("rel-stack", "rel-trial")}}
 TASK_SHORT = {"post-votes": "post-votes", "user-badge": "user-badge", "user-engagement": "user-engage.",
               "study-outcome": "study-outcome", "study-adverse": "study-adverse", "site-success": "site-success"}
 # arms with no LLM in the loop: their LLM-side cost metrics do not apply and print as "--", not 0
@@ -163,7 +169,8 @@ def main():
             for key, session in data[arm].items():
                 if session["test"] is None and session["audit"] == "clean":
                     raise ValueError(f"{p}: {key} has an unresolved test evaluation; recover scoring before publishing")
-        if "none" in data and any(set(d) != set(data["none"]) for d in data.values()):
+        ref_arm = "none" if "none" in done else "none#1"  # No memory, or its run 1 while it is still split into runs
+        if ref_arm in data and any(set(d) != set(data[ref_arm]) for d in data.values()):
             raise ValueError(f"{db}: completed arms cover different sessions; refusing a partial intersection")
         for arm, p in done.items():  # time-corrections.json: sessions that ran while their cell was paused
             fix = os.path.join(os.path.dirname(p), "time-corrections.json")
@@ -178,8 +185,8 @@ def main():
             series.setdefault(db, {})[arm] = [{"k": k, "task": t, "tokens": data[arm][(t, k)]["tokens"], "agent_s": data[arm][(t, k)]["agent_s"],
                                                "cost": data[arm][(t, k)]["cost"]["offpeak"], "test": data[arm][(t, k)]["test"]}
                                               for k, t in order if (t, k) in data[arm]]
-        if "none" in data:  # sessions without a valid solution: the reference's test score (run.json of the no-memory run)
-            ref = {(t, c["k"]): v.get("test") for c in json.load(open(os.path.join(done["none"], "run.json")))["cutoffs"]
+        if ref_arm in data:  # sessions without a valid solution: the reference's test score (run.json of the no-memory run 1)
+            ref = {(t, c["k"]): v.get("test") for c in json.load(open(os.path.join(done[ref_arm], "run.json")))["cutoffs"]
                    for t, v in (c.get("reference") or {}).items()}
             for d in data.values():
                 for key, v in d.items():
@@ -191,6 +198,7 @@ def main():
             if not all(i in data for i in ids):
                 continue
             runs = [data.pop(i) for i in ids]
+            done[arm] = done[ids[0]]  # run 1's folder (No memory's reference scores and workload)
             for i in ids:
                 series.get(db, {}).pop(i, None)
             data[arm] = average(runs)
@@ -307,7 +315,7 @@ def main():
                 continue
             costs = ["--" if c is None else bold(c, b) for c, b in zip(cells[arm], best_cost)]
             tests = [bold(score_text(r["test"][t]), best_scores[t]) for t in tasks]
-            counts = [bold(f"{r['solved']}/{len(keys)}", f"{best_solved}/{len(keys)}")]
+            counts = [bold(f"{count_text(r['solved'])}/{len(keys)}", f"{count_text(best_solved)}/{len(keys)}")]
             table.append(" & ".join([label] + costs + tests + counts) + "\\\\")
         table.append("\\midrule")
     if table and table[-1] == "\\midrule":

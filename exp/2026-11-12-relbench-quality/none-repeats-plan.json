@@ -1,0 +1,11 @@
+{
+  "recorded_at_utc": "2026-11-12T08:56:33Z",
+  "purpose": "run-to-run spread of the No memory baseline, so Table III reports No memory and MAVRA both as means of three runs",
+  "runs": [2, 3],
+  "run1": "existing results/relbench-pilot3/none-rel-stack-r1 and results/relbench-main/none-rel-trial-r1 (2026-10-21)",
+  "settings_check": "run.json settings of run 1 (call/validation caps, patience, sample, LightGBM parameters, model, reasoning effort) equal the current harness; the first new sessions' system prompt and tools are compared with run 1 before the runs are kept",
+  "paper_row": "No memory row = mean of runs 1-3; token ratios of every method relative to that mean; range of each task mean stated in the text",
+  "no_selection": "both new runs are reported whatever their scores",
+  "concurrency": "run alongside the four v10 cells (up to eight cells); memory headroom checked",
+  "budget_guard": "one guard over v10 and these cells"
+}

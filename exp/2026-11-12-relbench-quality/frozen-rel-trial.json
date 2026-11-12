@@ -1,0 +1,662 @@
+{
+ "runs": [
+  "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+  "results/quality-20261112-v10-none/none-rel-trial-r2",
+  "results/quality-20261112-v10-none/none-rel-trial-r3",
+  "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+  "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+  "results/quality-20261112-v10/mavra-retry-rel-trial-r3"
+ ],
+ "template": "relbench_trial_t1",
+ "rows": [
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "site-success",
+   "k": 2,
+   "frozen_test": 0.40680374628673993,
+   "frozen_val": 0.4204827986430406,
+   "fresh_test": 0.4410660317190618,
+   "n_features": 53
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 2,
+   "frozen_test": 49.81976533613856,
+   "frozen_val": 35.42996466720743,
+   "fresh_test": 48.76163680873639,
+   "n_features": 60
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 2,
+   "frozen_test": 0.6518632274018731,
+   "frozen_val": 0.6727779568159845,
+   "fresh_test": 0.6463518099547512,
+   "n_features": 96
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "site-success",
+   "k": 2,
+   "frozen_test": 0.4175631286888715,
+   "frozen_val": 0.38708242063198084,
+   "fresh_test": 0.3909969056236329,
+   "n_features": 69
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 2,
+   "frozen_test": 50.277354988323786,
+   "frozen_val": 34.31841955564835,
+   "fresh_test": 50.258054388143094,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 2,
+   "frozen_test": 0.6413961380616647,
+   "frozen_val": 0.6345923300032226,
+   "fresh_test": 0.6504656424287066,
+   "n_features": 66
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "site-success",
+   "k": 2,
+   "frozen_test": 0.4106477396721203,
+   "frozen_val": 0.39986952952160276,
+   "fresh_test": 0.41862996213343323,
+   "n_features": 27
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 2,
+   "frozen_test": 50.16759261197441,
+   "frozen_val": 34.53123853525693,
+   "fresh_test": 49.809119612116376,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 2,
+   "frozen_test": 0.6665197832263496,
+   "frozen_val": 0.6809184660006445,
+   "fresh_test": 0.655911291171209,
+   "n_features": 97
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "site-success",
+   "k": 2,
+   "frozen_test": 0.4058039362665054,
+   "frozen_val": 0.4034149727123086,
+   "fresh_test": 0.4094204842627093,
+   "n_features": 84
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 2,
+   "frozen_test": 49.58423273381899,
+   "frozen_val": 34.64405948457818,
+   "fresh_test": 49.58423273381899,
+   "n_features": 37
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 2,
+   "frozen_test": 0.6431620277807009,
+   "frozen_val": 0.6629487592652272,
+   "fresh_test": 0.6431620277807009,
+   "n_features": 99
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "site-success",
+   "k": 2,
+   "frozen_test": 0.3948529724622457,
+   "frozen_val": 0.4187516041706064,
+   "fresh_test": 0.4071445912668499,
+   "n_features": 21
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 2,
+   "frozen_test": 49.99158558677257,
+   "frozen_val": 33.82139385158399,
+   "fresh_test": 49.726209300961976,
+   "n_features": 74
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 2,
+   "frozen_test": 0.6459999473850363,
+   "frozen_val": 0.650783113116339,
+   "fresh_test": 0.6459999473850363,
+   "n_features": 55
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "site-success",
+   "k": 2,
+   "frozen_test": 0.4125676319611412,
+   "frozen_val": 0.5055578455824591,
+   "fresh_test": 0.40313301947323965,
+   "n_features": 1
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 2,
+   "frozen_test": 50.538887419151514,
+   "frozen_val": 35.901255209906644,
+   "fresh_test": 50.538887419151514,
+   "n_features": 25
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 2,
+   "frozen_test": 0.6507320056824162,
+   "frozen_val": 0.6616016757976152,
+   "fresh_test": 0.6507320056824162,
+   "n_features": 95
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "site-success",
+   "k": 3,
+   "frozen_test": 0.406231656255707,
+   "frozen_val": 0.4157162570357796,
+   "fresh_test": 0.3969112587860143,
+   "n_features": 53
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 3,
+   "frozen_test": 44.55427174055295,
+   "frozen_val": 49.549976484130724,
+   "fresh_test": 43.53556284043327,
+   "n_features": 60
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 3,
+   "frozen_test": 0.6514094432699082,
+   "frozen_val": 0.680633845889358,
+   "fresh_test": 0.6727942212825935,
+   "n_features": 96
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "site-success",
+   "k": 3,
+   "frozen_test": 0.3948298243968541,
+   "frozen_val": 0.4122612822228415,
+   "fresh_test": 0.3958748784142206,
+   "n_features": 69
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 3,
+   "frozen_test": 44.863413648611996,
+   "frozen_val": 49.79666625751244,
+   "fresh_test": 42.33591540092941,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 3,
+   "frozen_test": 0.6460764622973926,
+   "frozen_val": 0.6608964165159635,
+   "fresh_test": 0.6414270613107822,
+   "n_features": 66
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "site-success",
+   "k": 3,
+   "frozen_test": 0.39480385338490914,
+   "frozen_val": 0.43381077981837235,
+   "fresh_test": 0.39391801547573924,
+   "n_features": 27
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 3,
+   "frozen_test": 43.52587997754623,
+   "frozen_val": 49.30543038615227,
+   "fresh_test": 42.22893571097378,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 3,
+   "frozen_test": 0.6533051444679352,
+   "frozen_val": 0.6815826971841928,
+   "fresh_test": 0.6480725863284003,
+   "n_features": 97
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "site-success",
+   "k": 3,
+   "frozen_test": 0.39524207592276983,
+   "frozen_val": 0.41436323530006575,
+   "fresh_test": 0.3965194931803552,
+   "n_features": 84
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 3,
+   "frozen_test": 44.95409239254969,
+   "frozen_val": 49.309845856732366,
+   "fresh_test": 44.95409239254969,
+   "n_features": 37
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 3,
+   "frozen_test": 0.6709090909090909,
+   "frozen_val": 0.6613923318268529,
+   "fresh_test": 0.6709090909090909,
+   "n_features": 99
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "site-success",
+   "k": 3,
+   "frozen_test": 0.37715683745997347,
+   "frozen_val": 0.4099255070583712,
+   "fresh_test": 0.383282417905521,
+   "n_features": 21
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 3,
+   "frozen_test": 43.74405978101623,
+   "frozen_val": 48.43265714769012,
+   "fresh_test": 43.998601688162076,
+   "n_features": 74
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 3,
+   "frozen_test": 0.6571423537702609,
+   "frozen_val": 0.657451458156319,
+   "fresh_test": 0.6571423537702609,
+   "n_features": 55
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "site-success",
+   "k": 3,
+   "frozen_test": 0.4138089358514066,
+   "frozen_val": 0.4176874036579925,
+   "fresh_test": 0.40972163526068156,
+   "n_features": 1
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 3,
+   "frozen_test": 45.11578794478883,
+   "frozen_val": 49.97063237229368,
+   "fresh_test": 44.99568326566656,
+   "n_features": 25
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 3,
+   "frozen_test": 0.6650775193798449,
+   "frozen_val": 0.6633958296828456,
+   "fresh_test": 0.6650775193798449,
+   "n_features": 95
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "site-success",
+   "k": 4,
+   "frozen_test": 0.42441522587745784,
+   "frozen_val": 0.404792536611773,
+   "fresh_test": null,
+   "n_features": 53
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 4,
+   "frozen_test": 39.730763049235954,
+   "frozen_val": 43.92343336502592,
+   "fresh_test": 39.45515586312785,
+   "n_features": 60
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 4,
+   "frozen_test": 0.6703392857142858,
+   "frozen_val": 0.6759788256190429,
+   "fresh_test": 0.6689553571428573,
+   "n_features": 96
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "site-success",
+   "k": 4,
+   "frozen_test": 0.39313946746918105,
+   "frozen_val": 0.3679788237710825,
+   "fresh_test": 0.4198942535778802,
+   "n_features": 69
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 4,
+   "frozen_test": 39.6608944724292,
+   "frozen_val": 43.94789177893675,
+   "fresh_test": 38.70762627305921,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 4,
+   "frozen_test": 0.6472544642857143,
+   "frozen_val": 0.6517101039838324,
+   "fresh_test": 0.6616696428571429,
+   "n_features": 66
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "site-success",
+   "k": 4,
+   "frozen_test": 0.4209314818999947,
+   "frozen_val": 0.39707381490423127,
+   "fresh_test": null,
+   "n_features": 27
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 4,
+   "frozen_test": 38.76027084701429,
+   "frozen_val": 42.458408814989085,
+   "fresh_test": 37.82728661982942,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 4,
+   "frozen_test": 0.6748839285714285,
+   "frozen_val": 0.6722096739229246,
+   "fresh_test": 0.6661383928571427,
+   "n_features": 97
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "site-success",
+   "k": 4,
+   "frozen_test": 0.39327074176566007,
+   "frozen_val": 0.3767310762903192,
+   "fresh_test": 0.4001548645588013,
+   "n_features": 84
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 4,
+   "frozen_test": 39.800936853925265,
+   "frozen_val": 43.9516291093235,
+   "fresh_test": 39.800936853925265,
+   "n_features": 37
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 4,
+   "frozen_test": 0.6409151785714285,
+   "frozen_val": 0.6785976517975146,
+   "fresh_test": 0.6538258928571428,
+   "n_features": 99
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "site-success",
+   "k": 4,
+   "frozen_test": 0.4280855565830825,
+   "frozen_val": 0.39368404404050167,
+   "fresh_test": 0.4271475876913515,
+   "n_features": 21
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 4,
+   "frozen_test": 38.24991945831782,
+   "frozen_val": 42.80973584845597,
+   "fresh_test": 38.803549083970886,
+   "n_features": 74
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 4,
+   "frozen_test": 0.6683839285714286,
+   "frozen_val": 0.6835381075921483,
+   "fresh_test": 0.6683839285714286,
+   "n_features": 55
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "site-success",
+   "k": 4,
+   "frozen_test": 0.47536519602767396,
+   "frozen_val": 0.41360540977321075,
+   "fresh_test": 0.4458928941652951,
+   "n_features": 1
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 4,
+   "frozen_test": 40.63764908749409,
+   "frozen_val": 44.65202852955637,
+   "fresh_test": 41.15172439438161,
+   "n_features": 25
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 4,
+   "frozen_test": 0.66209375,
+   "frozen_val": 0.682013664049006,
+   "fresh_test": 0.6734553571428571,
+   "n_features": 95
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "site-success",
+   "k": 5,
+   "frozen_test": 0.4262575713050459,
+   "frozen_val": 0.42074966500706223,
+   "fresh_test": 0.3977620855861701,
+   "n_features": 53
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 5,
+   "frozen_test": 37.32724046393387,
+   "frozen_val": 38.593486849012386,
+   "fresh_test": 37.428563692969824,
+   "n_features": 60
+  },
+  {
+   "run": "/root/agentdb-mid/results/relbench-main/none-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 5,
+   "frozen_test": 0.716919109367622,
+   "frozen_val": 0.6732115493725401,
+   "fresh_test": 0.7062523458404466,
+   "n_features": 96
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "site-success",
+   "k": 5,
+   "frozen_test": 0.40334649050190324,
+   "frozen_val": 0.38123393738745276,
+   "fresh_test": 0.4324878219832232,
+   "n_features": 69
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 5,
+   "frozen_test": 36.68535165473358,
+   "frozen_val": 38.50776182648029,
+   "fresh_test": 34.783299838822664,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 5,
+   "frozen_test": 0.6988425169203202,
+   "frozen_val": 0.6332721286281657,
+   "fresh_test": 0.7209872507355345,
+   "n_features": 66
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "site-success",
+   "k": 5,
+   "frozen_test": 0.3947623893770816,
+   "frozen_val": 0.4144091046859196,
+   "fresh_test": 0.4018709763092858,
+   "n_features": 27
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 5,
+   "frozen_test": 34.83503062994314,
+   "frozen_val": 37.274371398538705,
+   "fresh_test": 34.22047622117309,
+   "n_features": 92
+  },
+  {
+   "run": "results/quality-20261112-v10-none/none-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 5,
+   "frozen_test": 0.7261390190451975,
+   "frozen_val": 0.6679309682405659,
+   "fresh_test": 0.7215260373155109,
+   "n_features": 97
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "site-success",
+   "k": 5,
+   "frozen_test": 0.38264285030455,
+   "frozen_val": 0.40889525235009044,
+   "fresh_test": 0.39265213476172706,
+   "n_features": 84
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-adverse",
+   "k": 5,
+   "frozen_test": 36.80320339818473,
+   "frozen_val": 38.82275257765186,
+   "fresh_test": 36.80320339818473,
+   "n_features": 37
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+   "task": "study-outcome",
+   "k": 5,
+   "frozen_test": 0.6832055985374064,
+   "frozen_val": 0.6651387827858417,
+   "fresh_test": 0.6837080624265979,
+   "n_features": 99
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "site-success",
+   "k": 5,
+   "frozen_test": 0.3996786101207511,
+   "frozen_val": 0.4073204965566088,
+   "fresh_test": 0.40447733742030895,
+   "n_features": 21
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-adverse",
+   "k": 5,
+   "frozen_test": 34.31592110500185,
+   "frozen_val": 37.417570989624664,
+   "fresh_test": 34.58440622645748,
+   "n_features": 74
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+   "task": "study-outcome",
+   "k": 5,
+   "frozen_test": 0.7009371254222514,
+   "frozen_val": 0.6591434021774579,
+   "fresh_test": 0.7009371254222514,
+   "n_features": 55
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "site-success",
+   "k": 5,
+   "frozen_test": 0.46222197509331003,
+   "frozen_val": 0.4749371681853262,
+   "fresh_test": 0.40619910590173663,
+   "n_features": 1
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-adverse",
+   "k": 5,
+   "frozen_test": 39.78410463303503,
+   "frozen_val": 39.9623479342407,
+   "fresh_test": 39.622651313433856,
+   "n_features": 25
+  },
+  {
+   "run": "results/quality-20261112-v10/mavra-retry-rel-trial-r3",
+   "task": "study-outcome",
+   "k": 5,
+   "frozen_test": 0.7102417880449918,
+   "frozen_val": 0.6676361134565469,
+   "fresh_test": 0.720484786846343,
+   "n_features": 95
+  }
+ ],
+ "skipped": []
+}

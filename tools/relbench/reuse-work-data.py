@@ -17,8 +17,9 @@ ARMS = ("none", "ace", "awm", "gmemory", "tecod", "mavra")
 KINDS = ("schema", "probe", "validate", "memory", "submit")
 REFUSED_KIND = {"run_sql": "probe", "list_tables": "schema", "describe_table": "schema", "join_path": "schema",
                 "check_join": "schema", "submit": "submit"}
-# as in paper-stats.py (11-12): MAVRA is the mean over three runs of the frozen v9 arm, the others their run 1
-MULTI_RUN = {"mavra": [f"results/quality-20261112-v9/mavra-delta-headers-{{db}}-r{i}" for i in (1, 2, 3)]}
+# as in paper-stats.py (11-12): MAVRA is the mean over three runs of arm mavra-retry (v10), the others their run 1
+MULTI_RUN = {"mavra": [f"results/quality-20261112-v10/mavra-retry-{{db}}-r{i}" for i in (1, 2, 3)],
+             "none": [None] + [f"results/quality-20261112-v10-none/none-{{db}}-r{i}" for i in (2, 3)]}  # None: run 1
 
 
 def main():
@@ -28,7 +29,8 @@ def main():
     work = {}
     for db, pattern in RUNS.items():
         for arm in ARMS:
-            folders = [f.format(db=db) for f in MULTI_RUN[arm]] if arm in MULTI_RUN else [pattern.format(arm=arm)]
+            folders = ([pattern.format(arm=arm) if f is None else f.format(db=db) for f in MULTI_RUN[arm]]
+                       if arm in MULTI_RUN else [pattern.format(arm=arm)])
             rows = []
             for folder in folders:
                 run = json.load(open(os.path.join(folder, "run.json")))
@@ -40,11 +42,12 @@ def main():
                 if len(late) != 12:
                     raise SystemExit(f"{folder}: {len(late)} reuse sessions, expected 12")
                 # a call the harness refused at that step (category "other": MAVRA's reuse offers only some tools per
-                # step) still counts in the table's tool calls, so it is drawn under the kind of the tool it asked for
+                # step) or a call of a tool that does not exist (no category) still counts in the table's tool calls,
+                # so it is drawn under the kind of the tool it asked for (unknown names as SQL probes)
                 counts = {k: sum(s["totals"]["tool_calls_by_category"].get(k, 0) for s in late) for k in KINDS}
                 for s in late:
                     for x in s["tools"]:
-                        if x.get("category") == "other":
+                        if x.get("category") in ("other", None):
                             counts[REFUSED_KIND.get(x["name"], "probe")] += 1
                 if sum(counts.values()) != sum(s["totals"]["tool_calls"] for s in late):
                     raise SystemExit(f"{folder}: tool calls by kind do not add up to the table's tool calls")

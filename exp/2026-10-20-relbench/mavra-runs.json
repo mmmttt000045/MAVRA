@@ -2,14 +2,26 @@
  "multi_run": {
   "mavra": {
    "rel-stack": [
-    "results/quality-20261112-v9/mavra-delta-headers-rel-stack-r1",
-    "results/quality-20261112-v9/mavra-delta-headers-rel-stack-r2",
-    "results/quality-20261112-v9/mavra-delta-headers-rel-stack-r3"
+    "results/quality-20261112-v10/mavra-retry-rel-stack-r1",
+    "results/quality-20261112-v10/mavra-retry-rel-stack-r2",
+    "results/quality-20261112-v10/mavra-retry-rel-stack-r3"
    ],
    "rel-trial": [
-    "results/quality-20261112-v9/mavra-delta-headers-rel-trial-r1",
-    "results/quality-20261112-v9/mavra-delta-headers-rel-trial-r2",
-    "results/quality-20261112-v9/mavra-delta-headers-rel-trial-r3"
+    "results/quality-20261112-v10/mavra-retry-rel-trial-r1",
+    "results/quality-20261112-v10/mavra-retry-rel-trial-r2",
+    "results/quality-20261112-v10/mavra-retry-rel-trial-r3"
+   ]
+  },
+  "none": {
+   "rel-stack": [
+    "results/relbench-pilot3/none-rel-stack-r1",
+    "results/quality-20261112-v10-none/none-rel-stack-r2",
+    "results/quality-20261112-v10-none/none-rel-stack-r3"
+   ],
+   "rel-trial": [
+    "results/relbench-main/none-rel-trial-r1",
+    "results/quality-20261112-v10-none/none-rel-trial-r2",
+    "results/quality-20261112-v10-none/none-rel-trial-r3"
    ]
   }
  },
@@ -17,45 +29,89 @@
   "rel-stack": {
    "mavra": [
     {
-     "tokens": 374536,
-     "token_ratio": 0.08692784289969908,
-     "llm_calls": 36,
-     "tool_calls": 52,
-     "agent_minutes": 26.479580239454904,
-     "usd": 0.10820222400000001,
+     "tokens": 331232,
+     "token_ratio": 0.09823659802039161,
+     "llm_calls": 31,
+     "tool_calls": 46,
+     "agent_minutes": 24.225558189551034,
+     "usd": 0.10856791799999999,
      "valid": 15,
      "test": {
-      "post-votes": 0.0642824416724136,
-      "user-badge": 0.8549123451967656,
-      "user-engagement": 0.8879038403144622
+      "post-votes": 0.06441432999318648,
+      "user-badge": 0.853092353832146,
+      "user-engagement": 0.883110223896787
      }
     },
     {
-     "tokens": 388117,
-     "token_ratio": 0.09007992183048495,
-     "llm_calls": 35,
-     "tool_calls": 45,
-     "agent_minutes": 30.5702161749204,
-     "usd": 0.105323688,
+     "tokens": 347581,
+     "token_ratio": 0.10308537513442463,
+     "llm_calls": 32,
+     "tool_calls": 41,
+     "agent_minutes": 42.4548645456632,
+     "usd": 0.099587538,
      "valid": 15,
      "test": {
-      "post-votes": 0.06431144660653512,
-      "user-badge": 0.8639106940862555,
-      "user-engagement": 0.8889888685906986
+      "post-votes": 0.06326494922964639,
+      "user-badge": 0.8598624754958089,
+      "user-engagement": 0.8844191158196845
      }
     },
     {
-     "tokens": 409208,
-     "token_ratio": 0.09497503240623081,
-     "llm_calls": 36,
-     "tool_calls": 47,
-     "agent_minutes": 34.87161387602488,
-     "usd": 0.11374468799999998,
+     "tokens": 351220,
+     "token_ratio": 0.10416462768307996,
+     "llm_calls": 33,
+     "tool_calls": 49,
+     "agent_minutes": 53.30390586455663,
+     "usd": 0.092465178,
      "valid": 15,
      "test": {
-      "post-votes": 0.06422792572998771,
-      "user-badge": 0.8627433491441315,
-      "user-engagement": 0.885364017775548
+      "post-votes": 0.06287361004461897,
+      "user-badge": 0.8596625421397905,
+      "user-engagement": 0.8881240835524234
+     }
+    }
+   ],
+   "none": [
+    {
+     "tokens": 4308585,
+     "token_ratio": 1.2778376868227979,
+     "llm_calls": 201,
+     "tool_calls": 334,
+     "agent_minutes": 112.21103179852167,
+     "usd": 0.31109633400000003,
+     "valid": 15,
+     "test": {
+      "post-votes": 0.06454176835830355,
+      "user-badge": 0.8588115098025881,
+      "user-engagement": 0.8843190100944827
+     }
+    },
+    {
+     "tokens": 2664145,
+     "token_ratio": 0.7901306076497325,
+     "llm_calls": 164,
+     "tool_calls": 289,
+     "agent_minutes": 125.12082499265671,
+     "usd": 0.21497986800000002,
+     "valid": 14,
+     "test": {
+      "post-votes": 0.06451882018870875,
+      "user-badge": 0.8425855387770985,
+      "user-engagement": 0.819909828961451
+     }
+    },
+    {
+     "tokens": 3142604,
+     "token_ratio": 0.9320317055274695,
+     "llm_calls": 174,
+     "tool_calls": 294,
+     "agent_minutes": 102.50871960322063,
+     "usd": 0.255850962,
+     "valid": 15,
+     "test": {
+      "post-votes": 0.0643799289163357,
+      "user-badge": 0.8484536169576284,
+      "user-engagement": 0.8828051081966815
      }
     }
    ]
@@ -63,45 +119,89 @@
   "rel-trial": {
    "mavra": [
     {
-     "tokens": 413764,
-     "token_ratio": 0.051589437035212043,
+     "tokens": 446716,
+     "token_ratio": 0.05388532402673044,
+     "llm_calls": 44,
+     "tool_calls": 57,
+     "agent_minutes": 44.63414797782898,
+     "usd": 0.110248272,
+     "valid": 15,
+     "test": {
+      "site-success": 0.4050972557193449,
+      "study-adverse": 41.18578634049717,
+      "study-outcome": 0.6626162129900014
+     }
+    },
+    {
+     "tokens": 454190,
+     "token_ratio": 0.05478687873212667,
+     "llm_calls": 46,
+     "tool_calls": 63,
+     "agent_minutes": 34.01623375415802,
+     "usd": 0.116206302,
+     "valid": 15,
+     "test": {
+      "site-success": 0.414142906125546,
+      "study-adverse": 40.20564134759749,
+      "study-outcome": 0.6625210306817452
+     }
+    },
+    {
+     "tokens": 360922,
+     "token_ratio": 0.04353638311225835,
      "llm_calls": 44,
      "tool_calls": 61,
-     "agent_minutes": 19.93542484045029,
-     "usd": 0.11173359,
+     "agent_minutes": 18.278517274061837,
+     "usd": 0.083416392,
      "valid": 15,
      "test": {
-      "site-success": 0.4290609356245519,
-      "study-adverse": 38.947721408027505,
-      "study-outcome": 0.6516855114584291
+      "site-success": 0.4346790145088396,
+      "study-adverse": 42.42249011810085,
+      "study-outcome": 0.6719512228853809
+     }
+    }
+   ],
+   "none": [
+    {
+     "tokens": 8020324,
+     "token_ratio": 0.9674552904739538,
+     "llm_calls": 319,
+     "tool_calls": 501,
+     "agent_minutes": 138.01131133238474,
+     "usd": 0.31881108,
+     "valid": 14,
+     "test": {
+      "site-success": 0.42449867292415255,
+      "study-adverse": 40.84950444278163,
+      "study-outcome": 0.6731981719166402
      }
     },
     {
-     "tokens": 373011,
-     "token_ratio": 0.04650822086489274,
-     "llm_calls": 41,
-     "tool_calls": 58,
-     "agent_minutes": 15.926105308532716,
-     "usd": 0.093166656,
+     "tokens": 8244760,
+     "token_ratio": 0.9945279867357024,
+     "llm_calls": 307,
+     "tool_calls": 440,
+     "agent_minutes": 166.0764119664828,
+     "usd": 0.35655807,
      "valid": 15,
      "test": {
-      "site-success": 0.42321352194008427,
-      "study-adverse": 42.67764682913119,
-      "study-outcome": 0.6465292741873964
+      "site-success": 0.4097800350115356,
+      "study-adverse": 40.23067988577205,
+      "study-outcome": 0.6642080180806775
      }
     },
     {
-     "tokens": 395520,
-     "token_ratio": 0.049314715964093224,
-     "llm_calls": 47,
-     "tool_calls": 61,
-     "agent_minutes": 22.995716706911722,
-     "usd": 0.09270596400000002,
-     "valid": 15,
+     "tokens": 8605287,
+     "token_ratio": 1.0380167227903436,
+     "llm_calls": 346,
+     "tool_calls": 544,
+     "agent_minutes": 139.44934182564418,
+     "usd": 0.34625204400000004,
+     "valid": 14,
      "test": {
-      "site-success": 0.41515345742205756,
-      "study-adverse": 44.71851214405264,
-      "study-outcome": 0.6541880920582853
+      "site-success": 0.423981544217253,
+      "study-adverse": 39.72208453690197,
+      "study-outcome": 0.6749052335615232
      }
     }
    ]
