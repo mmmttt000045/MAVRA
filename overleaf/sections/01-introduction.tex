@@ -2,69 +2,56 @@
 \label{sec:introduction}
 
 \bi{
-LLM-based data agents increasingly automate analytics and predictive modeling over enterprise databases~\cite{lei2025spider2,guo2024dsagent,liu2026agents}.
-To answer a request, an agent inspects table schemas, probes columns and join keys, and synthesizes task SQL~\cite{floratou2024nl2sql,robinson2024relbench}.
-Across an organization, multiple agents answer diverse requests over the same database, yet repeatedly investigate the same table relationships, business grains, domain filters, and calculation rules.
-Because sessions run in isolation, agents spend most of their LLM calls and latency rediscovering shared database knowledge, driving up inference cost while risking inconsistent answers.
+LLM-based data agents increasingly answer analytical questions and build predictive features on enterprise databases~\cite{lei2025spider2,guo2024dsagent,liu2026agents}: they inspect schemas, probe columns and join keys, and write SQL~\cite{floratou2024nl2sql,robinson2024relbench}.
+When many agents work over the same database, they repeatedly figure out the same join paths, row grains, business filters, and formulas in separate sessions, spending extra tokens and time while risking inconsistent answers.
 }
-{基于大语言模型的数据智能体正广泛用于自动完成企业数据库上的数据分析与预测建模任务~\cite{lei2025spider2,guo2024dsagent,liu2026agents}。为回答用户请求，智能体通常需要检查表结构、探查列取值与连接键，并合成目标 SQL~\cite{floratou2024nl2sql,robinson2024relbench}。在实际业务中，多个智能体围绕同一数据库回答不同请求，却反复探查相同的表连接关系、业务粒度、过滤规则与指标计算方式。由于各会话相互孤立，智能体将大部分大模型调用与等待时间耗费在重复探索共性数据库知识上，不仅推高了推理开销，也容易导致跨会话结果不一致。}
+{基于大语言模型的数据智能体正广泛用于企业数据库上的分析问答与预测特征构建~\cite{lei2025spider2,guo2024dsagent,liu2026agents}：它们查看表结构、探查列值与连接键，并编写 SQL~\cite{floratou2024nl2sql,robinson2024relbench}。当多个智能体围绕同一数据库各自作答时，往往在孤立会话里反复摸索相同的连接路径、行粒度、业务过滤与计算公式，既浪费 token 与时间，也容易给出口径不一的结果。}
 
 \input{figures/metric-record}
 
 \bi{
-Preserving verified discoveries could eliminate this repeated exploration, yet one successful session answers only one specific request under one parameter binding and data state.
-In Figure~\ref{fig:metric-record}, Agent~1 computes January electronics revenue by inspecting \code{date}, \code{sales}, and \code{item}, joining on \code{date\_id} and \code{item\_id}, probing \code{net\_paid} versus \code{gross} under \code{category='Elec.'}, and filtering \code{month=1}; later, Agent~2 asks for the highest-revenue month and Agent~$N$ compares September across years (all \WxSessions\ traced sessions on this metric repeat Steps~1--4, and 93\% of probes revisit earlier targets).
-Existing methods address isolated steps of reusing this discovery.
-Single-agent memories~\cite{zhao2024expel,wang2025awm,zhang2026ace} keep notes private (leaving $N$ agents over $k$ computations to repeat up to $Nk$ explorations), while result caches miss when the month or ranking changes.
-Multi-agent memories~\cite{zhang2025gmemory,biswal2026agentsm}, template stores~\cite{jivani2025tecod}, and semantic caches~\cite{bang2023gptcache,schroeder2026vcache} share artifacts across sessions, yet rely on unstructured traces or top-1 similarity: when ``revenue'' may denote post-coupon (\code{net\_paid}) or pre-coupon (\code{gross}) amounts, top-1 matching cannot surface competing definitions or abstain on absent metrics (memoryless agents fail all \WxNamed\ name-only sessions on Figure~\ref{fig:metric-record} by choosing \code{gross}), whereas view matching requires synthesizing target SQL first.
-Even after selecting the right calculation, data updates can break its relational assumptions under an unchanged schema: appending \code{sales} rows preserves the join, whereas loading historical \code{item} versions duplicates \code{item\_id} and silently inflates revenue---missed by TTLs and schema hashes, while semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} avoid drift only through manual engineering.
-Safe reuse therefore requires organizing agent discoveries into shared executable definitions that can be selected, validated, and maintained.
+Reusing verified work from past sessions could avoid this repetition, because the core calculation stays the same across questions.
+In Figure~\ref{fig:metric-record}, Agent~1 computes January electronics revenue by inspecting \code{date}, \code{sales}, and \code{item}, joining \code{date\_id} and \code{item\_id}, comparing \code{net\_paid} vs.\ \code{gross} under \code{category='Elec.'}, and filtering \code{month=1}; later, Agent~2 asks for the top month and Agent~$N$ compares September across years (all \WxSessions\ traced sessions repeat Steps~1--4, and 93\% of probes revisit earlier targets).
+Yet existing methods struggle to share these discoveries safely.
+Single-agent memories~\cite{zhao2024expel,wang2025awm,zhang2026ace} stay private (up to $Nk$ explorations across $N$ agents and $k$ computations), and result caches miss when periods or rankings change.
+Multi-agent memories~\cite{zhang2025gmemory,biswal2026agentsm} and template stores~\cite{jivani2025tecod} share raw SQL queries or session logs that pile up across slices and still force receiving agents to read examples and rewrite SQL; prompting an LLM to summarize a session is shorter, but can silently drop a filter, alter join behavior, or leave the learning period hardcoded.
+Moreover, SQL examples and top-1 caches~\cite{bang2023gptcache,schroeder2026vcache} hide business choices inside query text---picking one formula arbitrarily when ``revenue'' could mean \code{net\_paid} or \code{gross} (memoryless agents miss all \WxNamed\ name-only sessions in Figure~\ref{fig:metric-record})---and carry no checks when data loads break grain or join assumptions under a fixed schema (e.g., historical \code{item} rows duplicating \code{item\_id}), whereas semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} require manual authoring.
 }
-{保存已核验的探索结果有望消除重复探查，但单次成功会话仅对应特定的请求措辞、参数取值与数据库状态。以图~\ref{fig:metric-record} 为例：智能体~1 计算 1 月电子商品营业额时，依次检查 \code{date}、\code{sales} 与 \code{item}，按 \code{date\_id} 与 \code{item\_id} 连接，在 \code{category='Elec.'} 下探查 \code{net\_paid} 与 \code{gross}，最后筛选 \code{month=1}；此后，智能体~2 询问最高营业额月份，智能体~$N$ 对比 9 月同比变化（该指标的全部 \WxSessions\ 个会话均重复了步骤 1--4，整体 93\% 的数据库探查重复访问已有目标）。现有方法仅解决了复用链条上的局部环节：单智能体记忆~\cite{zhao2024expel,wang2025awm,zhang2026ace}将笔记局限于私有状态（$N$ 个智能体访问 $k$ 类计算仍需至多 $Nk$ 次探查），查询结果缓存在月份或排序变化时即告失效；多智能体记忆~\cite{zhang2025gmemory,biswal2026agentsm}、SQL 模板库~\cite{jivani2025tecod}与语义缓存~\cite{bang2023gptcache,schroeder2026vcache}虽支持跨会话共享，但依赖非结构化轨迹或 top-1 相似度匹配——当``营业额''可指代扣券后（\code{net\_paid}）或扣券前（\code{gross}）金额时，top-1 匹配既无法并列呈现竞争定义，也难以对目录外指标拒答（图~\ref{fig:metric-record} 中无记忆智能体在全部 \WxNamed\ 个仅给名称的会话中均误选 \code{gross}），而关系视图匹配则须先为新请求生成完整 SQL。即便选对了计算逻辑，后续数据更新仍可能在表结构不变时破坏其关系假设：追加 \code{sales} 记录不影响连接，但装载 \code{item} 历史版本会造成 \code{item\_id} 重复并静默虚增营业额；过期时间与模式哈希对此无能为力，企业语义层~\cite{dbt2026metricflow,databricks2026metricviews}则完全仰赖人工编写维护。因此，安全复用要求将智能体的探索发现组织为可选择、可检验、可维护的共享可执行定义。}
+{复用过往会话中已核验的计算本可避免这种重复劳动，因为即便问题变化，底层的核心算法往往不变。图~\ref{fig:metric-record} 中，智能体~1 查看 \code{date}、\code{sales} 与 \code{item}，连接 \code{date\_id} 与 \code{item\_id}，在 \code{category='Elec.'} 下对比 \code{net\_paid} 与 \code{gross}，再筛选 \code{month=1} 算出 1 月电子商品营业额；随后智能体~2 查询最高月份，智能体~$N$ 比较 9 月同比（全部 \WxSessions\ 个追踪会话都重复了步骤 1--4，93\% 的探查重复访问先前目标）。然而现有方法很难安全共享这些发现：单智能体记忆~\cite{zhao2024expel,wang2025awm,zhang2026ace}互不互通（$N$ 个智能体与 $k$ 项计算至多需 $Nk$ 次探查），结果缓存则在期间或排序变化时失效；多智能体记忆~\cite{zhang2025gmemory,biswal2026agentsm}与模板库~\cite{jivani2025tecod}共享具体 SQL 或会话记录，随切片不断堆积且仍需后续智能体阅读示例并重写 SQL；若仅靠提示词让大模型概括轨迹，虽更简短却可能悄悄漏掉过滤条件、改变连接行为或写死当期时间。此外，原始 SQL 示例与 top-1 缓存~\cite{bang2023gptcache,schroeder2026vcache}把口径埋在查询文本中，遇到``营业额''既可指 \code{net\_paid} 又可指 \code{gross} 时无法提示歧义（无记忆智能体在图~\ref{fig:metric-record} 全部 \WxNamed\ 个仅给名称的会话中均答错），在表结构未变而数据写入破坏主键唯一性或连接关系时（如装载带重复 \code{item\_id} 的历史商品行）也无法察觉；企业语义层~\cite{dbt2026metricflow,databricks2026metricviews}则依赖人工编写。}
 
 \bi{
-Unlike isolated memories or static caches, we aim to turn verified agent computations into shared executable definitions and determine when they remain applicable as requests and data change.
-Achieving this goal poses three challenges.
-First, \emph{building definitions without silent extraction loss (C1)}: a session trace entangles fixed calculation rules with request parameters and probes, and LLM abstraction can drop a mandatory filter or join while still compiling into runnable SQL that returns plausible wrong numbers, with only the session's single verified answer as ground truth.
-Second, \emph{selecting definitions for free-form requests (C2)}: without synthesizing SQL, lookup must match paraphrases, separate homonymous definitions differing in one choice, surface ambiguity on underspecified requests, and abstain on absent metrics---without per-lookup LLM catalog scans.
-Third, \emph{maintaining definitions under continuous writes (C3)}: updates routinely violate grain uniqueness, join cardinality, or domain assumptions under a fixed schema, yet rechecking every definition per write erases reuse savings while blind invalidation discards valid knowledge.
+Turning agent sessions into reliable shared knowledge therefore requires compact executable definitions that support verification, lookup, and maintenance together, raising three connected challenges:
+(C1)~\emph{compressing sessions into parameterized definitions with correctness guarantees}, stripping failed probes, aliases, and current parameters while ensuring exact answers across new bindings from one verified session;
+(C2)~\emph{matching free-form requests to the right definition} without writing SQL or scanning the catalog with an LLM on every query, handling paraphrases, shared names, ambiguity, and absent metrics; and
+(C3)~\emph{keeping definitions valid under continuous writes}, where updates break grain, join, or null assumptions under a fixed schema, full rechecking erases reuse savings, and blind invalidation wastes valid knowledge.
 }
-{不同于孤立记忆或静态缓存，我们的目标是将已核验的智能体计算转化为可持续复用的共享可执行定义，并在请求与底层数据变化时准确判定何时能够复用。实现这一目标面临三项关键挑战。第一，\emph{无静默语义损失地建立定义（C1）}：单次会话轨迹将固定计算规则与请求参数及探索探查交织在一起，LLM 抽象一旦遗漏必要过滤或连接，仍可能编译出可运行却返回合理错值的 SQL，而发布时唯一可用的真值仅是源会话在单一参数下的核验答案。第二，\emph{面向自由文本请求准确选择定义（C2）}：在不生成目标 SQL 的前提下，检索需匹配同义表述、区分仅差单一口径选择的同名定义、揭示含糊请求的歧义并对缺失指标拒答，同时避免每次检索调用 LLM 扫描目录。第三，\emph{在持续写入下高效维护定义（C3）}：数据更新常在表结构不变时破坏粒度唯一性、连接基数或值域假设；每次写入后全量重检会抵消复用收益，盲目失效则会丢弃有效知识。}
+{因此，把智能体会话转化为可靠的共享知识需要一套同时支撑入库核验、语义查找与数据维护的紧凑可执行定义，面临三项关联挑战：（C1）\emph{将会话大幅压缩为参数化定义并保证正确性}，剥离失败探查、别名与当次参数，仅凭单次核验会话保证新参数下的结果准确无误；（C2）\emph{为自由文本请求选对定义}，免写 SQL、免在线调用大模型扫描全目录，覆盖同义问法、同名定义、口径含糊与缺失指标；（C3）\emph{在持续写入下维护定义有效}，在表结构不变的数据更新下避免全量重检抵消收益或盲目作废丢弃有效知识。}
 
 \bi{
-In this paper, we present \system\ (\textbf{M}etric-\allowbreak\textbf{A}ware \textbf{V}ali\-dation and \textbf{R}euse for \textbf{A}gents), a shared layer between data agents and the DBMS that turns verified agent discoveries into reusable executable definitions.
-We represent agent-\allowbreak discov\-ered computations (both analytical metrics and predictive features) as versioned, parameterized definitions that separate fixed relational calculation (fact table, grain key, measure, verified joins, mandatory filters, and time attribution) from runtime parameters and post-aggregation derivations, while recording explicit semantic choices, data conditions, and source provenance.
-To prevent lossy abstraction in C1, we check each extracted candidate at publication by replaying SQL compiled solely from its parameterized implementation against the verified source answer alongside structural and trace checks.
+We present \system\ (\textbf{M}etric-\allowbreak\textbf{A}ware \textbf{V}ali\-dation and \textbf{R}euse for \textbf{A}gents), a shared layer between data agents and the DBMS that extracts, looks up, and maintains executable definitions for analytical metrics and predictive features.
+For C1, \system\ compresses a verified session into a compact relational implementation $I$ (${\sim}0.6$\,KB vs.\ tens to hundreds of thousands of session tokens) that fixes the fact grain, measure, verified many-to-one joins, fixed filters, and date role while separating per-request parameters and merging identical discoveries across sessions.
+Rather than trusting an LLM draft or its copied example SQL, \system\ traces the arithmetic steps behind the source answer without sending data rows, resolves table aliases on the SQL syntax tree, checks join directions, grain uniqueness, and parameter separation, and compiles fresh SQL from $I$ alone to confirm exact answer reproduction (plus 2,000-row value checks, time-censored leakage checks, and scan merging for features).
 }
-{本文提出位于数据智能体与数据库管理系统之间的共享层 \system{}（\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents），将智能体已核验的探索发现转化为可复用的共享可执行定义。我们将分析型指标与预测型特征统一表示为版本化的参数化定义，把固定的关系计算（事实表、业务粒度键、度量、已验证连接树、必需过滤谓词与时间归属）同运行期参数及聚合后派生操作解耦，并显式记录语义口径选择、数据条件与来源证据。针对 C1 的有损抽象风险，我们在发布阶段将仅由参数化实现编译生成的 SQL 与源会话核验答案回放比对，结合结构与算术链检查拦截失真候选。}
+{本文提出位于数据智能体与 DBMS 之间的共享层 \system{}（\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents），统一提取、查找并维护分析指标与预测特征的可执行定义。针对 C1，\system{} 将已核验会话压缩为紧凑的关系实现 $I$（约 $0.6$\,KB，而原始会话常达数万至数十万 token），固定事实粒度、度量、已验证多对一连接、固定过滤与日期角色，分离请求参数并合并跨会话重复发现。发布流程不轻信大模型草稿或其附带的示例 SQL：服务端在不发送原始数据行的前提下追踪源答案的算术计算链，在语法树上消解表别名，检查连接方向、粒度唯一性与参数分离，并仅凭 $I$ 重新编译生成 SQL 以核对是否复现源答案（预测特征还包含 2,000 样本复现、时间截断防泄漏检查与共享扫描合并）。}
 
 \bi{
-Because each published definition explicitly records its semantic choices, lookup in C2 can judge whether an incoming request is consistent with those choices rather than relying on surface embedding similarity.
-We use the catalog's recorded choices to enumerate request intents, synthesize diverse phrasings offline, and deterministically label request--definition pairs to train a compact cross-encoder matcher.
-Online, \system\ serves unambiguous matches directly, returns competing definitions with their structural differences when a request leaves a choice open, and caches confirmed phrasings in an alias table without online LLM calls.
+This checked structure $I$ directly drives lookup and maintenance.
+For C2, \system\ reads each definition's explicit choices from $I$, generates labeled request phrasings offline from the catalog, and trains a fast cross-encoder matcher that serves clear matches directly, returns competing definitions with their differences under ambiguity, and caches confirmed wordings without online LLM calls.
+For C3, \system\ derives key, join, null, and scale checks from $I$, skips unchanged tables via transactional version counters, shares check results across definitions and agents, and accepts a single-edit repair only when it restores all checks, reproduces the learning answer, and leaves untouched historical answers unchanged in one database snapshot.
+Our main contributions are:
 }
-{由于每份已发布定义均显式记录了语义口径选择，针对 C2 的检索不再依赖表层向量相似度，而是围绕这些结构化选择判定新请求与定义是否一致。我们利用目录记录的口径选择离线枚举请求意图、合成多样化表述并确定性自动打标，训练紧凑的交叉编码器匹配器。在线阶段，\system{} 直接返回明确匹配，在请求未指明区分口径时一并返回竞争定义及其结构差异供确认，并将已确认表述沉淀至别名表，无需在线调用 LLM。}
-
-\bi{
-As tables evolve, \system\ addresses C3 by maintaining data conditions derived from each definition: structural conditions on grain, joins, and dates, plus value conditions on what the compiled query reads (nulls in filter and measure columns, measure scale).
-We filter affected conditions via transactional table dependency versions, reuse validation results across definitions and agents sharing the same condition and versions, and check append batches incrementally.
-When a condition fails, we search a restricted single-edit space and publish a new revision only if a unique edit restores all conditions, reproduces the source answer on the learning snapshot, and leaves every answer on untouched history unchanged; an edit that would move such answers encodes a business choice and is withheld, as is a definition whose measure changes scale. At runtime, validation and query execution bind to the same database snapshot.
-}
-{随着底层数据更新，\system{} 维护由每个定义推导的数据条件来解决 C3：粒度、连接与日期上的结构条件，以及编译查询所读数据上的取值条件（过滤列与度量列的空值、度量尺度）。我们依据事务级表依赖版本筛选受影响条件，在共享同一条件与依赖版本的定义和智能体之间复用验证结果，并对追加批次执行增量检查。当某项条件失效时，我们在受限单步编辑空间内搜索修复方案，仅当唯一修改恢复全部条件、在学习时快照上复现源答案、且不改变任何未受写入影响的历史答案时发布新版本；会改动这类答案的修改实际是在做业务选择，度量尺度发生跳变的定义同样需要确认，二者都暂停提供。执行阶段将验证与查询绑定于同一数据库快照。}
-
-\bi{In summary, we make the following contributions:}
-{综上所述，本文的主要贡献如下：}
+{这一经核验的结构 $I$ 直接支撑查找与维护。针对 C2，\system{} 从 $I$ 读取显式语义口径，由目录离线生成带标签问法训练轻量交叉编码器，免在线 LLM 调用直接响应明确请求、在歧义时返回竞争定义差异并缓存确认表述。针对 C3，\system{} 从 $I$ 导出主键、连接、空值与数值尺度检查，借事务表版本号跳过未变更表，跨定义与智能体共享检查结果，并在同一快照内仅采纳恢复全部检查、复现学习答案且保持未变历史答案不变的单步修复。主要贡献如下：}
 
 \begin{itemize}
-\item \bi{We propose \system\ and introduce parameterized definitions unifying analytical metrics and predictive features, paired with answer-reproduction replay gates that prevent silent extraction loss.}
-{我们提出 \system{} 及统一分析指标与预测特征的参数化定义，配合源答案回放门禁消除静默提取损失。}
+\item \bi{We present \system{} and a verification-guided extraction pipeline that compresses multi-turn agent sessions into compact parameterized definitions for metrics and features, checking join cardinality, grain uniqueness, parameter separation, and fresh SQL replay (\BdPubChecks/\BdPubChecks{} unseen bindings exact).}
+{提出 \system{} 及验证引导的定义提取流程，将多轮会话压缩为面向指标与特征的紧凑参数化定义，联合检查连接基数、粒度唯一性、参数分离与独立 SQL 编译回放（\BdPubChecks/\BdPubChecks{} 次未见参数编译全部精确）。}
 
-\item \bi{We formalize request--definition consistency over structured choices so the catalog self-labels synthetic pairs for an LLM-free cross-encoder matcher covering paraphrases, homonyms, ambiguity, and absent metrics.}
-{我们基于结构化口径形式化一致性，由目录自动标注合成样本训练免在线 LLM 的交叉编码器匹配器，覆盖同义、同名、含糊与缺失请求。}
+\item \bi{We define request--definition consistency over the explicit choices read from each definition, letting the catalog generate training pairs for an LLM-free matcher handling paraphrases, shared names, ambiguity, and absent metrics.}
+{基于从定义直接读取的语义口径定义请求--定义一致性，由目录自动生成训练样本，训练免在线 LLM 的匹配器以处理同义、同名、含糊与目录外请求。}
 
-\item \bi{We derive structural and value conditions with proven sufficiency bounds, share check outcomes across definitions and agents, admit only answer-preserving repairs, and enforce snapshot-consistent execution.}
-{我们推导具充分性保证的结构条件与取值条件，跨定义与智能体共享检查结果，只准入不改变历史答案的修复，并保证快照一致执行。}
+\item \bi{We derive structural and value checks from each definition with proven correctness bounds, share check results across definitions and agents, accept only history-preserving repairs, and bind validation and execution to one snapshot.}
+{从定义导出具正确性保证的结构与取值检查，跨定义与智能体共享检查结果，仅采纳保持未变历史答案的修复，并将检查与执行绑定在同一快照。}
 
-\item \bi{We implement \system\ on PostgreSQL and evaluate it against eight baselines across five analytical schemas and RelBench. \system\ cuts token use by \PpMavraLateTokXNone$\times$ and latency by \PpMavraLateSpeedupNone$\times$, reaches 98.6\% direct-lookup precision, serves no wrong answer across \RpTotal{} replayed update instances, and beats a shared-definition recheck baseline by \CsBreakMavraGainRecheck{} points on condition-breaking updates at less than half its tokens.}
-{我们在 PostgreSQL 上实现 \system{}，并在五种分析模式与 RelBench 上对比八种基线。\system{} 将 token 与延迟分别降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，首次直接检索准确率达 98.6\%，在 \RpTotal{} 个回放的更新实例上没有给出错误答案，并在条件破坏更新上以不到一半的 token 比共享定义全量重检基线高 \CsBreakMavraGainRecheck{} 个百分点。}
+\item \bi{Across five analytical schemas and RelBench on PostgreSQL, \system{} cuts warmed TPC-DS tokens by \PpMavraLateTokXNone$\times$ and latency by \PpMavraLateSpeedupNone$\times$, reaches 98.6\% direct-lookup precision, serves zero wrong answers across \RpTotal{} replayed updates, and cuts predictive reuse tokens by up to \RbTrialMavraTokSave\%.}
+{在 PostgreSQL 上的五种分析模式与 RelBench 评估表明，\system{} 将预热后 TPC-DS 的 token 与延迟分别降低 \PpMavraLateTokXNone{} 倍与 \PpMavraLateSpeedupNone{} 倍，直接查找准确率达 98.6\%，\RpTotal{} 个回放更新零错答，并将预测特征工程复用 token 最高降低 \RbTrialMavraTokSave\%。}
 \end{itemize}
