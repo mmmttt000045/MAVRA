@@ -4,24 +4,36 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> paper main: make agent-call and timing scope explicit; numerical results unchanged",
-  "previous_head": "46a88cad081999399e9cc2ab94133bab4e582ba2",
-  "remote_commit": "cdf6d0ed1faa04123608115a7baf336db510c2b2",
+  "direction": "overleaf/ -> paper main: RelBench Table III, macros and Figs. 6-7 from the frozen v9 MAVRA arm averaged over three runs; Sec. 4.5 reuse description, setup reuse cap, Sec. 6.2 results text, abstract token claim",
+  "previous_head": "cdf6d0ed1faa04123608115a7baf336db510c2b2",
+  "remote_commit": "3210aedc6ee960efeac85b4f42728da3bc219931",
   "pending_payload": null,
   "changed_paths": [
+    "figures/relbench-cumulative.pdf",
+    "figures/reuse-work.pdf",
+    "gen/relbench-table.tex",
+    "gen/relbench.tex",
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/abstract.tex",
     "tables/relbench.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "built_on": "noctis, TeX Live2026, latexmk/pdfLaTeX;69-file main.tex dependency closure",
-    "status": "14 pages, body ends on12 and references start on13. References resolved, unchanged three existing small box warnings. Changed table page10 rendered and visually inspected; no clipping or overlap.",
-    "content": "Only the RelBench table note changed in this delivery: agent calls and time versus memory-inclusive tokens and fees. All numerical rows are unchanged; no failed candidate results published.",
-    "remote_checked": "origin/main matched46a88cad before sync. Six remote-only files preserved. Independent ls-remote confirmed cdf6d0ed1faa04123608115a7baf336db510c2b2 after push."
+    "local_build": "build.sh en with TeX Live 2026: 14 pages, 0 undefined references, the same 3 pre-existing overfull warnings (tables/capabilities.tex, algorithms/maintenance.tex, bibliography page)",
+    "rendered_pages_checked": [
+      8,
+      9,
+      10
+    ],
+    "stats_regression": "paper-stats.py with the mavra-push run alone reproduces the previous relbench.tex/relbench-table.tex exactly; duplicated run averages to the same values; v8 run matches gate-v8.json",
+    "baselines_unchanged": true,
+    "figures": "relbench-cumulative and reuse-work redrawn; reuse-work kinds sum to the table's tool calls for every arm"
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/cdf6d0ed1faa04123608115a7baf336db510c2b2",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/3210aedc6ee960efeac85b4f42728da3bc219931",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "6f75b0b5d3372ad228ab4e4a70ae27705769955d"
+  "source_commit": "64ab60712ebd235548c6d31f1bd0f554ac972ac2"
 }
