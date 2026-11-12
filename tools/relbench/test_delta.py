@@ -9,6 +9,7 @@ import pandas as pd
 
 import harness
 import test_signal as signal_tests
+import test_directed as directed_tests
 
 
 class DeltaWorkflowTests(unittest.TestCase):
@@ -116,6 +117,20 @@ class DeltaWorkflowTests(unittest.TestCase):
         f.run.arm=harness.ARMS['mavra-refine']
         self.assertIn('submit',names(2,0,False))
         self.assertNotIn('validate_additions',names(2,0,False))
+
+    def test_both_cold_and_warm_prompts_show_the_actual_statement_deadline(self):
+        f=directed_tests.DirectedBudgetTests()
+        f.setUp()
+        self.addCleanup(f.doCleanups)
+        f.run.arm=harness.ARMS['mavra-delta']
+        cold=f.run.system_prompt('task',1,f.seeds)
+        warm=f.run.system_prompt('task',2,f.seeds)
+        self.assertIn('40 model calls',cold)
+        self.assertIn('stop after 45 seconds',cold)
+        self.assertIn('4 model calls',warm)
+        self.assertIn('6 executed agent tools',warm)
+        self.assertIn('validate_additions',warm)
+        self.assertNotIn('only validate_features and submit',warm)
 
     def test_failed_refit_is_bounded_once_and_skip_is_bound_to_all_labels(self):
         f=self.fixture()

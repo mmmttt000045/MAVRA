@@ -849,6 +849,14 @@ class Run:
                          "On the last response only validate_features and submit are available. "
                          "A failed refinement retains the checked incumbent."
                          if guided else "")
+        if self.arm.get('delta_refinement'):
+            budget_detail = (f" Feature SQL statements stop after {self.validation_timeout(k)} seconds. "
+                             "Validate a compact working query early and keep each query within that limit.")
+            if guided:
+                budget_detail += (f" At most {self.arm['reuse_tool_limit']} executed agent tools in total. "
+                                  "With a checked base, validate_additions tests a small complementary query and keeps the best checked result. "
+                                  "A clean trial has priority over submit; repair errors within the same budget. "
+                                  "On the last response only the current validation action and, after a clean trial, submit are available.")
         return f"""You are a data scientist agent working on a PostgreSQL database: {self.manifest.get('description', '')}
 Your job is to engineer features with SQL for one prediction task. A fixed LightGBM model is trained on your features; you cannot change the model.
 
