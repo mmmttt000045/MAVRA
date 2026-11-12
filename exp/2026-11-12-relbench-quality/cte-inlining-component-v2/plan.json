@@ -1,0 +1,9 @@
+{
+  "recorded_at_utc": "2026-11-12 00:41:53 UTC",
+  "revision": "v2 eligibility correction; not a new quality method",
+  "basis": "The retained v1 comparison changed no CTE. Its allowlist rejected pg_catalog.extract inside the repeated grouped ae query, which has4 references. The sampled matrices compared the same SQL and do not establish inlining speed or equivalence.",
+  "change": "Allow PostgreSQL's built-in date extraction functions in addition to aggregates when inspecting an otherwise eligible grouped SELECT. Keep recursive/explicit-materialization/data-modification refusals, native audits, exact sampled equality, original-score reproduction and all time/speed thresholds unchanged.",
+  "case": "Same own v5 adverse k1 SQL and same first-cutoff train/validation source; no test labels, test-score input, optimizer initialization with old programs or model calls.",
+  "acceptance": "Require an actual changed CTE, exact sampled values, >=2x sampled speedup, <=45s full train+validation SQL, validation reproduced within1e-8, and fresh clean native audit. Keep v1 untouched and retain every failure.",
+  "execution": "Zero model-service calls. Use an available compute position after earlier components; total formal/component compute concurrency<=4. Do not change any running formal source or method cost gate."
+}
