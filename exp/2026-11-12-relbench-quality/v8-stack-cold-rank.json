@@ -1,0 +1,43 @@
+{
+  "at_utc": "2026-11-12T03:25:35.290918+00:00",
+  "purpose": "post-hoc reporting of all three complete Stack cold sessions; not a new causal experiment",
+  "model_service_calls": 0,
+  "used_as_feature_optimizer_input": false,
+  "source_files_sha256": {
+    "diagnosis-sessions.jsonl": "57c51292a5f6641c700bc80a65c680a74776a2c5dcfc0262332a3d14ab58c879",
+    "gate-v8-partial.json": "2a09e65aaffd7a6fb9593efba24a650fde0cf6c9205d8fe63031c4c74fdf8b34"
+  },
+  "records": [
+    {
+      "task": "post-votes",
+      "reported_best_mean_arm": "ace",
+      "baseline_session_sha256": "a83e7b7bb2f97254b4843155e6803b8c0da312c2955c71541c204ad069d333a9",
+      "candidate_session_sha256": "2d92e532ed211efee543aa0cf7c8fc930304325d50fbe774d60b0544f275994d",
+      "baseline_validation": 0.06607871753858027,
+      "candidate_validation": 0.06500067476340675,
+      "baseline_test": 0.0645736707980381,
+      "candidate_test": 0.063346214108405
+    },
+    {
+      "task": "user-badge",
+      "reported_best_mean_arm": "gmemory",
+      "baseline_session_sha256": "f65708913ecddfff5934d101172d8e1ad91e48de0c1bdf38bd525026a63d2a5a",
+      "candidate_session_sha256": "9236476cf7907117a00d39556dd8f13085295b4742570f0cbc2b7735f1c9e8b5",
+      "baseline_validation": 0.8756700038151302,
+      "candidate_validation": 0.8787378568496681,
+      "baseline_test": 0.8515796362400209,
+      "candidate_test": 0.8486737123065489
+    },
+    {
+      "task": "user-engagement",
+      "reported_best_mean_arm": "mavra-push",
+      "baseline_session_sha256": "dc044c54842e9c69092e4be8d385452bbfbd85dda0078f50bf3b27d3c0ba7f51",
+      "candidate_session_sha256": "638355d954483f9387f1e43a186f106b1d5cf997386cce49542cc87fd4ca2c9b",
+      "baseline_validation": 0.8876231252588983,
+      "candidate_validation": 0.8848866379649308,
+      "baseline_test": 0.8859459190848338,
+      "candidate_test": 0.8811907291275791
+    }
+  ],
+  "interpretation": "For user-badge, the candidate ranks higher on validation but lower on test than the strongest reported full-cohort baseline. This is an observed ranking mismatch, not proof of a unique causal mechanism."
+}

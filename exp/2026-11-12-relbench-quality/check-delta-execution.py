@@ -41,6 +41,11 @@ def main():
             records.append({'file': path.name, 'sha256': hashlib.sha256(raw).hexdigest(),
                             'model_calls': len(row.get('llm', [])), 'agent_tools': len(row.get('tools', [])),
                             'addition_attempts': len(additions), 'clean_additions': len(clean),
+                            'addition_errors': sum(bool(v.get('error')) for v in additions),
+                            'addition_timeouts': sum('timeout' in str(v.get('error', '')).lower() for v in additions),
+                            'addition_nonvarying': sum('no varying complementary columns' in str(v.get('error', '')) for v in additions),
+                            'addition_audit_rejections': sum(v.get('audit_result') in ('leak', 'error') for v in additions),
+                            'repaired_after_error': bool(clean) and any(v.get('error') for v in additions),
                             'improving_clean_additions': sum(bool(v.get('improved')) for v in clean),
                             'fit_calls': len(fits), 'checks': checks, 'passed': all(checks.values())})
         report['panels'][db] = {'warm_sessions': len(records), 'complete': len(records) == 12,
