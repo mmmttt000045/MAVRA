@@ -166,6 +166,7 @@ ARMS["mavra-early"] = {**ARMS["mavra-refine"], "cold_first_validation_by": 8}
 ARMS["mavra-delta"] = {**ARMS["mavra-refine"], "typed_reference": True, "delta_refinement": True,
                        "cold_validation_timeout":45,"current_refit_timeout":45,
                        "current_refit_attempts":1,"skip_failed_refit":True}
+ARMS["mavra-delta-headers"] = {**ARMS["mavra-delta"], "reuse_header_metadata": True}
 GMEMORY_REPO = "results/ext/GMemory"
 GMEMORY_PYTHON = "results/ext/venv-gmem/bin/python"
 GMEMORY_OBS_CHARS = 2000
@@ -589,6 +590,7 @@ def features(url, sql, seeds_table, seeds, ec, search_path=None, timeout_s=FEATU
         raise FeatureError("need the entity key, seed_time and at least one feature column")
     if df.shape[1] - 2 > MAX_FEATURES:
         raise FeatureError(f"{df.shape[1] - 2} feature columns; at most {MAX_FEATURES}")
+    source_keys = list(df.columns[:2])
     df = df.rename(columns={df.columns[0]: ec, df.columns[1]: "seed_time"})
     if df.duplicated([ec, "seed_time"]).any():
         raise FeatureError(f"{int(df.duplicated([ec, 'seed_time']).sum())} duplicate (key, seed_time) rows; return one row per seed")
@@ -611,7 +613,10 @@ def features(url, sql, seeds_table, seeds, ec, search_path=None, timeout_s=FEATU
     if bad:
         raise FeatureError(f"non-numeric feature columns: {bad[:10]}; encode them as numbers in SQL")
     try:
-        return x.astype(float), secs
+        result = x.astype(float)
+        from delta_features import remember_headers
+        remember_headers(sql, result, source_keys)
+        return result, secs
     except (TypeError, ValueError) as err:
         raise FeatureError(f"feature columns are not numeric: {str(err)[:200]}")
 
@@ -1298,7 +1303,7 @@ Shared memory: agents on this database publish verified feature definitions and 
 
     def prepare_delta(self, t, k, seeds, base, sql, event):
         """Read additions only, then reproduce their join with the checked base."""
-        from delta_features import delta_pool
+        from delta_features import cached_headers, delta_pool, remember_headers
 
         if base is None:
             raise FeatureError('no checked base is available; validate a complete feature SQL first')
@@ -1330,14 +1335,21 @@ Shared memory: agents on this database publish verified feature definitions and 
             event.update(chosen)
             val_table = f'task.{tname(t)}_val'
 
-            def headers(body):
+            def headers(body, train, valid, role):
+                if self.arm.get('reuse_header_metadata'):
+                    found = cached_headers(body, train, valid)
+                    if found is not None:
+                        event.setdefault('headers', []).append({'role':role, 'source':'successful feature query'})
+                        return found
+                timeout = self.validation_timeout(k) if self.arm.get('reuse_header_metadata') else min(5,self.validation_timeout(k))
+                event.setdefault('headers', []).append({'role':role, 'source':'SQL probe', 'timeout_seconds':timeout})
                 result,seconds = read_sql(self.url,
                     f"SELECT * FROM ({body.strip().rstrip(';').replace('{seeds}',val_table)}) q LIMIT 0",
-                    timeout_s=min(5,self.validation_timeout(k)))
+                    timeout_s=timeout)
                 event['sql_seconds'] += seconds
                 return list(result.columns[:2])
 
-            pkeys,dkeys = headers(psql),headers(sql)
+            pkeys,dkeys = headers(psql,pxtr,pxva,'base'),headers(sql,added_train,added_valid,'addition')
             mapping = chosen['added_columns']
             projection = ', '.join(f'q.{quote_ident(old)} AS {quote_ident(new)}' for old,new in mapping.items())
             secondary = (f'SELECT q.{quote_ident(dkeys[0])},q.{quote_ident(dkeys[1])},{projection} '
@@ -1348,6 +1360,9 @@ Shared memory: agents on this database publish verified feature definitions and 
             self.check_columns(t,k,combined,seeds,xv,check,timeout_s=SELECT_CHECK_TIMEOUT_S)
             event['sql_seconds'] += check['sql_seconds']
             event['values_reproduced'] = True
+            keys = pkeys if chosen['primary_columns'] else dkeys
+            remember_headers(combined, xt, keys)
+            remember_headers(combined, xv, keys)
             return combined,xt,xv
         finally:
             event['seconds'] = time.time()-started

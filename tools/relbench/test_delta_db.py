@@ -44,11 +44,12 @@ class DeltaDatabaseTests(unittest.TestCase):
             bx,_=harness.features(url,base_sql,'task.'+train,rows,'id')
             bv,_=harness.features(url,base_sql,'task.'+valid,rows,'id')
             run=harness.Run.__new__(harness.Run)
-            run.url,run.arm=url,harness.ARMS['mavra-delta']
+            run.url,run.arm=url,harness.ARMS['mavra-delta-headers']
             run.tasks={task:{'entity_col':'id','target_col':'label'}}
             run.manifest={'tables':{table:{'time_col':'happened_at'}}}
             event={}
-            with patch.object(harness,'features',wraps=harness.features) as spy:
+            with patch.object(harness,'features',wraps=harness.features) as spy, \
+                 patch.object(harness,'read_sql',wraps=harness.read_sql) as sql_reads:
                 combined,xt,xv=run.prepare_delta(task,2,seeds,(base_sql,bx,bv,[('baseline',1.)]),added_sql,event)
             self.assertEqual(event['duplicate_columns'],['duplicate_value'])
             self.assertEqual(len(spy.call_args_list),3)
@@ -56,6 +57,9 @@ class DeltaDatabaseTests(unittest.TestCase):
             self.assertEqual(spy.call_args_list[2].args[1],combined)
             self.assertTrue(spy.call_args_list[2].args[2].startswith('select_'))
             self.assertTrue(event['values_reproduced'])
+            self.assertTrue(all(h['source']=='successful feature query' for h in event['headers']))
+            self.assertEqual(sql_reads.call_count,3,'two additions and the original joined-value check remain')
+            self.assertFalse(any('q LIMIT 0' in c.args[1] for c in sql_reads.call_args_list))
             got,_=harness.features(url,combined,'task.'+valid,rows,'id')
             pd.testing.assert_frame_equal(got,xv)
             self.assertEqual(list(got.baseline),[2.,7.,4.,0.])

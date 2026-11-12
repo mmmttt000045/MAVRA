@@ -4,6 +4,32 @@ No labels, SQL execution or model-service input enter this module. The caller
 keeps the complete incumbent unless the checked joined candidate improves it.
 """
 from feature_selection import complementary_pool
+import hashlib
+
+
+HEADER_ATTRIBUTE = '_agentdb_source_headers_v1'
+
+
+def remember_headers(sql, frame, keys):
+    """Keep result-description names from the query that actually produced a frame."""
+    keys = tuple(keys)
+    if len(keys) != 2 or any(not isinstance(k, str) or not k for k in keys) or keys[0] == keys[1]:
+        raise ValueError('feature SQL needs two distinct named key columns')
+    frame.attrs[HEADER_ATTRIBUTE] = {'sql_sha256': hashlib.sha256(sql.encode()).hexdigest(), 'keys': keys}
+
+
+def cached_headers(sql, train, valid):
+    """Names only: current-frame/seed validity is still checked by the caller."""
+    expected = hashlib.sha256(sql.encode()).hexdigest()
+    records = [f.attrs.get(HEADER_ATTRIBUTE) for f in (train, valid)]
+    if any(not isinstance(r, dict) or r.get('sql_sha256') != expected for r in records):
+        return None
+    keys = records[0].get('keys')
+    if (not isinstance(keys, (tuple, list)) or len(keys) != 2
+            or any(not isinstance(k, str) or not k for k in keys) or keys[0] == keys[1]
+            or records[1].get('keys') != keys):
+        return None
+    return list(keys)
 
 
 def delta_pool(base_train, base_valid, importance, added_train, added_valid,
