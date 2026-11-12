@@ -1,10 +1,16 @@
 """Disjoint recorded agent-time components, not a reconstructed wall clock."""
 from pathlib import Path
+import argparse
 import hashlib
 import json
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--delta-only', action='store_true', help='profile the complete frozen v8 pair instead of v3/v4')
+args = parser.parse_args()
 roots = {'directed':Path('/root/agentdb-quality-directed-20261112/results/quality-20261112-v3b'),
          'cached':Path('/root/agentdb-quality-cached-safe-20261112/results/quality-20261112-v4b')}
+if args.delta_only:
+    roots = {'delta':Path('/root/agentdb-quality-delta-20261112/results/quality-20261112-v8')}
 report = {'purpose':'post-run timing diagnosis only; no optimizer input',
           'scope':'Reported agent seconds; phase sums are not end-to-end wall time. Different cold programs prevent a causal cross-arm interpretation.',
           'runs':{}}
@@ -39,6 +45,6 @@ for arm,root in roots.items():
                                         'residual_seconds':sum(r['residual_seconds'] for r in rows),
                                         'learning_seconds':sum(r['separately_recorded_learning_seconds'] for r in rows),
                                         'rows':rows}
-destination=Path('/root/agentdb-quality-20261112-tools/reuse-time-profile.json')
+destination=Path('/root/agentdb-quality-20261112-tools') / ('v8-time-profile.json' if args.delta_only else 'reuse-time-profile.json')
 destination.write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({name:{k:v for k,v in run.items() if k!='rows'} for name,run in report['runs'].items()},indent=2))
