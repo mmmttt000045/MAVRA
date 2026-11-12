@@ -11,8 +11,9 @@ roots = [Path('/root/agentdb-mid/results/relbench-pilot3'),Path('/root/agentdb-m
          Path('/root/agentdb-quality-cached-safe-20261112/results/quality-20261112-v4b'),
          Path('/root/agentdb-quality-signal-20261112/results/quality-20261112-v5'),
          Path('/root/agentdb-quality-refine-20261112/results/quality-20261112-v6'),
-         Path('/root/agentdb-quality-early-20261112/results/quality-20261112-v7')]
-arms = ('none','ace','gmemory','awm','tecod','featpilot','mavra-push','mavra-budgeted','mavra-portfolio','mavra-directed','mavra-cached','mavra-signal','mavra-refine','mavra-early')
+         Path('/root/agentdb-quality-early-20261112/results/quality-20261112-v7'),
+         Path('/root/agentdb-quality-delta-20261112/results/quality-20261112-v8')]
+arms = ('none','ace','gmemory','awm','tecod','featpilot','mavra-push','mavra-budgeted','mavra-portfolio','mavra-directed','mavra-cached','mavra-signal','mavra-refine','mavra-early','mavra-delta')
 report = {'purpose':'metadata-only protocol audit; no feature/label/quality input',
           'settings_groups':{},'order_mismatches':[], 'metadata_sha256':{},
           'run_cutoffs':{}, 'settings_mismatches':[]}
@@ -59,6 +60,9 @@ report['missing_metadata'] = sorted(f'{arm}-{db}-r1' for arm in arms for db in (
                                     if not any(Path(p).parent.name == f'{arm}-{db}-r1'
                                                for p in report['metadata_sha256']))
 report['non_llm_model_fields'] = 'FeatPilot has no language-model settings; its learner parameters are compared normally.'
+report['intentional_incomplete_runs'] = {
+    'mavra-early-rel-trial-r1':'administratively cancelled after completed Stack failed all3 quality gates; partials retained; no complete Trial rank/cost claim'
+}
 Path('/root/agentdb-quality-20261112-tools/protocol-equivalence.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({'settings_groups':[{'settings':g['settings'],'runs':len(g['runs'])} for g in report['settings_groups'].values()],
                   'all_available_dispatch_orders_match':report['all_available_dispatch_orders_match'],

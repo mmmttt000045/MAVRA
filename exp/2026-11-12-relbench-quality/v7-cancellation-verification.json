@@ -1,0 +1,10 @@
+{
+  "verified_at_utc": "2026-11-12T02:08:57.135677+00:00",
+  "cancelled_pid": 59870,
+  "process_stopped": true,
+  "temporary_database_removed": true,
+  "retained_artifact_hashes_match": true,
+  "artifact_count": 4,
+  "model_service_calls": 0,
+  "is_complete_trial_result": false
+}
