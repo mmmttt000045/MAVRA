@@ -1,72 +1,7 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-11-12",
+  "reviewed_on": "2026-11-13",
   "experiments": [
-    {
-      "id": "2026-09-29-maint-share",
-      "title": "维护方式与共享度扫描",
-      "status": "supporting",
-      "scope": "早期维护对照；与反序复验配对。当前通用缓存与扩展规模结果另见 10-02。",
-      "evidence": [
-        "exp/2026-09-29-maint-share/cells.txt",
-        "exp/2026-09-29-maint-share/report.md"
-      ],
-      "analysis": [
-        "tools/paper-results.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis `/root/agentdb-mid/results/maint-1790686347212630/`；本地为汇总与日志。",
-      "code_record": "`5e82e37`；命令与环境见本目录 README、历史索引。"
-    },
-    {
-      "id": "2026-09-30-maint-share-rev",
-      "title": "维护扫描反序复验",
-      "status": "supporting",
-      "scope": "早期运行顺序控制；不当作独立统计显著性检验。",
-      "evidence": [
-        "exp/2026-09-30-maint-share-rev/cells.txt",
-        "exp/2026-09-30-maint-share-rev/report.md"
-      ],
-      "analysis": [
-        "tools/paper-results.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis `/root/agentdb-mid/results/maint-1790707404365821/`；本地为汇总与日志。",
-      "code_record": "`5e82e37` 加计算链/G3 修复，原记录称不涉及 maint-bench；见 README。"
-    },
-    {
-      "id": "2026-09-30-metric-maint-named",
-      "title": "单模型指标维护",
-      "status": "historical",
-      "scope": "早期命名题实验；保留舍入核对和失败说明，当前场景主表使用后续批次。",
-      "evidence": [
-        "exp/2026-09-30-metric-maint-named/analysis.md",
-        "exp/2026-09-30-metric-maint-named/verified-results.json"
-      ],
-      "analysis": [
-        "tools/aggregate-metric.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis `results/metric-1790700840466648/`；普通中间层取 `results/metric-1790690815978959/` 的指定单元，其余缺陷组弃用。",
-      "code_record": "`5e82e37` 加计算链/G3 修复；详见本目录 README 与历史索引。"
-    },
-    {
-      "id": "2026-10-01-scenarios",
-      "title": "早期三模型场景",
-      "status": "historical",
-      "scope": "旧批次与服务限额失败保留；宏使用 PrevScen 前缀，不混入后续五轮统计。",
-      "evidence": [
-        "exp/2026-10-01-scenarios/paper-results.json"
-      ],
-      "analysis": [
-        "tools/paper-results.py"
-      ],
-      "outputs": [
-        "overleaf/gen/numbers-prev.tex"
-      ],
-      "raw_data": "noctis `results/scen-20260930/`；本地为采用组、排除原因与汇总。",
-      "code_record": "场景代码 `26c2b48` 起；完整批次记录见历史索引。"
-    },
     {
       "id": "2026-10-01-workload-characterization",
       "title": "工作负载刻画与 Redset",
@@ -96,93 +31,13 @@
       ],
       "analysis": [
         "tools/review-results.py",
-        "tools/replay-stats.py",
-        "tools/replay-safety-summary.py"
+        "tools/replay-stats.py"
       ],
       "outputs": [
-        "overleaf/gen/review.tex",
-        "overleaf/gen/snapshot-stress.tex"
+        "overleaf/gen/review.tex"
       ],
       "raw_data": "本地保存压缩回放与关键汇总；其余原始组在 noctis `results/motiv-20261001/` 等 README 指定目录。",
       "code_record": "各目录 README 的设计、运行记录与启动命令；运行版本以原记录为准。"
-    },
-    {
-      "id": "2026-10-02-scenarios-ds",
-      "title": "三轮场景及后续修正",
-      "status": "current",
-      "scope": "用于既有示例和部分宏；当前五轮图表另见 10-10，不能直接用本批宏覆盖五轮结果。",
-      "evidence": [
-        "exp/2026-10-02-scenarios-ds/scen-stats.json",
-        "exp/2026-10-02-scenarios-ds/paper-results.json"
-      ],
-      "analysis": [
-        "tools/scen-stats.py",
-        "tools/paper-results.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis `results/scen-20261002/`；本地保存汇总和当时队列脚本。",
-      "code_record": "各目录 README 的设计、运行记录与启动命令；运行版本以原记录为准。"
-    },
-    {
-      "id": "2026-10-03-session-latency",
-      "title": "固定定义库会话耗时",
-      "status": "supporting",
-      "scope": "固定库、配对会话的补充证据；完整任务耗时与启动成本分列，所有请求计分。",
-      "evidence": [
-        "exp/2026-10-03-session-latency/report.md",
-        "exp/2026-10-03-session-latency/stats.json",
-        "exp/2026-10-03-session-latency/verification/audit.json"
-      ],
-      "analysis": [
-        "tools/run-session-latency.py",
-        "tools/session-latency-stats.py"
-      ],
-      "outputs": [
-        "overleaf/gen/session-latency.tex"
-      ],
-      "raw_data": "本地 `raw/`、`verification/`；远端 `/root/agentdb-session-latency-20261003/results/session-latency-20261003/`。",
-      "code_record": "`60d0783` 加 `verification/run-source.tar.gz`；各会话 manifest 与 README 记录配置。"
-    },
-    {
-      "id": "2026-10-03-shared-memory",
-      "title": "共享记忆补充实验与回退稿",
-      "status": "supporting",
-      "scope": "补充实验保留；10-03 稿件重构已回退，原失败轮与恢复轮分别保留。",
-      "evidence": [
-        "exp/2026-10-03-shared-memory/manifest.json",
-        "exp/2026-10-03-shared-memory/analysis/results.md",
-        "exp/2026-10-03-shared-memory/analysis/summary.json"
-      ],
-      "analysis": [
-        "tools/memory-study-stats.py",
-        "tools/run-memory-study.py",
-        "tools/run-strategy-study.py",
-        "tools/metadata-audit.py"
-      ],
-      "outputs": [],
-      "raw_data": "本地 `raw/`、`analysis/` 与源码归档；远端路径见 manifest 和 README。",
-      "code_record": "`60d0783` 加运行时源码与二进制哈希；manifest、inputs 和 verification 记录为准。"
-    },
-    {
-      "id": "2026-10-08-lifecycle",
-      "title": "共享库累积更新生命周期",
-      "status": "supporting",
-      "scope": "生产、使用与更新累积的补充实验；与每次恢复初始数据的场景实验分开解释。",
-      "evidence": [
-        "exp/2026-10-08-lifecycle/lifecycle-stats.json",
-        "exp/2026-10-08-lifecycle/cell-mavra.json",
-        "exp/2026-10-08-lifecycle/cell-traj.json",
-        "exp/2026-10-08-lifecycle/cell-none.json"
-      ],
-      "analysis": [
-        "tools/lifecycle-stats.py"
-      ],
-      "outputs": [
-        "overleaf/gen/lifecycle.tex",
-        "overleaf/gen/lifecycle-rows.tex"
-      ],
-      "raw_data": "本地保存三个方法的 cell 和统计；完整轨迹位置见 README。",
-      "code_record": "生命周期设计从 `b1c5974` 起；配置及方法见 README。"
     },
     {
       "id": "2026-10-08-optimize",
@@ -195,40 +50,13 @@
         "exp/2026-10-08-optimize/report.md"
       ],
       "analysis": [
-        "tools/opt-stats.py",
-        "tools/premise-stats.py",
         "tools/sharing-stats.py"
       ],
       "outputs": [
-        "overleaf/gen/opt.tex",
-        "overleaf/gen/premise.tex",
         "overleaf/gen/sharing.tex"
       ],
       "raw_data": "本地 `trace/` 与汇总；完整优化单元在 noctis `results/scen-20261008-opt/`，学习轨迹在 `results/scen-20261008-trace/`。",
       "code_record": "各目录 README 的设计、运行记录与启动命令；运行版本以原记录为准。"
-    },
-    {
-      "id": "2026-10-10-scenarios-q5",
-      "title": "题集 v2、每种方法五轮",
-      "status": "historical",
-      "scope": "历史合成场景五轮协议及宏保留；当前 Fig.6 改用 2026-11-01-change-study。旧使用成本宏随旧稿归档，失败、替换与排除规则仍按本批协议。",
-      "evidence": [
-        "exp/2026-10-10-scenarios-q5/scen-stats.json",
-        "exp/2026-10-10-scenarios-q5/paper-results.json",
-        "exp/2026-10-10-scenarios-q5/holdout-cost.json"
-      ],
-      "analysis": [
-        "tools/scen-stats.py",
-        "tools/paper-results.py",
-        "tools/sharing-stats.py"
-      ],
-      "outputs": [
-        "overleaf/gen/scen-ds.tex",
-        "overleaf/gen/numbers.tex",
-        "exp/2026-10-28-official/legacy-manuscript/gen/scen-cost.tex"
-      ],
-      "raw_data": "noctis `results/scen-20261010/`；本地为汇总、成本与启动脚本。",
-      "code_record": "题集 v2 从 `7e9b532` 起；队列、题目、轮次与实际运行记录见 README。"
     },
     {
       "id": "2026-10-11-generality",
@@ -242,15 +70,9 @@
         "exp/2026-10-11-generality/e2e/outcomes.json.gz"
       ],
       "analysis": [
-        "tools/generality-stats.py",
-        "tools/replay-safety-summary.py",
-        "tools/bench-library.py",
-        "tools/scen-stats.py"
+        "tools/bench-library.py"
       ],
-      "outputs": [
-        "overleaf/gen/generality.tex",
-        "overleaf/gen/replay-safety.tex"
-      ],
+      "outputs": [],
       "raw_data": "本地包含模式、查询、定义库、压缩回放和 e2e 汇总；数据库模板与完整模型运行见 README。",
       "code_record": "各目录 README 的设计、运行记录与启动命令；运行版本以原记录为准。"
     },
@@ -273,40 +95,6 @@
       "code_record": "各目录 README 的设计、运行记录与启动命令；运行版本以原记录为准。"
     },
     {
-      "id": "2026-10-12-reforce",
-      "title": "ReFoRCE 作为使用者",
-      "status": "supporting",
-      "scope": "外部 Text-to-SQL 使用者的补充记录；结果采用范围和接口适配按原协议。",
-      "evidence": [
-        "exp/2026-10-12-reforce/reforce-stats.json"
-      ],
-      "analysis": [
-        "tools/reforce-stats.py",
-        "tools/reforce/mavra_reforce.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis `results/reforce-20261012/`；本地为统计与队列脚本。",
-      "code_record": "ReFoRCE 来源版本及适配方式见 README、third_party/reforce/README.md。"
-    },
-    {
-      "id": "2026-10-14-external-motivation",
-      "title": "外部任务中的知识复用",
-      "status": "current",
-      "scope": "BIRD、LiveSQLBench、Spider 2.0 的动机统计；统计口径为协议中的文本与术语代理。",
-      "evidence": [
-        "exp/2026-10-14-external-motivation/reuse-stats.json",
-        "exp/2026-10-14-external-motivation/reuse-stats.md"
-      ],
-      "analysis": [
-        "tools/external-reuse-stats.py"
-      ],
-      "outputs": [
-        "overleaf/gen/external.tex"
-      ],
-      "raw_data": "noctis `results/external-benchmarks/`；本地为汇总，数据下载与范围见 README。",
-      "code_record": "各目录 README 的设计、运行记录与启动命令；运行版本以原记录为准。"
-    },
-    {
       "id": "2026-10-20-relbench",
       "title": "RelBench 主实验与恢复审计",
       "status": "current",
@@ -320,8 +108,7 @@
       ],
       "analysis": [
         "tools/relbench/paper-stats.py",
-        "tools/relbench/compare-stats.py",
-        "tools/relbench/prepare-replay.py"
+        "tools/relbench/compare-stats.py"
       ],
       "outputs": [
         "overleaf/gen/relbench.tex",
@@ -329,68 +116,6 @@
       ],
       "raw_data": "本地及 noctis 的 `results/relbench-pilot3/`、`results/relbench-main/`；数据准备与模板在 noctis `results/relbench-data/`。",
       "code_record": "README 的逐轮记录、reproduction-notes、原始 run.json 和 timing-replay-plan 源文件哈希；10-22 恢复说明见 overleaf/README.md。"
-    },
-    {
-      "id": "2026-10-22-sql-only",
-      "title": "RelBench 完整 SQL 复用对照",
-      "status": "supporting",
-      "scope": "SQL-only／rel-stack 完成；其他组因网关空回复及上游额度不足停止，尚无完整配对结论。",
-      "evidence": [
-        "exp/2026-10-22-sql-only/cells.txt",
-        "exp/2026-10-22-sql-only/preflight.json",
-        "exp/2026-10-22-sql-only/run-provenance.json",
-        "exp/2026-10-22-sql-only/status.json"
-      ],
-      "analysis": [
-        "tools/relbench/sql-only-stats.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis `/root/agentdb-sql-only-20261022/results/sql-only-20261022/`；独立保存。",
-      "code_record": "本目录 README、preflight.json 与运行文件的代码及二进制哈希。"
-    },
-    {
-      "id": "2026-10-27-sql-only",
-      "title": "RelBench SQL-only 与 MAVRA 同批配对重跑",
-      "status": "historical",
-      "scope": "两库四组、60 会话已完成；经第三方网关运行，稳定性待验证，按用户要求仅作内部探索，暂不纳入论文。",
-      "evidence": [
-        "exp/2026-10-27-sql-only/cells-stack.txt",
-        "exp/2026-10-27-sql-only/cells-trial.txt",
-        "exp/2026-10-27-sql-only/run.sh",
-        "exp/2026-10-27-sql-only/preflight.json",
-        "exp/2026-10-27-sql-only/run-provenance.json",
-        "exp/2026-10-27-sql-only/legacy-diagnostic.md",
-        "exp/2026-10-27-sql-only/final-status.json",
-        "exp/2026-10-27-sql-only/verified-results.md",
-        "exp/2026-10-27-sql-only/verified-results.json"
-      ],
-      "analysis": [
-        "exp/2026-10-27-sql-only/gate.py",
-        "exp/2026-10-27-sql-only/audit-legacy.py",
-        "exp/2026-10-27-sql-only/analyze-results.py",
-        "exp/2026-10-27-sql-only/test-analysis.py",
-        "tools/relbench/sql-only-stats.py"
-      ],
-      "outputs": [],
-      "raw_data": "本地 `results/sql-only-20261027/` 与 noctis `/root/agentdb-sql-only-20261027/results/sql-only-20261027/`；保留四组原始会话、源码归档与输入清单。",
-      "code_record": "同一份 10-22 空回复恢复代码；运行时记录输入、代码和二进制哈希，并保存源码归档。"
-    },
-    {
-      "id": "2026-10-28-official",
-      "title": "官方API方法比较与机制图重构",
-      "status": "supporting",
-      "scope": "官方 API 五方法、两库、三任务、三截点的 90 个正式会话已完成；用于当前工作量与质量边界说明，和历史网关结果分开解释，不单独归因于特征组合。",
-      "evidence": [
-        "exp/2026-10-28-official/README.md",
-        "exp/2026-10-28-official/protocol.json"
-      ],
-      "analysis": [
-        "exp/2026-10-28-official/analyze.py",
-        "exp/2026-10-28-official/build-figures.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis /root/agentdb-official-20261028/results/official-20261028/；本机 results/official-20261028/ 为同步目录。",
-      "code_record": "source-as-started.tar.gz、source-manifest.json、build-provenance.json；后续基础设施修复另记。"
     },
     {
       "id": "2026-10-29-mechanism-pilot",
@@ -403,9 +128,7 @@
         "exp/2026-10-29-mechanism-pilot/pilot-summary.json",
         "exp/2026-10-29-mechanism-pilot/system-summary.json",
         "exp/2026-10-29-mechanism-pilot/seed-binding-preflight.json",
-        "exp/2026-10-29-mechanism-pilot/formal-a-next.json",
-        "exp/2026-10-29-mechanism-pilot/paper-integration/README.md",
-        "exp/2026-10-29-mechanism-pilot/paper-integration/validation.json"
+        "exp/2026-10-29-mechanism-pilot/formal-a-next.json"
       ],
       "analysis": [
         "exp/2026-10-29-mechanism-pilot/analyze_pilot.py",
@@ -416,226 +139,10 @@
         "tools/figures/mechanism.py"
       ],
       "outputs": [
-        "overleaf/gen/mechanism.tex",
-        "overleaf/figures/memory-access-pilot.pdf",
-        "overleaf/figures/fixed-sharing.pdf",
-        "overleaf/figures/snapshot-control.pdf"
+        "overleaf/gen/mechanism.tex"
       ],
       "raw_data": "本地 results/mechanism-pilot-20261029/ 与 results/mechanism-systems-20261029/；服务器隔离目录及输出位置见 README。",
       "code_record": "protocol、runtime-manifest 与 systems-manifest；接口故障前代码、修复子批次、冻结源编译一致性检查及费用账本分开保存。"
-    },
-    {
-      "id": "2026-10-29-fig3-restore",
-      "title": "Fig.3 历史累计图恢复与质量图移除",
-      "status": "historical",
-      "scope": "稿件恢复记录；Fig.3 沿用历史五截点数据，官方 API 工作量图另行保留；未新增实验。",
-      "evidence": [
-        "exp/2026-10-29-fig3-restore/restored-fig3.json",
-        "exp/2026-10-29-fig3-restore/protected-files.json",
-        "exp/2026-10-29-fig3-restore/github-push-result.json"
-      ],
-      "analysis": [
-        "exp/2026-10-29-fig3-restore/update-paper.py",
-        "exp/2026-10-29-fig3-restore/prepare.py"
-      ],
-      "outputs": [
-        "overleaf/figures/relbench-cumulative.tex",
-        "overleaf/figures/relbench-cumulative.pdf",
-        "overleaf/figures/relbench-cumulative-zh.pdf"
-      ],
-      "raw_data": "本目录保存恢复来源、保护清单和同步结果；历史实验数据仍归 2026-10-20-relbench，不新增原始运行。",
-      "code_record": "恢复来源 01daa2133a54ee45a8d1b529b5e04167e81ed340；当时提交与核验结果见 github-push-result.json。"
-    },
-    {
-      "id": "2026-10-29-fig45-official",
-      "title": "官方 API 图表的历史重构版本",
-      "status": "historical",
-      "scope": "图表迭代记录；六任务质量图后来退出正文，工作量图继续使用官方 API 数据；保留当时图号与分析。",
-      "evidence": [
-        "exp/2026-10-29-fig45-official/figure-data.json",
-        "exp/2026-10-29-fig45-official/protected-files.json",
-        "exp/2026-10-29-fig45-official/github-push-result.json"
-      ],
-      "analysis": [
-        "exp/2026-10-29-fig45-official/build-figures.py",
-        "exp/2026-10-29-fig45-official/update-paper.py"
-      ],
-      "outputs": [],
-      "raw_data": "使用 2026-10-28 官方 API 已完成会话；逐点数据与来源保存在 figure-data.json，未新增模型调用。",
-      "code_record": "当时生成与同步逻辑见本目录脚本；版本记录见 github-base.json 和 github-push-result.json。"
-    },
-    {
-      "id": "2026-10-29-fig5-review",
-      "title": "复用轨迹来源与归因范围审计",
-      "status": "supporting",
-      "scope": "只读复核完整任务 SQL 与结构化定义的实际使用；工作量结果不单独证明特征组合的增量作用。",
-      "evidence": [
-        "exp/2026-10-29-fig5-review/lineage-audit.json",
-        "exp/2026-10-29-fig5-review/github-push-result.json"
-      ],
-      "analysis": [
-        "exp/2026-10-29-fig5-review/audit_lineage.py"
-      ],
-      "outputs": [
-        "overleaf/sections/05-evaluation.tex"
-      ],
-      "raw_data": "审阅 2026-10-28 官方 API 的 MAVRA 原始会话；本目录保存逐会话来源审计及历史修订草稿，不新增实验。",
-      "code_record": "审计逻辑见 audit_lineage.py；冻结时源码、候选修订和后续同步按本目录 README 分开解释。"
-    },
-    {
-      "id": "2026-10-29-fig5-table3-restore",
-      "title": "Fig.5 与 Table III 中间恢复记录",
-      "status": "historical",
-      "scope": "稿件中间版本：恢复成本散点图与 Table III；后续 Table III 更正在 2026-10-29-table4-fig1 单列。",
-      "evidence": [
-        "exp/2026-10-29-fig5-table3-restore/github-base.json",
-        "exp/2026-10-29-fig5-table3-restore/github-push-result.json",
-        "exp/2026-10-29-fig5-table3-restore/sync-plan.json"
-      ],
-      "analysis": [
-        "exp/2026-10-29-fig5-table3-restore/prepare.py"
-      ],
-      "outputs": [],
-      "raw_data": "本目录为历史源码恢复和推送记录，没有新增实验数据；原始实验归相应既有批次。",
-      "code_record": "论文仓库提交 514d6c474cbfd8339c7392acf809d6a5e93e0f25；恢复来源和文件清单见 github-push-result.json。"
-    },
-    {
-      "id": "2026-10-29-table4-fig1",
-      "title": "历史 Table IV 恢复与 Fig.1 位置更正",
-      "status": "historical",
-      "scope": "稿件更正记录：恢复历史 Table IV 及旧数值、撤销 Table III 误回滚，并调整 Fig.1 声明位置；未新增实验。",
-      "evidence": [
-        "exp/2026-10-29-table4-fig1/github-base.json",
-        "exp/2026-10-29-table4-fig1/github-push-result.json",
-        "exp/2026-10-29-table4-fig1/sync-plan.json"
-      ],
-      "analysis": [
-        "exp/2026-10-29-table4-fig1/prepare.py"
-      ],
-      "outputs": [
-        "overleaf/tables/relbench.tex",
-        "overleaf/gen/relbench.tex",
-        "overleaf/gen/relbench-table.tex"
-      ],
-      "raw_data": "历史五截点网关数据与官方 API 数据分开保留；本目录仅记录源码恢复与同步，没有新运行。",
-      "code_record": "论文仓库提交 b2755c23953b646e27ccd5fe9a1f9cf1798cca92；恢复来源、编译与核验见 github-push-result.json。"
-    },
-    {
-      "id": "2026-10-30-published-scenarios",
-      "title": "修复前已发表记忆基线比较与失败分析",
-      "status": "supporting",
-      "scope": "修复前两轮比较及逐例分析：发现共用 SQL 审查误拒绝、失效语义丢失及反馈条件差异；原始分数和费用保留。当前 Fig.6 采用 2026-11-01-change-study，旧结果不与其合并。",
-      "evidence": [
-        "exp/2026-10-30-published-scenarios/protocol.json",
-        "exp/2026-10-30-published-scenarios/frozen-source-manifest.json",
-        "exp/2026-10-30-published-scenarios/runtime-source.tgz",
-        "exp/2026-10-30-published-scenarios/upstream-ace-awm-verification.json",
-        "exp/2026-10-30-published-scenarios/upstream-gmemory-verification.json",
-        "exp/2026-10-30-published-scenarios/offline-smoke-result.json",
-        "exp/2026-10-30-published-scenarios/checkpoint-isolation-check.json",
-        "exp/2026-10-30-published-scenarios/raw-results.tgz",
-        "exp/2026-10-30-published-scenarios/archive-manifest.json",
-        "exp/2026-10-30-published-scenarios/runtime-source-recovery.tgz",
-        "exp/2026-10-30-published-scenarios/provider-repair-check.json",
-        "exp/2026-10-30-published-scenarios/financial-close.json",
-        "exp/2026-10-30-published-scenarios/database-cleanup-check.json",
-        "exp/2026-10-30-published-scenarios/delivery-check.json",
-        "exp/2026-10-30-published-scenarios/failure-analysis.md"
-      ],
-      "analysis": [
-        "exp/2026-10-30-published-scenarios/analyse.py"
-      ],
-      "outputs": [
-        "exp/2026-10-30-published-scenarios/study-stats.json",
-        "exp/2026-10-30-published-scenarios/summary.md",
-        "exp/2026-10-30-published-scenarios/overleaf-numbers.tex"
-      ],
-      "raw_data": "本地 raw-results.tgz 与 results/published-scenarios-20261030/ 保存 893 个归档文件；含 16 个完整格、两次失败学习尝试、逐次 API 用量和轨迹。私有余额字段脱敏，消费记录完整；下载包及所有文件哈希已核对。",
-      "code_record": "首次付费前冻结协议与可执行文件；runtime-source.tgz 保存原始源码，runtime-source-recovery.tgz 保存仅修复回环地址下 provider profile 的恢复增量，未改原生 Rust 二进制及上游核心。analyse.py 从全部完整配对轮生成数值，figure 脚本核对绘图均值与正文宏。"
-    },
-    {
-      "id": "2026-10-31-corrected-scenarios",
-      "title": "SQL 审查／语义保留修复与统一反馈比较",
-      "status": "supporting",
-      "scope": "SQL 审查／语义保留修复后的有效批次：232 任务、184 次计分；当前扩展比较复用其全部六个未变更基线格，旧 MAVRA 仅作历史结果。原始数值、492 文件及累计 14.30 元扣费记录保留。",
-      "evidence": [
-        "exp/2026-10-31-corrected-scenarios/protocol.json",
-        "exp/2026-10-31-corrected-scenarios/frozen-source-manifest.json",
-        "exp/2026-10-31-corrected-scenarios/final-source-manifest.json",
-        "exp/2026-10-31-corrected-scenarios/implementation-amendment.json",
-        "exp/2026-10-31-corrected-scenarios/runtime-source.tgz",
-        "exp/2026-10-31-corrected-scenarios/runtime-source-recovery.tgz",
-        "exp/2026-10-31-corrected-scenarios/data-provenance.json",
-        "exp/2026-10-31-corrected-scenarios/repair-verification-extended.log",
-        "exp/2026-10-31-corrected-scenarios/offline-smoke-result.json",
-        "exp/2026-10-31-corrected-scenarios/raw-results.tgz",
-        "exp/2026-10-31-corrected-scenarios/archive-manifest.json",
-        "exp/2026-10-31-corrected-scenarios/archive-verification.json",
-        "exp/2026-10-31-corrected-scenarios/feedback-comparison-check.json",
-        "exp/2026-10-31-corrected-scenarios/repeat-decision.json",
-        "exp/2026-10-31-corrected-scenarios/financial-close.json",
-        "exp/2026-10-31-corrected-scenarios/database-cleanup-check.json",
-        "exp/2026-10-31-corrected-scenarios/delivery-check.json"
-      ],
-      "analysis": [
-        "exp/2026-10-31-corrected-scenarios/analyse.py",
-        "exp/2026-10-31-corrected-scenarios/verify-comparison.py",
-        "exp/2026-10-31-corrected-scenarios/test-budget.py"
-      ],
-      "outputs": [
-        "exp/2026-10-31-corrected-scenarios/study-stats.json",
-        "exp/2026-10-31-corrected-scenarios/summary.md",
-        "exp/2026-10-31-corrected-scenarios/overleaf-numbers.tex"
-      ],
-      "raw_data": "本地 raw-results.tgz 与 results/corrected-scenarios-20261031/ 保存 492 个校验通过的文件；含8个正式格、1个旧实现调试格及1个零调用失败启动。两项私有余额字段脱敏，原始消费和全部轨迹保留；累计 5,144 次调用含前批 3,378 次。",
-      "code_record": "主源码修复已通过56项 Rust 测试和 PostgreSQL 回归；实现2以修订清单冻结，仅四个声明路径较初始快照改变。全部初始实现结果均排除为调试，费用不排除；原协议、数据、反馈和上游核心保留。按预算／时间门槛停止第二轮，不按准确率选场景；TPC-H 克隆增长的误去重案例及剩余日期键／单位失败如实报告。"
-    },
-    {
-      "id": "2026-10-31-diverse-scenarios",
-      "title": "受检指标执行与跨智能体多题型比较",
-      "status": "historical",
-      "scope": "原 Fig.6（已由 2026-11-01-change-study 取代）：12 道不同问题、四题型、208 次计分；六个冻结基线格、两格原生重跑和八格新增题。两库全情形等权描述性汇总 MAVRA 84.6%、AWM 81.4%，分库结果及全部失败保留。新增六题全对，比 AWM 少 36.7% 调用和 33.3% token；累计扣费 19.72 元。",
-      "evidence": [
-        "exp/2026-10-31-diverse-scenarios/paired-reuse-protocol.json",
-        "exp/2026-10-31-diverse-scenarios/extra-protocol.json",
-        "exp/2026-10-31-diverse-scenarios/reuse-compatibility-check.json",
-        "exp/2026-10-31-diverse-scenarios/paired-extra-decision.json",
-        "exp/2026-10-31-diverse-scenarios/runtime-source.tgz",
-        "exp/2026-10-31-diverse-scenarios/runtime-source-recovery.tgz",
-        "exp/2026-10-31-diverse-scenarios/runtime-source-compatible.tgz",
-        "exp/2026-10-31-diverse-scenarios/runtime-source-extra.tgz",
-        "exp/2026-10-31-diverse-scenarios/extra-source-verification.json",
-        "exp/2026-10-31-diverse-scenarios/smoke-result.json",
-        "exp/2026-10-31-diverse-scenarios/source-replay-smoke.json",
-        "exp/2026-10-31-diverse-scenarios/native-source-replay-smoke.json",
-        "exp/2026-10-31-diverse-scenarios/data-provenance.json",
-        "exp/2026-10-31-diverse-scenarios/local-source-check.json",
-        "exp/2026-10-31-diverse-scenarios/final-source-check.json",
-        "exp/2026-10-31-diverse-scenarios/raw-results.tgz",
-        "exp/2026-10-31-diverse-scenarios/archive-manifest.json",
-        "exp/2026-10-31-diverse-scenarios/archive-verification.json",
-        "exp/2026-10-31-diverse-scenarios/feedback-comparison-check.json",
-        "exp/2026-10-31-diverse-scenarios/case-evidence.json",
-        "exp/2026-10-31-diverse-scenarios/financial-close.json",
-        "exp/2026-10-31-diverse-scenarios/database-cleanup-check.json",
-        "exp/2026-10-31-diverse-scenarios/delivery-check.json"
-      ],
-      "analysis": [
-        "exp/2026-10-31-diverse-scenarios/analyse-paired-reuse.py",
-        "exp/2026-10-31-diverse-scenarios/analyse.py",
-        "tools/figures/two_schemas.py"
-      ],
-      "outputs": [
-        "exp/2026-10-31-diverse-scenarios/study-stats.json",
-        "exp/2026-10-31-diverse-scenarios/summary.md",
-        "exp/2026-10-31-diverse-scenarios/failure-analysis.md",
-        "exp/2026-10-31-diverse-scenarios/overleaf-numbers.tex",
-        "overleaf/gen/published-scenarios.tex",
-        "overleaf/figures/two-schemas.pdf",
-        "overleaf/figures/two-schemas-zh.pdf"
-      ],
-      "raw_data": "新批 raw-results.tgz 与本地 results/diverse-scenarios-20261031/ 共684文件逐项核验，包含被排除的开发运行、两格正式原生、八格新增题及全部1946次本批请求；另复用旧有效对照归档492文件。72个缓存源任务不重复计分；两项私有余额字段脱敏，密钥／连接串扫描通过。",
-      "code_record": "57项 Rust 测试及发布版 PostgreSQL 回归通过；完整轨迹丢失的开发批次全部排除但保留费用。按 compatible 与 extra 源码增量修复并冻结；六个对照全量复用，原生原题库重跑。新增题量由先固定的成本门槛选择，不按准确率选题；主／额外源码、17数据输入及206个上游／适配器文件最终哈希核验通过。"
     },
     {
       "id": "2026-11-01-change-study",
@@ -707,21 +214,6 @@
       "code_record": "src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。"
     },
     {
-      "id": "2026-11-09-structural-reuse",
-      "title": "结构变化下的跨智能体复用",
-      "status": "supporting",
-      "scope": "维度过滤、差值与排名的结构化复用协议及冒烟记录；独立于旧版只改变时间的群体实验。",
-      "evidence": [
-        "exp/2026-11-09-structural-reuse/tpcds-defs.json"
-      ],
-      "analysis": [
-        "exp/2026-11-09-structural-reuse/analyse.py"
-      ],
-      "outputs": [],
-      "raw_data": "noctis results/structural-reuse-smoke；后续范围以本目录运行记录为准。",
-      "code_record": "原目录 README 记录 run_metric 维度问法与 v3 题集实现；不以本次整理提交替代运行版本。"
-    },
-    {
       "id": "2026-11-11-maint-hardening",
       "title": "值条件、历史保持修复与查找补证",
       "status": "current",
@@ -745,26 +237,30 @@
     },
     {
       "id": "2026-11-12-relbench-quality",
-      "title": "RelBench 质量与代价联合优化",
-      "status": "supporting",
-      "scope": "八个独立开发候选，逐项验证复用成本不退步和六项质量第一；保留全部结果与行政停止记录，尚无通过联合门槛的论文替换结果。",
+      "title": "RelBench 三次均值评测与首截点重拟合归因",
+      "status": "current",
+      "scope": "Table 3、Fig. 6 与 Fig. 7 中 MAVRA（mavra-retry）与无记忆基线的三次同输入均值评测，以及首截点纯重拟合对照与两库差异归因。",
       "evidence": [
-        "exp/2026-11-12-relbench-quality/protocol.json",
-        "exp/2026-11-12-relbench-quality/protocol-v8.json",
-        "exp/2026-11-12-relbench-quality/input-verification.json",
-        "exp/2026-11-12-relbench-quality/v8-launch-record.json"
+        "exp/2026-11-12-relbench-quality/v10-plan.json",
+        "exp/2026-11-12-relbench-quality/none-repeats-plan.json",
+        "exp/2026-11-12-relbench-quality/gate-v10-r1.json",
+        "exp/2026-11-12-relbench-quality/gate-v10-r2.json",
+        "exp/2026-11-12-relbench-quality/gate-v10-r3.json",
+        "exp/2026-11-12-relbench-quality/frozen-summary.json",
+        "exp/2026-11-12-relbench-quality/explain-v10.json"
       ],
       "analysis": [
-        "tools/relbench/diagnose-quality.py",
-        "tools/relbench/feature_selection.py",
-        "tools/relbench/quality-cost-gate.py",
-        "exp/2026-11-12-relbench-quality/check_protocol_equivalence.py",
-        "exp/2026-11-12-relbench-quality/verify-inputs.py",
-        "exp/2026-11-12-relbench-quality/check-delta-execution.py"
+        "tools/relbench/paper-stats.py",
+        "tools/relbench/frozen-program.py",
+        "tools/relbench/frozen-summary.py",
+        "tools/relbench/explain-quality.py"
       ],
-      "outputs": [],
-      "raw_data": "noctis 八个独立冻结目录；各版位置、计划、源码哈希及未完成运行的停止原因见本目录 README 和 source-sha256-v*.json。既有会话与 TPC-DS 280 对题次的只读诊断保留来源哈希。",
-      "code_record": "从主仓库 b60a84b 和论文 ec8d755 开始；运行前冻结源码及校验，命令与接纳规则见本目录 README。"
+      "outputs": [
+        "overleaf/gen/relbench.tex",
+        "overleaf/gen/relbench-table.tex"
+      ],
+      "raw_data": "noctis `results/quality-20261112-v10/`（MAVRA r1–r3）与 `results/quality-20261112-v10-none/`（无记忆 r2–r3，配对首轮见 `2026-10-20-relbench`）。",
+      "code_record": "`bee203f`、`5603c49`；启动配置与三次逐会话记录见本目录 JSON 与 README。"
     }
   ]
 }

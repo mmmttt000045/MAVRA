@@ -85,9 +85,6 @@ def answers(ax, data, ds, t):
         ax.errorbar(xs, [-b for b in bad], yerr=[[r["wrong_max"] - b for b, r in zip(bad, rows)],
                                                 [b - r["wrong_min"] for b, r in zip(bad, rows)]],
                     fmt="none", ecolor="black", elinewidth=.4, capsize=.7, capthick=.4, zorder=3)
-        for x, b in zip(xs, bad):
-            if b == 0:
-                ax.text(x, -1.5, "0", ha="center", va="top", fontsize=5.6, zorder=4)
     ax.axhline(0, color="black", lw=.6, zorder=3)
     ax.set(ylim=(-88, 106), yticks=[-75, -50, -25, 0, 25, 50, 75, 100])
     ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{abs(v):.0f}"))

@@ -45,7 +45,7 @@ def bracket(ax, x, y0, y1, label, color):
     ax.text(x + .2, (y0 + y1) / 2, label, ha='left', va='center', fontsize=6.5, color=color, clip_on=False)
 
 
-def draw(lang, data_path=DATA, out_dir=None):
+def figure(lang, data_path=DATA):
     data = json.loads(Path(data_path).read_text(encoding='utf-8'))
     macros = printed()
     mplstyle.setup(lang)
@@ -120,11 +120,15 @@ def draw(lang, data_path=DATA, out_dir=None):
     for label in legend.get_texts():
         if label.get_text().startswith('MAVRA'):
             label.set_weight('bold')
+    return fig
+
+
+def draw(lang='en', data_path=DATA, out_dir=None):
+    fig = figure(lang, data_path)
     out = Path(out_dir or style.OUT) / (f'{NAME}.pdf' if lang == 'en' else f'{NAME}-zh.pdf')
     mplstyle.save(fig, out)
     print(out)
 
 
 if __name__ == '__main__':
-    for lang in ('en', 'zh'):
-        draw(lang, *(sys.argv[1:3]))
+    draw('en', *(sys.argv[1:3]))

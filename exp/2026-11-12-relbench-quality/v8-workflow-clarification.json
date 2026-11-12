@@ -1,7 +1,0 @@
-{
-  "recorded_at_utc": "2026-11-12 00:55:46 UTC",
-  "status": "clarification before v8 runtime implementation or model calls",
-  "priority": "With a checked warm base, prioritize one clean added-feature validation before submit. Failed SQL, duplicate-only proposals and failed/unknown audits return feedback and remain charged; repair may continue only within the unchanged4-response/6-tool/8-validation ceilings. Budget exhaustion retains the complete checked incumbent.",
-  "stopping": "A clean added-feature trial completes the single post-goal refinement for this new workflow. An error does not complete that clean trial. Cold exploration and every previous arm keep their original stopping behavior. This new stopping policy is part of the development method, not an unreported change to historical baselines.",
-  "accounting": "Every failed attempt, SQL read, fixed-learner fit, reproduction check and audit is retained. No extra model/tool allowance, free preflight or safety-by-error. Twelve warm sessions have at most48 agent model calls and72 agent tool calls, below original Stack52/74; all token/time/USD values still require the original joint gates."
-}

@@ -1,12 +1,8 @@
 """Build the paper's vector figures into overleaf/figures/.
 
-    python3 tools/figures/build.py              # all paper figures
-    python3 tools/figures/build.py sharing      # only the named ones
-    python3 tools/figures/build.py --out /tmp/x # somewhere else, for previews
-    python3 tools/figures/build.py --deck       # the report deck's figures, into slides/figures/
-
-Each figure is written twice: <name>.pdf for the English paper and
-<name>-zh.pdf for the bilingual build.
+    python3 tools/figures/build.py                     # all paper figures
+    python3 tools/figures/build.py population          # only named figures
+    python3 tools/figures/build.py --out /tmp/preview  # custom output folder
 """
 import argparse
 import importlib
@@ -16,33 +12,32 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import style  # noqa: E402
 
-FIGURES = {'running-example': 'example', 'architecture': 'architecture', 'replay-outcomes': 'replay_outcomes',
-           'maintenance-cost': 'maintenance_cost', 'scenario-changes': 'scenario_changes',
-           'two-schemas': 'two_schemas', 'consumer-cost': 'consumer_cost',
-           'metric-record': 'metric_record', 'shared-validation': 'shared_validation', 'change-study': 'change_study',
-           'population': 'population', 'reuse-work': 'reuse_work',
-           'extraction': 'extraction', 'maintenance': 'maintenance', 'snapshot': 'snapshot', 'lookup': 'lookup'}
-DECK = {'structure': 'structure', 'definition': 'definition', 'process': 'process',   # report deck only
-        'run-publish': 'run_publish', 'run-use': 'run_use', 'run-maintain': 'run_maintain'}
-DECK_OUT = style.ROOT / 'slides/figures'
+FIGURES = {
+    'metric-record': 'metric_record',
+    'architecture': 'architecture',
+    'extraction': 'extraction',
+    'lookup': 'lookup',
+    'maintenance': 'maintenance',
+    'relbench-cumulative': 'relbench_cumulative',
+    'reuse-work': 'reuse_work',
+    'population': 'population',
+    'change-study': 'change_study',
+    'shared-validation': 'shared_validation',
+}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('names', nargs='*', metavar='name',
                         help=f'figures to build: {", ".join(FIGURES)} (default: all)')
-    parser.add_argument('--out', type=Path)
-    parser.add_argument('--deck', action='store_true',
-                        help=f'build the report deck\'s figures ({", ".join(DECK)}) into {DECK_OUT}')
+    parser.add_argument('--out', type=Path, default=style.OUT)
     args = parser.parse_args()
-    known = DECK if args.deck else FIGURES
-    unknown = set(args.names) - set(known)
+    unknown = set(args.names) - set(FIGURES)
     if unknown:
         parser.error(f'unknown figure: {", ".join(sorted(unknown))}')
-    out = args.out or (DECK_OUT if args.deck else style.OUT)
-    out.mkdir(parents=True, exist_ok=True)
-    for name in args.names or known:
-        for path in style.build(importlib.import_module(known[name]), out):
+    args.out.mkdir(parents=True, exist_ok=True)
+    for name in args.names or FIGURES:
+        for path in style.build(importlib.import_module(FIGURES[name]), args.out):
             print(path)
 
 

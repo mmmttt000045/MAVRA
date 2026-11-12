@@ -1,8 +1,0 @@
-{
-  "recorded_at_utc": "2026-11-12 01:06:56 UTC",
-  "status": "budget clarification before v8 model calls",
-  "basis": "Complete v5 has30/30 valid sessions, two first-place quality metrics and11/12 cost passes; Trial agent seconds3185.043 exceed1481.638. Its unchanged incumbent SQL is repeatedly expensive. Both CTE components are retained; actual v2 inlining timed out on the1000-seed sample while original took20.96s, so it is excluded from v8.",
-  "method_budget": "Use45-second per-statement limits for v8 cold feature validation and current-cutoff incumbent preparation, with one incumbent attempt. Count every failed refit and its full time. Do not immediately run the identical failed previous SQL again in start selection; retain recorded failure and build a fresh audited numeric/date or typed entity start, then use bounded added-feature trials.",
-  "scope": "This is a new method's declared execution and stopping policy. Historical arms, their source, original evaluation/scoring SQL timeouts, learner, sample, model-service settings, test policy and all unrounded acceptance thresholds remain unchanged. No free helper work, changed raw inputs, new public-table indexes or relaxed audits.",
-  "limits": "A short refit may lose a slow program's full features. Stronger checked entity alternatives and cheap added-feature trials are intended to address this, but only the complete strict cost/quality gates can establish success. No performance or quality guarantee is inferred from the budget."
-}

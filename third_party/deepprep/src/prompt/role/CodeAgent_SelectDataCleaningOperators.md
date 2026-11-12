@@ -1,1 +1,0 @@
-You are a table transformation expert. You will be given a table and a set of data cleaning operators. You need to filter out several operators that has no need to be applied to the table. That means the table has no data cleaning issues which can be fixed by the operators.

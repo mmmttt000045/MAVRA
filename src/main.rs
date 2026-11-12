@@ -1,5 +1,5 @@
 mod agentmem;
-mod bindingbench;
+mod bench;
 mod catalog;
 mod checks;
 mod db;
@@ -10,22 +10,14 @@ mod flight;
 mod integration_tests;
 mod knowledge;
 mod llm;
-mod maintbench;
-mod memorybench;
 mod metric;
-mod metricbench;
 mod middle;
-mod replaybench;
-mod scenario;
 mod server;
-mod sessionbench;
-mod specchange;
 mod sqlscan;
 mod sqlscope;
-mod strategybench;
 mod timing;
-mod tpcds;
-mod workloadbench;
+
+pub(crate) use bench::{bindingbench, maintbench, metricbench, replaybench, scenario, specchange, tpcds, workloadbench};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -61,12 +53,6 @@ enum Cmd {
     BindingBench(bindingbench::Options),
     /// 工作负载刻画：互不共享的 Agent 会话并发回答同一批分析题，逐次记录工具调用（真实模型，独立数据库）
     WorkloadBench(workloadbench::Options),
-    /// 固定已学定义库的会话耗时分解：首次使用、热复用、更新后首次使用与突发并发（真实模型，独立数据库）
-    SessionBench(sessionbench::Options),
-    /// 共享记忆的时序积累：同一生产者轨迹前缀下，比较隔离、冻结、持续积累和轨迹检索（真实模型，独立数据库）
-    MemoryBench(memorybench::Options),
-    /// 用数据库实测检查结果检验反馈排序：训练、采纳证据与未见候选测试分离（不调用 LLM）
-    StrategyBench(strategybench::Options),
     /// 初始化：状态列与 ETL 批次表（幂等）
     Setup,
     /// 模拟 ETL 改版：apply-v2 / reset / status
@@ -106,9 +92,6 @@ async fn main() -> Result<()> {
         Cmd::ReplayBench(options) => replaybench::run(&cli.db, cli.pool, &cli.out, options).await?,
         Cmd::BindingBench(options) => bindingbench::run(&cli.db, &cli.out, options).await?,
         Cmd::WorkloadBench(options) => workloadbench::run(&cli.db, cli.pool, &cli.out, options).await?,
-        Cmd::SessionBench(options) => sessionbench::run(&cli.db, cli.pool, &cli.out, options).await?,
-        Cmd::MemoryBench(options) => memorybench::run(&cli.db, cli.pool, &cli.out, options).await?,
-        Cmd::StrategyBench(options) => strategybench::run(&cli.db, &cli.out, options).await?,
         Cmd::Setup => {
             etl::setup(&admin).await?;
             eprintln!("初始化完成");

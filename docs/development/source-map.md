@@ -1,24 +1,33 @@
-# 源码导览
+# Source Map
 
-所有路径相对仓库根目录。
+All paths are relative to the repository root.
 
-| 文件 | 职责 |
+## Core System (`src/` and `src/middle/`)
+
+| Path | Responsibility |
 | --- | --- |
-| `src/main.rs` | CLI 入口、服务与评测命令分发 |
-| `src/middle.rs` | 中间层配置、共享、守护与工具调度 |
-| `src/middle/metrics.rs` | 定义准入、条件维护、撤销、受限修复、`run_metric` 与执行修订核对 |
-| `src/middle/features.rs` | 共享特征的发布、验证与使用 |
-| `src/middle/optimize.rs` | 优化候选验证与修订发布 |
-| `src/metric.rs` | 定义结构、SQL 编译、静态检查与提炼 |
-| `src/catalog.rs`、`src/checks.rs` | 目录、表版本与语义条件检查 |
-| `src/knowledge.rs`、`src/flight.rs` | 经验库与在途请求合并 |
-| `src/db.rs`、`src/etl.rs`、`src/sqlscan.rs` | 数据库访问、ETL 与 SQL 扫描 |
-| `src/sqlscope.rs` | 基于 SQL AST 的查询内列来源与唯一性证明，保留过滤、预聚合和子查询作用域 |
-| `src/llm.rs`、`src/server.rs` | 模型客户端与 HTTP 工具接口 |
-| `src/feedback.rs`、`src/timing.rs` | 检查反馈与请求局部计时 |
-| `src/*bench.rs` | 端到端、维护、回放、会话、群体等评测入口 |
-| `src/scenario.rs`、`src/specchange.rs`、`src/tpcds.rs` | 场景、模式变化与基准支持 |
-| `src/agentmem.rs` | 早期记忆方法适配；论文采用范围见 RelBench 协议 |
-| `src/integration_tests.rs`、`data/mock_fixture.sql` | 数据库与 HTTP 集成测试及最小输入 |
+| `src/main.rs` | CLI entry point (`agentdb-mid`): `serve`, `setup`, `etl`, and benchmark subcommands |
+| `src/server.rs` | Asynchronous `axum` HTTP/JSON tool interface |
+| `src/db.rs`, `src/etl.rs` | PostgreSQL connection pool, `REPEATABLE READ` snapshot binding, sharded `mavra_versions` triggers, and `etl_batch_log` |
+| `src/flight.rs`, `src/timing.rs` | Single-flight concurrent check coalescing and task-local latency/SQL attribution |
+| `src/catalog.rs`, `src/checks.rs` | Schema/join/grain catalog, table version stamps, and structural/value check SQL generation |
+| `src/sqlscan.rs`, `src/sqlscope.rs` | `sqlparser` AST canonicalization, alias normalization, and query-scoped grain uniqueness proofs |
+| `src/metric.rs`, `src/knowledge.rs` | Executable definition representation $m^r = (B,I,C,E,r)$, deterministic SQL compilation, and persistent store $(M, \mathcal{H})$ |
+| `src/feedback.rs` | Candidate pruning and check failure feedback |
+| `src/llm.rs`, `src/agentmem.rs` | OpenAI/DeepSeek-compatible LLM client and per-agent/shared text-memory baseline adapters |
+| `src/middle/mod.rs` | Stateless middleware coordinator and agent tool dispatch |
+| `src/middle/metrics.rs` | Admission gates (G1–G7), version-coalesced validation, history-preserving repair, and snapshot execution |
+| `src/middle/features.rs` | Point-in-time predictive feature admission, `LATERAL` fusion, and time-censored leakage audits |
+| `src/middle/optimize.rs` | Equivalent candidate verification and revision publication |
+| `src/integration_tests.rs` | End-to-end PostgreSQL and HTTP lifecycle, concurrency, and repair regression tests |
 
-当前评测模块共享 `metricbench.rs` 中的配置和辅助函数。后续模块整理应先抽出这些公共职责，再迁移到评测子模块；目录迁移与行为变更分别审查。
+## Evaluation Suite (`src/bench/`)
+
+| Path | Responsibility |
+| --- | --- |
+| `src/bench/metricbench.rs` | End-to-end multi-agent analytical sharing and post-update evaluation (`metric-bench`) |
+| `src/bench/maintbench.rs` | Controlled maintenance policy comparison (`maint-bench`) |
+| `src/bench/replaybench.rs` | Paired four-schema, twelve-update maintenance policy replay (`replay-bench`) |
+| `src/bench/bindingbench.rs` | Unseen parameter-binding compilation accuracy benchmark (`binding-bench`) |
+| `src/bench/workloadbench.rs` | Memoryless agent exploration and probe-target workload profiler (`workload-bench`) |
+| `src/bench/scenario.rs`, `specchange.rs`, `tpcds.rs` | Synthetic retail, TPC-DS, TPC-H, SSB, and BIRD `financial` workload definitions and data mutations |

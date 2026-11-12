@@ -80,6 +80,7 @@ pub async fn measure<T>(kind: &str, future: impl Future<Output = T>) -> T {
     future.await
 }
 
+#[cfg(test)]
 pub async fn capture<T>(future: impl Future<Output = T>) -> (T, Profile) {
     let ledger = Arc::new(Ledger { start: Instant::now(), profile: Mutex::new(Profile::default()) });
     let result = CURRENT.scope(ledger.clone(), future).await;

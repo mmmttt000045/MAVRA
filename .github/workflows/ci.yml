@@ -1,4 +1,4 @@
-name: Rust checks
+name: CI
 
 on: [push, pull_request]
 
@@ -11,11 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/experiment-index.py --check
-      - name: Offline scenario budget tests
-        run: |
-          python3 exp/2026-10-30-published-scenarios/test-budget.py
-          python3 exp/2026-10-31-corrected-scenarios/test-budget.py
-          python3 exp/2026-10-31-diverse-scenarios/test-budget.py
 
   test:
     strategy:

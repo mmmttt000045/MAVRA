@@ -96,7 +96,7 @@ def build(figure, out=OUT):
     with draw(sheet, lang) is drawn with the vecfig kit.
     """
     paths = []
-    for lang, suffix in (('en', ''), ('zh', '-zh')):
+    for lang, suffix in (('en', ''),):
         if lang not in getattr(figure, 'LANGS', ('en', 'zh')):   # the deck figures are Chinese only
             continue
         path = Path(out) / f'{figure.NAME}{suffix}.pdf'

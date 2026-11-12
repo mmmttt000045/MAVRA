@@ -23,16 +23,25 @@ and traj-verify):
 import argparse
 import collections
 import glob
-import importlib.util
 import json
 import os
 import re
 import statistics
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-spec = importlib.util.spec_from_file_location("scen_stats", os.path.join(HERE, "scen-stats.py"))
-ss = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(ss)
+def load_scen(root):
+    rp = os.path.join(root, "replaced.txt")
+    replaced = {x.strip() for x in open(rp, encoding="utf-8")} if os.path.exists(rp) else set()
+    cells, skipped = [], []
+    for f in sorted(glob.glob(os.path.join(root, "*", "metric-*", "cell-*.json"))):
+        job = os.path.relpath(f, root).split(os.sep)[0]
+        if job.startswith("smoke"):
+            continue
+        if f"{job}/{os.path.basename(f)[:-5]}" in replaced:
+            skipped.append(f)
+            continue
+        with open(f, encoding="utf-8") as fh:
+            cells.append({"job": job, "file": f, "d": json.load(fh)})
+    return cells, skipped
 
 BENIGN = ["append", "backfill", "correct", "addcol"]
 REPAIRED = ["status", "revision", "dimhist"]
@@ -155,7 +164,7 @@ def main():
     print(f"both studies: judged {judged_all}, refused by replay {refusals['replay']}, by provenance chain {refusals['chain']}")
     print(f"largest canonical-replay error: {worst}")
 
-    cells, _ = ss.load(a.scen)
+    cells, _ = load_scen(a.scen)
     by = collections.defaultdict(list)
     for c in cells:
         by[c["d"]["mode"]].append(c)

@@ -152,8 +152,6 @@ ARMS = {
     "ace": {"middle_mode": "middle-alone", "parallel_ok": True, "ace": True},
     # G-Memory (NeurIPS 2025) as published: one store shared by all agents, tasks one at a time (README §1.3)
     "gmemory": {"middle_mode": "middle-alone", "parallel_ok": False, "gmemory": True},
-    # AgentSM (preprint) as described: read-only memory of this database built offline (tools/relbench/agentsm.py build)
-    "agentsm": {"middle_mode": "middle-alone", "parallel_ok": True, "agentsm": True},
     # AWM (ICML 2025) as published (online WebArena pipeline): one workflow memory per agent, re-induced after every task
     "awm": {"middle_mode": "middle-alone", "parallel_ok": True, "awm": True},
     # TeCoD (SIGMOD 2026) as released, API mode: one template pool per database from verified (question, SQL) pairs;
@@ -701,7 +699,6 @@ class Run:
             if self.arm.get("awm"):
                 self.restore_awm(a.targets_from, first)
         self.gmem = None
-        self.asm = None
         self.tecod = None
         self.tecod_names = None  # tables and columns of the database, for TeCoD's literal masking
         os.makedirs(os.path.join(a.out, "sessions"), exist_ok=True)
@@ -896,9 +893,6 @@ Shared memory: agents on this database publish verified feature definitions and 
             "(this task's verified program from an earlier cutoff: its complete feature SQL when it still runs). If it returns "
             "a feature SQL, validate it first; explore the tables and extend the SQL only to improve on it."
             if self.arm.get("sql_memory") else "") + (
-            "\n\nMemory: retrieve_trajectory returns how the most similar earlier task on this database was explored; call it before you start. "
-            "schema_linking asks a schema linking agent to map a task to tables, columns and joins. The other extra tools run tool sequences "
-            "that agents often call together." if self.arm.get("agentsm") else "") + (
             "\n\n" + open(os.path.join(ACE_DIR, "appworld_playbook_block.txt")).read().replace(
                 "{{ playbook }}", self.playbooks.get(f"{tname(t)}-agent", ACE_EMPTY_PLAYBOOK)).rstrip()
             + "\nWhen you call validate_features or submit, list in bullet_ids the playbook bullets you used." if self.arm.get("ace") else "") + (
@@ -1740,7 +1734,7 @@ Shared memory: agents on this database publish verified feature definitions and 
                "preserving every seed row and all time bounds. The memory joins "
                "these columns with its complete checked base, fits the unchanged model, reproduces the joined SQL and audits it. "
                "Keep this query focused on new signals; the base SQL is already held by the memory.", {"sql":s}, ["sql"]),
-        ] if self.arm.get("delta_refinement") else []) + (self.asm.tool_specs() if self.asm else [])
+        ] if self.arm.get("delta_refinement") else [])
 
     def find_sql_program(self, t, k):
         """Match MAVRA's 50-seed executability check, without extraction or feature composition."""
@@ -2238,32 +2232,11 @@ Shared memory: agents on this database publish verified feature definitions and 
                     except Exception as err:
                         out = {"error": f"{err}"}
                     entry["category"] = "memory"
-                elif self.asm and name in self.asm.names():
-                    sub = []
+                elif name in ("list_tables", "describe_table", "join_path", "check_join", "run_sql"):
                     try:
-                        if name == "retrieve_trajectory":
-                            out = self.asm.retrieve(args.get("query") or self.task_desc[t]["description"], args.get("phase") or "exploration")
-                            entry["category"] = "memory"
-                        elif name == "schema_linking":
-                            out = self.asm.schema_linking(args.get("question") or self.task_desc[t]["description"], middle, agent, sid, self.llm, sub)
-                            entry["category"] = "schema"
-                        else:
-                            out = self.asm.composite(name, args, middle, agent, sid, lambda a2: self.agentsm_sql(middle, agent, sid, a2, rec))
-                            entry["category"] = "schema"
+                        out = middle.call(name, agent, sid, sid, args)
                     except Exception as err:
                         out = {"error": f"{err}"}
-                        entry.setdefault("category", "memory")
-                    rec.setdefault("llm_sub", []).extend({**x, "role": name} for x in sub)
-                    if isinstance(out, dict) and "_sub_tool_calls" in out:
-                        entry["sub_tool_calls"] = out.pop("_sub_tool_calls")
-                elif name in ("list_tables", "describe_table", "join_path", "check_join", "run_sql"):
-                    if self.asm and name == "run_sql":
-                        out = self.agentsm_sql(middle, agent, sid, args, rec)
-                    else:
-                        try:
-                            out = middle.call(name, agent, sid, sid, args)
-                        except Exception as err:
-                            out = {"error": f"{err}"}
                     entry["category"] = "probe" if name == "run_sql" else "schema"
                 elif name in ("validate_features","validate_additions"):
                     entry["category"] = "validate"
@@ -2549,7 +2522,6 @@ Shared memory: agents on this database publish verified feature definitions and 
                                "label": label, "memory_size": g.get("memory_size"), "error": g.get("error")}
         sub_calls = rec.get("llm_sub") or []
         rec["totals"] = {
-            # AgentSM's schema-linking sub-agent and SQL repair calls are counted here (they are not in the planner budget)
             "llm_calls": len(rec["llm"]) + len(sub_calls),
             "planner_llm_calls": len(rec["llm"]),
             "tool_calls": len(rec["tools"]) + sum(x.get("sub_tool_calls", 0) for x in rec["tools"]),
@@ -2708,24 +2680,6 @@ Shared memory: agents on this database publish verified feature definitions and 
                 "events": events, "program": r.get("program"), "error": r.get("error"), "audit": audit.get("result"),
                 "excluded_leaking_columns": sorted(leaking), "raw": r}
 
-    def agentsm_sql(self, middle, agent, sid, args, rec):
-        """AgentSM's SQL tool: a failing statement is repaired once by the model and run again."""
-        import agentsm
-
-        try:
-            out = middle.call("run_sql", agent, sid, sid, args)
-        except Exception as err:
-            out = {"error": f"{err}"}
-        if isinstance(out, dict) and out.get("error") and args.get("sql"):
-            sub = []
-            fixed = agentsm.repair_sql(self.llm, args["sql"], out["error"], sub)
-            rec.setdefault("llm_sub", []).extend({**x, "role": "sql_repair"} for x in sub)
-            try:
-                out2 = middle.call("run_sql", agent, sid, sid, {**args, "sql": fixed})
-            except Exception as err:
-                out2 = {"error": f"{err}"}
-            out = {**out2, "repaired_sql": fixed, "original_error": out["error"]}
-        return out
 
     def ace_update(self, t, k, rec, msgs, agent):
         """ACE after a session (online, no ground truth): Reflector (REFLECTOR_PROMPT_NO_GT), counters, Curator
@@ -2889,10 +2843,6 @@ Shared memory: agents on this database publish verified feature definitions and 
                 self.gmem = GMemoryService(self.env, a.out, self.llm)
             if arm.get("tecod"):
                 self.tecod = TecodService(a.out)
-            if arm.get("agentsm"):
-                import agentsm
-
-                self.asm = agentsm.Memory(a.agentsm_memory, self, a.out)
             ks = range(1, self.timeline["K"] + 1) if not a.cutoffs else [int(x) for x in a.cutoffs]
             prev = None
             for k in ks:
@@ -2945,8 +2895,6 @@ Shared memory: agents on this database publish verified feature definitions and 
                 json.dump(summary, f, indent=1, default=str)
             if self.gmem:
                 self.gmem.close()
-            if self.asm:
-                self.asm.close()
             if self.tecod:
                 try:
                     with open(os.path.join(a.out, "tecod-pool.json"), "w") as f:
@@ -2983,7 +2931,6 @@ def main():
     ap.add_argument("--parallel", type=int, default=3)
     ap.add_argument("--port", type=int)
     ap.add_argument("--keep-db", action="store_true")
-    ap.add_argument("--agentsm-memory", help="memory.json from tools/relbench/agentsm.py build (arm agentsm)")
     ap.add_argument("--targets-from", help="run folder whose sessions at the cutoff before the first one give the retraining goals")
     ap.add_argument("--llm", default="deepseek", choices=list(PROVIDERS), help="model service (pilot: river; since 10-21: deepseek)")
     ap.add_argument("--reasoning-effort", help="reasoning effort of the agents and of MAVRA's extractor (default: the .env setting; "

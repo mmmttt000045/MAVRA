@@ -4,10 +4,7 @@ build.log
 .env.*
 !.env.example
 /results/
-/slides/node_modules/
-/slides/build/
 __pycache__/
-/.pydeps-reforce/
 
 # Local compilation, render previews, and authoring caches.
 /tmp/

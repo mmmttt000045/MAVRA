@@ -86,6 +86,7 @@ def main() -> int:
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--push", action="store_true")
     ap.add_argument("--force", action="store_true", help="sync although the paper repo moved")
+    ap.add_argument("--prune", action="store_true", help="remove tracked paper-repo files outside the main.tex closure")
     a = ap.parse_args()
     dst = a.repo.resolve()
     if not (dst / ".git").exists():
@@ -113,8 +114,10 @@ def main() -> int:
     changed = sorted(n for n in want if n in have and
                      (not (dst / n).is_file() or lf(n, (dst / n).read_bytes()) != want[n]))
     added = sorted(n for n in want if n not in have)
-    preserved = sorted(have - set(want) - KEEP)
-    for title, names in (("changed", changed), ("added", added), ("preserved", preserved)):
+    extra = sorted(have - set(want) - KEEP)
+    deleted = extra if a.prune else []
+    preserved = [] if a.prune else extra
+    for title, names in (("changed", changed), ("added", added), ("deleted", deleted), ("preserved", preserved)):
         print(f"{title} ({len(names)}):", *names, sep="\n  ")
 
     if not a.apply:
@@ -122,10 +125,15 @@ def main() -> int:
     for n in changed + added:
         (dst / n).parent.mkdir(parents=True, exist_ok=True)
         (dst / n).write_bytes(want[n])
+    for n in deleted:
+        if (dst / n).is_file():
+            (dst / n).unlink()
 
     if a.push:
         if changed or added:
             git(dst, "add", "--", *(changed + added))
+        if deleted:
+            git(dst, "rm", "-q", "--", *deleted)
         if subprocess.call(["git", "-C", str(dst), "diff", "--cached", "--quiet"]) == 0:
             print("paper repo already up to date")
             return 0
@@ -136,7 +144,7 @@ def main() -> int:
         record.update(
             date=datetime.date.today().isoformat(), status="pushed", previous_head=remote,
             remote_commit=commit, source_commit=git(ROOT, "rev-parse", "HEAD"),
-            changed_paths=changed + added, deletions=[], preserve_remote_only=True,
+            changed_paths=changed + added, deletions=deleted, preserve_remote_only=not a.prune,
             delivery_mode="github_only", source_package=None,
             commit_url=f"{record['repository_url']}/commit/{commit}",
         )

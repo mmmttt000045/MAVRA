@@ -1,39 +1,33 @@
 {
   "schema_version": 1,
-  "date": "2026-11-12",
+  "date": "2026-11-13",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> paper main: merged remote edits 2c66571 (from cc743c6: wording pass on Secs. 1-6, abstract, implementation); RelBench Table III/macros/Figs. 6-7 from v10 MAVRA and No memory as three-run means; Sec. 6.2 explanation from the frozen-program analysis; Sec. 4.5 v10 reuse description",
-  "previous_head": "2c66571d3d2cd9914935e929b7def4302ce54dd6",
-  "remote_commit": "e92b98623027167fabf9bcf3b8b1267463234a85",
+  "direction": "overleaf/ -> paper main: formalize C_struct/C_null/C_scale separation and Proposition 4.3 exact aggregation proof, unify zero-wrong scope across 1,806 replays vs. 11-update study (fixing 5-error fallback breakdown), foreground C3 history-preserving maintenance and Algorithm 1 Hist gate, and clarify DeepSeek-vs-GLM lookup boundary",
+  "previous_head": "2f2e1ac2e9c31af75fe333f7ed6bcc952f7dc60d",
+  "remote_commit": "93c9aa9a98773f3d0dcf572e61e448c71b7438da",
   "pending_payload": null,
   "changed_paths": [
-    "figures/relbench-cumulative.pdf",
-    "figures/reuse-work.pdf",
-    "gen/relbench-table.tex",
-    "gen/relbench.tex",
+    "algorithms/maintenance.tex",
+    "sections/01-introduction.tex",
     "sections/04-design.tex",
     "sections/05-evaluation.tex",
-    "tables/relbench.tex"
+    "sections/06-conclusion.tex",
+    "sections/abstract.tex",
+    "sections/implementation.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "local_build": "build.sh en with TeX Live 2026: 14 pages, body ends on page 12 and references start on page 13, 0 undefined references, 1 overfull box (pre-existing, tables/capabilities.tex)",
-    "rendered_pages_checked": [
-      9,
-      10,
-      11,
-      12
-    ],
-    "remote_merge": "2c66571 merged three-way against 3210aed; a trial --force --apply on a copy of the clone changed only the 7 RelBench-related files, the 6 files only 2c66571 edited showed no diff",
-    "stats_regression": "paper-stats.py reproduces the original table exactly when given single runs (MAVRA and No memory); baseline single-run figure data unchanged",
-    "baselines_unchanged": "ACE, G-Memory, AWM, TeCoD, FeatPilot rows unchanged; No memory now a three-run mean (token ratios relative to it)"
+    "built_on": "noctis, TeX Live 2026, latexmk/pdfLaTeX; 69-file main.tex dependency closure",
+    "status": "14 pages, body ends cleanly at bottom of page 12 and references start at top of page 13. Zero undefined citations/references and zero Overfull hboxes across the body.",
+    "content": "Separated C(I) = C_struct U C_null U C_scale in Section 4.4 so Proposition 4.3 explicitly attributes duplicate prevention to checks (1,2,4), join/NULL loss bounds to checks (3,5,6), and exact business aggregation to b=eps_loss=0 across (3,5,6), while keeping measure-scale monitor (7) as an empirical guard for premise B2; formatted Algorithm 1 line 7 explicitly as C(x + e) ^ Repro ^ Hist; fixed Section 6.5 attribution of the 5 agent-fallback errors (1/114 on covered breaks + 4 on backup-copy premise shifts vs. 0/210 from stored definitions); unified Abstract/Intro/Conclusion scope between 1,806 policy replays and the 11-update agent study; and explicitly named DeepSeek-synthesized training vs. unseen GLM rewrites (88%).",
+    "remote_checked": "origin/main matched 2f2e1ac2e9c31af75fe333f7ed6bcc952f7dc60d before sync. Six remote-only files preserved. Independent ls-remote confirmed 93c9aa9a98773f3d0dcf572e61e448c71b7438da after push."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e92b98623027167fabf9bcf3b8b1267463234a85",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/93c9aa9a98773f3d0dcf572e61e448c71b7438da",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "46d6b611323e34915136a6bb706ca32ba9670c46"
+  "source_commit": "cc743c6784b2d65f8355309f915b8f5faa4edab9"
 }

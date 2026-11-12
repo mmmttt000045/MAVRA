@@ -1,20 +1,17 @@
 .DEFAULT_GOAL := help
 PYTHON ?= python3
-NPM ?= npm
 
-.PHONY: help check index index-check paper paper-en paper-pack figures deck-figures slides-deps slides
+.PHONY: help check index index-check py-test paper paper-en paper-pack figures
 
 help:
 	@printf '%s\n' \
-	  'check         Rust format, tests, Clippy, and experiment index' \
+	  'check         Experiment index check, Rust format, unit tests, and Clippy' \
 	  'index         Regenerate exp/README.md from exp/catalog.json' \
-	  'index-check   Check experiment coverage and local references' \
-	  'paper         Build the English PDF (paper-en is an alias)' \
-	  'paper-pack    Package Overleaf sources (no TeX required)' \
-	  'figures       Regenerate paper PDFs (drawing dependencies required)' \
-	  'deck-figures  Regenerate deck PDFs and PNGs (also requires pdftoppm)' \
-	  'slides-deps   Install locked PPT dependencies' \
-	  'slides        Build PPT from existing PNGs into slides/build/'
+	  'index-check   Validate exp/catalog.json coverage and file references' \
+	  'py-test       Run offline Python unit tests in tools/relbench/' \
+	  'paper         Compile overleaf/main.tex -> overleaf/build/main.pdf' \
+	  'paper-pack    Package Overleaf source closure into overleaf/build/mavra-pvldb.zip' \
+	  'figures       Regenerate all paper vector figures in overleaf/figures/'
 
 check: index-check
 	cargo fmt --check
@@ -27,6 +24,9 @@ index:
 index-check:
 	$(PYTHON) tools/experiment-index.py --check
 
+py-test:
+	PYTHONPATH=tools/relbench $(PYTHON) -m unittest discover -s tools/relbench -p "test_*.py"
+
 paper paper-en:
 	bash overleaf/build.sh en
 
@@ -35,16 +35,4 @@ paper-pack:
 
 figures:
 	$(PYTHON) tools/figures/build.py
-	$(PYTHON) tools/figures/population.py
-	$(PYTHON) tools/figures/relbench_cumulative.py
 	$(PYTHON) tools/figures/mechanism.py
-
-deck-figures:
-	$(PYTHON) tools/figures/build.py --deck
-	@set -e; for f in slides/figures/*.pdf; do pdftoppm -r 300 -png -singlefile "$$f" "$${f%.pdf}"; done
-
-slides-deps:
-	$(NPM) --prefix slides ci
-
-slides:
-	$(NPM) --prefix slides run build
