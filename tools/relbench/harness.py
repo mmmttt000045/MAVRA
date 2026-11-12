@@ -167,6 +167,10 @@ ARMS["mavra-delta"] = {**ARMS["mavra-refine"], "typed_reference": True, "delta_r
                        "cold_validation_timeout":45,"current_refit_timeout":45,
                        "current_refit_attempts":1,"skip_failed_refit":True}
 ARMS["mavra-delta-headers"] = {**ARMS["mavra-delta"], "reuse_header_metadata": True}
+# v10 (11-12): v9 dropped the stored program when its refit at a new cutoff hit the 45 s limit (5 of 36 rel-trial and
+# 2 of 36 rel-stack reuse sessions in three runs); one retry under the standard 600 s statement limit keeps it
+ARMS["mavra-retry"] = {**ARMS["mavra-delta-headers"], "current_refit_attempts": 2,
+                       "current_refit_retry_timeout": FEATURE_SQL_TIMEOUT_S}
 GMEMORY_REPO = "results/ext/GMemory"
 GMEMORY_PYTHON = "results/ext/venv-gmem/bin/python"
 GMEMORY_OBS_CHARS = 2000
@@ -1039,8 +1043,12 @@ Shared memory: agents on this database publish verified feature definitions and 
 
         try:
             attempts = self.arm.get('current_refit_attempts',2)
-            options = {'timeout_s':self.arm['current_refit_timeout']} if self.arm.get('current_refit_timeout') else {}
+            work["attempt_timeouts"] = []
             for attempt in range(1,attempts+1):
+                # mavra-retry (v10): a refit cut by the short limit is retried once under the standard statement limit
+                timeout = (self.arm.get('current_refit_retry_timeout') if attempt > 1 else None) or self.arm.get('current_refit_timeout')
+                options = {'timeout_s':timeout} if timeout else {}
+                work["attempt_timeouts"].append(timeout)
                 try:
                     xtr, s1 = features(self.url, prev[1], f"task.{tname(t)}_train_sample", seeds["train_sample"], ec, **options)
                     work["sql_seconds"] += s1

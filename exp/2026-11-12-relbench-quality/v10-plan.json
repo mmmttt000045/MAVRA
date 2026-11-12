@@ -1,0 +1,15 @@
+{
+  "recorded_at_utc": "2026-11-12T08:13:09Z",
+  "recorded_by": "Claude Code",
+  "method": "mavra-retry (v10)",
+  "parent": "mavra-delta-headers (v9, source da42981)",
+  "defect": "v9 tries the stored program's refit at a new cutoff once under a 45 s statement limit and drops the program on timeout; in v9 runs 1-3 this happened in 5 of 36 rel-trial and 2 of 36 rel-stack reuse sessions (one rel-trial fallback left a constant-only program that the next cutoff inherited)",
+  "how_found": "session execution records (target_detail.why = statement timeout), read after the v9 test scores were known; the change is decided from execution failures, not from scores",
+  "change": "on a statement timeout the refit is retried once under the standard 600 s statement limit (FEATURE_SQL_TIMEOUT_S); other errors are not retried; the first attempt keeps the 45 s limit; all attempts stay charged to the session",
+  "unchanged": "everything else in v9: cold start, reuse call/tool caps, additions, audits, learner, data, cutoffs, model service, reasoning effort, Rust backend binary",
+  "runs": "three runs per database from empty memory, identical inputs; --run only names the database and output folder",
+  "concurrency": "at most four cells at once",
+  "paper_row": "Table III MAVRA row = mean over the three v10 runs; every run reported; v9's three runs stay in this directory and the README",
+  "no_selection": "all three v10 runs are reported whatever their scores; no further method change after these runs",
+  "budget_guard": "budget-watch cap 20 CNY over the v10 cells"
+}
