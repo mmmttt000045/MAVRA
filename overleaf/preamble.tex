@@ -14,6 +14,18 @@
 \usepackage{needspace}
 \makeatletter
 \providecommand*{\toclevel@algorithm}{0}
+\AtBeginDocument{\@ifpackageloaded{balance}{%
+  \renewcommand{\@BAlancecol}{\if@twocolumn
+    \setbox0=\vbox{\unvbox\@outputbox}\@tempdima=\ht0
+    \advance\@tempdima by \topskip \advance\@tempdima by -\baselineskip
+    \divide\@tempdima by 2 \splittopskip=\topskip
+    {\vbadness=\@M \loop \global\setbox3=\copy0
+     \global\setbox1=\vsplit3 to \@tempdima
+     \ifdim\ht3>\@tempdima \global\advance\@tempdima by 1pt \repeat}%
+    \setbox\@leftcolumn=\vbox to \@tempdima{\dimen2=\dp1\unvbox1\kern-\dimen2\vfil}%
+    \setbox\@outputbox=\vbox to \@tempdima{\dimen2=\dp3\unvbox3\kern-\dimen2\vfil}%
+  \fi}%
+}{}}
 \makeatother
 % Keep the template's float spacing, paragraph spacing, and float limits (deviations risk desk rejection).
 % Method colors, fixed across every figure and table; the figures (tools/figures/) read these
@@ -61,6 +73,16 @@
 \input{gen/sustained}
 \input{gen/served-split}
 \input{gen/workload-example}
+% Reuse-phase cost reduction ranges across warmed TPC-DS (agents 9-16) and RelBench (cutoffs 2-5),
+% computed automatically from gen/population.tex and gen/relbench.tex so reruns propagate everywhere.
+\newcommand{\ReuseFmtOne}[1]{\fpeval{trunc(round(#1,1),0)}.\fpeval{round((round(#1,1)-trunc(round(#1,1),0))*10,0)}}
+\newcommand{\RbStackMavraTokRedX}{\ReuseFmtOne{\RbStackNoneTok/\RbStackMavraTok}}
+\newcommand{\RbTrialMavraTokRedX}{\ReuseFmtOne{\RbTrialNoneTok/\RbTrialMavraTok}}
+\newcommand{\ReuseTokMinX}{\ReuseFmtOne{min(\PpMavraLateTokXNone,\RbStackNoneTok/\RbStackMavraTok,\RbTrialNoneTok/\RbTrialMavraTok)}}
+\newcommand{\ReuseTokMaxX}{\ReuseFmtOne{max(\PpMavraLateTokXNone,\RbStackNoneTok/\RbStackMavraTok,\RbTrialNoneTok/\RbTrialMavraTok)}}
+\newcommand{\ReuseLatMinX}{\ReuseFmtOne{min(\PpMavraLateSpeedupNone,\RbStackMavraSpeed,\RbTrialMavraSpeed)}}
+\newcommand{\ReuseLatMaxX}{\ReuseFmtOne{max(\PpMavraLateSpeedupNone,\RbStackMavraSpeed,\RbTrialMavraSpeed)}}
+\providecommand{\LkDirectPrec}{98.6}
 % Macros of runs still in progress: the generated files override these once the numbers exist.
 \providecommand{\RpTableCorrect}{--}\providecommand{\RpTableWrong}{--}\providecommand{\RpTableNeeded}{--}
 \providecommand{\RpTableUnneeded}{--}\providecommand{\RpTableDB}{--}

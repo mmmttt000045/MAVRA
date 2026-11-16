@@ -21,6 +21,7 @@
 | [2026-11-01-shared-validation](2026-11-01-shared-validation/README.md)<br>一次更新后验证代价随智能体数增长 | 当前 Fig.7：16 个定义、四个事实／日期表对、1–32 个智能体、交错与同时到达、三轮随机块（108 格，无模型调用）。最终二进制：MAVRA 始终 8 次检查；32 个智能体时各自验证为 MAVRA 的 15 倍（同时到达 34 倍），整定义重查 2.4 倍（1.7 倍）。首轮旧二进制结果保留。 |
 | [2026-11-11-maint-hardening](2026-11-11-maint-hardening/README.md)<br>值条件、历史保持修复与查找补证 | 当前稿件新增值条件、G9 修复准入、共享重验对照、查找确认与持续写入证据；各子实验的范围见协议。 |
 | [2026-11-12-relbench-quality](2026-11-12-relbench-quality/README.md)<br>RelBench 三次均值评测与首截点重拟合归因 | Table 3、Fig. 6 与 Fig. 7 中 MAVRA（mavra-retry）与无记忆基线的三次同输入均值评测，以及首截点纯重拟合对照与两库差异归因。 |
+| [2026-11-13-tpcds-scaling](2026-11-13-tpcds-scaling/README.md)<br>TPC-DS SF1/SF3/SF10 维护扩展性与审稿补证 | 论文第 6.2 节与第 6.6 节补证：TPC-DS SF1→SF3→SF10（288 万→864 万→2,880 万行 store_sales）下共享验证与修复扩展性、RelBench 无记忆 4 次调用截断对照及 I/G3 静态基准覆盖率统计。 |
 
 ## 补充证据
 
@@ -49,6 +50,7 @@
 | 2026-11-01-shared-validation | [cells.tgz](2026-11-01-shared-validation/cells.tgz)、[cells-final.tgz](2026-11-01-shared-validation/cells-final.tgz) | [analyse.py](2026-11-01-shared-validation/analyse.py) | [stats.json](2026-11-01-shared-validation/stats.json)、[shared-validation.tex](../overleaf/gen/shared-validation.tex) |
 | 2026-11-11-maint-hardening | [binding-report.json](2026-11-11-maint-hardening/binding-report.json)、[replay-hardening.json](2026-11-11-maint-hardening/replay-hardening.json)、[served-split.json](2026-11-11-maint-hardening/served-split.json) | [analyse-replay.py](2026-11-11-maint-hardening/analyse-replay.py)、[served-split.py](2026-11-11-maint-hardening/served-split.py) | [binding.tex](../overleaf/gen/binding.tex)、[served-split.tex](../overleaf/gen/served-split.tex)、[sustained.tex](../overleaf/gen/sustained.tex) |
 | 2026-11-12-relbench-quality | [v10-plan.json](2026-11-12-relbench-quality/v10-plan.json)、[none-repeats-plan.json](2026-11-12-relbench-quality/none-repeats-plan.json)、[gate-v10-r1.json](2026-11-12-relbench-quality/gate-v10-r1.json)、[gate-v10-r2.json](2026-11-12-relbench-quality/gate-v10-r2.json)、[gate-v10-r3.json](2026-11-12-relbench-quality/gate-v10-r3.json)、[frozen-summary.json](2026-11-12-relbench-quality/frozen-summary.json)、[explain-v10.json](2026-11-12-relbench-quality/explain-v10.json) | [paper-stats.py](../tools/relbench/paper-stats.py)、[frozen-program.py](../tools/relbench/frozen-program.py)、[frozen-summary.py](../tools/relbench/frozen-summary.py)、[explain-quality.py](../tools/relbench/explain-quality.py) | [relbench.tex](../overleaf/gen/relbench.tex)、[relbench-table.tex](../overleaf/gen/relbench-table.tex) |
+| 2026-11-13-tpcds-scaling | [scaling-summary.json](2026-11-13-tpcds-scaling/scaling-summary.json)、[scaling-reports.tgz](2026-11-13-tpcds-scaling/scaling-reports.tgz)、[relbench-4call-truncation.json](2026-11-13-tpcds-scaling/relbench-4call-truncation.json)、[g3-coverage.json](2026-11-13-tpcds-scaling/g3-coverage.json) | — | — |
 
 ## 原始数据与代码版本记录
 
@@ -66,6 +68,7 @@
 | 2026-11-01-shared-validation | cells-final.tgz：最终二进制 108 格（results/shared-validation-1793508134275611）；cells.tgz：旧二进制 108 格（results/shared-validation-1793471974128556）。 | src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。 |
 | 2026-11-11-maint-hardening | 原始位置、时间、源码校验与失败记录见本目录 README；归档 JSON 不代表所有原始输出均已下载。 | 9334549、89322f2、65f13fe、66c2181 等；各子实验版本按原 README 核对。 |
 | 2026-11-12-relbench-quality | noctis `results/quality-20261112-v10/`（MAVRA r1–r3）与 `results/quality-20261112-v10-none/`（无记忆 r2–r3，配对首轮见 `2026-10-20-relbench`）。 | `bee203f`、`5603c49`；启动配置与三次逐会话记录见本目录 JSON 与 README。 |
+| 2026-11-13-tpcds-scaling | `scaling-reports.tgz` 保存 SF1/SF3/SF10 完整配对回放报告、表行数与库大小；RelBench 原始会话见 `2026-10-20-relbench` 与 `2026-11-12-relbench-quality`。 | `replay-bench`（`src/bench/replaybench.rs` 维表索引与统计信息快照复制修正）；PostgreSQL 18.6，`--pool 16 --sql-timeout-secs 1800/3600`。 |
 
 ## 维护索引
 

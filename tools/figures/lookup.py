@@ -67,7 +67,7 @@ LABELS = {
         'alias_rows': (('store turnover', '`D01 D02`'), ('net store profit', '`D07`')),
         'miss': 'miss', 'hit_note': 'hit: reply at once',
         's2': 'recall', 's2_note': 'bge-m3, cosine, top 8',
-        's3': 'judge', 's3_note': 'cross-encoder (XLM-R, 12 layers) ×3, mean $p$',
+        's3': 'judge', 's3_note': 'cross-encoder (XLM-R, 12 layers) ×3, mean $\\hat{y}$',
         'pair': 'one pass per candidate',
         'seg': (('request', 'in-store takings…'), ('definition', '`sum(ss_net_paid)`'),
                 ('choices', 'after coupons'), ('differences', '`D02`: before')),
@@ -77,10 +77,10 @@ LABELS = {
         'rest': '6 others',
         'zones': ('reject', 'refer', 'accept'),
         'replies': (
-            ('same name', BLUE, 'in-store takings', (('`D01` + `D02`', BLUE_TXT), (', differ in amount basis', MUTED))),
-            ('hit', BLUE, 'return rate by units', (('`D17`', BLUE_TXT),)),
-            ('refer', AMBER, 'store profit', (('`D07` or `D08`?', INK), (' agent confirms', MUTED))),
-            ('none', MUTED, 'sales per m² of stores', (('not in catalog', MUTED),)),
+            ('Diffs', BLUE, 'in-store takings', (('`D01` + `D02`', BLUE_TXT), (', differ in amount basis', MUTED))),
+            ('Hit', BLUE, 'return rate by units', (('`D17`', BLUE_TXT),)),
+            ('Refer', AMBER, 'store profit', (('`D07` or `D08`?', INK), (' agent confirms', MUTED))),
+            ('Miss', MUTED, 'sales per m² of stores', (('not in catalog', MUTED),)),
         ),
         'to_alias': 'stored as alias',
         'off': 'Offline, once per catalog: the judge’s training data', 'off_note': 'labels by rule, no annotation',
@@ -100,7 +100,7 @@ LABELS = {
         'alias_rows': (('门店流水', '`D01 D02`'), ('门店净利润', '`D07`')),
         'miss': '未命中', 'hit_note': '命中：直接回复',
         's2': '召回', 's2_note': 'bge-m3，余弦相似度，前 8 条',
-        's3': '判别', 's3_note': '交叉编码器（XLM-R，12 层）×3，$p$ 取平均',
+        's3': '判别', 's3_note': '交叉编码器（XLM-R，12 层）×3，$\\hat{y}$ 取平均',
         'pair': '每个候选算一次',
         'seg': (('请求', '实体店的收入…'), ('定义', '`sum(ss_net_paid)`'),
                 ('口径', '扣券后实付'), ('区别', '`D02`：扣券前')),
@@ -110,10 +110,10 @@ LABELS = {
         'rest': '其余 6 条',
         'zones': ('排除', '参考', '接受'),
         'replies': (
-            ('同名', BLUE, '实体店的收入', (('`D01` + `D02`', BLUE_TXT), ('，金额口径不同', MUTED))),
-            ('命中', BLUE, '按件数算的门店退货率', (('`D17`', BLUE_TXT),)),
-            ('参考', AMBER, '门店利润', (('`D07` 还是 `D08`？', INK), ('智能体确认', MUTED))),
-            ('没有', MUTED, '门店坪效', (('目录中没有', MUTED),)),
+            ('Diffs', BLUE, '实体店的收入', (('`D01` + `D02`', BLUE_TXT), ('，金额口径不同', MUTED))),
+            ('Hit', BLUE, '按件数算的门店退货率', (('`D17`', BLUE_TXT),)),
+            ('Refer', AMBER, '门店利润', (('`D07` 还是 `D08`？', INK), ('智能体确认', MUTED))),
+            ('Miss', MUTED, '门店坪效', (('目录中没有', MUTED),)),
         ),
         'to_alias': '存为别名',
         'off': '离线，每个目录一次：判别器的训练数据', 'off_note': '规则打标签，无需人工标注',
@@ -307,7 +307,7 @@ def draw(s, lang):
         p0, p3 = (xs[q_i] + tok / 2, ty - .15), (xs[j] + tok / 2, ty - .15)
         hgt = 1.0 + (p3[0] - p0[0]) * .045
         s.curve(p0, (p0[0], ty - hgt - .4), (p3[0], ty - hgt - .4), p3, c, .2)
-    # [CLS] rises through the layers to the head; p leaves to the left, into step 4.
+    # [CLS] rises through the layers to the head; \hat{y} leaves to the left, into step 4.
     cls_x = xs[0] + tok / 2
     top_l = ys_l[-1]
     s.line(cls_x, ty, cls_x, ys_l[0] + lay_h, INK, .18)
@@ -318,7 +318,7 @@ def draw(s, lang):
     s.rect(cls_x - .85, hy - .85, 1.7, 1.7, INK, None, r=.3)
     text(cls_x, baseline(hy, TINY - .4), 'σ', TINY - .4, WHITE, align='center')
     arrow(s, [(cls_x - .95, hy), (x3 - .4, hy)], INK)
-    text(x3 - 1.2, baseline(hy - 1.35, TAG), r'$p$', TAG, INK, align='right')
+    text(x3 - 1.2, baseline(hy - 1.35, TAG), r'$\hat{y}$', TAG, INK, align='right')
     # MLP note right of the head
     text(cls_x + 1.4, baseline(hy, TINY - .6), '[CLS] → MLP → σ', TINY - .6, MUTED)
 

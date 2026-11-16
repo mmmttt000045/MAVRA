@@ -6,7 +6,7 @@
 % Unified metrics (review point 4, 2026-11-11): first-response set-exact, final set-exact after the consuming agent's
 % confirmation turn (exp/2026-11-11-maint-hardening/lookup-confirm: deepseek-flash reads MAVRA's references and picks),
 % absent requests rejected, LLM tokens (prompt + completion) and seconds per request including confirmation.
-\begin{table}[htbp]
+\begin{table}[b]
 \caption{\bt{Lookup accuracy and cost on 96 requests over 26 TPC-DS definitions.}{26 条 TPC-DS 定义上 96 个请求的查找准确率与开销。}}
 \label{tab:lookup}
 \footnotesize
@@ -27,7 +27,7 @@
 \textbf{\system{}}, \bt{repeated phrasing}{同表述再查} & 98\% & -- & 13/13 & 0 & 33\,ms\\
 \bottomrule
 \end{tabularx}
-\par\smallskip
-{\raggedright
-\bt{Exact: the first response (direct answer, or the references returned) equals $A(\rho)$. Final: after the consuming agent (\llmmodel{}) picks among \system{}'s references on the 23\% of requests that receive them. Absent: out-of-catalog requests finally rejected (per run). Tokens and time are means per request, confirmation included (shared GPU for judges; API for LLMs). $^{*}$Released 4B embedding and NLI models in float32 on a shared CPU; pool of 6 phrasings per definition from the same catalog-generated data.}{一致：首次响应（直接答案，或返回的参考集合）等于 $A(\rho)$。确认后：对收到参考的 23\% 请求，由使用方智能体（\llmmodel{}）在参考中选择之后的结果。拒识：目录外请求最终被拒识的数量（每轮）。token 与耗时为每请求均值，含确认（判别器运行于共享 GPU，LLM 经 API 调用）。$^{*}$TeCoD 发布的 4B 嵌入与 NLI 模型以 float32 运行于共享 CPU；模板池为每个定义 6 条取自同一份目录生成数据的问法。}\par}
+\par\vspace{2pt}
+{\scriptsize\raggedright
+\bt{Exact: first response (\code{Hit}, \code{Diffs}, or \code{Refer} candidates) equals $A(\rho)$. Final: after \llmmodel{} confirms among candidate references on the 23\% uncertain-retrieval requests. Absent: absent-metric requests rejected (per run); \emph{repeated phrasing} re-queries 92 period-swapped variants (79 alias hits + 13 uncached absent requests). Tokens/time are means per request including confirmation (judges on shared GPU; LLMs via API). $^{*}$Released 4B float32 models on shared CPU; 6 synthetic phrasings/definition.}{一致：首次响应（\code{Hit}、\code{Diffs} 或 \code{Refer} 参考集合）等于 $A(\rho)$。确认后：对收到 \code{Refer} 参考的 23\% 请求，由使用方智能体（\llmmodel{}）在参考中选择之后的结果。拒识：目录外请求最终被拒识的数量（每轮）；\emph{同表述再查}复测 92 个换期重复请求（含 79 条别名命中与 13 条未缓存缺失指标）。token 与耗时为每请求均值，含确认（判别器运行于共享 GPU，LLM 经 API 调用）。$^{*}$TeCoD 发布的 4B 嵌入与 NLI 模型以 float32 运行于共享 CPU；模板池为每个定义 6 条取自同一份目录生成数据的问法。}\par}
 \end{table}

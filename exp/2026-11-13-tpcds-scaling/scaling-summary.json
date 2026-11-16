@@ -1,0 +1,235 @@
+{
+  "sf1": {
+    "rows": {
+      "store_sales": 2880545,
+      "store_returns": 287514,
+      "customer": 100000,
+      "date_dim": 73049,
+      "item": 18000,
+      "household_demographics": 7200,
+      "store": 12
+    },
+    "db_bytes": 616699583,
+    "maintenance": {
+      "condition/snapshot": {
+        "append": {
+          "db_s": 21.27,
+          "wall_s": 21.29,
+          "queries": 33,
+          "entries_used": 4
+        },
+        "correct": {
+          "db_s": 18.08,
+          "wall_s": 18.1,
+          "queries": 33,
+          "entries_used": 4
+        },
+        "dimhist": {
+          "db_s": 7.98,
+          "wall_s": 11.25,
+          "queries": 40,
+          "entries_used": 2
+        },
+        "revision": {
+          "db_s": 54.48,
+          "wall_s": 54.56,
+          "queries": 80,
+          "entries_used": 4
+        },
+        "dupload": {
+          "db_s": 32.09,
+          "wall_s": 58.68,
+          "queries": 54,
+          "entries_used": 4
+        }
+      },
+      "definition/snapshot": {
+        "append": {
+          "db_s": 46.89,
+          "wall_s": 46.9,
+          "queries": 73,
+          "entries_used": 4
+        },
+        "correct": {
+          "db_s": 36.56,
+          "wall_s": 36.57,
+          "queries": 73,
+          "entries_used": 4
+        },
+        "dimhist": {
+          "db_s": 13.33,
+          "wall_s": 13.36,
+          "queries": 52,
+          "entries_used": 2
+        },
+        "revision": {
+          "db_s": 146.16,
+          "wall_s": 152.11,
+          "queries": 171,
+          "entries_used": 4
+        },
+        "dupload": {
+          "db_s": 109.91,
+          "wall_s": 109.95,
+          "queries": 120,
+          "entries_used": 4
+        }
+      }
+    },
+    "accuracy": {
+      "condition/snapshot": {
+        "n": 54,
+        "correct": 54,
+        "served_wrong": 0
+      },
+      "definition/snapshot": {
+        "n": 54,
+        "correct": 54,
+        "served_wrong": 0
+      }
+    }
+  },
+  "sf3": {
+    "rows": {
+      "store_sales": 8640037,
+      "store_returns": 862834,
+      "customer": 188000,
+      "date_dim": 73049,
+      "item": 36000,
+      "household_demographics": 7200,
+      "store": 32
+    },
+    "db_bytes": 1761580735,
+    "maintenance": {
+      "condition/snapshot": {
+        "append": {
+          "db_s": 60.87,
+          "wall_s": 60.89,
+          "queries": 33,
+          "entries_used": 4
+        },
+        "correct": {
+          "db_s": 48.86,
+          "wall_s": 48.88,
+          "queries": 33,
+          "entries_used": 4
+        },
+        "dimhist": {
+          "db_s": 22.87,
+          "wall_s": 30.13,
+          "queries": 40,
+          "entries_used": 2
+        },
+        "revision": {
+          "db_s": 172.56,
+          "wall_s": 172.64,
+          "queries": 80,
+          "entries_used": 4
+        },
+        "dupload": {
+          "db_s": 93.76,
+          "wall_s": 179.78,
+          "queries": 54,
+          "entries_used": 4
+        }
+      },
+      "definition/snapshot": {
+        "append": {
+          "db_s": 139.79,
+          "wall_s": 139.81,
+          "queries": 73,
+          "entries_used": 4
+        },
+        "correct": {
+          "db_s": 95.18,
+          "wall_s": 95.19,
+          "queries": 73,
+          "entries_used": 4
+        },
+        "dimhist": {
+          "db_s": 38.59,
+          "wall_s": 38.63,
+          "queries": 52,
+          "entries_used": 2
+        },
+        "revision": {
+          "db_s": 465.8,
+          "wall_s": 481.56,
+          "queries": 171,
+          "entries_used": 4
+        },
+        "dupload": {
+          "db_s": 347.09,
+          "wall_s": 347.13,
+          "queries": 120,
+          "entries_used": 4
+        }
+      }
+    },
+    "accuracy": {
+      "condition/snapshot": {
+        "n": 54,
+        "correct": 54,
+        "served_wrong": 0
+      },
+      "definition/snapshot": {
+        "n": 54,
+        "correct": 54,
+        "served_wrong": 0
+      }
+    }
+  },
+  "sf10": {
+    "rows": {
+      "store_sales": 28802398,
+      "store_returns": 2875319,
+      "customer": 500000,
+      "item": 102000,
+      "date_dim": 73049,
+      "household_demographics": 7200,
+      "store": 102
+    },
+    "db_bytes": 5773407935,
+    "maintenance": {
+      "condition/snapshot": {
+        "append": {
+          "db_s": 142.59,
+          "wall_s": 142.61,
+          "queries": 33,
+          "entries_used": 4
+        },
+        "correct": {
+          "db_s": 160.21,
+          "wall_s": 160.23,
+          "queries": 33,
+          "entries_used": 4
+        },
+        "dimhist": {
+          "db_s": 70.36,
+          "wall_s": 87.42,
+          "queries": 40,
+          "entries_used": 2
+        },
+        "revision": {
+          "db_s": 651.52,
+          "wall_s": 692.82,
+          "queries": 82,
+          "entries_used": 4
+        },
+        "dupload": {
+          "db_s": 319.13,
+          "wall_s": 605.3,
+          "queries": 54,
+          "entries_used": 4
+        }
+      }
+    },
+    "accuracy": {
+      "condition/snapshot": {
+        "n": 54,
+        "correct": 54,
+        "served_wrong": 0
+      }
+    }
+  }
+}

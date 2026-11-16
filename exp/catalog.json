@@ -261,6 +261,22 @@
       ],
       "raw_data": "noctis `results/quality-20261112-v10/`（MAVRA r1–r3）与 `results/quality-20261112-v10-none/`（无记忆 r2–r3，配对首轮见 `2026-10-20-relbench`）。",
       "code_record": "`bee203f`、`5603c49`；启动配置与三次逐会话记录见本目录 JSON 与 README。"
+    },
+    {
+      "id": "2026-11-13-tpcds-scaling",
+      "title": "TPC-DS SF1/SF3/SF10 维护扩展性与审稿补证",
+      "status": "current",
+      "scope": "论文第 6.2 节与第 6.6 节补证：TPC-DS SF1→SF3→SF10（288 万→864 万→2,880 万行 store_sales）下共享验证与修复扩展性、RelBench 无记忆 4 次调用截断对照及 I/G3 静态基准覆盖率统计。",
+      "evidence": [
+        "exp/2026-11-13-tpcds-scaling/scaling-summary.json",
+        "exp/2026-11-13-tpcds-scaling/scaling-reports.tgz",
+        "exp/2026-11-13-tpcds-scaling/relbench-4call-truncation.json",
+        "exp/2026-11-13-tpcds-scaling/g3-coverage.json"
+      ],
+      "analysis": [],
+      "outputs": [],
+      "raw_data": "`scaling-reports.tgz` 保存 SF1/SF3/SF10 完整配对回放报告、表行数与库大小；RelBench 原始会话见 `2026-10-20-relbench` 与 `2026-11-12-relbench-quality`。",
+      "code_record": "`replay-bench`（`src/bench/replaybench.rs` 维表索引与统计信息快照复制修正）；PostgreSQL 18.6，`--pool 16 --sql-timeout-secs 1800/3600`。"
     }
   ]
 }

@@ -1,46 +1,52 @@
 {
   "schema_version": 1,
-  "date": "2026-11-13",
+  "date": "2026-11-16",
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> paper main: prune 17 unused macros/figures/algorithms/tables to exact 61-file PVLDB compilation closure while preserving all 93c9aa9 manuscript refinements and refreshing README.md",
-  "previous_head": "93c9aa9a98773f3d0dcf572e61e448c71b7438da",
-  "remote_commit": "2832156d1d04d32bc0a1254c73ffd97865731d52",
+  "direction": "overleaf/ -> paper main: restore simplified running-example schema (sales, date, item) in Figure 2 (architecture.pdf) and Section 3 while introducing TPC-DS explicitly at Section 4.1",
+  "previous_head": "0a35f3a4554f7b2e38c9fb96dd06db7c62099d17",
+  "remote_commit": "58319915330459392a26c1dd0a9701f28c638cce",
   "pending_payload": null,
   "changed_paths": [
-    "README.md",
-    "preamble.tex"
+    "figures/architecture.pdf",
+    "figures/architecture.tex",
+    "sections/03-overview.tex",
+    "sections/04-design.tex"
   ],
-  "preserve_remote_only": false,
-  "deletions": [
-    "algorithms/lookup.tex",
-    "algorithms/snapshot-execution.tex",
-    "figures/snapshot.pdf",
-    "figures/snapshot.tex",
-    "gen/external.tex",
-    "gen/generality.tex",
-    "gen/lifecycle.tex",
-    "gen/numbers-prev.tex",
-    "gen/numbers.tex",
-    "gen/official-numbers.tex",
-    "gen/opt.tex",
-    "gen/premise.tex",
-    "gen/published-scenarios.tex",
-    "gen/replay-safety.tex",
-    "gen/scen-ds.tex",
-    "gen/session-latency.tex",
-    "tables/external.tex"
-  ],
+  "preserve_remote_only": true,
+  "deletions": [],
   "validation": {
-    "built_on": "noctis, TeX Live, latexmk/pdfLaTeX; standalone 61-file main.tex closure",
-    "status": "14 pages, 7 CONCLUSION ends cleanly at bottom of page 12 and REFERENCES starts at top of page 13. Zero undefined citations/references, zero multiply-defined labels, and zero Overfull hboxes.",
-    "content": "Merged 93c9aa9 into overleaf/ without loss, pruned 11 zero-use gen/*.tex inputs from preamble.tex and 17 unused files from icde-2027-paper, and updated README.md section listing.",
-    "remote_checked": "origin/main matched 93c9aa9a98773f3d0dcf572e61e448c71b7438da before push; git ls-remote confirmed 2832156d1d04d32bc0a1254c73ffd97865731d52 after push."
+    "tex_compile": "Compiled overleaf/main.tex via tmp/bin/tectonic/tectonic.exe: standard T1 check passed (0 errors, 0 undefined references/citations, 0 Rerun warnings, only pre-existing untouched sections/01-introduction:114--116 Overfull \\hbox at 8.2pt); calibrated OpenType Linux Libertine/Inconsolata builds (TU encoding) at FakeStretch=0.983 and 0.992 both converged cleanly at 13 pages total with 7 CONCLUSION finishing on p. 12 col. 2 (y=106.8pt / 128.7pt) and REFERENCES spanning p. 12 col. 2 to p. 13 (0 Overfull \\hbox > 2pt, 0 Overfull \\vbox).",
+    "experiment_index": "C:\\ProgramData\\miniconda3\\python.exe tools/experiment-index.py --check passed (13 experiments: coverage, references, and index OK).",
+    "visual_review": "Visually inspected rebuilt Figure 2 (architecture.pdf at 220 dpi) and rendered pages p. 4-5 (0983) and p. 12 (0992); verified zero leftover TPC-DS identifiers in Figure 2, clean simplified-schema alignment across Figure 1, Figure 2, and Section 3, explicit TPC-DS bridge at Section 4.1, and clean Page 12 conclusion fit.",
+    "remote_checked": "Confirmed origin/main moved from 0a35f3a4554f7b2e38c9fb96dd06db7c62099d17 to 58319915330459392a26c1dd0a9701f28c638cce (git -C tmp/paper-sync ls-remote origin main) on https://github.com/mmmttt000045/icde-2027-paper with 4 changed files and 0 additions/deletions.",
+    "scope": "Switched Figure 2 (figures/architecture.pdf, figures/architecture.tex) and Section 3 (sections/03-overview.tex) back to the simplified running-example schema (sales, date, item) matching Figure 1, and added an explicit TPC-DS schema bridge at the start of Section 4.1 (sections/04-design.tex); abstract.tex and 01-introduction.tex untouched, main repo unpushed, no Overleaf ZIP generated."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/2832156d1d04d32bc0a1254c73ffd97865731d52",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/58319915330459392a26c1dd0a9701f28c638cce",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11 & 2026-11-13).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "e5d0202ec149099af938d5f37fa22d1ed0953240"
+  "source_commit": "ed81a1d164e86ef3dd73a0aef62ef71ee044a384",
+  "source_worktree": true,
+  "restoration": {
+    "advisor_marked_commit": "411025f1b986fce6b43d3332671be61c26443b47",
+    "source_revision": "990f546ed29d35fbb3724c13e7932e78a1e79556",
+    "source_revision_description": "Overleaf follow-up on 2026-11-08 21:41 +08:00, retaining the advisor-edited opening and narrative; explicitly selected by the user over the later Tuesday rewrite.",
+    "preserved": "Original opening, example, related-work narrative, sentence order, and five contribution bullets.",
+    "localized_changes": [
+      "Add current catalog-trained cross-encoder lookup and align C1-C3 numbering.",
+      "Require unique, source-answer-reproducing, history-preserving single-edit repair.",
+      "Use current derived reuse-cost ranges and restrict zero wrong answers to definition-served answers.",
+      "Align the example with the electronics-revenue figure and remove the obsolete IEEE keyword environment.",
+      "Surgically embed Verifiable Relational Kernel Extraction (C1), Lightweight Adaptive Semantic Resolution (C2), and Snapshot-Validated Definition Repair (C3) in Abstract and Introduction.",
+      "Upgrade Innovation 1 (C1) in Abstract and Introduction (lines 117-137) to Graph-Based Verifiable Relational Kernel Extraction while leaving 01-introduction.tex lines 1-116 untouched.",
+      "Fix two minor grammar typos in 01-introduction.tex (lines 31, 59) and add '(and task programs)' parenthetical in abstract.tex and 01-introduction.tex (line 115) for two-level predictive reuse alignment."
+    ]
+  },
+  "source_file_sha256": {
+    "sections/01-introduction.tex": "14cfe1c895ff1b816083d3b5aa35f97e526e07652527f5a35dd6f025fe76cec0",
+    "sections/abstract.tex": "74f3fddaa42358faf8e5865913d3a04ef4385a076206f3f2cc87cd260bd22183"
+  },
+  "pending_local_paths_not_in_this_commit": []
 }

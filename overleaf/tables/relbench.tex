@@ -22,8 +22,8 @@
 \RbTableBody
 \bottomrule
 \end{tabular*}
-\par\smallskip
+\par\vspace{1.5pt}
 \parbox{\textwidth}{\footnotesize\raggedright
-\bt{Tokens and dollar costs include memory operations; calls and time cover agent-phase work, excluding leakage audits and background learning. Token ratios are relative to \emph{No memory}. \system{} and \emph{No memory} rows are means over three runs with identical inputs (fractional counts); other methods are single runs. \textsuperscript{*}SQL-adapted FeatPilot (Section~\ref{sec:setup-baselines}).}{token 与费用包含记忆操作；调用次数与时间统计智能体阶段，不包含泄漏审计与后台学习。token 比率以无记忆为基准。\system{} 与无记忆两行为输入相同的三次运行的均值（计数可为小数），其他方法为单次运行。\textsuperscript{*}FeatPilot 的 SQL 适配版本（第~\ref{sec:setup-baselines} 节）。}
+\bt{Tokens and USD include all extraction and memory LLM calls; calls and \emph{Obs.\ min} cover agent-phase work (including LightGBM validation; adding audits and learning gives \system{} 54.4 and 53.6 all-in min vs.\ 122.0 and 165.7 for \emph{No memory}). Ratios are vs.\ \emph{No memory}; \system{} and \emph{No memory} are 3-run means, others single runs. \textsuperscript{*}SQL-adapted FeatPilot (Section~\ref{sec:setup-baselines}).}{token 与美元成本含全部提取与记忆 LLM 调用；调用数与观测分钟统计智能体阶段（含会话内 LightGBM 验证）。计入泄漏审计与后台学习后，\system{} 在截点 2--5 的全包耗时为 54.4 与 53.6 分钟（无记忆为 122.0 与 165.7 分钟），仍居全表最低。token 比率以无记忆为基准；\system{} 与无记忆为三次运行均值（计数可为小数），其余为单次运行。\textsuperscript{*}FeatPilot 的 SQL 适配版（第~\ref{sec:setup-baselines} 节）。}
 }
 \end{table*}

@@ -1,0 +1,54 @@
+{
+  "experiment": "i-expressiveness-and-g3-fallback",
+  "recorded_on": "2026-11-13",
+  "online_learning": {
+    "verified_sessions": 510,
+    "g3_rejected_after_alias_canonicalization": 0,
+    "pre_canonicalization_alias_unqualified_drafts": 79,
+    "false_admissions": 0
+  },
+  "static_benchmarks": {
+    "ssb": {
+      "admitted_queries": 13,
+      "total_queries": 13,
+      "coverage_pct": 100.0,
+      "unique_definitions": 11
+    },
+    "tpcds": {
+      "total_templates": 99,
+      "templates_with_star_aggregate_blocks": 82,
+      "star_aggregate_blocks": 175,
+      "standalone_admitted_templates": 58,
+      "standalone_coverage_pct": 58.6,
+      "admitted_definitions": 93,
+      "fallback_categories": [
+        "multi-fact CTEs and set operations",
+        "correlated subqueries",
+        "dsqgen-specific non-SQL tokens"
+      ]
+    },
+    "tpch": {
+      "total_queries": 22,
+      "aggregate_blocks": 25,
+      "admitted_blocks": 13,
+      "coverage_pct": 52.0,
+      "fallback_breakdown": {
+        "subquery": 5,
+        "cross_table_predicate": 3,
+        "non_standard_date_predicate": 2,
+        "cyclic_join_q5": 1,
+        "or_join_q19": 1
+      }
+    },
+    "bird_financial": {
+      "aggregate_blocks": 20,
+      "admitted_blocks": 12,
+      "coverage_pct": 60.0,
+      "fallback_breakdown": {
+        "one_to_many_non_tree_join_disp_client": 6,
+        "boolean_sum": 1,
+        "non_canonical_syntax": 1
+      }
+    }
+  }
+}

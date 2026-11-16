@@ -244,18 +244,36 @@ fn load_with(path: &str, judge: &dyn Fn(&Metric) -> Metric) -> Result<Library> {
 /// 学习时快照所在的模式（time travel 的原型替代）。
 const LEARN_SCHEMA: &str = "mavra_learn";
 
-/// 准入前把 public 模式的全部基表原样复制到 `LEARN_SCHEMA`，返回复制的表数。
+/// 准入前把 public 模式的全部基表原样复制到 `LEARN_SCHEMA`（维表保留索引，全部表执行 ANALYZE 收集统计信息，与真实数仓快照表一致），返回复制的表数。
 async fn copy_learning_snapshot(db: &Db) -> Result<usize> {
     let tables = db
         .query(
             QKind::Meta,
-            "select table_name from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE' order by 1",
+            "select t.table_name, coalesce(c.reltuples, 0)::bigint \
+             from information_schema.tables t \
+             left join pg_class c on c.relname = t.table_name and c.relnamespace = 'public'::regnamespace \
+             where t.table_schema = 'public' and t.table_type = 'BASE TABLE' order by 1",
         )
         .await?;
     db.execute(&format!("drop schema if exists {LEARN_SCHEMA} cascade; create schema {LEARN_SCHEMA}")).await?;
     let mut n = 0;
-    for t in tables.rows.iter().filter_map(|r| r.first().cloned().flatten()) {
-        db.execute(&format!("create table {LEARN_SCHEMA}.\"{t}\" as table public.\"{t}\"")).await?;
+    for r in &tables.rows {
+        let Some(t) = r.first().and_then(|v| v.as_deref()) else { continue };
+        let approx_rows: i64 = r.get(1).and_then(|v| v.as_deref()).and_then(|s| s.parse().ok()).unwrap_or(0);
+        if approx_rows <= 1_000_000 {
+            db.execute(&format!(
+                "create table {LEARN_SCHEMA}.\"{t}\" (like public.\"{t}\" including defaults including indexes); \
+                 insert into {LEARN_SCHEMA}.\"{t}\" select * from public.\"{t}\"; \
+                 analyze {LEARN_SCHEMA}.\"{t}\""
+            ))
+            .await?;
+        } else {
+            db.execute(&format!(
+                "create table {LEARN_SCHEMA}.\"{t}\" as table public.\"{t}\"; \
+                 analyze {LEARN_SCHEMA}.\"{t}\""
+            ))
+            .await?;
+        }
         n += 1;
     }
     Ok(n)
@@ -373,7 +391,8 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
     let name = format!("agentdb_replay_{}_{stamp}", std::process::id());
     let directory = format!("{out}/replay-{stamp}");
     std::fs::create_dir_all(&directory)?;
-    let root = Db::connect(url, 1, false)?;
+    let setup_timeout = o.sql_timeout_secs.max(300);
+    let root = Db::connect_timeout(url, 1, false, setup_timeout)?;
     let mut isolated = reqwest::Url::parse(url)?;
     isolated.set_path(&format!("/{name}"));
     let create = match (&spec, schema) {
@@ -383,7 +402,7 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
     };
     root.query(QKind::Meta, &create).await.context("创建隔离实验库失败（需要 CREATEDB；tpcds 还需要模板库存在且无人连接）")?;
     let result: Result<Value> = async {
-        let admin = Db::connect(isolated.as_str(), 2, false)?;
+        let admin = Db::connect_timeout(isolated.as_str(), 2, false, setup_timeout)?;
         let gen: Option<Gen> = match &spec {
             Some(s) => {
                 eprintln!("从模板库 {} 复制 {} 数据", s.template_db, s.label);
@@ -420,7 +439,7 @@ pub async fn run(url: &str, pool: usize, out: &str, o: Options) -> Result<()> {
             let failed: Vec<Value> = table_tests(&admin, &tests).await?.into_iter().filter(|x| x["failed"] == true).collect();
             ensure!(failed.is_empty(), "表级测试在初始快照上就失败，无法作为校准过的基线：{failed:?}");
         }
-        let probe = Db::connect(isolated.as_str(), 2, true)?;
+        let probe = Db::connect_timeout(isolated.as_str(), 2, true, setup_timeout)?;
         let db = Arc::new(Db::connect_timeout(isolated.as_str(), pool, true, o.sql_timeout_secs)?);
         // 合成基准的留出题与手写标准答案；TPC-DS 库的留出题随条目给出，标准答案在每个变化下由原定义算出
         let defs: Vec<String> = ["M1", "M2", "M3", "M4", "M5"].iter().map(|s| s.to_string()).collect();

@@ -1,31 +1,33 @@
 \begin{table*}[t]
-\caption{\bt{Comparison of reuse, lookup, and validity capabilities.}{复用、查找与有效性能力对比。}}
+\caption{\bt{Built-in reuse, lookup, and validity capabilities of each cited design (without manual test or pipeline add-ons).}{各引用设计的原生复用、查找与有效性能力对比（不含外接手工测试或流水线）。}}
 \label{tab:capabilities}
 \footnotesize
-\newcommand{\capyes}{\ding{51}}
-\newcommand{\capno}{\ding{55}}
+\newcommand{\capyes}{\ifcsname pdfliteral\endcsname\leavevmode\hbox to 5.8bp{\pdfliteral{q 0.42 w 2.9 5.2 m 4.28 5.2 5.4 4.08 5.4 2.7 c 5.4 1.32 4.28 0.2 2.9 0.2 c 1.52 0.2 0.4 1.32 0.4 2.7 c 0.4 4.08 1.52 5.2 2.9 5.2 c h B Q}\hss}\else$\bullet$\fi}
+\newcommand{\cappart}{\ifcsname pdfliteral\endcsname\leavevmode\hbox to 5.8bp{\pdfliteral{q 0.42 w 2.9 5.2 m 2.9 0.2 l 1.52 0.2 0.4 1.32 0.4 2.7 c 0.4 4.08 1.52 5.2 2.9 5.2 c h f 2.9 5.2 m 4.28 5.2 5.4 4.08 5.4 2.7 c 5.4 1.32 4.28 0.2 2.9 0.2 c 1.52 0.2 0.4 1.32 0.4 2.7 c 0.4 4.08 1.52 5.2 2.9 5.2 c h S Q}\hss}\else$\ominus$\fi}
+\newcommand{\capno}{\ifcsname pdfliteral\endcsname\leavevmode\hbox to 5.8bp{\pdfliteral{q 0.42 w 2.9 5.2 m 4.28 5.2 5.4 4.08 5.4 2.7 c 5.4 1.32 4.28 0.2 2.9 0.2 c 1.52 0.2 0.4 1.32 0.4 2.7 c 0.4 4.08 1.52 5.2 2.9 5.2 c h S Q}\hss}\else$\circ$\fi}
 \setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.12}
+\renewcommand{\arraystretch}{1.04}
 \begin{tabularx}{\linewidth}{@{}P{0.18\linewidth}P{0.20\linewidth}*{5}{>{\centering\arraybackslash}X}@{}}
 \toprule
 \multicolumn{4}{c}{\textbf{\bt{Reuse}{复用}}} & \multicolumn{3}{c}{\textbf{\bt{Validity}{有效性}}}\\
 \cmidrule(lr){1-4}\cmidrule(lr){5-7}
-\textbf{\bh{Design}{设计}} & \textbf{\bh{Reusable object}{复用对象}} & \textbf{\bh{Knowledge\\extraction}{知识提取}} & \textbf{\bh{Ambiguity-\\aware lookup}{歧义感知查找}} & \textbf{\bh{Derived\\data checks}{派生数据检查}} & \textbf{\bh{Shared\\check results}{共享检查结果}} & \textbf{\bh{Data-update\\handling}{数据更新处理}}\\
+\textbf{\bh{Design}{设计}} & \textbf{\bh{Reusable object}{复用对象}} & \textbf{\bh{Knowledge\\extraction}{知识提取}} & \textbf{\bh{Ambiguity-\\aware lookup}{歧义感知查找}} & \textbf{\bh{Derived\\data conditions}{派生数据条件}} & \textbf{\bh{Shared check\\outcomes}{共享验证结果}} & \textbf{\bh{Data-update\\handling}{数据更新处理}}\\
+\midrule
+\multicolumn{7}{@{}l@{}}{\scriptsize \capyes~\bt{Built-in full support}{原生完整支持}\quad \cappart~\bt{Partial / qualified support (see $^{a\text{--}f}$)}{部分或受限支持（见注 $^{a\text{--}f}$）}\quad \capno~\bt{Not built in (external tests or pipelines may be paired)}{未原生内置（可外接手工测试或流水线）}}\\
 \midrule
 AgentSM~\cite{biswal2026agentsm} & \bhl{Trajectories; tools}{轨迹；工具} & \capyes & \capno & \capno & \capno & \capno\\
 G-Memory~\cite{zhang2025gmemory} & \bhl{Trajectories; insights}{轨迹；洞见} & \capyes & \capno & \capno & \capno & \capno\\
 DataLab~\cite{weng2025datalab} & \bhl{Business logic}{业务逻辑} & \capyes & \capno & \capno & \capno & \capno\\
-TeCoD~\cite{jivani2025tecod} & \bhl{Question--SQL templates}{问题--SQL 模板} & \capyes & \capno & \capno & \capno & \capno\\
-dbt Semantic Layer (MetricFlow)~\cite{dbt2026metricflow,dbt2026slcache} & \bhl{Metrics; cached results}{指标；缓存结果} & \capno & \capyes$^{c}$ & \capno & \capno & \capyes$^{a}$\\
-Databricks metric views~\cite{databricks2026metricviews,databricks2026materialization} & \bhl{Metrics; materialized data}{指标；物化数据} & \capno & \capyes$^{c}$ & \capno & \capno & \capyes$^{b}$\\
-vCache~\cite{schroeder2026vcache} & \bhl{LLM responses}{LLM 回答} & \capno & \capyes$^{d}$ & \capno & \capno & \capno\\
-\bhl{Semantic cache~\cite{dar1996semantic}}{语义缓存} & \bhl{Data regions}{数据区域} & \capno & \capyes$^{e}$ & \capno & \capno & \capno\\
-TxCache~\cite{ports2010txcache} & \bhl{Computation results}{计算结果} & \capno & \capyes$^{e}$ & \capno & \capno & \capyes\\
+TeCoD~\cite{jivani2025tecod} & \bhl{Question--SQL templates}{问题--SQL 模板} & \capyes & \cappart$^{c}$ & \capno & \capno & \capno\\
+dbt MetricFlow~\cite{dbt2026metricflow,dbt2026slcache} & \bhl{Metrics; cached results}{指标；缓存结果} & \capno & \cappart$^{d}$ & \capno & \capno & \cappart$^{a}$\\
+Databricks metric views~\cite{databricks2026metricviews,databricks2026materialization} & \bhl{Metrics; materialized data}{指标；物化数据} & \capno & \cappart$^{d}$ & \capno & \capno & \cappart$^{b}$\\
+vCache~\cite{schroeder2026vcache} & \bhl{LLM responses}{LLM 回答} & \capno & \cappart$^{e}$ & \capno & \capno & \capno\\
+\bhl{Semantic cache~\cite{dar1996semantic}}{语义缓存} & \bhl{Data regions}{数据区域} & \capno & \cappart$^{f}$ & \capno & \capno & \capno\\
+TxCache~\cite{ports2010txcache} & \bhl{Computation results}{计算结果} & \capno & \cappart$^{f}$ & \capno & \capno & \capyes\\
 \midrule
-\textbf{\system} & \textbf{\bhl{Metric definitions}{指标定义}} & \capyes & \capyes & \capyes & \capyes & \capyes\\
+\textbf{\system} & \textbf{\bhl{Executable definitions}{可执行定义}} & \capyes & \capyes & \capyes & \capyes & \capyes\\
 \bottomrule
 \end{tabularx}
-\par\smallskip
-\bt{\capyes: supported; \capno: not supported in the cited design. Ambiguity-aware lookup: a natural-language request is matched without SQL, competing definitions are returned when it leaves a choice open, and absent metrics are rejected (TeCoD's NLI matcher rejects, but returns one template). Derived data checks are generated from each definition's grain, joins, and filters; dbt-style layers support uniqueness, relationship, and custom SQL tests, declared by hand.}{\capyes：支持；\capno：所引设计不支持。歧义感知查找：不合成 SQL 即可匹配自然语言请求，请求未说明某项口径时返回全部竞争定义，并拒识目录中没有的指标（TeCoD 的 NLI 匹配器可以拒识，但只返回一个模板）。派生数据检查由每个定义的粒度、连接与过滤自动生成；dbt 类语义层支持唯一性、关系与自定义 SQL 测试，但需手工声明。}
-\bt{$^{a}$With declarative caching. $^{b}$With unaggregated materialization and scheduled refresh. $^{c}$Metrics are requested by their declared name. $^{d}$Statistical error bound on response text. $^{e}$Matches given queries or calls, not natural-language requests.}{$^{a}$启用声明式缓存。$^{b}$启用非聚合物化与定时刷新。$^{c}$按声明的名称请求指标。$^{d}$对回答文本的统计错误率上界。$^{e}$匹配给定的查询或调用，而非自然语言请求。}
+\par\vspace{1.5pt}
+{\scriptsize \bt{$^{a}$Declarative caching. $^{b}$Unaggregated materialization + scheduled refresh. $^{c}$NLI rejects absent metrics; single template only. $^{d}$By declared metric name. $^{e}$Statistical text error bound. $^{f}$Matches SQL/calls, not NL.}{$^{a}$启用声明式缓存。$^{b}$启用非聚合物化与定时刷新。$^{c}$NLI 可拒识缺失指标，但仅返回单模板。$^{d}$仅按声明指标名查找。$^{e}$回答文本统计误差界。$^{f}$匹配给定查询或调用而非自然语言。}\par}
 \end{table*}

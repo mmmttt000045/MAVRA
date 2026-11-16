@@ -1,33 +1,33 @@
 % Right column of figures/maintenance-algorithm.
 \par\hrule\smallskip
 \captionsetup*{type=algorithm}
-\caption{\bt{Dependency-aware shared validation and maintenance}{依赖感知的共享验证与维护}}
+\caption{\bt{Snapshot-validated validation and repair}{基于快照验证的校验与修复}}
 \label{alg:maintenance}
 \small
 \begin{algorithmic}[1]
-\Require Revision $x$; snapshot $D$; table stamps $V$; optional append batch $\Delta T$; shared outcome store $\mathcal H$
+\Require Revision $x$; snapshot $D_s$; version vector $V_s$; outcome cache $\Gamma$
 \Ensure Validated revision $x'$, $\text{Pending}(x, c, \text{vals})$, or $\bot$ (retired)
-\Function{Validate}{$x, D, V, \Delta T, \mathcal H$}
-  \Statex \hspace{\algorithmicindent}\textit{// Stage 1: Version Filtering and Shared Outcomes}
-  \IfThen{$V(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$}
-  \State $\Delta C(x) \gets \{c \in C(x) \mid V(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
+\Function{Validate}{$x, D_s, V_s, \Gamma$}
+  \Statex \hspace{\algorithmicindent}\textit{// Stage 1: Version-Coalesced Validation}
+  \IfThen{$V_s(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$}
+  \State $\Delta C(x) \gets \{c \in C(x) \mid V_s(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
   \For{each $c \in \Delta C(x)$}
-    \If{$\neg\Call{EvalCond}{c, D, V, \Delta T, \mathcal H}$}
-      \Statex \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textit{// Repair or Retire}
+    \If{$\neg\Call{EvalCond}{c, D_s, V_s, \Gamma}$}
+      \Statex \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textit{// History-Preserving Repair or Retire}
       \IfThen{$c\text{ checks scale}$}{\Return $\text{Pending}(x, c, \text{vals})$}
-      \State $\mathcal E_{\mathrm{ok}} \gets \{e \in \mathcal E(x, c) \mid C(x \oplus e) \land \operatorname{Repro} \land \operatorname{Hist}\}$
-      \IfThen{$\lvert\mathcal E_{\mathrm{ok}}\rvert = 1$}{\Return published revision $x' \gets x \oplus e^*$}
+      \State $\mathcal E_{\mathrm{ok}} \gets \{\delta \in \mathcal E(x, c) \mid C(x \oplus \delta) \land \operatorname{Repro} \land \operatorname{Hist}\}$
+      \IfThen{$\lvert\mathcal E_{\mathrm{ok}}\rvert = 1$}{\Return published revision $x' \gets x \oplus \delta^*$}
       \State \Return $\bot$
     \EndIf
   \EndFor
-  \State $V_x(\operatorname{dep}(x)) \gets V(\operatorname{dep}(x))$; \Return $x$
+  \State $V_x(\operatorname{dep}(x)) \gets V_s(\operatorname{dep}(x))$; \Return $x$
 \EndFunction
-\Function{EvalCond}{$c, D, V, \Delta T, \mathcal H$}
-  \Statex \hspace{\algorithmicindent}\textit{// Stage 2: Incremental Check on Inserted Rows}
-  \If{key $k(c, V)$ is not in $\mathcal H$}
-    \State $\mathcal H[k(c, V)] \gets \operatorname{DeltaCheck}(c, \Delta T)$ if $\Delta T$ insert-only, else $Q_c(D)$
+\Function{EvalCond}{$c, D_s, V_s, \Gamma$}
+  \Statex \hspace{\algorithmicindent}\textit{// Stage 2: Single-Flight Node Check}
+  \If{key $k(c, V_s)$ is not in $\Gamma$}
+    \State $\Gamma[k(c, V_s)] \gets \operatorname{SingleFlight}(k(c, V_s),\, Q_c(D_s))$
   \EndIf
-  \State \Return $\operatorname{Accept}(c, \mathcal H[k(c, V)])$
+  \State \Return $\operatorname{Accept}(c, \Gamma[k(c, V_s)])$
 \EndFunction
 \end{algorithmic}
 \par\smallskip\hrule
