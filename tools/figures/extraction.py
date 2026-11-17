@@ -8,9 +8,12 @@ Visual workflow across three panels:
     graph (mini tables item, store_sales, date_dim with crow's-foot N:1 joins and
     condition markers 1-5) from runtime slots (p, d), while deriving KeyUnique (G4)
     and unmatched join-loss gauges matched to M5-L1.
-(c) Example-blind replay before publication: linear bar comparison on D_{s_0} shows
-    G6 source SQL matching G7 Keep phi (2,754,299.60 -> Publish) while G7 Omit phi
-    inflates 4.9x to 13,532,799.00 (Reject).
+(c) Recompilation equivalence check on D_{s_0}: the source SQL and the candidate keeping
+    phi both give 2,754,299.60 (Publish), while the draft omitting phi inflates 4.9x to
+    13,532,799.00 (Reject).
+(d) Lookup training data from M (offline, once per catalog; moved here from Fig. 4): intents
+    enumerated from the published definitions' attributes go through an LLM into wordings,
+    which the consistency rule labels against D01/D02 to train the judge of Fig. 4.
 """
 import sys
 from pathlib import Path
@@ -20,7 +23,7 @@ import style  # noqa: E402
 from vecfig import PT, measure  # noqa: E402
 
 NAME = 'extraction'
-W, H = style.COLUMN, 63.2
+W, H = style.COLUMN, 84.6
 
 INK, MUTED = '#1F2328', '#596068'
 CARD_EDGE, SUB_EDGE, RULE = '#737B84', '#B6BEC7', '#CFD5DC'
@@ -134,18 +137,18 @@ def draw(s, lang):
         return ys
 
     # ------------------------------------------------------------------ (a)
-    card(.5, 12.6, '(a) Source session & derivation DAG' if en else '(a) 源会话与推导图', 1)
+    card(.5, 12.6, '(a) Confirmed session & query lineage' if en else '(a) 源会话与推导图', 1)
     # Right header gates: [G1-G2] deriv.  [G3] read-only
     r_text = 'read-only' if en else '只读'
     w_r = measure(r_text, 4.9)
     xr = W - 1.6 - w_r
     label(xr, 2.25, r_text, 4.9, MUTED)
-    wg3 = gate_pill(xr - .6, 2.25, 'G3', 'right')
-    t_text = 'deriv.' if en else '推导图'
+    wg3 = gate_pill(xr - .6, 2.25, 'SQL', 'right')
+    t_text = 'verified' if en else '已核验'
     w_t = measure(t_text, 4.9)
     xt = xr - .6 - wg3 - 1.3 - w_t
     label(xt, 2.25, t_text, 4.9, MUTED)
-    gate_pill(xt - .6, 2.25, 'G1–G2' if en else 'G1-G2', 'right')
+    gate_pill(xt - .6, 2.25, 'Lineage' if en else '血缘', 'right')
 
     # Row 1: User question bubble -> verified answer pill
     yc1 = 6.05
@@ -153,10 +156,10 @@ def draw(s, lang):
     s.rect(4.5, yc1 - 1.5, 31.2, 3.0, SOFT_BG, SUB_EDGE, .15, r=.45)
     s.rect(5.1, yc1 - .95, 2.8, 1.9, LEARN_DK, None, r=.35)
     label(6.5, yc1, 'Q', 4.9, WHITE, 'bold', 'center')
-    label(8.6, yc1, 'Jan. 2001 electronics revenue?' if en else '2001年1月电子品类营业额？',
+    label(8.6, yc1, 'Jan. 2026 electronics revenue?' if en else '2026年1月电子品类营业额？',
           5.6, INK, width=26.6)
     s.route([(36.2, yc1), (47.4, yc1)], MUTED, .2, length=.8)
-    label(41.8, yc1 - 1.1, '0 raw rows' if en else '零原始行', 4.8, MUTED, 'sans', 'center')
+    label(41.8, yc1 - 1.1, 'query lineage' if en else '查询血缘', 4.8, MUTED, 'sans', 'center')
 
     s.rect(48.0, yc1 - 1.5, W - 49.6, 3.0, ACC_PALE, NAVY_EDGE, .16, r=.45)
     check_mark(49.9, yc1, True, ACC, k=.8)
@@ -181,7 +184,7 @@ def draw(s, lang):
     x_sql += w_phi + .65
     x_sql += label(x_sql, yc2, '`AND`', 4.8, MUTED) + .65
     # Highlighted period binding pill (p_0)
-    p0_lbl = '`d_year=2001, d_moy=1`' if en else '`d_year=2001,d_moy=1`'
+    p0_lbl = '`d_year=2026, d_moy=1`' if en else '`d_year=2026,d_moy=1`'
     w_p0 = W - 2.3 - x_sql
     p0_cx = x_sql + w_p0 / 2
     s.rect(x_sql, yc2 - 1.25, w_p0, 2.5, LEARN_PALE, LEARN, .18, r=.4, dash=(.55, .35))
@@ -189,26 +192,26 @@ def draw(s, lang):
     label(x_sql + w_p0 - .8, yc2, '$p_0$', 5.2, LEARN_DK, 'bold', 'right')
 
     # Catalog join grounding chip + Dual split arrows (panel a bottom 13.1 -> panel b top 15.1)
-    w_cat = pill(1.6, 14.1, 'Catalog `join:` in $\\mathcal{M}$' if en else '复用 $\\mathcal{M}$ 中 `join:`',
+    w_cat = pill(1.6, 14.1, 'Verified joins in $\\mathcal{M}$' if en else '复用 $\\mathcal{M}$ 中已验证连接',
                  SOFT_BG, NAVY_EDGE, ACC_DK, size=4.45, font='bold', pad_x=.85, h=1.55, r=.35)
     s.route([(1.6 + w_cat, 14.1), (1.6 + w_cat + 2.2, 14.1), (1.6 + w_cat + 2.2, 15.1)],
             ACC, .2, dash=(.55, .3), length=.7)
     s.route([(phi_cx, 13.1), (phi_cx, 15.1)], ACC, .24, length=.8)
     label(phi_cx + 1.0, 14.1, r'fixed $\varphi \to I$' if en else r'固定 $\varphi \to I$', 4.8, ACC_DK, 'bold')
     s.route([(p0_cx, 13.1), (p0_cx, 15.1)], LEARN, .24, length=.8)
-    label(p0_cx - 1.0, 14.1, r'slot $p_0$' if en else r'槽位 $p_0$', 4.8, LEARN_DK, 'bold', 'right')
+    label(p0_cx - 1.0, 14.1, r'param $p_0$' if en else r'参数 $p_0$', 4.8, LEARN_DK, 'bold', 'right')
 
     # ------------------------------------------------------------------ (b)
-    card(15.1, 27.3, '(b) Compose kernel $I$ & condition DAG $C$' if en
-         else '(b) 组合核图 $I$ 与条件有向图 $C$')
+    card(15.1, 27.3, '(b) Extract core query $I$ & constraints $C$' if en
+         else '(b) 提取核心查询 $I$ 与约束 $C$')
     s_text = 'join DAG, N:1' if en else '连接 DAG, N:1'
     ws = measure(s_text, 4.9)
     label(W - 1.6, 16.85, s_text, 4.9, MUTED, align='right')
-    gate_pill(W - 1.6 - ws - .6, 16.85, 'G4', 'right')
+    gate_pill(W - 1.6 - ws - .6, 16.85, 'Static' if en else '静态', 'right')
 
     # Left subcard: Kernel graph I relational join DAG
     s.rect(1.6, 19.0, 54.7, 15.8, SOFT_BG, NAVY_EDGE, .18, r=.45)
-    label(2.4, 20.3, 'Kernel graph $I$' if en else '关系核图 $I$', 5.5, ACC_DK, 'bold')
+    label(2.4, 20.3, 'Core query $I$' if en else '核心查询 $I$', 5.5, ACC_DK, 'bold')
     cx_chk = 55.5
     for chk_txt in ('no dates' if en else '无日期', 'DAG, N:1' if en else 'N:1 有向无环'):
         tw = measure(chk_txt, 4.8)
@@ -267,7 +270,7 @@ def draw(s, lang):
     s.line(j1_x0, j1_y, j1_x1, j1_y, CARD_EDGE, .18)
     one_bar(j1_x0, j1_y, +1)
     crow(j1_x1, j1_y, -1)
-    label((j1_x0 + j1_x1) / 2, j1_y - 1.45, '`join:`' if en else '复用边', 4.2, ACC_DK, 'bold', 'center')
+    label((j1_x0 + j1_x1) / 2, j1_y - 1.45, 'N:1', 4.2, ACC_DK, 'bold', 'center')
     cond_marker((j1_x0 + j1_x1) / 2, j1_y, 3, r=.78, halo=True)
 
     # 2) store_sales (N) >-- date_dim (1) along ys_f[2] == ys_d[0]
@@ -281,11 +284,11 @@ def draw(s, lang):
     # Right subcard: Runtime slots (p, d) + dashed connector from date_dim slot p
     rx0, rw = 57.6, W - 59.2
     s.rect(rx0, 19.0, rw, 15.8, '#FAFBFD', LEARN, .16, r=.45, dash=(.65, .4))
-    label(rx0 + rw / 2, 20.4, 'Runtime slots $(p,d)$' if en else '运行期槽位 $(p,d)$', 5.5, LEARN_DK, 'bold', 'center')
+    label(rx0 + rw / 2, 20.4, 'Query params $(p,d)$' if en else '查询参数 $(p,d)$', 5.5, LEARN_DK, 'bold', 'center')
     s.route([(date_x + date_w, ys_d[1]), (rx0, ys_d[1])], LEARN, .18, dash=(.55, .35), length=.7)
 
     slot_rows = (
-        (22.1, WHITE, LEARN, '$p_0$: Jan. 2001 $\\cdot$ id' if en else '$p_0$: 2001/1 $\\cdot$ 原值'),
+        (22.1, WHITE, LEARN, '$p_0$: Jan. 2026 $\\cdot$ id' if en else '$p_0$: 2026/1 $\\cdot$ 原值'),
         (26.4, LEARN_PALE, LEARN_EDGE, 'Reuse: month + rank' if en else '复用: 月份 + 排名'),
         (30.7, LEARN_PALE, LEARN_EDGE, 'Reuse: 2 periods + $\\Delta$' if en else '复用: 两期 + 差值 $\\Delta$'),
     )
@@ -303,7 +306,7 @@ def draw(s, lang):
     wk = key_icon(1.8, ky1, INK, k=.95)
     tw_ku = label(1.8 + wk + .7, ky1, 'KeyUnique nodes $\\to \\mathcal{H}$' if en else '键唯一节点 $\\to \\mathcal{H}$',
                   5.1, INK, 'bold')
-    gate_pill(1.8 + wk + .7 + tw_ku + .8, ky1, 'G5')
+    gate_pill(1.8 + wk + .7 + tw_ku + .8, ky1, 'DB')
     kx = 2.0
     for idx, tname in ((1, '`store_sales.K`'), (2, '`item`'), (4, '`date_dim`')):
         cond_marker(kx, ky2, idx, r=.74)
@@ -326,18 +329,18 @@ def draw(s, lang):
 
     # ------------------------------------------------------------------ (c)
     s.route([(W / 2, 42.4), (W / 2, 44.0)], ACC, .24, length=.75)
-    card(44.0, 18.7, '(c) Example-blind replay before publication' if en
-         else '(c) 发布前盲示例重编译验证', 2)
-    label(W - 1.6, 45.75, 'no draft SQL' if en else '弃用草稿 SQL', 5.0, MUTED, align='right')
+    card(44.0, 18.7, '(c) Recompilation equivalence check' if en
+         else '(c) 重编译等价性验证', 2)
+    label(W - 1.6, 45.75, 'compiled from $I$' if en else '由 $I$ 编译', 5.0, MUTED, align='right')
 
     x_axis, bar_max = 31.2, 20.5
     x_target = x_axis + bar_max * (2754299.60 / 13532799.00)
     replay_rows = (
-        (49.75, SOFT_BG, SUB_EDGE, 'G6', 'Source SQL ($D_{s_0}$)' if en else '源 SQL ($D_{s_0}$)',
+        (49.75, SOFT_BG, SUB_EDGE, 'Src', 'Source SQL ($D_{s_0}$)' if en else '源 SQL ($D_{s_0}$)',
          2754299.60, SLATE, None, 'target' if en else '源基准', None),
-        (53.45, ACC_PALE, NAVY_EDGE, 'G7', r'Keep $\varphi$ $(I,p_0,d_0)$' if en else r'保留 $\varphi$ $(I,p_0,d_0)$',
+        (53.45, ACC_PALE, NAVY_EDGE, 'Cand.', r'Keep $\varphi$ $(I,p_0,d_0)$' if en else r'保留 $\varphi$ $(I,p_0,d_0)$',
          2754299.60, ACC, True, 'Publish' if en else '发布', '1.0x'),
-        (57.15, RED_PALE, RED_EDGE, 'G7', r"Omit $\varphi$ (no `'Elec.'`)" if en else r"漏掉 $\varphi$",
+        (57.15, RED_PALE, RED_EDGE, 'Cand.', r"Omit $\varphi$ (no `'Elec.'`)" if en else r"漏掉 $\varphi$",
          13532799.00, RED, False, 'Reject' if en else '拒绝', r'$4.9\times$'),
     )
     for yc, row_bg, row_edge, gcode, row_lbl, val, bcol, ok, v_text, mult in replay_rows:
@@ -365,8 +368,75 @@ def draw(s, lang):
     s.line(x_axis, 48.0, x_axis, 58.9, CARD_EDGE, .15)
     s.line(x_target, 48.0, x_target, 58.9, ACC_DK, .18, dash=(.55, .35))
 
-    label(1.7, 60.75, 'Evidence on $(D_{s_0},p_0,d_0)$; cross-period validity relies on graph invariants G4–G5 & P1–P3.' if en
-          else '仅对 $(D_{s_0},p_0,d_0)$ 给出复现证据；跨期正确性依赖图不变量 G4–G5 与 P1–P3。', 4.85, MUTED, width=W - 3.4)
+    label(1.7, 60.75, 'Checks equivalence on $(D_{s_0},p_0,d_0)$; cross-period validity relies on structural constraints & domain assumptions.' if en
+          else '仅在 $(D_{s_0},p_0,d_0)$ 上检验等价性；跨期正确性依赖结构约束与领域假设。', 4.85, MUTED, width=W - 3.4)
+
+    # ------------------------------------------------------------------ (d)
+    # Offline, once per catalog: the published definitions' attributes become the lookup judge's training data
+    # (moved here from Fig. 4, which now shows only the online lookup). Wordings are generated training questions
+    # (exp/2026-11-10-lookup-facets/train-xl.jsonl, shortened); labels follow the consistency rule.
+    d_top = 64.7
+    s.route([(W / 2, 62.9), (W / 2, d_top)], ACC, .24, length=.75)
+    label(W / 2 + 1.0, (62.7 + d_top) / 2, r'publish $m^0 \to \mathcal{M}$' if en else r'发布 $m^0 \to \mathcal{M}$',
+          4.6, ACC_DK, 'bold')
+    b_d = card(d_top, 19.4, '(d) Lookup training data from $\\mathcal{M}$' if en else '(d) 由 $\\mathcal{M}$ 合成查找训练数据')
+    label(W - 1.6, d_top + 1.75, 'offline, once per catalog' if en else '离线，每个定义库一次', 5.0, MUTED, align='right')
+
+    ATTR = '#8A5A00'                                  # attribute values (ochre, as Fig. 2's attribute chips)
+    int_cols = (ACC_DK, ATTR, MUTED)
+    hy = b_d + 1.45                                   # column headers
+    rows_y = [hy + 2.75 + 2.3 * k for k in range(4)]   # clear of the two-line D01/D02 headers
+    px = 24.0                                         # phrasing column
+    c1, c2 = W - 9.2, W - 3.7                         # label columns
+    label(1.6, hy, 'intents from $B(I)$' if en else '由 $B(I)$ 枚举意图', 4.5, MUTED)
+    label(px + 1.0, hy, 'LLM phrasing' if en else '大模型改写的问法', 4.5, MUTED)
+    for c, did, attr in ((c1, 'D01', 'after' if en else '扣券后'), (c2, 'D02', 'before' if en else '扣券前')):
+        label(c, hy - .55, f'`{did}`', 4.6, ACC_DK, align='center')
+        label(c, hy + 1.0, attr, 3.9, ATTR, align='center')
+
+    phrasings = (('takings of Changsha stores, Q3?', 0, (True, True)),
+                 ('how much did offline shops sell?', 0, (True, True)),
+                 ('store income after coupons, ex tax?', 1, (True, False)),
+                 ('units the web store sold last year?', 2, (False, False)))
+    if not en:
+        phrasings = (('长沙线下店上季度流水多少？', 0, (True, True)), ('上个月北京线下店卖了多少钱？', 0, (True, True)),
+                     ('深圳店里券后税外的收入？', 1, (True, False)), ('去年网店卖了多少件？', 2, (False, False)))
+    for k, ((text, it, labs), yc) in enumerate(zip(phrasings, rows_y)):
+        if k:
+            s.line(px + .4, yc - 1.15, W - 1.6, yc - 1.15, RULE, .1)
+        s.rect(px + .1, yc - .78, .5, 1.56, int_cols[it], None, r=.2)
+        label(px + 1.1, yc, text, 4.9, INK, width=c1 - 3.2 - px - 1.1)
+        for c, ok in zip((c1, c2), labs):
+            check_mark(c, yc, ok, k=.62, sw=.24)
+
+    # intents (from the attributes of M's definitions) -> LLM -> wordings
+    iw, ih = 14.4, 1.75
+    inty = [(rows_y[0] + rows_y[1]) / 2, rows_y[2], rows_y[3]]
+    assert min(b - a for a, b in zip(inty, inty[1:])) >= ih + .3, 'intent pills touch'
+    intents = ('store · revenue', '+ after coupons', 'web · units') if en else ('门店 · 销售额', '+ 扣券后实付', '网店 · 销量')
+    sx, sy = 1.6 + iw + 4.6, inty[1]
+    jx = sx - 2.5
+    for k, (txt, yc) in enumerate(zip(intents, inty)):
+        s.rect(1.6, yc - ih / 2, iw, ih, WHITE, int_cols[k], .16, r=ih / 2)
+        label(1.6 + iw / 2, yc, txt, 4.6, int_cols[k], align='center', width=iw - .6)
+        pts = [(1.6 + iw + .1, yc), (jx, yc)] + ([(jx, sy)] if abs(yc - sy) > 1e-6 else [])
+        s.route(pts, int_cols[k], .15, heads=None, radius=.4)
+    s.line(jx, sy, sx - 1.15, sy, LEARN, .15)
+    kk = .28 * 1.1                                    # four-pointed star, the LLM mark used in Figs. 2 and 4
+    s.poly([(sx, sy - 1.1), (sx + kk, sy - kk), (sx + 1.1, sy), (sx + kk, sy + kk), (sx, sy + 1.1),
+            (sx - kk, sy + kk), (sx - 1.1, sy), (sx - kk, sy - kk)], LEARN, None)
+    llm_w = measure('LLM', 4.2, 'bold')
+    label(sx, sy + 2.0, 'LLM', 4.2, LEARN, 'bold', 'center')
+    fan_x = sx + 1.9
+    assert jx < sx - llm_w / 2 - .4 and sx + llm_w / 2 + .3 < fan_x, 'LLM label touches the routes'
+    for yc in rows_y:
+        mid = [(fan_x, sy), (fan_x, yc)] if abs(yc - sy) > 1e-6 else []
+        s.route([(sx + 1.2, sy)] + mid + [(px - .3, yc)], LEARN, .14, radius=.4, length=.6)
+
+    label(1.7, d_top + 19.4 - 1.45, 'Labels by Definition 4.1, no annotation; peers (`D02` for “after coupons”) are hard negatives. Trains the judge of Fig. 4.'
+          if en else '标签由定义 4.1 自动给出，无需人工标注；同组同伴（如“扣券后”问法下的 D02）即难负例；用于训练图 4 的判别器。',
+          4.6, MUTED, width=W - 3.4)
+    assert d_top + 19.4 <= H - .3, (d_top + 19.4, H)
 
 
 if __name__ == '__main__':
