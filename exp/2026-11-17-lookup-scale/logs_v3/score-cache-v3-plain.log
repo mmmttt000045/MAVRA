@@ -1,0 +1,16 @@
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 26980.34it/s]
+recall done: raw
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 6978.10it/s]
+recall done: tuned
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 5823.81it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 6413.06it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 6769.19it/s]
+scored single_ce_refreshed raw M=26
+scored single_ce_refreshed tuned M=26
+scored single_ce_refreshed raw M=100
+scored single_ce_refreshed tuned M=100
+scored single_ce_refreshed raw M=500
+scored single_ce_refreshed tuned M=500
+scored single_ce_refreshed raw M=1000
+scored single_ce_refreshed tuned M=1000
+=== SCORE CACHE COMPLETE ===

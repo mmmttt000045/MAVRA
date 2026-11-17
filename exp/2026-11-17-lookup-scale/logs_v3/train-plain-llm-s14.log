@@ -1,0 +1,8 @@
+[seed=14 contrast=False] train_q=22356 pairs=306740 pos=19774
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 7496.62it/s]
+  epoch 1/4 loss=0.0343 elapsed=392.8s
+  epoch 2/4 loss=0.0041 elapsed=843.7s
+  epoch 3/4 loss=0.0015 elapsed=1262.1s
+  epoch 4/4 loss=0.0006 elapsed=1830.2s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.40s/it]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.40s/it]
+DONE: {"base": "models/bge-reranker-base", "catalog": "catalog_1000.json", "definitions": 1000, "seed": 14, "epochs": 4, "batch": 64, "lr": 2e-05, "def_contrast": false, "max_len": 384, "train_questions": 22356, "train_pairs": 306740, "positive_pairs": 19774, "device": "NVIDIA RTX 5880 Ada Generation", "bf16": true, "train_seconds": 1830.22}

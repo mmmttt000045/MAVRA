@@ -284,3 +284,83 @@ in the added domains (fresh set) because the core has a median of 78 phrasings p
 v3 policy. Reading, fixed now: if `glm_174` first-response exact at 1,000 definitions falls by at least 5 points
 from v3 (74.1%) or its selective risk at least doubles (v3 4.3%), density is supported; otherwise the paper calls
 the cause of the fresh-set gap open. First response only (no confirmation call).
+
+### 7.3 Same-rule replay (attribution, added after 7.1 ran; not registered)
+
+7.1 assumed that the absence check (W) and peer-group coherence (C) need attributes in the judge input. They read the
+catalog's attributes, so the plain judges can run the complete v3 policy, which isolates the input rendering.
+`replay_plain_rule.py` feeds `policy_v2.py` the plain scores as the refreshed family and writes
+`results_v3_plain/policy-summary.json` and `risk-coverage-v2.json`. The registered 7.1 curve (Section 3 rule) equals
+that replay's config `r` point for point, which checks the replica in `analyse_v3.py`.
+
+### 7.4 Results of 7.1–7.3 (2026-11-18)
+
+Training: plain s13–s15 25–31 min each, thin s13–s15 39–48 min each (GPU0 shared with another user's job), all exit 0;
+`logs_v3/`. Caches: `score-caches-v3-ablation.tgz` (`results_v3_plain/cache.json`, `results_v3_thin/cache.json`).
+
+**7.1, registered: single threshold chosen on the test set, no abstention, v3 tuned top-8.** The v3 judges' value
+under the same metric (from `results_v3/cache.json`) is added for comparison.
+
+| M | subset | CE w/o diffs, 3-model mean | per-seed mean | v3 judges, 3-model mean | per-seed mean |
+|---:|---|---:|---:|---:|---:|
+| 26 | all_390 | 90.0 | 87.5 | 89.7 | 87.8 |
+| 26 | orig_96 | 93.8 | 92.4 | 94.8 | 93.4 |
+| 26 | glm_174 | 81.6 | 76.6 | 80.5 | 76.6 |
+| 1000 | all_390 | 89.5 | 87.4 | 88.5 | 86.8 |
+| 1000 | orig_96 | 93.8 | 93.4 | 93.8 | 92.7 |
+| 1000 | glm_174 | 83.9 | 81.4 | 81.6 | 78.9 |
+| 1000 | scale_120 | 95.0 | 93.1 | 95.0 | 93.9 |
+
+100 and 500 lie in between (`scale-summary-v3.json` keys `single_ce_refreshed` and `mavra_refreshed_oracle`).
+
+**7.1 registered curve and 7.3 replay.** Cells are first exact / direct coverage / selective risk, main 390:
+
+| M | v3 judges, v3 rule | CE w/o diffs, v3 rule | v3 judges, no W/C (config r) | CE w/o diffs, no W/C (registered) |
+|---:|---|---|---|---|
+| 26 | 82.6 / 81.0 / 2.9 | 80.3 / 79.5 / 2.9 | 82.6 / 82.6 / 4.7 | 80.3 / 81.5 / 5.3 |
+| 100 | 82.8 / 81.3 / 3.8 | 80.5 / 80.3 / 3.8 | 82.8 / 82.8 / 5.6 | 80.8 / 82.6 / 6.2 |
+| 500 | 82.3 / 80.8 / 4.1 | 80.3 / 80.5 / 5.1 | 82.3 / 82.6 / 6.2 | 80.3 / 82.3 / 7.2 |
+| 1000 | 83.3 / 80.5 / 3.8 | 82.6 / 82.0 / 5.0 | 83.6 / 82.6 / 5.9 | 82.8 / 83.9 / 6.7 |
+
+At matched coverage on the 1,000-definition sweep, the risk of the two judge sets under the v3 rule is:
+
+| coverage | v3 judges | CE w/o diffs |
+|---:|---:|---:|
+| 59% | 1.7% | 2.6% |
+| 80% | 3.9% | 4.5% |
+| ≥87% | 5.3% | 5.3% |
+
+Reading for 7.1/7.3:
+- With the v3 phrasings, peer differences in the judge input change accuracy by about one point. The test-tuned
+  single CE is in fact one point higher at 1,000 definitions.
+- Under the same rule, peer differences lower risk by at most about one point.
+- W and C cut the v3 judges' risk from 5.9% to 3.8% at 1,000 definitions.
+- The v1 gaps came from other differences, not from the rendering:
+  - Table V's "85% without diffs" compared one model against three.
+  - `scale-plain-s13..15` (72–77% vs 72–82% for the v1 refreshed judges, oracle metric) were trained on template-only
+    data.
+- Section 3 also had the frozen plain CE (`single_ce_zero`, 1 model). At 1,000 definitions it beats the frozen
+  peer-difference judges on human queries: 74.0% vs 52–60% per model, under the oracle metric. So 0-retrain
+  generalization comes from rendering candidates from the catalog at query time, not from the peer differences.
+
+**7.2, registered reading.**
+
+| M | subset | v3 (first / cov / risk) | thin core, 6 per intent |
+|---:|---|---|---|
+| 1000 | glm_174 | 74.1 / 67.2 / 4.3 | 75.3 / 71.8 / 7.2 |
+| 1000 | orig_96 | 86.5 / 88.5 / 3.5 | 91.7 / 90.6 / 3.5 |
+| 1000 | scale_120 | 94.2 / 93.3 / 3.6 | 88.3 / 75.0 / 3.3 |
+| 1000 | all_390 | 83.3 / 80.5 / 3.8 | 83.3 / 77.4 / 5.0 |
+
+`glm_174` first exact rises by 1.2 points rather than falling by 5, and its risk grows 1.7× rather than doubling. By
+the rule fixed in 7.2, density is not supported, and the paper calls the cause of the fresh-set gap open. Thinning
+does raise `glm_174` risk at every size (6.3→8.3, 6.2→8.1, 5.2→7.4, 4.3→7.2), but stays under the registered
+threshold.
+
+**Paper changes (Section 6.3, Fig. 8):**
+- The 26-definition sentence no longer says that removing peer differences drops accuracy; it says one plain
+  cross-encoder reaches 85%.
+- 0-retrain is attributed to query-time rendering.
+- The scaling paragraph ends with both ablations.
+- Fig. 8(a) adds the 7.1 oracle line; Fig. 8(b) adds the 7.3 same-rule curve, not the registered no-W/C curve, whose
+  gap to MAVRA would be the effect of W/C.

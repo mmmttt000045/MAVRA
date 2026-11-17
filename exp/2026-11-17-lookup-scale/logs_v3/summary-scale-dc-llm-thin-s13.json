@@ -1,0 +1,17 @@
+{
+  "base": "models/bge-reranker-base",
+  "catalog": "catalog_1000.json",
+  "definitions": 1000,
+  "seed": 13,
+  "epochs": 4,
+  "batch": 64,
+  "lr": 2e-05,
+  "def_contrast": true,
+  "max_len": 384,
+  "train_questions": 16511,
+  "train_pairs": 231503,
+  "positive_pairs": 17076,
+  "device": "NVIDIA RTX 5880 Ada Generation",
+  "bf16": true,
+  "train_seconds": 2363.67
+}

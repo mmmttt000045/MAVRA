@@ -4,7 +4,8 @@
 MAVRA (refreshed) = v3 (results_v3*/, policy config "v2" on the v3 cache, confirmation family mavra_refreshed_v3).
 MAVRA (0-retrain) = frozen 26-definition judges with W + C on raw bge-m3 (registered v2 config "wc").
 Top-8 + LLM       = LLM judge over the v3 retriever's top-8 (the same candidates MAVRA scores).
-Single CE (no diff) = README 7.1 (v3 data, no peer differences, oracle threshold, v3 top-8), when present.
+Single CE (no diff) = README 7.1 (v3 data, no peer differences, oracle threshold, v3 top-8), when present; README 7.3
+                      adds the same judges under the full v3 rule (replay_plain_rule.py -> results_v3_plain/).
 Name match, Embedding top-1, TeCoD and raw bge-m3 recall are unchanged from Section 3 (scale-summary.json).
 
 Writes scale-summary-v3.json, risk-coverage-v3.json and overleaf/gen/lookup-scale.tex.
@@ -102,7 +103,7 @@ if E("results_v3_plain/cache.json"):
                 return False
         return True
 
-    sce = {}
+    sce, mor = {}, {}
     dev_raw = np.array(CP["meta"]["dev_top1_cos"]["raw"]["1000"])
     dev_tuned = np.sort(np.array(CP["meta"]["dev_top1_cos"]["tuned"]["1000"]))
 
@@ -118,7 +119,9 @@ if E("results_v3_plain/cache.json"):
         cos = CP["recall"]["tuned"][m]["cos"]
         per = np.array(CP["scores"]["single_ce_refreshed"]["tuned"][m])[:, :, :8]  # judges x req x 8
         mean = per.mean(axis=0)
-        sce[m] = {}
+        mper = np.array(C3["scores"]["mavra_refreshed"]["tuned"][m])[:, :, :8]  # v3 judges, same metric (7.3)
+        assert CP["recall"]["tuned"][m]["ids"] == C3["recall"]["tuned"][m]["ids"]
+        sce[m], mor[m] = {}, {}
         for sub in QTAG:
             idx = [i for i, r in enumerate(reqs) if sub == "all_390" or r["qset"] == sub]
 
@@ -131,6 +134,11 @@ if E("results_v3_plain/cache.json"):
             sce[m][sub] = {"n": len(idx), "no_abstain_best_tau": round(float(best), 3),
                            "no_abstain_exact_rate": round(exact(mean, best) / len(idx), 4),
                            "per_seed_exact_rates": [round(x, 4) for x in seeds]}
+            mm = mper.mean(axis=0)
+            mb = max(taus, key=lambda t: exact(mm, t))
+            mor[m][sub] = {"no_abstain_best_tau": round(float(mb), 3), "no_abstain_exact_rate": round(exact(mm, mb) / len(idx), 4),
+                           "per_seed_exact_rates": [round(max(exact(mper[j], t) for t in np.linspace(0.05, 0.95, 46)) / len(idx), 4)
+                                                    for j in range(mper.shape[0])]}
         # risk-coverage with the Section 3 schedule (v1 rule: no W/C)
         pts = []
         for u in [k / 20 for k in range(21)]:
@@ -154,9 +162,21 @@ if E("results_v3_plain/cache.json"):
                     dn += 1
                     wn += gold[i] != []
             pts.append({"coverage": round(dn / len(reqs), 4), "selective_risk": round(wn / max(1, dn), 4)})
-        rc[m]["single_ce_refreshed"] = {"all_390": pts}
+        rc[m]["single_ce_refreshed_v1rule"] = {"all_390": pts}   # registered 7.1 curve
     summ["single_ce_refreshed"] = sce
+    summ["mavra_refreshed_oracle"] = mor
     summ["single_ce_refreshed_dirs"] = CP["meta"]["plain_dirs"]
+
+# README 7.3 (attribution): plain judges under the full v3 rule; MAVRA's own judges without W/C (registered config r)
+for m in SCALES:
+    rc[m]["mavra_refreshed_r"] = RC3[m]["mavra_refreshed_r"]
+summ["mavra_refreshed_first_r"] = P3["mavra_refreshed"]["r"]
+if E("results_v3_plain/policy-summary.json"):
+    PP, RP = J("results_v3_plain/policy-summary.json"), J("results_v3_plain/risk-coverage-v2.json")
+    summ["single_ce_rule"] = {"v2": PP["mavra_refreshed"]["v2"], "r": PP["mavra_refreshed"]["r"]}
+    for m in SCALES:
+        rc[m]["single_ce_refreshed"] = RP[m]["mavra_refreshed_v2"]
+        rc[m]["single_ce_refreshed_r"] = RP[m]["mavra_refreshed_r"]
 
 # README 7.2: training density
 if E("results_v3_thin/policy-summary.json"):
@@ -198,6 +218,7 @@ for sc, st in STAG.items():
             r = summ["single_ce_refreshed"][sc][qs]
             mac[f"LsSceRef{st}{qt}"] = pct(r["no_abstain_exact_rate"])
             mac[f"LsSceRefOne{st}{qt}"] = pct(statistics.mean(r["per_seed_exact_rates"]))
+            mac[f"LsMavRefOracle{st}{qt}"] = pct(summ["mavra_refreshed_oracle"][sc][qs]["no_abstain_exact_rate"])
         else:  # README 7.1 still running: visible placeholder, never shipped
             mac[f"LsSceRef{st}{qt}"] = mac[f"LsSceRefOne{st}{qt}"] = "??"
         if "thin_density" in summ:
@@ -207,6 +228,14 @@ for sc, st in STAG.items():
             mac[f"LsThinCov{st}{qt}"] = pct(r["direct_coverage"])
         else:
             mac[f"LsThinFirst{st}{qt}"] = mac[f"LsThinRisk{st}{qt}"] = mac[f"LsThinCov{st}{qt}"] = "??"
+        a = P3["mavra_refreshed"]["r"][sc][qs]
+        mac[f"LsMavRefNoWcFirst{st}{qt}"], mac[f"LsMavRefNoWcCov{st}{qt}"], mac[f"LsMavRefNoWcRisk{st}{qt}"] = \
+            pct(a["first_exact_rate"]), pct(a["direct_coverage"]), pct(a["selective_risk"])
+        if "single_ce_rule" in summ:
+            for cfg, tag in (("v2", "SceRule"), ("r", "SceRuleNoWc")):
+                a = summ["single_ce_rule"][cfg][sc][qs]
+                mac[f"Ls{tag}First{st}{qt}"], mac[f"Ls{tag}Cov{st}{qt}"], mac[f"Ls{tag}Risk{st}{qt}"] = \
+                    pct(a["first_exact_rate"]), pct(a["direct_coverage"]), pct(a["selective_risk"])
         p = paired["main"][sc][qs]
         mac[f"LsPairP{st}{qt}"] = f"{p['mcnemar_p']:.2f}"
     mac[f"LsMavRefLat{st}Ms"] = f"{C3['timing_v2'][sc]['latency_ms_mean']:.0f}"

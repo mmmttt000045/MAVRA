@@ -41,6 +41,12 @@ def load():
         f"{100.0 * summ['top8_llm_judge']['1000']['all_390']['exact_rate']:.1f}",
         printed["LsTopLlmKAll"],
     )
+    if "single_ce_refreshed" in summ:
+        style.agree(
+            "LsSceRefKAll",
+            f"{100.0 * summ['single_ce_refreshed']['1000']['all_390']['no_abstain_exact_rate']:.1f}",
+            printed["LsSceRefKAll"],
+        )
     return summ, rc
 
 
@@ -90,7 +96,7 @@ def figure(lang):
     # Panel (b): Selective Wrong-Match Risk vs Autonomous Coverage at |M| = 1,000
     rc_k = rc["1000"]
 
-    def plot_rc(fam_key, color, ls, marker, label, mark_default=False):
+    def plot_rc(fam_key, color, ls, marker, label, mark_default=False, lw=None, ms=3.0, z=2):
         if fam_key not in rc_k:
             return
         pts = rc_k[fam_key][qset]
@@ -98,14 +104,15 @@ def figure(lang):
         xs = [100.0 * p["coverage"] for p in pts]
         ys = [100.0 * p["selective_risk"] for p in pts]
         step_idx = [0, 5, 10, 15, len(pts) - 1] if len(pts) >= 20 else list(range(0, len(pts), max(1, len(pts) // 5)))
-        ax_b.plot(xs, ys, ls=ls, lw=1.05 if "mavra" in fam_key else 0.9, color=color)
-        ax_b.plot([xs[i] for i in step_idx], [ys[i] for i in step_idx], ls="none", marker=marker, ms=3.0, color=color)
+        ax_b.plot(xs, ys, ls=ls, lw=lw or (1.05 if "mavra" in fam_key else 0.9), color=color, zorder=z)
+        ax_b.plot([xs[i] for i in step_idx], [ys[i] for i in step_idx], ls="none", marker=marker, ms=ms, color=color, zorder=z)
         if mark_default and len(pts) >= 11:
-            ax_b.scatter([xs[10]], [ys[10]], marker="*", s=34, color=color, edgecolor="black", linewidth=0.35, zorder=5)
+            ax_b.scatter([xs[10]], [ys[10]], marker="*", s=34, color=color, edgecolor="black", linewidth=0.35, zorder=6)
 
-    plot_rc("mavra_refreshed", c_mavra, "-", "o", "MAVRA (refreshed)", mark_default=True)
+    # CE w/o diffs first and thinner: under the same rule it runs about one point above MAVRA and would hide it
+    plot_rc(sce_key, c_sce, "-", "D", "CE w/o diffs (same rule, README 7.3)", lw=0.8, ms=2.4, z=2)
+    plot_rc("mavra_refreshed", c_mavra, "-", "o", "MAVRA (refreshed)", mark_default=True, z=4)
     plot_rc("mavra_zero", c_zero, "--", "s", "MAVRA (0-retrain)", mark_default=True)
-    plot_rc(sce_key, c_sce, "-", "D", "Single CE (no diff)")
     plot_rc("emb_top1", c_emb, "--", "v", "Embed. top-1")
     plot_rc("tecod_nli", c_tecod, ":", "x", "TeCoD NLI")
 

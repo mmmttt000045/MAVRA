@@ -1,0 +1,11 @@
+{"intents": 99, "kept": 590, "from": 7273, "absent_kept": 323}
+2026-11-18 02:02:08 ablation training start
+2026-11-18 02:27:57 plain s13 exit 0
+2026-11-18 02:41:57 thin s13 exit 0
+2026-11-18 02:54:59 plain s15 exit 0
+2026-11-18 03:12:54 plain s14 exit 0
+2026-11-18 03:41:14 thin s14 exit 0
+2026-11-18 04:01:26 thin s15 exit 0
+2026-11-18 04:01:27 ablation scoring start
+2026-11-18 04:23:07 scoring exit plain=0 thin=0
+=== V3 ABLATION DONE ===
