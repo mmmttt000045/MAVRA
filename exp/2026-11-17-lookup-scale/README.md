@@ -94,3 +94,193 @@ python3 exp/2026-11-17-lookup-scale/analyse_scale.py \
   --llm-summary results_llm/llm-summary.json
 python3 tools/figures/build.py lookup-scale
 ```
+
+## 4. Revision v2: catalog-tuned recall, absence check, peer-group coherence (registered 2026-11-17, before running)
+
+### 4.1 Diagnosis of v1 at $|\mathcal M|=1{,}000$ (`results_gpu/for_llm/responses_mavra_refreshed_M1000.jsonl`)
+
+`MAVRA (refreshed)` answered 252 of 390 requests directly; 49 were wrong (19.4% selective risk):
+
+| Error | 26 defs | 1,000 defs | Cause |
+|---|---:|---:|---|
+| `Miss` on a metric that is in the catalog | 2 | 23 (17 GLM, 6 multi-domain) | 16 of 23 have the gold outside the bge-m3 top-8; the rest score < .1 |
+| single wrong definition | 1 | 8 | 7 of 8 have the gold set not fully in the top-8 (a sibling is accepted) |
+| `Diffs` with an extra definition | 8 | 12 | judge accepts a same-channel definition with another subject (revenue + net profit, return amount + return rate) |
+| answered an absent metric | 4 | 6 | judge |
+
+The growth from 26 to 1,000 definitions is almost entirely recall: 974 added definitions repeat the retail
+subjects over 32 new channels, so a colloquial or English request for, e.g., catalog-channel revenue retrieves eight
+other channels' revenue. Stage-1 is the one component that was never trained on the catalog.
+
+This diagnosis read v1's test responses, so v2 is one revision, fixed here before any v2 number exists; it is run
+once and reported whatever it gives, next to v1. A fresh check that nobody has looked at follows (4.4).
+
+### 4.2 Changes (all parameters fixed here)
+
+1. **Catalog-tuned recall (R)** — `train_retriever.py`: fine-tune bge-m3 on the judges' own synthetic training
+   phrasings (`train_26_clean.jsonl` + `train_scale_extra.jsonl`, labels from Definition 4.1, absent questions
+   skipped), excluding the seed-13 dev split; InfoNCE with in-batch documents plus one same-channel/same-subject
+   hard negative per anchor, co-gold documents masked; 2 epochs, batch 64, lr 1e-5, temperature 0.02, seed 13.
+   Acceptance check, decided on dev only: v2 uses the tuned retriever iff dev Recall@8 at $|\mathcal M|=1{,}000$
+   improves over raw bge-m3 (92.4% before training). K stays 8.
+2. **Absence check (W)**: when no top-8 candidate reaches .1, the same judges score ranks 9–32; if any reaches .1
+   the reply is `Refer` with those candidates, otherwise `Miss`/close-neighbour as before. W only turns a `Miss` into
+   a `Refer`; it never creates a direct answer.
+3. **Peer-group coherence (C)**: two or more accepted candidates (no uncertain one) are returned as `Diffs` only if
+   they share subject, category and channel (unset channel = whole-channel); otherwise the reply is `Refer` with the
+   accepted set. Under Definition 4.1 several matches arise from attributes the request leaves open; subject is
+   always stated and an unset channel admits only the whole-channel value, so an accepted set spanning groups is a
+   judge error unless the request names two subjects (1 of 96 human requests, `w04`), which then becomes a `Refer`.
+4. **Close-neighbour threshold**: the 0.60 cosine on raw bge-m3 is mapped to the tuned retriever by quantile on the
+   dev questions' top-1 cosines at $|\mathcal M|=1{,}000$ (same fraction of dev questions above the threshold).
+
+Unchanged: judges (`ft_scale/scale-dc-s13..15`, `ft_base/base-dc-xl-s13..15`), K = 8, band .1/.9, the confirmation
+prompt and model, all baselines. `MAVRA (0-retrain)` gets W + C on raw bge-m3 (the tuned retriever saw multi-domain
+phrasings, so it belongs to the refreshed configuration).
+
+### 4.3 Runs and reporting
+
+- `score_cache_v2.py` (GPU): top-32 for both retrievers at every size, every judge's score on all 32, and a timing
+  pass of the deployed v2 path. `policy_v2.py` (CPU) replays v1 from the cache (must reproduce Section 3 numbers)
+  and v2, plus ablations R only and W + C only, and the risk–coverage sweep with the Section 3 schedule.
+- `run_llm_methods.py` confirmation on noctis for the v2 `Refer` replies (deepseek-flash, same prompt); also
+  `Top-8 (tuned recall) + LLM judge` as a control that gives the LLM baseline the same retriever.
+- Reported: v1 and v2 side by side per subset and size; first-response exact, direct coverage, selective risk,
+  final after confirmation, tokens, latency.
+
+### 4.4 Fresh check after v2 is fixed
+
+After the v2 numbers are recorded, GLM (Zhipu, the 2026-11-11 rewrite prompt) writes two rewrites of each of the 120
+multi-domain requests (`scale_120`, whose wording comes from templates close to the training phrasings); rewrites
+that add or drop a metric choice are removed on reading, and v1 and v2 run unchanged on the rest at all sizes.
+
+## 5. Revision v3: LLM-written training phrasings for the added definitions (registered 2026-11-17, before running)
+
+### 5.1 Why a second revision
+
+v2 ran as registered (results in Section 6). On the fresh check (4.4: 204 audited GLM rewrites of
+the multi-domain requests) v2 barely moved selective risk at 1,000 definitions (v1 27.9% at 38.7% coverage, v2 25.7%
+at 49.5%) although tuned recall reached 98.5% Recall@8 (raw 93.6%): with the gold in the top-8, the judges reject it.
+Only aggregate fresh numbers were read, no fresh item.
+
+The cause is a deviation from the method, not a parameter: Section 4.4 of the paper trains the judges on phrasings an
+LLM writes from the catalog, and the 26-definition judges were trained that way (8,053 DeepSeek phrasings), but the
+974 added definitions got rule templates (`train_scale_extra.jsonl`, one fixed synonym per channel), so the judges
+never saw natural wording in the added domains. v3 removes the deviation.
+
+### 5.2 Change (everything else as v2)
+
+- `gen_train_scale_llm.py` (noctis, deepseek-flash): gen_train.py's enumeration and prompt, unchanged, over the 974
+  added definitions: 694 name-level groups, their distinguishing and missing attribute values, channel x subject for
+  the 32 added channels, category sales for two random categories per added channel, and out-of-catalog metrics per
+  added channel; 1,874 targets x 6 phrasings. The LLM sees canonical attribute values only (no test request, no
+  synonym list). Labels from Definition 4.1. Phrasings equal to, contained in, or containing any test request of the
+  four sets (spaces and punctuation removed) are dropped.
+- Judges `ft_scale/scale-dc-llm-s13..15` and retriever `ft_retriever/bge-m3-cat-llm-s13`: same scripts and recipes as
+  v2, training data `train_26_clean.jsonl` + `train_scale_extra.jsonl` + the new file.
+- Policy, thresholds, K, sigma mapping rule (recomputed on the new retriever's dev cosines), confirmation: as v2.
+
+### 5.3 Reporting
+
+v1, v2 and v3 side by side on the main 390 requests and on the 204 fresh requests, every size; first response, direct
+coverage, selective risk, final after confirmation. v3 is the last revision: whatever it gives is reported.
+
+## 6. Results of v2 and v3 (recorded 2026-11-18; v3 is the last revision)
+
+Both revisions ran exactly as registered. Files: `results_v2*/` and `results_v3*/` (policy replays, `for_llm/`, `llm/`),
+`logs_v3/` (training logs and model summaries), `run_v3_gpu.sh`, `report_v123.py` → `results_v3/report-v123.json`,
+`analyse_v3.py` → `scale-summary-v3.json`, `risk-coverage-v3.json`, `overleaf/gen/lookup-scale.tex` (Fig. 8 and Section 6.3).
+The score caches are archived in `score-caches-v2-v3.tgz` (untar here; `policy_v2.py` then regenerates `for_llm/`).
+In `results_v3*/policy-summary.json` the config named `v2` (R + W + C) is v3: the same rule with the v3 judges and
+retriever; the export renamed it `mavra_refreshed_v3` for confirmation.
+
+Checks: on the v3 cache, `MAVRA (0-retrain)` replays Section 3 exactly at every size (its models did not change).
+The v3 retriever passed the acceptance rule (dev Recall@8 at 1,000 definitions 92.65% → 99.95%, 2,190 present dev
+questions); the close-neighbour threshold maps to 0.7895 (v2: 0.7278). v2 fresh-set confirmation was run on
+2026-11-17 after v3 was registered (same script, families v1/v2); only aggregate fresh numbers were read.
+
+### 6.1 MAVRA (refreshed), v1 / v2 / v3
+
+First response = exact set in the first reply; risk = wrong share of direct replies; final = exact after the
+deepseek-flash confirmation turn; tok/s = mean per request, all requests. LLM ctrl = Top-8 + LLM judge over the
+same version's retriever (raw bge-m3 for v1; 880-1,100 tokens, 1.9-3.8 s per request).
+
+Main 390 (`all_390`):
+
+| M | ver | first exact | direct cov. | sel. risk | final | tok | s | LLM ctrl |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 26 | v1 | 66.4 | 62.1 | 6.2 | 91.3 | 218 | 0.85 | 84.4 |
+| 26 | v2 | 63.3 | 60.5 | 3.0 | 95.4 | 224 | 0.66 | 86.2 |
+| 26 | v3 | 82.6 | 81.0 | 2.9 | 95.9 | 92 | 0.39 | 86.9 |
+| 100 | v1 | 66.9 | 61.3 | 8.0 | 90.3 | 213 | 0.83 | 89.7 |
+| 100 | v2 | 63.1 | 60.0 | 5.1 | 93.3 | 240 | 0.75 | 92.3 |
+| 100 | v3 | 82.8 | 81.3 | 3.8 | 94.6 | 95 | 0.39 | 92.0 |
+| 500 | v1 | 66.7 | 64.6 | 15.5 | 83.6 | 182 | 0.73 | 88.2 |
+| 500 | v2 | 66.1 | 61.3 | 6.7 | 90.5 | 214 | 0.68 | 93.6 |
+| 500 | v3 | 82.3 | 80.8 | 4.1 | 95.1 | 98 | 0.39 | 95.6 |
+| 1,000 | v1 | 63.1 | 64.6 | 19.4 | 80.8 | 181 | 0.70 | 86.2 |
+| 1,000 | v2 | 65.1 | 60.8 | 8.0 | 90.8 | 208 | 0.70 | 94.9 |
+| 1,000 | v3 | 83.3 | 80.5 | 3.8 | 95.1 | 103 | 0.43 | 95.9 |
+
+At 1,000 definitions by subset (first exact / sel. risk / final; LLM ctrl): `orig_96` v1 68.8/10.3/91.7, v2 67.7/4.5/96.9,
+v3 86.5/3.5/96.9 (97.9); `glm_174` v1 49.4/35.0/71.3, v2 55.2/8.3/90.2, v3 74.1/4.3/94.2 (92.5); `scale_120` v1
+78.3/8.3/85.8, v2 77.5/10.3/86.7, v3 94.2/3.6/95.0 (99.2).
+
+Fresh 204 (`glm_scale`, Section 4.4; lookup not timed there, so s is the confirmation call only — add ~50-70 ms):
+
+| M | ver | first exact | direct cov. | sel. risk | final | tok | s | LLM ctrl |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 26 | v1 | 83.8 | 68.6 | 1.4 | 91.2 | 148 | 0.62 | — |
+| 26 | v2 | 82.3 | 83.3 | 1.2 | 91.7 | 94 | 0.41 | 67.2 |
+| 26 | v3 | 96.1 | 97.5 | 1.5 | 98.0 | 9 | 0.04 | 66.7 |
+| 100 | v1 | 75.5 | 54.4 | 7.2 | 79.4 | 256 | 1.13 | — |
+| 100 | v2 | 72.5 | 74.5 | 9.2 | 82.3 | 129 | 0.51 | 79.9 |
+| 100 | v3 | 90.7 | 89.2 | 5.5 | 93.6 | 77 | 0.31 | 80.9 |
+| 500 | v1 | 62.7 | 42.6 | 21.8 | 70.6 | 351 | 1.57 | — |
+| 500 | v2 | 64.2 | 65.7 | 18.7 | 73.0 | 189 | 0.75 | 92.2 |
+| 500 | v3 | 81.9 | 76.5 | 10.9 | 89.7 | 151 | 0.55 | 94.6 |
+| 1,000 | v1 | 49.0 | 38.7 | 27.9 | 68.6 | 343 | 1.29 | — |
+| 1,000 | v2 | 50.0 | 49.5 | 25.7 | 72.5 | 321 | 1.22 | 94.6 |
+| 1,000 | v3 | 75.0 | 67.7 | 12.3 | 87.8 | 202 | 0.73 | 95.6 |
+
+At 26 definitions every fresh request is absent (their channels are not in the 26-definition catalog); the LLM judge
+names a definition for 68 of 204; MAVRA v3 answers 3 directly and names one for 4 after confirmation.
+
+### 6.2 Reading
+
+- v3 is the configuration to report. On the main set it holds 95% final at every size (95.1% at 1,000, LLM judge
+  95.9%) at ~100 tokens and 0.4 s per request vs ~950 tokens and 2.2 s; direct replies are 80% of requests at 3-4%
+  risk (direct precision 96.2% at 1,000, meeting the ≥95% bar).
+- The fresh set is the honest limit: at 1,000 definitions v3 reaches 87.8% final vs the LLM judge's 95.6%, and direct
+  replies carry 12.3% risk (precision 87.7%, below the bar). The gap opens with catalog size (26: 98.0 vs 66.7;
+  100: 93.6 vs 80.9; 500: 89.7 vs 94.6).
+- Where the gain comes from (replays of the same v3 cache, not registered, for attribution only; first exact /
+  coverage / risk at 1,000): v3 judges with the v1 rule and raw recall give main 80.0/78.5/10.5 and fresh
+  74.5/60.8/15.3; adding R + W + C gives 83.3/80.5/3.8 and 75.0/67.7/12.3. The LLM-written training phrasings
+  are the main driver; recall and the two checks mainly cut risk.
+- Cost of v3 over v2: phrasing generation 1,906 deepseek-flash calls (0.47M prompt + 3.58M completion tokens, no
+  failure, no test overlap); judges 3 × 54 min and retriever 6 min on one RTX 5880 Ada (22.4k training questions,
+  ~308k pairs per seed). Deployed lookup 49-67 ms per request (timing pass, widened check included).
+
+## 7. Ablations on the v3 setup for the paper (registered 2026-11-18, before running)
+
+GPU only (`run_v3_ablation_gpu.sh`), no API call; both use the v3 retriever, so only the judges change.
+Reported once, whatever they give, at all four sizes on the main 390.
+
+### 7.1 Peer differences at scale
+
+The v1 `Single CE (no diff)` judges (`scale-plain-s13..15`) were trained on rule templates only, so comparing them
+with v3 would mix two changes. `scale-plain-llm-s13..15`: v3 training data and recipe, definition rendered as name +
+text (no attributes, no peer differences), i.e. `train_scale_ce.py` without `--def-contrast`. Scored on the v3 tuned
+top-8 and reported as before: 3-model mean score, single threshold chosen on the test set (oracle, no abstention),
+plus the risk-coverage sweep with the Section 3 schedule (no W/C, which need attributes).
+
+### 7.2 Training density per intent
+
+Hypothesis from Section 6: v3 matches the LLM judge on unseen-generator wording in the core domain (`glm_174`) but not
+in the added domains (fresh set) because the core has a median of 78 phrasings per intent and the added domains 6.
+`make_thin_core.py` keeps at most 6 phrasings per core intent (99 intents, seed 13); judges
+`scale-dc-llm-thin-s13..15` are trained exactly as v3 on that file plus both added-domain files, and replayed with the
+v3 policy. Reading, fixed now: if `glm_174` first-response exact at 1,000 definitions falls by at least 5 points
+from v3 (74.1%) or its selective risk at least doubles (v3 4.3%), density is supported; otherwise the paper calls
+the cause of the fresh-set gap open. First response only (no confirmation call).

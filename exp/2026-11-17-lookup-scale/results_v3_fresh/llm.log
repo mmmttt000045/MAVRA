@@ -1,0 +1,17 @@
+[Top-8 LLM M=26] total=204 cached=0 todo=204
+  Top-8 LLM M=26 glm_scale=0.6667
+[Top-8 LLM M=100] total=204 cached=0 todo=204
+  Top-8 LLM M=100 glm_scale=0.8088
+[Top-8 LLM M=500] total=204 cached=0 todo=204
+  Top-8 LLM M=500 glm_scale=0.9461
+[Top-8 LLM M=1000] total=204 cached=0 todo=204
+  Top-8 LLM M=1000 glm_scale=0.9559
+[Confirm mavra_refreshed_v3 M=26] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v3 M=26 glm_scale=0.9804
+[Confirm mavra_refreshed_v3 M=100] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v3 M=100 glm_scale=0.9363
+[Confirm mavra_refreshed_v3 M=500] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v3 M=500 glm_scale=0.8971
+[Confirm mavra_refreshed_v3 M=1000] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v3 M=1000 glm_scale=0.8775
+=== ALL LLM LOOKUP & CONFIRMATION RUNS COMPLETE ===

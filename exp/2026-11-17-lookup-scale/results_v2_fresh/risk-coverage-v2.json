@@ -1,0 +1,6186 @@
+{
+  "26": {
+    "mavra_zero_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.2157,
+          "selective_risk": 0.1364,
+          "direct_precision": 0.8636,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.2941,
+          "selective_risk": 0.15,
+          "direct_precision": 0.85,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.3529,
+          "selective_risk": 0.1389,
+          "direct_precision": 0.8611,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.3824,
+          "selective_risk": 0.1282,
+          "direct_precision": 0.8718,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.4559,
+          "selective_risk": 0.1183,
+          "direct_precision": 0.8817,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.5,
+          "selective_risk": 0.1078,
+          "direct_precision": 0.8922,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.5245,
+          "selective_risk": 0.1028,
+          "direct_precision": 0.8972,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.598,
+          "selective_risk": 0.0902,
+          "direct_precision": 0.9098,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.6422,
+          "selective_risk": 0.084,
+          "direct_precision": 0.916,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.6814,
+          "selective_risk": 0.0791,
+          "direct_precision": 0.9209,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.7206,
+          "selective_risk": 0.0748,
+          "direct_precision": 0.9252,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.799,
+          "selective_risk": 0.0675,
+          "direct_precision": 0.9325,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.848,
+          "selective_risk": 0.0636,
+          "direct_precision": 0.9364,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.8676,
+          "selective_risk": 0.0621,
+          "direct_precision": 0.9379,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.9118,
+          "selective_risk": 0.1075,
+          "direct_precision": 0.8925,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.9167,
+          "selective_risk": 0.1123,
+          "direct_precision": 0.8877,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.9265,
+          "selective_risk": 0.1217,
+          "direct_precision": 0.8783,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.9265,
+          "selective_risk": 0.1217,
+          "direct_precision": 0.8783,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.9314,
+          "selective_risk": 0.1263,
+          "direct_precision": 0.8737,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.9363,
+          "selective_risk": 0.1257,
+          "direct_precision": 0.8743,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.1765,
+          "direct_precision": 0.8235,
+          "overall_wrong_rate": 0.1765
+        }
+      ]
+    },
+    "mavra_zero_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.2157,
+          "selective_risk": 0.1364,
+          "direct_precision": 0.8636,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.2941,
+          "selective_risk": 0.15,
+          "direct_precision": 0.85,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.3529,
+          "selective_risk": 0.1389,
+          "direct_precision": 0.8611,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.3824,
+          "selective_risk": 0.1282,
+          "direct_precision": 0.8718,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.4559,
+          "selective_risk": 0.1183,
+          "direct_precision": 0.8817,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.4951,
+          "selective_risk": 0.1089,
+          "direct_precision": 0.8911,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.5196,
+          "selective_risk": 0.1038,
+          "direct_precision": 0.8962,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.5931,
+          "selective_risk": 0.0909,
+          "direct_precision": 0.9091,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.6373,
+          "selective_risk": 0.0846,
+          "direct_precision": 0.9154,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.6765,
+          "selective_risk": 0.0797,
+          "direct_precision": 0.9203,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.7157,
+          "selective_risk": 0.0753,
+          "direct_precision": 0.9247,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.7941,
+          "selective_risk": 0.0679,
+          "direct_precision": 0.9321,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.8431,
+          "selective_risk": 0.064,
+          "direct_precision": 0.936,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.8627,
+          "selective_risk": 0.0625,
+          "direct_precision": 0.9375,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.9069,
+          "selective_risk": 0.1081,
+          "direct_precision": 0.8919,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.9118,
+          "selective_risk": 0.1129,
+          "direct_precision": 0.8871,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.9216,
+          "selective_risk": 0.1223,
+          "direct_precision": 0.8777,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.9216,
+          "selective_risk": 0.1223,
+          "direct_precision": 0.8777,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.9265,
+          "selective_risk": 0.127,
+          "direct_precision": 0.873,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.9314,
+          "selective_risk": 0.1263,
+          "direct_precision": 0.8737,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.9902,
+          "selective_risk": 0.1733,
+          "direct_precision": 0.8267,
+          "overall_wrong_rate": 0.1716
+        }
+      ]
+    },
+    "mavra_zero_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.598,
+          "selective_risk": 0.0492,
+          "direct_precision": 0.9508,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.7059,
+          "selective_risk": 0.0625,
+          "direct_precision": 0.9375,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.7745,
+          "selective_risk": 0.0633,
+          "direct_precision": 0.9367,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.8137,
+          "selective_risk": 0.0663,
+          "direct_precision": 0.9337,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.8235,
+          "selective_risk": 0.0655,
+          "direct_precision": 0.9345,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.8382,
+          "selective_risk": 0.0643,
+          "direct_precision": 0.9357,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.8431,
+          "selective_risk": 0.064,
+          "direct_precision": 0.936,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.8529,
+          "selective_risk": 0.0632,
+          "direct_precision": 0.9368,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.8578,
+          "selective_risk": 0.0629,
+          "direct_precision": 0.9371,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.8627,
+          "selective_risk": 0.0682,
+          "direct_precision": 0.9318,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.9118,
+          "selective_risk": 0.1129,
+          "direct_precision": 0.8871,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.9167,
+          "selective_risk": 0.1176,
+          "direct_precision": 0.8824,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.9265,
+          "selective_risk": 0.127,
+          "direct_precision": 0.873,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.9265,
+          "selective_risk": 0.127,
+          "direct_precision": 0.873,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.9314,
+          "selective_risk": 0.1316,
+          "direct_precision": 0.8684,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.9363,
+          "selective_risk": 0.1309,
+          "direct_precision": 0.8691,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.1814,
+          "direct_precision": 0.8186,
+          "overall_wrong_rate": 0.1814
+        }
+      ]
+    },
+    "mavra_zero_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.598,
+          "selective_risk": 0.0492,
+          "direct_precision": 0.9508,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.7059,
+          "selective_risk": 0.0625,
+          "direct_precision": 0.9375,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.7745,
+          "selective_risk": 0.0633,
+          "direct_precision": 0.9367,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.8137,
+          "selective_risk": 0.0663,
+          "direct_precision": 0.9337,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.8235,
+          "selective_risk": 0.0655,
+          "direct_precision": 0.9345,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.8382,
+          "selective_risk": 0.0643,
+          "direct_precision": 0.9357,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.8431,
+          "selective_risk": 0.064,
+          "direct_precision": 0.936,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.8529,
+          "selective_risk": 0.0632,
+          "direct_precision": 0.9368,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.8578,
+          "selective_risk": 0.0629,
+          "direct_precision": 0.9371,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.8627,
+          "selective_risk": 0.0682,
+          "direct_precision": 0.9318,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.8676,
+          "selective_risk": 0.0678,
+          "direct_precision": 0.9322,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.9118,
+          "selective_risk": 0.1129,
+          "direct_precision": 0.8871,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.9167,
+          "selective_risk": 0.1176,
+          "direct_precision": 0.8824,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.9265,
+          "selective_risk": 0.127,
+          "direct_precision": 0.873,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.9265,
+          "selective_risk": 0.127,
+          "direct_precision": 0.873,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.9314,
+          "selective_risk": 0.1316,
+          "direct_precision": 0.8684,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.9363,
+          "selective_risk": 0.1309,
+          "direct_precision": 0.8691,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.9951,
+          "selective_risk": 0.1773,
+          "direct_precision": 0.8227,
+          "overall_wrong_rate": 0.1765
+        }
+      ]
+    },
+    "mavra_refreshed_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.2255,
+          "selective_risk": 0.0217,
+          "direct_precision": 0.9783,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.2892,
+          "selective_risk": 0.0169,
+          "direct_precision": 0.9831,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.3333,
+          "selective_risk": 0.0294,
+          "direct_precision": 0.9706,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.3775,
+          "selective_risk": 0.026,
+          "direct_precision": 0.974,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.4314,
+          "selective_risk": 0.0227,
+          "direct_precision": 0.9773,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.4657,
+          "selective_risk": 0.0211,
+          "direct_precision": 0.9789,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.4902,
+          "selective_risk": 0.02,
+          "direct_precision": 0.98,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.5686,
+          "selective_risk": 0.0172,
+          "direct_precision": 0.9828,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.6078,
+          "selective_risk": 0.0161,
+          "direct_precision": 0.9839,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.652,
+          "selective_risk": 0.015,
+          "direct_precision": 0.985,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.6863,
+          "selective_risk": 0.0143,
+          "direct_precision": 0.9857,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.7745,
+          "selective_risk": 0.0127,
+          "direct_precision": 0.9873,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.8333,
+          "selective_risk": 0.0118,
+          "direct_precision": 0.9882,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.8529,
+          "selective_risk": 0.0115,
+          "direct_precision": 0.9885,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.8627,
+          "selective_risk": 0.017,
+          "direct_precision": 0.983,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.8824,
+          "selective_risk": 0.0389,
+          "direct_precision": 0.9611,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.8873,
+          "selective_risk": 0.0442,
+          "direct_precision": 0.9558,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.9118,
+          "selective_risk": 0.0538,
+          "direct_precision": 0.9462,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.9265,
+          "selective_risk": 0.0635,
+          "direct_precision": 0.9365,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.9363,
+          "selective_risk": 0.0733,
+          "direct_precision": 0.9267,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.1275,
+          "direct_precision": 0.8725,
+          "overall_wrong_rate": 0.1275
+        }
+      ]
+    },
+    "mavra_refreshed_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.2255,
+          "selective_risk": 0.0217,
+          "direct_precision": 0.9783,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.2843,
+          "selective_risk": 0.0172,
+          "direct_precision": 0.9828,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.3284,
+          "selective_risk": 0.0299,
+          "direct_precision": 0.9701,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.3676,
+          "selective_risk": 0.0267,
+          "direct_precision": 0.9733,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.4216,
+          "selective_risk": 0.0233,
+          "direct_precision": 0.9767,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.4559,
+          "selective_risk": 0.0215,
+          "direct_precision": 0.9785,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.4853,
+          "selective_risk": 0.0202,
+          "direct_precision": 0.9798,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.5637,
+          "selective_risk": 0.0174,
+          "direct_precision": 0.9826,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.6029,
+          "selective_risk": 0.0163,
+          "direct_precision": 0.9837,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.6422,
+          "selective_risk": 0.0153,
+          "direct_precision": 0.9847,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.6765,
+          "selective_risk": 0.0145,
+          "direct_precision": 0.9855,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.7598,
+          "selective_risk": 0.0129,
+          "direct_precision": 0.9871,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.8186,
+          "selective_risk": 0.012,
+          "direct_precision": 0.988,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.8382,
+          "selective_risk": 0.0117,
+          "direct_precision": 0.9883,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.848,
+          "selective_risk": 0.0173,
+          "direct_precision": 0.9827,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.8676,
+          "selective_risk": 0.0395,
+          "direct_precision": 0.9605,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.8725,
+          "selective_risk": 0.0449,
+          "direct_precision": 0.9551,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.8873,
+          "selective_risk": 0.0497,
+          "direct_precision": 0.9503,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8922,
+          "selective_risk": 0.0495,
+          "direct_precision": 0.9505,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.902,
+          "selective_risk": 0.0598,
+          "direct_precision": 0.9402,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.951,
+          "selective_risk": 0.1082,
+          "direct_precision": 0.8918,
+          "overall_wrong_rate": 0.1029
+        }
+      ]
+    },
+    "mavra_refreshed_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.549,
+          "selective_risk": 0.0089,
+          "direct_precision": 0.9911,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.652,
+          "selective_risk": 0.0075,
+          "direct_precision": 0.9925,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.7157,
+          "selective_risk": 0.0137,
+          "direct_precision": 0.9863,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.7696,
+          "selective_risk": 0.0127,
+          "direct_precision": 0.9873,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.7794,
+          "selective_risk": 0.0126,
+          "direct_precision": 0.9874,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.7892,
+          "selective_risk": 0.0124,
+          "direct_precision": 0.9876,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.799,
+          "selective_risk": 0.0123,
+          "direct_precision": 0.9877,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.8186,
+          "selective_risk": 0.012,
+          "direct_precision": 0.988,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.8284,
+          "selective_risk": 0.0118,
+          "direct_precision": 0.9882,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.8431,
+          "selective_risk": 0.0116,
+          "direct_precision": 0.9884,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.8431,
+          "selective_risk": 0.0116,
+          "direct_precision": 0.9884,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.8431,
+          "selective_risk": 0.0116,
+          "direct_precision": 0.9884,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.8529,
+          "selective_risk": 0.0115,
+          "direct_precision": 0.9885,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.8529,
+          "selective_risk": 0.0115,
+          "direct_precision": 0.9885,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.8578,
+          "selective_risk": 0.0171,
+          "direct_precision": 0.9829,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.8775,
+          "selective_risk": 0.0391,
+          "direct_precision": 0.9609,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.8824,
+          "selective_risk": 0.0444,
+          "direct_precision": 0.9556,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.902,
+          "selective_risk": 0.0543,
+          "direct_precision": 0.9457,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.9167,
+          "selective_risk": 0.0642,
+          "direct_precision": 0.9358,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.9265,
+          "selective_risk": 0.0741,
+          "direct_precision": 0.9259,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.1373,
+          "direct_precision": 0.8627,
+          "overall_wrong_rate": 0.1373
+        }
+      ]
+    },
+    "mavra_refreshed_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.5441,
+          "selective_risk": 0.009,
+          "direct_precision": 0.991,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.6471,
+          "selective_risk": 0.0076,
+          "direct_precision": 0.9924,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.7108,
+          "selective_risk": 0.0138,
+          "direct_precision": 0.9862,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.7598,
+          "selective_risk": 0.0129,
+          "direct_precision": 0.9871,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.7696,
+          "selective_risk": 0.0127,
+          "direct_precision": 0.9873,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.7794,
+          "selective_risk": 0.0126,
+          "direct_precision": 0.9874,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.7941,
+          "selective_risk": 0.0123,
+          "direct_precision": 0.9877,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.8137,
+          "selective_risk": 0.012,
+          "direct_precision": 0.988,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.8235,
+          "selective_risk": 0.0119,
+          "direct_precision": 0.9881,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.8333,
+          "selective_risk": 0.0118,
+          "direct_precision": 0.9882,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.8333,
+          "selective_risk": 0.0118,
+          "direct_precision": 0.9882,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.8333,
+          "selective_risk": 0.0118,
+          "direct_precision": 0.9882,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.8431,
+          "selective_risk": 0.0116,
+          "direct_precision": 0.9884,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.8431,
+          "selective_risk": 0.0116,
+          "direct_precision": 0.9884,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.848,
+          "selective_risk": 0.0173,
+          "direct_precision": 0.9827,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.8676,
+          "selective_risk": 0.0395,
+          "direct_precision": 0.9605,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.8725,
+          "selective_risk": 0.0449,
+          "direct_precision": 0.9551,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.8873,
+          "selective_risk": 0.0497,
+          "direct_precision": 0.9503,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.8922,
+          "selective_risk": 0.0495,
+          "direct_precision": 0.9505,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.902,
+          "selective_risk": 0.0598,
+          "direct_precision": 0.9402,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.9559,
+          "selective_risk": 0.1077,
+          "direct_precision": 0.8923,
+          "overall_wrong_rate": 0.1029
+        }
+      ]
+    }
+  },
+  "100": {
+    "mavra_zero_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1471,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1912,
+          "selective_risk": 0.2308,
+          "direct_precision": 0.7692,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.2451,
+          "selective_risk": 0.22,
+          "direct_precision": 0.78,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2647,
+          "selective_risk": 0.2037,
+          "direct_precision": 0.7963,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.3088,
+          "selective_risk": 0.2222,
+          "direct_precision": 0.7778,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.3431,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.3578,
+          "selective_risk": 0.2055,
+          "direct_precision": 0.7945,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.402,
+          "selective_risk": 0.1951,
+          "direct_precision": 0.8049,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.4559,
+          "selective_risk": 0.1828,
+          "direct_precision": 0.8172,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.4902,
+          "selective_risk": 0.17,
+          "direct_precision": 0.83,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.5294,
+          "selective_risk": 0.1574,
+          "direct_precision": 0.8426,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.6814,
+          "selective_risk": 0.1871,
+          "direct_precision": 0.8129,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.7647,
+          "selective_risk": 0.1795,
+          "direct_precision": 0.8205,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.7941,
+          "selective_risk": 0.179,
+          "direct_precision": 0.821,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.8431,
+          "selective_risk": 0.2209,
+          "direct_precision": 0.7791,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.8529,
+          "selective_risk": 0.2241,
+          "direct_precision": 0.7759,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.8676,
+          "selective_risk": 0.2316,
+          "direct_precision": 0.7684,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.8676,
+          "selective_risk": 0.2316,
+          "direct_precision": 0.7684,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8676,
+          "selective_risk": 0.2316,
+          "direct_precision": 0.7684,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.8873,
+          "selective_risk": 0.2431,
+          "direct_precision": 0.7569,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.3088,
+          "direct_precision": 0.6912,
+          "overall_wrong_rate": 0.3088
+        }
+      ]
+    },
+    "mavra_zero_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1422,
+          "selective_risk": 0.1724,
+          "direct_precision": 0.8276,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1814,
+          "selective_risk": 0.2162,
+          "direct_precision": 0.7838,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.2304,
+          "selective_risk": 0.1915,
+          "direct_precision": 0.8085,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.25,
+          "selective_risk": 0.1765,
+          "direct_precision": 0.8235,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.2941,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.3284,
+          "selective_risk": 0.1791,
+          "direct_precision": 0.8209,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.3431,
+          "selective_risk": 0.1857,
+          "direct_precision": 0.8143,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3824,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.4314,
+          "selective_risk": 0.1477,
+          "direct_precision": 0.8523,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.4657,
+          "selective_risk": 0.1368,
+          "direct_precision": 0.8632,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.5,
+          "selective_risk": 0.1275,
+          "direct_precision": 0.8725,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.6225,
+          "selective_risk": 0.1417,
+          "direct_precision": 0.8583,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.701,
+          "selective_risk": 0.1329,
+          "direct_precision": 0.8671,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.7304,
+          "selective_risk": 0.1342,
+          "direct_precision": 0.8658,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.7647,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.7745,
+          "selective_risk": 0.1709,
+          "direct_precision": 0.8291,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.7892,
+          "selective_risk": 0.1801,
+          "direct_precision": 0.8199,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.7892,
+          "selective_risk": 0.1801,
+          "direct_precision": 0.8199,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.7892,
+          "selective_risk": 0.1801,
+          "direct_precision": 0.8199,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.8039,
+          "selective_risk": 0.189,
+          "direct_precision": 0.811,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.8725,
+          "selective_risk": 0.2303,
+          "direct_precision": 0.7697,
+          "overall_wrong_rate": 0.201
+        }
+      ]
+    },
+    "mavra_zero_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.3922,
+          "selective_risk": 0.075,
+          "direct_precision": 0.925,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.4902,
+          "selective_risk": 0.08,
+          "direct_precision": 0.92,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.549,
+          "selective_risk": 0.0893,
+          "direct_precision": 0.9107,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.5931,
+          "selective_risk": 0.0909,
+          "direct_precision": 0.9091,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.6176,
+          "selective_risk": 0.1032,
+          "direct_precision": 0.8968,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.6471,
+          "selective_risk": 0.1212,
+          "direct_precision": 0.8788,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.701,
+          "selective_risk": 0.1399,
+          "direct_precision": 0.8601,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.7108,
+          "selective_risk": 0.1379,
+          "direct_precision": 0.8621,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.7255,
+          "selective_risk": 0.1419,
+          "direct_precision": 0.8581,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.7353,
+          "selective_risk": 0.1467,
+          "direct_precision": 0.8533,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.7353,
+          "selective_risk": 0.1467,
+          "direct_precision": 0.8533,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.7598,
+          "selective_risk": 0.1677,
+          "direct_precision": 0.8323,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.7647,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.7647,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.8186,
+          "selective_risk": 0.2156,
+          "direct_precision": 0.7844,
+          "overall_wrong_rate": 0.1765
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.8235,
+          "selective_risk": 0.2202,
+          "direct_precision": 0.7798,
+          "overall_wrong_rate": 0.1814
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.8382,
+          "selective_risk": 0.2281,
+          "direct_precision": 0.7719,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.8382,
+          "selective_risk": 0.2281,
+          "direct_precision": 0.7719,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.8382,
+          "selective_risk": 0.2281,
+          "direct_precision": 0.7719,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.8578,
+          "selective_risk": 0.24,
+          "direct_precision": 0.76,
+          "overall_wrong_rate": 0.2059
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.3284,
+          "direct_precision": 0.6716,
+          "overall_wrong_rate": 0.3284
+        }
+      ]
+    },
+    "mavra_zero_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.3922,
+          "selective_risk": 0.075,
+          "direct_precision": 0.925,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.4902,
+          "selective_risk": 0.08,
+          "direct_precision": 0.92,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.5441,
+          "selective_risk": 0.0811,
+          "direct_precision": 0.9189,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.5882,
+          "selective_risk": 0.0833,
+          "direct_precision": 0.9167,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.6078,
+          "selective_risk": 0.0968,
+          "direct_precision": 0.9032,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.6324,
+          "selective_risk": 0.1085,
+          "direct_precision": 0.8915,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.6863,
+          "selective_risk": 0.1286,
+          "direct_precision": 0.8714,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.6961,
+          "selective_risk": 0.1268,
+          "direct_precision": 0.8732,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.7108,
+          "selective_risk": 0.131,
+          "direct_precision": 0.869,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.7206,
+          "selective_risk": 0.1361,
+          "direct_precision": 0.8639,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.7206,
+          "selective_risk": 0.1361,
+          "direct_precision": 0.8639,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.7402,
+          "selective_risk": 0.1523,
+          "direct_precision": 0.8477,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.7451,
+          "selective_risk": 0.1513,
+          "direct_precision": 0.8487,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.7451,
+          "selective_risk": 0.1513,
+          "direct_precision": 0.8487,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.7794,
+          "selective_risk": 0.1824,
+          "direct_precision": 0.8176,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.7843,
+          "selective_risk": 0.1875,
+          "direct_precision": 0.8125,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.799,
+          "selective_risk": 0.1963,
+          "direct_precision": 0.8037,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.799,
+          "selective_risk": 0.1963,
+          "direct_precision": 0.8037,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.799,
+          "selective_risk": 0.1963,
+          "direct_precision": 0.8037,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.8088,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.1618
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.8971,
+          "selective_risk": 0.2568,
+          "direct_precision": 0.7432,
+          "overall_wrong_rate": 0.2304
+        }
+      ]
+    },
+    "mavra_refreshed_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1667,
+          "selective_risk": 0.0882,
+          "direct_precision": 0.9118,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.2108,
+          "selective_risk": 0.093,
+          "direct_precision": 0.907,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.25,
+          "selective_risk": 0.0784,
+          "direct_precision": 0.9216,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2745,
+          "selective_risk": 0.0714,
+          "direct_precision": 0.9286,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.3284,
+          "selective_risk": 0.0896,
+          "direct_precision": 0.9104,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.3578,
+          "selective_risk": 0.0822,
+          "direct_precision": 0.9178,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.3725,
+          "selective_risk": 0.1053,
+          "direct_precision": 0.8947,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.4265,
+          "selective_risk": 0.092,
+          "direct_precision": 0.908,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.4706,
+          "selective_risk": 0.0833,
+          "direct_precision": 0.9167,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.5,
+          "selective_risk": 0.0784,
+          "direct_precision": 0.9216,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.5441,
+          "selective_risk": 0.0721,
+          "direct_precision": 0.9279,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.6765,
+          "selective_risk": 0.1014,
+          "direct_precision": 0.8986,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.7696,
+          "selective_risk": 0.1146,
+          "direct_precision": 0.8854,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.8039,
+          "selective_risk": 0.1098,
+          "direct_precision": 0.8902,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.8333,
+          "selective_risk": 0.1294,
+          "direct_precision": 0.8706,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.8676,
+          "selective_risk": 0.1525,
+          "direct_precision": 0.8475,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.8775,
+          "selective_risk": 0.1564,
+          "direct_precision": 0.8436,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.8922,
+          "selective_risk": 0.1593,
+          "direct_precision": 0.8407,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8971,
+          "selective_risk": 0.1639,
+          "direct_precision": 0.8361,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.9069,
+          "selective_risk": 0.173,
+          "direct_precision": 0.827,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.2206,
+          "direct_precision": 0.7794,
+          "overall_wrong_rate": 0.2206
+        }
+      ]
+    },
+    "mavra_refreshed_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1618,
+          "selective_risk": 0.0606,
+          "direct_precision": 0.9394,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.201,
+          "selective_risk": 0.0732,
+          "direct_precision": 0.9268,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.2402,
+          "selective_risk": 0.0612,
+          "direct_precision": 0.9388,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2598,
+          "selective_risk": 0.0566,
+          "direct_precision": 0.9434,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.3088,
+          "selective_risk": 0.0635,
+          "direct_precision": 0.9365,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.3333,
+          "selective_risk": 0.0588,
+          "direct_precision": 0.9412,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.348,
+          "selective_risk": 0.0845,
+          "direct_precision": 0.9155,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.402,
+          "selective_risk": 0.0732,
+          "direct_precision": 0.9268,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.451,
+          "selective_risk": 0.0652,
+          "direct_precision": 0.9348,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.4755,
+          "selective_risk": 0.0619,
+          "direct_precision": 0.9381,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.5196,
+          "selective_risk": 0.0566,
+          "direct_precision": 0.9434,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.6373,
+          "selective_risk": 0.0769,
+          "direct_precision": 0.9231,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.7206,
+          "selective_risk": 0.0952,
+          "direct_precision": 0.9048,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.7549,
+          "selective_risk": 0.0909,
+          "direct_precision": 0.9091,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.7843,
+          "selective_risk": 0.1125,
+          "direct_precision": 0.8875,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.8088,
+          "selective_risk": 0.1273,
+          "direct_precision": 0.8727,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.8186,
+          "selective_risk": 0.1317,
+          "direct_precision": 0.8683,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.8333,
+          "selective_risk": 0.1353,
+          "direct_precision": 0.8647,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8382,
+          "selective_risk": 0.1345,
+          "direct_precision": 0.8655,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.848,
+          "selective_risk": 0.1445,
+          "direct_precision": 0.8555,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.9069,
+          "selective_risk": 0.173,
+          "direct_precision": 0.827,
+          "overall_wrong_rate": 0.1569
+        }
+      ]
+    },
+    "mavra_refreshed_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.4167,
+          "selective_risk": 0.0353,
+          "direct_precision": 0.9647,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.5049,
+          "selective_risk": 0.0388,
+          "direct_precision": 0.9612,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.5637,
+          "selective_risk": 0.0348,
+          "direct_precision": 0.9652,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.6127,
+          "selective_risk": 0.048,
+          "direct_precision": 0.952,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.6324,
+          "selective_risk": 0.0465,
+          "direct_precision": 0.9535,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.6667,
+          "selective_risk": 0.0735,
+          "direct_precision": 0.9265,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.7157,
+          "selective_risk": 0.089,
+          "direct_precision": 0.911,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.7353,
+          "selective_risk": 0.0933,
+          "direct_precision": 0.9067,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.75,
+          "selective_risk": 0.098,
+          "direct_precision": 0.902,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.7647,
+          "selective_risk": 0.1026,
+          "direct_precision": 0.8974,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.7647,
+          "selective_risk": 0.1026,
+          "direct_precision": 0.8974,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.7745,
+          "selective_risk": 0.1076,
+          "direct_precision": 0.8924,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.7843,
+          "selective_risk": 0.1062,
+          "direct_precision": 0.8938,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.7892,
+          "selective_risk": 0.1056,
+          "direct_precision": 0.8944,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.8088,
+          "selective_risk": 0.1212,
+          "direct_precision": 0.8788,
+          "overall_wrong_rate": 0.098
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.8431,
+          "selective_risk": 0.1453,
+          "direct_precision": 0.8547,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.848,
+          "selective_risk": 0.1503,
+          "direct_precision": 0.8497,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.8676,
+          "selective_risk": 0.1525,
+          "direct_precision": 0.8475,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.8775,
+          "selective_risk": 0.1564,
+          "direct_precision": 0.8436,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.8922,
+          "selective_risk": 0.1703,
+          "direct_precision": 0.8297,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.2353,
+          "direct_precision": 0.7647,
+          "overall_wrong_rate": 0.2353
+        }
+      ]
+    },
+    "mavra_refreshed_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.4069,
+          "selective_risk": 0.0361,
+          "direct_precision": 0.9639,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.4902,
+          "selective_risk": 0.04,
+          "direct_precision": 0.96,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.549,
+          "selective_risk": 0.0357,
+          "direct_precision": 0.9643,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.598,
+          "selective_risk": 0.0492,
+          "direct_precision": 0.9508,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.6176,
+          "selective_risk": 0.0476,
+          "direct_precision": 0.9524,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.6471,
+          "selective_risk": 0.0682,
+          "direct_precision": 0.9318,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.6961,
+          "selective_risk": 0.0845,
+          "direct_precision": 0.9155,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.7108,
+          "selective_risk": 0.0828,
+          "direct_precision": 0.9172,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.7255,
+          "selective_risk": 0.0878,
+          "direct_precision": 0.9122,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.7451,
+          "selective_risk": 0.0921,
+          "direct_precision": 0.9079,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.7451,
+          "selective_risk": 0.0921,
+          "direct_precision": 0.9079,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.7549,
+          "selective_risk": 0.0974,
+          "direct_precision": 0.9026,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.7647,
+          "selective_risk": 0.0962,
+          "direct_precision": 0.9038,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.7696,
+          "selective_risk": 0.0955,
+          "direct_precision": 0.9045,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.7892,
+          "selective_risk": 0.1118,
+          "direct_precision": 0.8882,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.8137,
+          "selective_risk": 0.1265,
+          "direct_precision": 0.8735,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.8186,
+          "selective_risk": 0.1317,
+          "direct_precision": 0.8683,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.8333,
+          "selective_risk": 0.1294,
+          "direct_precision": 0.8706,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.8382,
+          "selective_risk": 0.1287,
+          "direct_precision": 0.8713,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.8529,
+          "selective_risk": 0.1437,
+          "direct_precision": 0.8563,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.9118,
+          "selective_risk": 0.172,
+          "direct_precision": 0.828,
+          "overall_wrong_rate": 0.1569
+        }
+      ]
+    }
+  },
+  "500": {
+    "mavra_zero_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1324,
+          "selective_risk": 0.3333,
+          "direct_precision": 0.6667,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1569,
+          "selective_risk": 0.375,
+          "direct_precision": 0.625,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.1863,
+          "selective_risk": 0.3684,
+          "direct_precision": 0.6316,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2206,
+          "selective_risk": 0.3556,
+          "direct_precision": 0.6444,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.2549,
+          "selective_risk": 0.3654,
+          "direct_precision": 0.6346,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2745,
+          "selective_risk": 0.375,
+          "direct_precision": 0.625,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.2892,
+          "selective_risk": 0.3729,
+          "direct_precision": 0.6271,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3039,
+          "selective_risk": 0.3548,
+          "direct_precision": 0.6452,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.3431,
+          "selective_risk": 0.3286,
+          "direct_precision": 0.6714,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.3775,
+          "selective_risk": 0.3247,
+          "direct_precision": 0.6753,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.402,
+          "selective_risk": 0.3049,
+          "direct_precision": 0.6951,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.5637,
+          "selective_risk": 0.3565,
+          "direct_precision": 0.6435,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.6471,
+          "selective_risk": 0.3636,
+          "direct_precision": 0.6364,
+          "overall_wrong_rate": 0.2353
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.6912,
+          "selective_risk": 0.3617,
+          "direct_precision": 0.6383,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.7696,
+          "selective_risk": 0.4013,
+          "direct_precision": 0.5987,
+          "overall_wrong_rate": 0.3088
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.7892,
+          "selective_risk": 0.4099,
+          "direct_precision": 0.5901,
+          "overall_wrong_rate": 0.3235
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.7941,
+          "selective_risk": 0.4074,
+          "direct_precision": 0.5926,
+          "overall_wrong_rate": 0.3235
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.8137,
+          "selective_risk": 0.4217,
+          "direct_precision": 0.5783,
+          "overall_wrong_rate": 0.3431
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8235,
+          "selective_risk": 0.4226,
+          "direct_precision": 0.5774,
+          "overall_wrong_rate": 0.348
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.8382,
+          "selective_risk": 0.4269,
+          "direct_precision": 0.5731,
+          "overall_wrong_rate": 0.3578
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.4902,
+          "direct_precision": 0.5098,
+          "overall_wrong_rate": 0.4902
+        }
+      ]
+    },
+    "mavra_zero_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.0931,
+          "selective_risk": 0.0526,
+          "direct_precision": 0.9474,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1029,
+          "selective_risk": 0.0476,
+          "direct_precision": 0.9524,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.1324,
+          "selective_risk": 0.1111,
+          "direct_precision": 0.8889,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.1667,
+          "selective_risk": 0.1471,
+          "direct_precision": 0.8529,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.201,
+          "selective_risk": 0.1951,
+          "direct_precision": 0.8049,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2157,
+          "selective_risk": 0.2045,
+          "direct_precision": 0.7955,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.2255,
+          "selective_risk": 0.2174,
+          "direct_precision": 0.7826,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.2402,
+          "selective_risk": 0.2041,
+          "direct_precision": 0.7959,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.2745,
+          "selective_risk": 0.1786,
+          "direct_precision": 0.8214,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.3039,
+          "selective_risk": 0.1774,
+          "direct_precision": 0.8226,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.3235,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.4706,
+          "selective_risk": 0.25,
+          "direct_precision": 0.75,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.5441,
+          "selective_risk": 0.2613,
+          "direct_precision": 0.7387,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.5833,
+          "selective_risk": 0.2689,
+          "direct_precision": 0.7311,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.6373,
+          "selective_risk": 0.3,
+          "direct_precision": 0.7,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.6471,
+          "selective_risk": 0.303,
+          "direct_precision": 0.697,
+          "overall_wrong_rate": 0.1961
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.652,
+          "selective_risk": 0.3008,
+          "direct_precision": 0.6992,
+          "overall_wrong_rate": 0.1961
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.6618,
+          "selective_risk": 0.3111,
+          "direct_precision": 0.6889,
+          "overall_wrong_rate": 0.2059
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.6667,
+          "selective_risk": 0.3088,
+          "direct_precision": 0.6912,
+          "overall_wrong_rate": 0.2059
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.6765,
+          "selective_risk": 0.3116,
+          "direct_precision": 0.6884,
+          "overall_wrong_rate": 0.2108
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.7598,
+          "selective_risk": 0.3484,
+          "direct_precision": 0.6516,
+          "overall_wrong_rate": 0.2647
+        }
+      ]
+    },
+    "mavra_zero_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.152,
+          "selective_risk": 0.129,
+          "direct_precision": 0.871,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.2255,
+          "selective_risk": 0.1087,
+          "direct_precision": 0.8913,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.2794,
+          "selective_risk": 0.1053,
+          "direct_precision": 0.8947,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.3333,
+          "selective_risk": 0.1324,
+          "direct_precision": 0.8676,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.3873,
+          "selective_risk": 0.1646,
+          "direct_precision": 0.8354,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.4559,
+          "selective_risk": 0.2473,
+          "direct_precision": 0.7527,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.4902,
+          "selective_risk": 0.27,
+          "direct_precision": 0.73,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.5343,
+          "selective_risk": 0.2752,
+          "direct_precision": 0.7248,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.5588,
+          "selective_risk": 0.2895,
+          "direct_precision": 0.7105,
+          "overall_wrong_rate": 0.1618
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.5784,
+          "selective_risk": 0.2966,
+          "direct_precision": 0.7034,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.5784,
+          "selective_risk": 0.2966,
+          "direct_precision": 0.7034,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.6127,
+          "selective_risk": 0.328,
+          "direct_precision": 0.672,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.6275,
+          "selective_risk": 0.3359,
+          "direct_precision": 0.6641,
+          "overall_wrong_rate": 0.2108
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.6324,
+          "selective_risk": 0.3411,
+          "direct_precision": 0.6589,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.7108,
+          "selective_risk": 0.4,
+          "direct_precision": 0.6,
+          "overall_wrong_rate": 0.2843
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.7402,
+          "selective_risk": 0.4238,
+          "direct_precision": 0.5762,
+          "overall_wrong_rate": 0.3137
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.7451,
+          "selective_risk": 0.4211,
+          "direct_precision": 0.5789,
+          "overall_wrong_rate": 0.3137
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.75,
+          "selective_risk": 0.4248,
+          "direct_precision": 0.5752,
+          "overall_wrong_rate": 0.3186
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.7696,
+          "selective_risk": 0.4331,
+          "direct_precision": 0.5669,
+          "overall_wrong_rate": 0.3333
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.7892,
+          "selective_risk": 0.4348,
+          "direct_precision": 0.5652,
+          "overall_wrong_rate": 0.3431
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.5294,
+          "direct_precision": 0.4706,
+          "overall_wrong_rate": 0.5294
+        }
+      ]
+    },
+    "mavra_zero_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.1373,
+          "selective_risk": 0.0357,
+          "direct_precision": 0.9643,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.201,
+          "selective_risk": 0.0244,
+          "direct_precision": 0.9756,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.2598,
+          "selective_risk": 0.0377,
+          "direct_precision": 0.9623,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.3088,
+          "selective_risk": 0.0635,
+          "direct_precision": 0.9365,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.3578,
+          "selective_risk": 0.0959,
+          "direct_precision": 0.9041,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.4167,
+          "selective_risk": 0.1765,
+          "direct_precision": 0.8235,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.451,
+          "selective_risk": 0.2065,
+          "direct_precision": 0.7935,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.4902,
+          "selective_risk": 0.21,
+          "direct_precision": 0.79,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.5098,
+          "selective_risk": 0.2308,
+          "direct_precision": 0.7692,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.5196,
+          "selective_risk": 0.2358,
+          "direct_precision": 0.7642,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.5196,
+          "selective_risk": 0.2358,
+          "direct_precision": 0.7642,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.5539,
+          "selective_risk": 0.2655,
+          "direct_precision": 0.7345,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.5588,
+          "selective_risk": 0.2632,
+          "direct_precision": 0.7368,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.5637,
+          "selective_risk": 0.2696,
+          "direct_precision": 0.7304,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.6029,
+          "selective_risk": 0.3008,
+          "direct_precision": 0.6992,
+          "overall_wrong_rate": 0.1814
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.6078,
+          "selective_risk": 0.3065,
+          "direct_precision": 0.6935,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.6127,
+          "selective_risk": 0.304,
+          "direct_precision": 0.696,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.6176,
+          "selective_risk": 0.3095,
+          "direct_precision": 0.6905,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.6225,
+          "selective_risk": 0.3071,
+          "direct_precision": 0.6929,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.6373,
+          "selective_risk": 0.3077,
+          "direct_precision": 0.6923,
+          "overall_wrong_rate": 0.1961
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.7206,
+          "selective_risk": 0.3537,
+          "direct_precision": 0.6463,
+          "overall_wrong_rate": 0.2549
+        }
+      ]
+    },
+    "mavra_refreshed_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1275,
+          "selective_risk": 0.1538,
+          "direct_precision": 0.8462,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1716,
+          "selective_risk": 0.1429,
+          "direct_precision": 0.8571,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.1961,
+          "selective_risk": 0.15,
+          "direct_precision": 0.85,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2157,
+          "selective_risk": 0.1364,
+          "direct_precision": 0.8636,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.2598,
+          "selective_risk": 0.1887,
+          "direct_precision": 0.8113,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2794,
+          "selective_risk": 0.2105,
+          "direct_precision": 0.7895,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.3039,
+          "selective_risk": 0.2258,
+          "direct_precision": 0.7742,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3333,
+          "selective_risk": 0.2206,
+          "direct_precision": 0.7794,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.3676,
+          "selective_risk": 0.2133,
+          "direct_precision": 0.7867,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.402,
+          "selective_risk": 0.2195,
+          "direct_precision": 0.7805,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.4265,
+          "selective_risk": 0.2184,
+          "direct_precision": 0.7816,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.5833,
+          "selective_risk": 0.2605,
+          "direct_precision": 0.7395,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.6912,
+          "selective_risk": 0.2837,
+          "direct_precision": 0.7163,
+          "overall_wrong_rate": 0.1961
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.7451,
+          "selective_risk": 0.2763,
+          "direct_precision": 0.7237,
+          "overall_wrong_rate": 0.2059
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.8088,
+          "selective_risk": 0.2848,
+          "direct_precision": 0.7152,
+          "overall_wrong_rate": 0.2304
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.8382,
+          "selective_risk": 0.2982,
+          "direct_precision": 0.7018,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.8382,
+          "selective_risk": 0.2982,
+          "direct_precision": 0.7018,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.8529,
+          "selective_risk": 0.2931,
+          "direct_precision": 0.7069,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8578,
+          "selective_risk": 0.2971,
+          "direct_precision": 0.7029,
+          "overall_wrong_rate": 0.2549
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.8676,
+          "selective_risk": 0.3051,
+          "direct_precision": 0.6949,
+          "overall_wrong_rate": 0.2647
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.3725,
+          "direct_precision": 0.6275,
+          "overall_wrong_rate": 0.3725
+        }
+      ]
+    },
+    "mavra_refreshed_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1225,
+          "selective_risk": 0.12,
+          "direct_precision": 0.88,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1667,
+          "selective_risk": 0.1176,
+          "direct_precision": 0.8824,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.1912,
+          "selective_risk": 0.1282,
+          "direct_precision": 0.8718,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2108,
+          "selective_risk": 0.1163,
+          "direct_precision": 0.8837,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.25,
+          "selective_risk": 0.1569,
+          "direct_precision": 0.8431,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2647,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.2892,
+          "selective_risk": 0.1864,
+          "direct_precision": 0.8136,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3186,
+          "selective_risk": 0.1846,
+          "direct_precision": 0.8154,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.3578,
+          "selective_risk": 0.1918,
+          "direct_precision": 0.8082,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.3922,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.4118,
+          "selective_risk": 0.1905,
+          "direct_precision": 0.8095,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.5441,
+          "selective_risk": 0.2072,
+          "direct_precision": 0.7928,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.6422,
+          "selective_risk": 0.2366,
+          "direct_precision": 0.7634,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.6912,
+          "selective_risk": 0.234,
+          "direct_precision": 0.766,
+          "overall_wrong_rate": 0.1618
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.7549,
+          "selective_risk": 0.2403,
+          "direct_precision": 0.7597,
+          "overall_wrong_rate": 0.1814
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.7745,
+          "selective_risk": 0.2468,
+          "direct_precision": 0.7532,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.7745,
+          "selective_risk": 0.2468,
+          "direct_precision": 0.7532,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.7892,
+          "selective_risk": 0.2422,
+          "direct_precision": 0.7578,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.7941,
+          "selective_risk": 0.2469,
+          "direct_precision": 0.7531,
+          "overall_wrong_rate": 0.1961
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.8039,
+          "selective_risk": 0.2561,
+          "direct_precision": 0.7439,
+          "overall_wrong_rate": 0.2059
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.8873,
+          "selective_risk": 0.2983,
+          "direct_precision": 0.7017,
+          "overall_wrong_rate": 0.2647
+        }
+      ]
+    },
+    "mavra_refreshed_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.2059,
+          "selective_risk": 0.0476,
+          "direct_precision": 0.9524,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.2941,
+          "selective_risk": 0.0833,
+          "direct_precision": 0.9167,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.3627,
+          "selective_risk": 0.0676,
+          "direct_precision": 0.9324,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.4167,
+          "selective_risk": 0.0706,
+          "direct_precision": 0.9294,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.4706,
+          "selective_risk": 0.0833,
+          "direct_precision": 0.9167,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.5294,
+          "selective_risk": 0.1389,
+          "direct_precision": 0.8611,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.5735,
+          "selective_risk": 0.1624,
+          "direct_precision": 0.8376,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.6225,
+          "selective_risk": 0.1811,
+          "direct_precision": 0.8189,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.6667,
+          "selective_risk": 0.1985,
+          "direct_precision": 0.8015,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.6961,
+          "selective_risk": 0.2113,
+          "direct_precision": 0.7887,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.6961,
+          "selective_risk": 0.2113,
+          "direct_precision": 0.7887,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.7108,
+          "selective_risk": 0.2276,
+          "direct_precision": 0.7724,
+          "overall_wrong_rate": 0.1618
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.7157,
+          "selective_risk": 0.226,
+          "direct_precision": 0.774,
+          "overall_wrong_rate": 0.1618
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.7255,
+          "selective_risk": 0.223,
+          "direct_precision": 0.777,
+          "overall_wrong_rate": 0.1618
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.7843,
+          "selective_risk": 0.2375,
+          "direct_precision": 0.7625,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.8235,
+          "selective_risk": 0.2619,
+          "direct_precision": 0.7381,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.8235,
+          "selective_risk": 0.2619,
+          "direct_precision": 0.7381,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.8382,
+          "selective_risk": 0.2573,
+          "direct_precision": 0.7427,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.8431,
+          "selective_risk": 0.2616,
+          "direct_precision": 0.7384,
+          "overall_wrong_rate": 0.2206
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.8578,
+          "selective_risk": 0.2743,
+          "direct_precision": 0.7257,
+          "overall_wrong_rate": 0.2353
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.3431,
+          "direct_precision": 0.6569,
+          "overall_wrong_rate": 0.3431
+        }
+      ]
+    },
+    "mavra_refreshed_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.2059,
+          "selective_risk": 0.0476,
+          "direct_precision": 0.9524,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.2843,
+          "selective_risk": 0.0862,
+          "direct_precision": 0.9138,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.3578,
+          "selective_risk": 0.0685,
+          "direct_precision": 0.9315,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.4167,
+          "selective_risk": 0.0706,
+          "direct_precision": 0.9294,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.4657,
+          "selective_risk": 0.0737,
+          "direct_precision": 0.9263,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.5147,
+          "selective_risk": 0.1238,
+          "direct_precision": 0.8762,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.549,
+          "selective_risk": 0.1429,
+          "direct_precision": 0.8571,
+          "overall_wrong_rate": 0.0784
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.5931,
+          "selective_risk": 0.157,
+          "direct_precision": 0.843,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.6324,
+          "selective_risk": 0.1783,
+          "direct_precision": 0.8217,
+          "overall_wrong_rate": 0.1127
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.6569,
+          "selective_risk": 0.1866,
+          "direct_precision": 0.8134,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.6569,
+          "selective_risk": 0.1866,
+          "direct_precision": 0.8134,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.6716,
+          "selective_risk": 0.2044,
+          "direct_precision": 0.7956,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.6765,
+          "selective_risk": 0.2029,
+          "direct_precision": 0.7971,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.6863,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.7402,
+          "selective_risk": 0.2053,
+          "direct_precision": 0.7947,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.7696,
+          "selective_risk": 0.2229,
+          "direct_precision": 0.7771,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.7696,
+          "selective_risk": 0.2229,
+          "direct_precision": 0.7771,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.7843,
+          "selective_risk": 0.2188,
+          "direct_precision": 0.7812,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.7892,
+          "selective_risk": 0.2236,
+          "direct_precision": 0.7764,
+          "overall_wrong_rate": 0.1765
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.799,
+          "selective_risk": 0.2331,
+          "direct_precision": 0.7669,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.8775,
+          "selective_risk": 0.2626,
+          "direct_precision": 0.7374,
+          "overall_wrong_rate": 0.2304
+        }
+      ]
+    }
+  },
+  "1000": {
+    "mavra_zero_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.2304,
+          "selective_risk": 0.234,
+          "direct_precision": 0.766,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.2598,
+          "selective_risk": 0.2642,
+          "direct_precision": 0.7358,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.2843,
+          "selective_risk": 0.2931,
+          "direct_precision": 0.7069,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.3039,
+          "selective_risk": 0.3065,
+          "direct_precision": 0.6935,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.3284,
+          "selective_risk": 0.3134,
+          "direct_precision": 0.6866,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.348,
+          "selective_risk": 0.338,
+          "direct_precision": 0.662,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.3676,
+          "selective_risk": 0.36,
+          "direct_precision": 0.64,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3824,
+          "selective_risk": 0.359,
+          "direct_precision": 0.641,
+          "overall_wrong_rate": 0.1373
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.4069,
+          "selective_risk": 0.3494,
+          "direct_precision": 0.6506,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.4314,
+          "selective_risk": 0.3523,
+          "direct_precision": 0.6477,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.451,
+          "selective_risk": 0.337,
+          "direct_precision": 0.663,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.5833,
+          "selective_risk": 0.395,
+          "direct_precision": 0.605,
+          "overall_wrong_rate": 0.2304
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.6422,
+          "selective_risk": 0.4198,
+          "direct_precision": 0.5802,
+          "overall_wrong_rate": 0.2696
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.6716,
+          "selective_risk": 0.438,
+          "direct_precision": 0.562,
+          "overall_wrong_rate": 0.2941
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.7549,
+          "selective_risk": 0.474,
+          "direct_precision": 0.526,
+          "overall_wrong_rate": 0.3578
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.7843,
+          "selective_risk": 0.4875,
+          "direct_precision": 0.5125,
+          "overall_wrong_rate": 0.3824
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.7892,
+          "selective_risk": 0.4845,
+          "direct_precision": 0.5155,
+          "overall_wrong_rate": 0.3824
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.799,
+          "selective_risk": 0.4908,
+          "direct_precision": 0.5092,
+          "overall_wrong_rate": 0.3922
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.8137,
+          "selective_risk": 0.494,
+          "direct_precision": 0.506,
+          "overall_wrong_rate": 0.402
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.8333,
+          "selective_risk": 0.5059,
+          "direct_precision": 0.4941,
+          "overall_wrong_rate": 0.4216
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.5441,
+          "direct_precision": 0.4559,
+          "overall_wrong_rate": 0.5441
+        }
+      ]
+    },
+    "mavra_zero_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1814,
+          "selective_risk": 0.027,
+          "direct_precision": 0.973,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1961,
+          "selective_risk": 0.025,
+          "direct_precision": 0.975,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.2157,
+          "selective_risk": 0.0682,
+          "direct_precision": 0.9318,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2353,
+          "selective_risk": 0.1042,
+          "direct_precision": 0.8958,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.2598,
+          "selective_risk": 0.1321,
+          "direct_precision": 0.8679,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2745,
+          "selective_risk": 0.1607,
+          "direct_precision": 0.8393,
+          "overall_wrong_rate": 0.0441
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.2892,
+          "selective_risk": 0.1864,
+          "direct_precision": 0.8136,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3039,
+          "selective_risk": 0.1935,
+          "direct_precision": 0.8065,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.3235,
+          "selective_risk": 0.1818,
+          "direct_precision": 0.8182,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.3431,
+          "selective_risk": 0.1857,
+          "direct_precision": 0.8143,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.3627,
+          "selective_risk": 0.1757,
+          "direct_precision": 0.8243,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.4804,
+          "selective_risk": 0.2653,
+          "direct_precision": 0.7347,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.5245,
+          "selective_risk": 0.2897,
+          "direct_precision": 0.7103,
+          "overall_wrong_rate": 0.152
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.549,
+          "selective_risk": 0.3214,
+          "direct_precision": 0.6786,
+          "overall_wrong_rate": 0.1765
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.598,
+          "selective_risk": 0.3443,
+          "direct_precision": 0.6557,
+          "overall_wrong_rate": 0.2059
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.6127,
+          "selective_risk": 0.352,
+          "direct_precision": 0.648,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.6176,
+          "selective_risk": 0.3492,
+          "direct_precision": 0.6508,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.6275,
+          "selective_risk": 0.3594,
+          "direct_precision": 0.6406,
+          "overall_wrong_rate": 0.2255
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.6324,
+          "selective_risk": 0.3566,
+          "direct_precision": 0.6434,
+          "overall_wrong_rate": 0.2255
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.6373,
+          "selective_risk": 0.3615,
+          "direct_precision": 0.6385,
+          "overall_wrong_rate": 0.2304
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.75,
+          "selective_risk": 0.3987,
+          "direct_precision": 0.6013,
+          "overall_wrong_rate": 0.299
+        }
+      ]
+    },
+    "mavra_zero_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.1422,
+          "selective_risk": 0.1379,
+          "direct_precision": 0.8621,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.2059,
+          "selective_risk": 0.119,
+          "direct_precision": 0.881,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.2451,
+          "selective_risk": 0.14,
+          "direct_precision": 0.86,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.2892,
+          "selective_risk": 0.1695,
+          "direct_precision": 0.8305,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.3382,
+          "selective_risk": 0.2029,
+          "direct_precision": 0.7971,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.3922,
+          "selective_risk": 0.3,
+          "direct_precision": 0.7,
+          "overall_wrong_rate": 0.1176
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.4265,
+          "selective_risk": 0.3333,
+          "direct_precision": 0.6667,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.4559,
+          "selective_risk": 0.3441,
+          "direct_precision": 0.6559,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.4804,
+          "selective_risk": 0.3673,
+          "direct_precision": 0.6327,
+          "overall_wrong_rate": 0.1765
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.5049,
+          "selective_risk": 0.3786,
+          "direct_precision": 0.6214,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.5049,
+          "selective_risk": 0.3786,
+          "direct_precision": 0.6214,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.5539,
+          "selective_risk": 0.4248,
+          "direct_precision": 0.5752,
+          "overall_wrong_rate": 0.2353
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.5686,
+          "selective_risk": 0.431,
+          "direct_precision": 0.569,
+          "overall_wrong_rate": 0.2451
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.5735,
+          "selective_risk": 0.4359,
+          "direct_precision": 0.5641,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.6716,
+          "selective_risk": 0.5036,
+          "direct_precision": 0.4964,
+          "overall_wrong_rate": 0.3382
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.7059,
+          "selective_risk": 0.5278,
+          "direct_precision": 0.4722,
+          "overall_wrong_rate": 0.3725
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.7157,
+          "selective_risk": 0.5274,
+          "direct_precision": 0.4726,
+          "overall_wrong_rate": 0.3775
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.7255,
+          "selective_risk": 0.5338,
+          "direct_precision": 0.4662,
+          "overall_wrong_rate": 0.3873
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.7451,
+          "selective_risk": 0.5395,
+          "direct_precision": 0.4605,
+          "overall_wrong_rate": 0.402
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.7598,
+          "selective_risk": 0.5419,
+          "direct_precision": 0.4581,
+          "overall_wrong_rate": 0.4118
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.6275,
+          "direct_precision": 0.3725,
+          "overall_wrong_rate": 0.6275
+        }
+      ]
+    },
+    "mavra_zero_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.1225,
+          "selective_risk": 0.0,
+          "direct_precision": 1.0,
+          "overall_wrong_rate": 0.0
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.1814,
+          "selective_risk": 0.0,
+          "direct_precision": 1.0,
+          "overall_wrong_rate": 0.0
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.2157,
+          "selective_risk": 0.0227,
+          "direct_precision": 0.9773,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.2549,
+          "selective_risk": 0.0577,
+          "direct_precision": 0.9423,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.299,
+          "selective_risk": 0.0984,
+          "direct_precision": 0.9016,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.3431,
+          "selective_risk": 0.2,
+          "direct_precision": 0.8,
+          "overall_wrong_rate": 0.0686
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.3775,
+          "selective_risk": 0.2468,
+          "direct_precision": 0.7532,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.402,
+          "selective_risk": 0.2561,
+          "direct_precision": 0.7439,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.4216,
+          "selective_risk": 0.2907,
+          "direct_precision": 0.7093,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.4412,
+          "selective_risk": 0.3,
+          "direct_precision": 0.7,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.4412,
+          "selective_risk": 0.3,
+          "direct_precision": 0.7,
+          "overall_wrong_rate": 0.1324
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.4804,
+          "selective_risk": 0.3469,
+          "direct_precision": 0.6531,
+          "overall_wrong_rate": 0.1667
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.4853,
+          "selective_risk": 0.3434,
+          "direct_precision": 0.6566,
+          "overall_wrong_rate": 0.1667
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.4902,
+          "selective_risk": 0.35,
+          "direct_precision": 0.65,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.5196,
+          "selective_risk": 0.3679,
+          "direct_precision": 0.6321,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.5294,
+          "selective_risk": 0.3796,
+          "direct_precision": 0.6204,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.5343,
+          "selective_risk": 0.3761,
+          "direct_precision": 0.6239,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.5441,
+          "selective_risk": 0.3874,
+          "direct_precision": 0.6126,
+          "overall_wrong_rate": 0.2108
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.549,
+          "selective_risk": 0.3839,
+          "direct_precision": 0.6161,
+          "overall_wrong_rate": 0.2108
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.5588,
+          "selective_risk": 0.386,
+          "direct_precision": 0.614,
+          "overall_wrong_rate": 0.2157
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.6373,
+          "selective_risk": 0.4231,
+          "direct_precision": 0.5769,
+          "overall_wrong_rate": 0.2696
+        }
+      ]
+    },
+    "mavra_refreshed_v1": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1422,
+          "selective_risk": 0.1379,
+          "direct_precision": 0.8621,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1912,
+          "selective_risk": 0.1538,
+          "direct_precision": 0.8462,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.2059,
+          "selective_risk": 0.1667,
+          "direct_precision": 0.8333,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.2157,
+          "selective_risk": 0.1591,
+          "direct_precision": 0.8409,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.2353,
+          "selective_risk": 0.2083,
+          "direct_precision": 0.7917,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2647,
+          "selective_risk": 0.2407,
+          "direct_precision": 0.7593,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.2941,
+          "selective_risk": 0.2833,
+          "direct_precision": 0.7167,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.3137,
+          "selective_risk": 0.2812,
+          "direct_precision": 0.7188,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.3431,
+          "selective_risk": 0.2714,
+          "direct_precision": 0.7286,
+          "overall_wrong_rate": 0.0931
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.3676,
+          "selective_risk": 0.28,
+          "direct_precision": 0.72,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.3873,
+          "selective_risk": 0.2785,
+          "direct_precision": 0.7215,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.5049,
+          "selective_risk": 0.3301,
+          "direct_precision": 0.6699,
+          "overall_wrong_rate": 0.1667
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.5833,
+          "selective_risk": 0.3782,
+          "direct_precision": 0.6218,
+          "overall_wrong_rate": 0.2206
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.6127,
+          "selective_risk": 0.376,
+          "direct_precision": 0.624,
+          "overall_wrong_rate": 0.2304
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.6912,
+          "selective_risk": 0.3972,
+          "direct_precision": 0.6028,
+          "overall_wrong_rate": 0.2745
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.7255,
+          "selective_risk": 0.4122,
+          "direct_precision": 0.5878,
+          "overall_wrong_rate": 0.299
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.7304,
+          "selective_risk": 0.4094,
+          "direct_precision": 0.5906,
+          "overall_wrong_rate": 0.299
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.7451,
+          "selective_risk": 0.4013,
+          "direct_precision": 0.5987,
+          "overall_wrong_rate": 0.299
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.7549,
+          "selective_risk": 0.4026,
+          "direct_precision": 0.5974,
+          "overall_wrong_rate": 0.3039
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.7745,
+          "selective_risk": 0.4177,
+          "direct_precision": 0.5823,
+          "overall_wrong_rate": 0.3235
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.4951,
+          "direct_precision": 0.5049,
+          "overall_wrong_rate": 0.4951
+        }
+      ]
+    },
+    "mavra_refreshed_wc": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.45,
+          "coverage": 0.1324,
+          "selective_risk": 0.0741,
+          "direct_precision": 0.9259,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.465,
+          "coverage": 0.1765,
+          "selective_risk": 0.0833,
+          "direct_precision": 0.9167,
+          "overall_wrong_rate": 0.0147
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.48,
+          "coverage": 0.1912,
+          "selective_risk": 0.1026,
+          "direct_precision": 0.8974,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.495,
+          "coverage": 0.201,
+          "selective_risk": 0.0976,
+          "direct_precision": 0.9024,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.51,
+          "coverage": 0.2108,
+          "selective_risk": 0.1163,
+          "direct_precision": 0.8837,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.525,
+          "coverage": 0.2353,
+          "selective_risk": 0.1458,
+          "direct_precision": 0.8542,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.54,
+          "coverage": 0.2598,
+          "selective_risk": 0.1887,
+          "direct_precision": 0.8113,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.555,
+          "coverage": 0.2794,
+          "selective_risk": 0.193,
+          "direct_precision": 0.807,
+          "overall_wrong_rate": 0.0539
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.57,
+          "coverage": 0.3137,
+          "selective_risk": 0.2031,
+          "direct_precision": 0.7969,
+          "overall_wrong_rate": 0.0637
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.585,
+          "coverage": 0.3382,
+          "selective_risk": 0.2174,
+          "direct_precision": 0.7826,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.6,
+          "coverage": 0.3529,
+          "selective_risk": 0.2083,
+          "direct_precision": 0.7917,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.641,
+          "coverage": 0.4461,
+          "selective_risk": 0.2418,
+          "direct_precision": 0.7582,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.682,
+          "coverage": 0.5049,
+          "selective_risk": 0.2913,
+          "direct_precision": 0.7087,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.723,
+          "coverage": 0.5343,
+          "selective_risk": 0.2936,
+          "direct_precision": 0.7064,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.764,
+          "coverage": 0.5882,
+          "selective_risk": 0.3,
+          "direct_precision": 0.7,
+          "overall_wrong_rate": 0.1765
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.805,
+          "coverage": 0.6078,
+          "selective_risk": 0.3065,
+          "direct_precision": 0.6935,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 0.846,
+          "coverage": 0.6127,
+          "selective_risk": 0.304,
+          "direct_precision": 0.696,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 0.887,
+          "coverage": 0.6275,
+          "selective_risk": 0.2969,
+          "direct_precision": 0.7031,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 0.928,
+          "coverage": 0.6373,
+          "selective_risk": 0.3,
+          "direct_precision": 0.7,
+          "overall_wrong_rate": 0.1912
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 0.969,
+          "coverage": 0.6471,
+          "selective_risk": 0.3106,
+          "direct_precision": 0.6894,
+          "overall_wrong_rate": 0.201
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.7598,
+          "selective_risk": 0.3419,
+          "direct_precision": 0.6581,
+          "overall_wrong_rate": 0.2598
+        }
+      ]
+    },
+    "mavra_refreshed_r": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.1569,
+          "selective_risk": 0.0625,
+          "direct_precision": 0.9375,
+          "overall_wrong_rate": 0.0098
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.2402,
+          "selective_risk": 0.1429,
+          "direct_precision": 0.8571,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.2745,
+          "selective_risk": 0.125,
+          "direct_precision": 0.875,
+          "overall_wrong_rate": 0.0343
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.3186,
+          "selective_risk": 0.1231,
+          "direct_precision": 0.8769,
+          "overall_wrong_rate": 0.0392
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.3578,
+          "selective_risk": 0.137,
+          "direct_precision": 0.863,
+          "overall_wrong_rate": 0.049
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.4118,
+          "selective_risk": 0.2024,
+          "direct_precision": 0.7976,
+          "overall_wrong_rate": 0.0833
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.4412,
+          "selective_risk": 0.2333,
+          "direct_precision": 0.7667,
+          "overall_wrong_rate": 0.1029
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.4755,
+          "selective_risk": 0.2577,
+          "direct_precision": 0.7423,
+          "overall_wrong_rate": 0.1225
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.5147,
+          "selective_risk": 0.2762,
+          "direct_precision": 0.7238,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.549,
+          "selective_risk": 0.3036,
+          "direct_precision": 0.6964,
+          "overall_wrong_rate": 0.1667
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.549,
+          "selective_risk": 0.3036,
+          "direct_precision": 0.6964,
+          "overall_wrong_rate": 0.1667
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.5637,
+          "selective_risk": 0.3217,
+          "direct_precision": 0.6783,
+          "overall_wrong_rate": 0.1814
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.5686,
+          "selective_risk": 0.319,
+          "direct_precision": 0.681,
+          "overall_wrong_rate": 0.1814
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.5833,
+          "selective_risk": 0.3193,
+          "direct_precision": 0.6807,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.6471,
+          "selective_risk": 0.3258,
+          "direct_precision": 0.6742,
+          "overall_wrong_rate": 0.2108
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.6961,
+          "selective_risk": 0.3592,
+          "direct_precision": 0.6408,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.701,
+          "selective_risk": 0.3566,
+          "direct_precision": 0.6434,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.7157,
+          "selective_risk": 0.3493,
+          "direct_precision": 0.6507,
+          "overall_wrong_rate": 0.25
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.7255,
+          "selective_risk": 0.3514,
+          "direct_precision": 0.6486,
+          "overall_wrong_rate": 0.2549
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.75,
+          "selective_risk": 0.3725,
+          "direct_precision": 0.6275,
+          "overall_wrong_rate": 0.2794
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 1.0,
+          "selective_risk": 0.4706,
+          "direct_precision": 0.5294,
+          "overall_wrong_rate": 0.4706
+        }
+      ]
+    },
+    "mavra_refreshed_v2": {
+      "glm_scale": [
+        {
+          "lo": 0.005,
+          "hi": 0.995,
+          "sigma": 0.4743,
+          "coverage": 0.152,
+          "selective_risk": 0.0323,
+          "direct_precision": 0.9677,
+          "overall_wrong_rate": 0.0049
+        },
+        {
+          "lo": 0.0145,
+          "hi": 0.9855,
+          "sigma": 0.5004,
+          "coverage": 0.2157,
+          "selective_risk": 0.0909,
+          "direct_precision": 0.9091,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.024,
+          "hi": 0.976,
+          "sigma": 0.5202,
+          "coverage": 0.2549,
+          "selective_risk": 0.0769,
+          "direct_precision": 0.9231,
+          "overall_wrong_rate": 0.0196
+        },
+        {
+          "lo": 0.0335,
+          "hi": 0.9665,
+          "sigma": 0.5527,
+          "coverage": 0.299,
+          "selective_risk": 0.082,
+          "direct_precision": 0.918,
+          "overall_wrong_rate": 0.0245
+        },
+        {
+          "lo": 0.043,
+          "hi": 0.957,
+          "sigma": 0.5781,
+          "coverage": 0.3333,
+          "selective_risk": 0.0882,
+          "direct_precision": 0.9118,
+          "overall_wrong_rate": 0.0294
+        },
+        {
+          "lo": 0.0525,
+          "hi": 0.9475,
+          "sigma": 0.6031,
+          "coverage": 0.3824,
+          "selective_risk": 0.1538,
+          "direct_precision": 0.8462,
+          "overall_wrong_rate": 0.0588
+        },
+        {
+          "lo": 0.062,
+          "hi": 0.938,
+          "sigma": 0.6293,
+          "coverage": 0.402,
+          "selective_risk": 0.1829,
+          "direct_precision": 0.8171,
+          "overall_wrong_rate": 0.0735
+        },
+        {
+          "lo": 0.0715,
+          "hi": 0.9285,
+          "sigma": 0.6525,
+          "coverage": 0.4314,
+          "selective_risk": 0.2045,
+          "direct_precision": 0.7955,
+          "overall_wrong_rate": 0.0882
+        },
+        {
+          "lo": 0.081,
+          "hi": 0.919,
+          "sigma": 0.6768,
+          "coverage": 0.4657,
+          "selective_risk": 0.2316,
+          "direct_precision": 0.7684,
+          "overall_wrong_rate": 0.1078
+        },
+        {
+          "lo": 0.0905,
+          "hi": 0.9095,
+          "sigma": 0.7019,
+          "coverage": 0.4951,
+          "selective_risk": 0.2574,
+          "direct_precision": 0.7426,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.1,
+          "hi": 0.9,
+          "sigma": 0.7278,
+          "coverage": 0.4951,
+          "selective_risk": 0.2574,
+          "direct_precision": 0.7426,
+          "overall_wrong_rate": 0.1275
+        },
+        {
+          "lo": 0.12,
+          "hi": 0.84,
+          "sigma": 0.7947,
+          "coverage": 0.5098,
+          "selective_risk": 0.2788,
+          "direct_precision": 0.7212,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.14,
+          "hi": 0.78,
+          "sigma": 0.8454,
+          "coverage": 0.5147,
+          "selective_risk": 0.2762,
+          "direct_precision": 0.7238,
+          "overall_wrong_rate": 0.1422
+        },
+        {
+          "lo": 0.16,
+          "hi": 0.72,
+          "sigma": 0.8699,
+          "coverage": 0.5343,
+          "selective_risk": 0.2752,
+          "direct_precision": 0.7248,
+          "overall_wrong_rate": 0.1471
+        },
+        {
+          "lo": 0.18,
+          "hi": 0.66,
+          "sigma": 0.884,
+          "coverage": 0.5833,
+          "selective_risk": 0.2689,
+          "direct_precision": 0.7311,
+          "overall_wrong_rate": 0.1569
+        },
+        {
+          "lo": 0.2,
+          "hi": 0.6,
+          "sigma": 0.8997,
+          "coverage": 0.6078,
+          "selective_risk": 0.2823,
+          "direct_precision": 0.7177,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.22,
+          "hi": 0.54,
+          "sigma": 1.01,
+          "coverage": 0.6127,
+          "selective_risk": 0.28,
+          "direct_precision": 0.72,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.24,
+          "hi": 0.48,
+          "sigma": 1.01,
+          "coverage": 0.6275,
+          "selective_risk": 0.2734,
+          "direct_precision": 0.7266,
+          "overall_wrong_rate": 0.1716
+        },
+        {
+          "lo": 0.26,
+          "hi": 0.42,
+          "sigma": 1.01,
+          "coverage": 0.6422,
+          "selective_risk": 0.2748,
+          "direct_precision": 0.7252,
+          "overall_wrong_rate": 0.1765
+        },
+        {
+          "lo": 0.28,
+          "hi": 0.36,
+          "sigma": 1.01,
+          "coverage": 0.652,
+          "selective_risk": 0.2857,
+          "direct_precision": 0.7143,
+          "overall_wrong_rate": 0.1863
+        },
+        {
+          "lo": 0.3,
+          "hi": 0.3,
+          "sigma": 1.01,
+          "coverage": 0.7696,
+          "selective_risk": 0.3185,
+          "direct_precision": 0.6815,
+          "overall_wrong_rate": 0.2451
+        }
+      ]
+    }
+  }
+}

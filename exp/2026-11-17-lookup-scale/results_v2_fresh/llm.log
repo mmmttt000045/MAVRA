@@ -1,0 +1,41 @@
+[Top-8 LLM M=26] total=204 cached=0 todo=204
+  Top-8 LLM M=26 glm_scale=0.6716
+[Top-8 LLM M=100] total=204 cached=0 todo=204
+  Top-8 LLM M=100 glm_scale=0.799
+[Top-8 LLM M=500] total=204 cached=0 todo=204
+  Top-8 LLM M=500 glm_scale=0.9216
+[Top-8 LLM M=1000] total=204 cached=0 todo=204
+  Top-8 LLM M=1000 glm_scale=0.9461
+[Confirm mavra_refreshed_v1 M=26] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v1 M=26 glm_scale=0.9118
+[Confirm mavra_refreshed_v1 M=100] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v1 M=100 glm_scale=0.7941
+[Confirm mavra_refreshed_v1 M=500] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v1 M=500 glm_scale=0.7059
+[Confirm mavra_refreshed_v1 M=1000] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v1 M=1000 glm_scale=0.6863
+[Confirm mavra_refreshed_v2 M=26] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v2 M=26 glm_scale=0.9167
+[Confirm mavra_refreshed_v2 M=100] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v2 M=100 glm_scale=0.8235
+[Confirm mavra_refreshed_v2 M=500] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v2 M=500 glm_scale=0.7304
+[Confirm mavra_refreshed_v2 M=1000] total=204 cached=0 todo=204
+  Confirm mavra_refreshed_v2 M=1000 glm_scale=0.7255
+[Confirm mavra_zero_v1 M=26] total=204 cached=0 todo=204
+  Confirm mavra_zero_v1 M=26 glm_scale=0.8676
+[Confirm mavra_zero_v1 M=100] total=204 cached=0 todo=204
+  Confirm mavra_zero_v1 M=100 glm_scale=0.7451
+[Confirm mavra_zero_v1 M=500] total=204 cached=0 todo=204
+  Confirm mavra_zero_v1 M=500 glm_scale=0.6225
+[Confirm mavra_zero_v1 M=1000] total=204 cached=0 todo=204
+  Confirm mavra_zero_v1 M=1000 glm_scale=0.6275
+[Confirm mavra_zero_wc M=26] total=204 cached=0 todo=204
+  Confirm mavra_zero_wc M=26 glm_scale=0.8676
+[Confirm mavra_zero_wc M=100] total=204 cached=0 todo=204
+  Confirm mavra_zero_wc M=100 glm_scale=0.7598
+[Confirm mavra_zero_wc M=500] total=204 cached=0 todo=204
+  Confirm mavra_zero_wc M=500 glm_scale=0.6422
+[Confirm mavra_zero_wc M=1000] total=204 cached=0 todo=204
+  Confirm mavra_zero_wc M=1000 glm_scale=0.6667
+=== ALL LLM LOOKUP & CONFIRMATION RUNS COMPLETE ===

@@ -1,0 +1,8 @@
+train anchors=16862 dev questions=3076 (present 2190)
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 30460.69it/s]
+  dev Recall (before, M=1000, 2190 present dev questions): {'recall@1': 0.4758, 'recall@4': 0.8438, 'recall@8': 0.9265, 'recall@16': 0.9603, 'recall@32': 0.9776}
+  epoch 1/2 loss=0.1052 elapsed=177.2s
+  epoch 2/2 loss=0.0073 elapsed=362.8s
+  dev Recall (after, M=1000, 2190 present dev questions): {'recall@1': 0.7799, 'recall@4': 0.9991, 'recall@8': 0.9995, 'recall@16': 1.0, 'recall@32': 1.0}
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.65s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.65s/it]
+DONE: {"base": "models/bge-m3", "catalog": "catalog_1000.json", "seed": 13, "epochs": 2, "batch": 64, "lr": 1e-05, "temperature": 0.02, "train_anchors": 16862, "dev_questions_present": 2190, "dev_recall_before": {"recall@1": 0.4758, "recall@4": 0.8438, "recall@8": 0.9265, "recall@16": 0.9603, "recall@32": 0.9776}, "dev_recall_after": {"recall@1": 0.7799, "recall@4": 0.9991, "recall@8": 0.9995, "recall@16": 1.0, "recall@32": 1.0}, "device": "NVIDIA RTX 5880 Ada Generation", "train_seconds": 362.83}

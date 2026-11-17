@@ -1,0 +1,27 @@
+{
+  "base": "models/bge-m3",
+  "catalog": "catalog_1000.json",
+  "seed": 13,
+  "epochs": 2,
+  "batch": 64,
+  "lr": 1e-05,
+  "temperature": 0.02,
+  "train_anchors": 16862,
+  "dev_questions_present": 2190,
+  "dev_recall_before": {
+    "recall@1": 0.4758,
+    "recall@4": 0.8438,
+    "recall@8": 0.9265,
+    "recall@16": 0.9603,
+    "recall@32": 0.9776
+  },
+  "dev_recall_after": {
+    "recall@1": 0.7799,
+    "recall@4": 0.9991,
+    "recall@8": 0.9995,
+    "recall@16": 1.0,
+    "recall@32": 1.0
+  },
+  "device": "NVIDIA RTX 5880 Ada Generation",
+  "train_seconds": 362.83
+}

@@ -1,7 +1,7 @@
 \begin{figure}[tb]
 \centering
 \includegraphics[width=\linewidth]{figures/lookup-scale}%
-\caption{\bt{Catalog scaling ($26\to 1{,}000$ definitions) and selective wrong-match risk vs.\ autonomous coverage over 390 multi-style requests (stars mark \system{}'s $.1/.9$ band).}{定义库规模扩展（$26\to 1{,}000$ 条定义）及 390 个多风格请求上的选择性误配风险--自主覆盖率曲线（星号标出 \system{} 的 $.1/.9$ 阈值带）。}}
+\caption{\bt{Catalog scaling ($26\to 1{,}000$ definitions) and selective wrong-match risk vs.\ autonomous coverage over 390 multi-style requests (Top-8 + LLM judges the same tuned top-8 as \system{}; stars mark the $.1/.9$ band).}{定义库规模扩展（$26\to 1{,}000$ 条定义）及 390 个多风格请求上的选择性误配风险--自主覆盖率曲线（Top-8+LLM 与 \system{} 使用同一组微调召回的前 8 个候选；星号标出 $.1/.9$ 阈值带）。}}
 \label{fig:lookup-scale}
-\Description{Two side-by-side line charts. Panel (a) plots set-exact lookup accuracy across catalog sizes 26, 100, 500, and 1,000 for Stage-1 Recall at 8, MAVRA refreshed, MAVRA zero-retrain, Top-8 plus LLM judge, Single cross-encoder without peer differences, Embedding top-1, and TeCoD NLI on GPU. Panel (b) plots selective wrong-match risk against autonomous zero-LLM coverage at 1,000 definitions, showing MAVRA achieving the lowest wrong-match risk across coverage levels.}
+\Description{Two side-by-side line charts. Panel (a) plots set-exact lookup accuracy across catalog sizes 26, 100, 500, and 1,000 for Recall at 8 of the tuned and raw embedders, MAVRA refreshed, MAVRA zero-retrain, Top-8 plus LLM judge, cross-encoders without peer differences, Embedding top-1, and TeCoD NLI on GPU; MAVRA refreshed and Top-8 plus LLM stay near 95 percent at every size. Panel (b) plots selective wrong-match risk against autonomous zero-LLM coverage at 1,000 definitions, showing MAVRA achieving the lowest wrong-match risk across coverage levels.}
 \end{figure}

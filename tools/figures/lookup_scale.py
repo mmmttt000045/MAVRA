@@ -4,6 +4,7 @@ Two side-by-side panels (single column, 84.6 mm wide):
   (a) Set-exact accuracy across nested catalogs |M| in {26, 100, 500, 1,000} over 390 multi-style requests
       (96 human original + 174 unseen GLM rewrites + 120 multi-domain scale queries).
   (b) Selective wrong-match risk vs. autonomous (zero-LLM) coverage at |M| = 1,000, sweeping uncertainty thresholds.
+Data: revision v3 (exp/2026-11-17-lookup-scale/analyse_v3.py -> scale-summary-v3.json, risk-coverage-v3.json).
 """
 import json
 import sys
@@ -21,8 +22,8 @@ X_POS = [0, 1, 2, 3]
 
 
 def load():
-    summ = json.loads((ROOT / "exp/2026-11-17-lookup-scale/scale-summary.json").read_text(encoding="utf-8"))
-    rc = json.loads((ROOT / "exp/2026-11-17-lookup-scale/risk-coverage.json").read_text(encoding="utf-8"))
+    summ = json.loads((ROOT / "exp/2026-11-17-lookup-scale/scale-summary-v3.json").read_text(encoding="utf-8"))
+    rc = json.loads((ROOT / "exp/2026-11-17-lookup-scale/risk-coverage-v3.json").read_text(encoding="utf-8"))
     printed = style.macros("lookup-scale")
     # Verify key endpoints against overleaf/gen/lookup-scale.tex
     style.agree(
@@ -58,19 +59,22 @@ def figure(lang):
     # Panel (a): Accuracy vs Catalog Size |M| on all_390
     qset = "all_390"
     rec8 = [100.0 * summ["recall_bge_m3"][s][qset]["recall@8_all"] for s in SCALES]
+    rec8t = [100.0 * summ["recall_tuned_v3"][s][qset]["recall@8_all"] for s in SCALES]
     mav_ref = [100.0 * summ["mavra_confirmed"]["mavra_refreshed"][s][qset]["final_exact_rate"] for s in SCALES]
     mav_zero = [100.0 * summ["mavra_confirmed"]["mavra_zero"][s][qset]["final_exact_rate"] for s in SCALES]
     top_llm = [100.0 * summ["top8_llm_judge"][s][qset]["exact_rate"] for s in SCALES]
-    sce_key = "single_ce_refreshed" if "single_ce_refreshed" in summ["cross_encoders"] else "single_ce_zero"
-    sce = [100.0 * summ["cross_encoders"][sce_key][s][qset]["no_abstain_exact_rate"] for s in SCALES]
+    sce_key = "single_ce_refreshed"
+    sce = [100.0 * summ[sce_key][s][qset]["no_abstain_exact_rate"] for s in SCALES] if sce_key in summ else None
     emb = [100.0 * summ["emb_top1"][s][qset]["oracle_exact_rate"] for s in SCALES]
     tecod = [100.0 * summ["tecod_nli_gpu"][s][qset]["exact_rate"] for s in SCALES]
 
-    ax_a.plot(X_POS, rec8, ls=":", lw=0.8, color="#7A7A7A", label="Stage-1 Recall@8")
+    ax_a.plot(X_POS, rec8t, ls=":", lw=0.9, color="#4A4A4A", label="Recall@8 (tuned)")
+    ax_a.plot(X_POS, rec8, ls=":", lw=0.8, color="#A0A0A0", label="Recall@8 (raw)")
     ax_a.plot(X_POS, mav_ref, marker="o", lw=1.2, ms=3.5, color=c_mavra, label="MAVRA (refreshed)")
     ax_a.plot(X_POS, mav_zero, marker="s", ls="--", lw=1.0, ms=3.0, color=c_zero, label="MAVRA (0-retrain)")
     ax_a.plot(X_POS, top_llm, marker="^", ls="-.", lw=0.95, ms=3.2, color=c_llm, label="Top-8 + LLM")
-    ax_a.plot(X_POS, sce, marker="D", ls="-", lw=0.95, ms=2.9, color=c_sce, label="Single CE (no diff)")
+    if sce:
+        ax_a.plot(X_POS, sce, marker="D", ls="-", lw=0.95, ms=2.9, color=c_sce, label="CE w/o diffs")
     ax_a.plot(X_POS, emb, marker="v", ls="--", lw=0.9, ms=3.0, color=c_emb, label="Embed. top-1")
     ax_a.plot(X_POS, tecod, marker="x", ls=":", lw=0.95, ms=3.4, color=c_tecod, label="TeCoD NLI")
 

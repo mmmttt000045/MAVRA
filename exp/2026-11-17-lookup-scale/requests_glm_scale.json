@@ -1,0 +1,3197 @@
+{
+ "note": "GLM (glm-5.3) paraphrases of the 120 multi-domain requests (README 4.4), after audit (audit_glm_scale.json); stated choices copied from the originals.",
+ "requests": [
+  {
+   "id": "t100_h01-a",
+   "kind": "homonym_multi",
+   "text": "为了给管理层做月度经营回顾，我需要拉一下2024年9月社区场景下即时配送渠道实现的交易规模数据。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "社区即时达"
+    ]
+   },
+   "orig": "t100_h01"
+  },
+  {
+   "id": "t100_h02-a",
+   "kind": "homonym_multi",
+   "text": "我想看看华南那边的仓库2023年一整年卖出去多少钱，帮我拉个总数。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华南区域仓"
+    ]
+   },
+   "orig": "t100_h02"
+  },
+  {
+   "id": "t100_h03-a",
+   "kind": "homonym_multi",
+   "text": "我们团队正在准备2024年第三季度机场免税业务的运营复盘，需要看下全品类机场免税的退货情况占比，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   },
+   "orig": "t100_h03"
+  },
+  {
+   "id": "t100_h03-b",
+   "kind": "homonym_multi",
+   "text": "机场免税店今年Q3的退款比例大概多少啊，不分品类的话。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   },
+   "orig": "t100_h03"
+  },
+  {
+   "id": "t100_h04-a",
+   "kind": "homonym_multi",
+   "text": "我们下季度要重点优化移动端渠道，想先看看今年上半年4到6月这块通过手机下单的交易规模大概做到什么水平，麻烦给下数字。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   },
+   "orig": "t100_h04"
+  },
+  {
+   "id": "t100_h05-a",
+   "kind": "homonym_multi",
+   "text": "我在做一份给管理层看的跨境电商月度经营分析，需要了解咱们自营海外站点2024年9月的退货情况占比，麻烦帮我查一下这个数据。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   },
+   "orig": "t100_h05"
+  },
+  {
+   "id": "t100_h05-b",
+   "kind": "homonym_multi",
+   "text": "last September (2024) what was the return rate on our own cross-border D2C website?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   },
+   "orig": "t100_h05"
+  },
+  {
+   "id": "t100_h06-a",
+   "kind": "homonym_multi",
+   "text": "我们最近在复盘海外直营业务的整体表现，想了解2023年这十二个月里我们自建站渠道一共卖出多少钱，麻烦帮我统计一下。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   },
+   "orig": "t100_h06"
+  },
+  {
+   "id": "t100_h06-b",
+   "kind": "homonym_multi",
+   "text": "Hey, what's the total revenue for our overseas self-operated website during the whole year of 2023?",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   },
+   "orig": "t100_h06"
+  },
+  {
+   "id": "t100_h07-a",
+   "kind": "homonym_multi",
+   "text": "我们正在复盘各线上渠道的表现，帮我查一下2024年第三季度微信小程序上全品类商品的营业收入是多少。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "微信小程序"
+    ]
+   },
+   "orig": "t100_h07"
+  },
+  {
+   "id": "t100_h07-b",
+   "kind": "homonym_multi",
+   "text": "微信小程序2024年三季度所有品类一共卖了多少钱？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "微信小程序"
+    ]
+   },
+   "orig": "t100_h07"
+  },
+  {
+   "id": "t100_h08-a",
+   "kind": "homonym_multi",
+   "text": "我在做跨境仓的二季度经营复盘，领导要看下备货仓这块的生意盘子有多大，帮我查一下2025年Q2跨境备货仓的GMV大概是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "保税跨境仓"
+    ]
+   },
+   "orig": "t100_h08"
+  },
+  {
+   "id": "t100_h08-b",
+   "kind": "homonym_multi",
+   "text": "cross-border stocking warehouse sales for Q2 2023 — how much was it?",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "保税跨境仓"
+    ]
+   },
+   "orig": "t100_h08"
+  },
+  {
+   "id": "t100_h09-a",
+   "kind": "homonym_multi",
+   "text": "我们在做月度经营回顾，需要看一下2024年9月机场免税渠道的营业收入情况。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   },
+   "orig": "t100_h09"
+  },
+  {
+   "id": "t100_h09-b",
+   "kind": "homonym_multi",
+   "text": "last september（2024年9月）机场那边的免税业务卖了多少钱？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   },
+   "orig": "t100_h09"
+  },
+  {
+   "id": "t100_h10-b",
+   "kind": "homonym_multi",
+   "text": "What was the overall return percentage for Douyin livestream selling in 2023?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "抖音直播间"
+    ]
+   },
+   "orig": "t100_h10"
+  },
+  {
+   "id": "t100_h11-a",
+   "kind": "homonym_multi",
+   "text": "我在做微信小程序渠道的运营复盘，需要看 2024 年第三季度该渠道（不限品类）的退单比例大概是多少，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "微信小程序"
+    ]
+   },
+   "orig": "t100_h11"
+  },
+  {
+   "id": "t100_h12-a",
+   "kind": "homonym_multi",
+   "text": "我这边在做区域配送中心的经营复盘，需要看一下华东大区RDC仓库在2024年4到6月这三个月的整体营收规模大概是多少，麻烦帮我查一下具体数。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   },
+   "orig": "t100_h12"
+  },
+  {
+   "id": "t100_f01-b",
+   "kind": "facet_single",
+   "text": "帮我看看2024年前六个月，特许经销那块的退款占实付的比例是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "加盟经销商"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t100_f01"
+  },
+  {
+   "id": "t100_f02-a",
+   "kind": "facet_single",
+   "text": "我在给财务做半年度的口径核对，需要拉一下抖音渠道2024年1到6月通过带货产生的成交额，请按未减去优惠券减免的折前口径、且剔除税金来算，帮我查一下这个数。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "抖音直播间"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f02"
+  },
+  {
+   "id": "t100_f02-b",
+   "kind": "facet_single",
+   "text": "Hey, what was the gross sales (pre-discount, before coupon deduction, tax-exclusive) from Douyin live-selling for the first half of 2024?",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "抖音直播间"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f02"
+  },
+  {
+   "id": "t100_f03-a",
+   "kind": "facet_single",
+   "text": "我们需要给管理层准备财务口径的收入核对材料，用于和账面数据做勾稽验证，请帮忙查一下2024年1月至6月软件订阅业务在剔除优惠抵扣后用户实际支付的不含税净收入金额。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t100_f03"
+  },
+  {
+   "id": "t100_f03-b",
+   "kind": "facet_single",
+   "text": "hey, 软件订阅那块2024年上半年扣掉券以后实收的不含税净额是多少来着？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t100_f03"
+  },
+  {
+   "id": "t100_f04-a",
+   "kind": "facet_single",
+   "text": "我在做上半年财务对账，需要核对一下快手小店2024年1月到6月期间，退回来的商品件数占售出件数的比重是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "快手直播间"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t100_f04"
+  },
+  {
+   "id": "t100_f04-b",
+   "kind": "facet_single",
+   "text": "快手电商那边，2024年头六个月卖出去的东西里，被退回来的占总销量的几成？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "快手直播间"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t100_f04"
+  },
+  {
+   "id": "t100_f05-a",
+   "kind": "facet_single",
+   "text": "我们财务这边月底要做账实核对，需要查一下华北区域配送中心2024年1月到6月剔除优惠券以后的实收净额，注意要不含税口径。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华北中心仓"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t100_f05"
+  },
+  {
+   "id": "t100_f05-b",
+   "kind": "facet_single",
+   "text": "帮我看看今年上半年华北RDC仓库扣掉优惠之后实际收的钱（不含税）有多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华北中心仓"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t100_f05"
+  },
+  {
+   "id": "t100_f06-a",
+   "kind": "facet_single",
+   "text": "我在跟财务对账，需要看一下KA渠道今年上半年折前、未扣优惠卷的营收是多少（不含税口径）。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f06"
+  },
+  {
+   "id": "t100_f06-b",
+   "kind": "facet_single",
+   "text": "麻烦查下2024年1到6月大客户这条业务线，还没扣券、也不含税的收入总共是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f06"
+  },
+  {
+   "id": "t100_f07-a",
+   "kind": "facet_single",
+   "text": "我们正在做半年度经营复盘，需要和账面数据对齐一下：今年1到6月手机App这个销售渠道上，退款金额相对于用户实际支付金额的占比情况怎么样？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "移动端App"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t100_f07"
+  },
+  {
+   "id": "t100_f07-b",
+   "kind": "facet_single",
+   "text": "Hey, for the mobile app channel in H1 2024, what's the refunded amount as a percentage of what customers actually paid?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "移动端App"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t100_f07"
+  },
+  {
+   "id": "t100_f08-a",
+   "kind": "facet_single",
+   "text": "我们财务这边要跟业务报表对账，麻烦查一下2024年1月到6月期间，加盟渠道（不含直营）的未使用优惠抵扣前的营业收入（剔除增值税后）合计是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "加盟经销商"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f08"
+  },
+  {
+   "id": "t100_f09-a",
+   "kind": "facet_single",
+   "text": "我们财务这边在做半年度的账务复核，需要看一下2024年1到6月仓店一体快送业务的客户退单情况，按退款金额除以用户实际支付金额的口径算出来的比率是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "社区即时达"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t100_f09"
+  },
+  {
+   "id": "t100_f09-b",
+   "kind": "facet_single",
+   "text": "hey, what was the refund rate for the front-warehouse quick-commerce channel in H1 2024, calculated as refund amount over actual payment amount?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "社区即时达"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t100_f09"
+  },
+  {
+   "id": "t100_f10-a",
+   "kind": "facet_single",
+   "text": "我在给财务做上半年数据对账，需要核对一下2024年1到6月中小商户业务线的营收情况，口径是折前、未剔除优惠券优惠、且为不含税金额，这个数是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f10"
+  },
+  {
+   "id": "t100_f10-b",
+   "kind": "facet_single",
+   "text": "帮我看下，中小商户线2024上半年卖了多少（不扣券、折前、不含税）？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   },
+   "orig": "t100_f10"
+  },
+  {
+   "id": "t100_s01-a",
+   "kind": "domain_single",
+   "text": "我们团队在复盘重点客户渠道的运营表现，需要了解2025年6月大客户业务板块平均每位客户消费金额的数据。",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ]
+   },
+   "orig": "t100_s01"
+  },
+  {
+   "id": "t100_s01-b",
+   "kind": "domain_single",
+   "text": "What was the average spend per customer for the KA channel in March 2023?",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ]
+   },
+   "orig": "t100_s01"
+  },
+  {
+   "id": "t100_s02-a",
+   "kind": "domain_single",
+   "text": "我们在做一份给管理层汇报的经营分析，想了解2023年10月到12月这三个月，自营海外电商站点的出货情况如何，麻烦帮忙拉一下数据。",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   },
+   "orig": "t100_s02"
+  },
+  {
+   "id": "t100_s03-a",
+   "kind": "domain_single",
+   "text": "我想在年度渠道复盘里看下2024年移动端APP这个渠道的成交规模，帮我查一下销售数量是多少",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   },
+   "orig": "t100_s03"
+  },
+  {
+   "id": "t100_s03-b",
+   "kind": "domain_single",
+   "text": "how many units did we sell through the app channel last year (2024)?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   },
+   "orig": "t100_s03"
+  },
+  {
+   "id": "t100_s04-a",
+   "kind": "domain_single",
+   "text": "我们最近在做前置仓业务的经营复盘，想看看2024年8月即时配送到家这条线的顾客单次购买金额平均水平，帮我查一下这个数据。",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "社区即时达"
+    ]
+   },
+   "orig": "t100_s04"
+  },
+  {
+   "id": "t100_s04-b",
+   "kind": "domain_single",
+   "text": "What was the average order value for front warehouse-based instant retail in July 2024?",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "社区即时达"
+    ]
+   },
+   "orig": "t100_s04"
+  },
+  {
+   "id": "t100_s05-b",
+   "kind": "domain_single",
+   "text": "去年四季度咱们的软件订阅服务（云端那种）销量是多少来着？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ]
+   },
+   "orig": "t100_s05"
+  },
+  {
+   "id": "t100_s06-a",
+   "kind": "domain_single",
+   "text": "我们今年在复盘企业级批发渠道的表现，帮我看一下2024年这块业务的成交数量是多少？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ]
+   },
+   "orig": "t100_s06"
+  },
+  {
+   "id": "t100_s06-b",
+   "kind": "domain_single",
+   "text": "In 2024, how many units did the B2B enterprise channel move?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ]
+   },
+   "orig": "t100_s06"
+  },
+  {
+   "id": "t100_s07-a",
+   "kind": "domain_single",
+   "text": "我们团队在复盘华东区仓储业务的月度表现，请帮我看一下2024年6月昆山主仓这个仓库卖出了多少货。",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   },
+   "orig": "t100_s07"
+  },
+  {
+   "id": "t100_s07-b",
+   "kind": "domain_single",
+   "text": "昆山那个中央仓库上个月出了多少货啊？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   },
+   "orig": "t100_s07"
+  },
+  {
+   "id": "t100_s09-a",
+   "kind": "domain_single",
+   "text": "我们正在复盘华北中心仓去年的整体表现，领导想知道2024年这个仓一共卖出了多少货？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "华北中心仓"
+    ]
+   },
+   "orig": "t100_s09"
+  },
+  {
+   "id": "t100_s09-b",
+   "kind": "domain_single",
+   "text": "How many units did the North China central warehouse move in 2024?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "华北中心仓"
+    ]
+   },
+   "orig": "t100_s09"
+  },
+  {
+   "id": "t100_s10-a",
+   "kind": "domain_single",
+   "text": "我在做抖音直播渠道的经营复盘，需要看一下2024年7月这块的平均每位顾客消费金额水平，帮我查一下。",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "抖音直播间"
+    ]
+   },
+   "orig": "t100_s10"
+  },
+  {
+   "id": "t100_s10-b",
+   "kind": "domain_single",
+   "text": "去年7月份抖音直播那边每个客户平均花了多少钱啊？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "抖音直播间"
+    ]
+   },
+   "orig": "t100_s10"
+  },
+  {
+   "id": "t500_h02-a",
+   "kind": "homonym_multi",
+   "text": "我最近在做移动渠道的复盘，想看看咱们App这个渠道在2023年1月到12月期间被退掉的商品涉及多少钱，麻烦帮我拉一下总数。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   },
+   "orig": "t500_h02"
+  },
+  {
+   "id": "t500_h02-b",
+   "kind": "homonym_multi",
+   "text": "hey，App上买东西退回来的钱2023这一年加起来有多少呀？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   },
+   "orig": "t500_h02"
+  },
+  {
+   "id": "t500_h03-a",
+   "kind": "homonym_multi",
+   "text": "我在帮加盟渠道做季度复盘，需要看一下2024年第三季度经销商这边全品类的盈利情况，麻烦帮我查一下收益数据。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "加盟经销商"
+    ]
+   },
+   "orig": "t500_h03"
+  },
+  {
+   "id": "t500_h03-b",
+   "kind": "homonym_multi",
+   "text": "帮我看下加盟经销商去年Q3挣了多少（所有品类）？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "加盟经销商"
+    ]
+   },
+   "orig": "t500_h03"
+  },
+  {
+   "id": "t500_h04-a",
+   "kind": "homonym_multi",
+   "text": "为了评估短视频渠道的投入产出情况，方便下季度做渠道预算分配，我想看一下快手这个渠道2024年4到6月的盈利表现，数值大概是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "快手直播间"
+    ]
+   },
+   "orig": "t500_h04"
+  },
+  {
+   "id": "t500_h04-b",
+   "kind": "homonym_multi",
+   "text": "快手那边今年二季度挣不挣钱啊？赚了多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "快手直播间"
+    ]
+   },
+   "orig": "t500_h04"
+  },
+  {
+   "id": "t500_h05-a",
+   "kind": "homonym_multi",
+   "text": "我在做月度经营复盘，需要向管理层汇报信贷类支付方式带来的收入贡献，麻烦帮我查一下2024年9月信用卡分期这种支付方式对应的成交金额是多少。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "信用卡分期"
+    ]
+   },
+   "orig": "t500_h05"
+  },
+  {
+   "id": "t500_h05-b",
+   "kind": "homonym_multi",
+   "text": "hey，帮我看看去年9月信用卡分期卖了多少钱？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "信用卡分期"
+    ]
+   },
+   "orig": "t500_h05"
+  },
+  {
+   "id": "t500_h06-a",
+   "kind": "homonym_multi",
+   "text": "我在做年度经营复盘，需要看软件服务线上订阅这块业务2023年一整年的盈利总共是多少。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ]
+   },
+   "orig": "t500_h06"
+  },
+  {
+   "id": "t500_h06-b",
+   "kind": "homonym_multi",
+   "text": "2023年整年那个软件订阅服务赚了多少钱？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ]
+   },
+   "orig": "t500_h06"
+  },
+  {
+   "id": "t500_h07-a",
+   "kind": "homonym_multi",
+   "text": "我们在评估会员业务对整体业绩的贡献，需要看一下2024年第三季度学生校园会员在全部品类上的营收情况，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "校园联名会员"
+    ]
+   },
+   "orig": "t500_h07"
+  },
+  {
+   "id": "t500_h07-b",
+   "kind": "homonym_multi",
+   "text": "What was the revenue for the campus student membership across all categories in Q3 of 2024?",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "校园联名会员"
+    ]
+   },
+   "orig": "t500_h07"
+  },
+  {
+   "id": "t500_h08-a",
+   "kind": "homonym_multi",
+   "text": "我们正在复盘售后服务体系的经营质量，想看看2024年4月至6月期间，官方授权的售后维修网点的盈利情况，具体赚了多少钱？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "线下授权网点"
+    ]
+   },
+   "orig": "t500_h08"
+  },
+  {
+   "id": "t500_h08-b",
+   "kind": "homonym_multi",
+   "text": "去年Q2那批经授权的售后点挣了多少钱啊？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "线下授权网点"
+    ]
+   },
+   "orig": "t500_h08"
+  },
+  {
+   "id": "t500_h09-a",
+   "kind": "homonym_multi",
+   "text": "我们在做第三季度的社媒带货投放效果复盘，需要核对一下2024年9月通过KOL/网红推广带来的订单被退回部分涉及的钱有多少，帮我查一下。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "达人种草投放"
+    ]
+   },
+   "orig": "t500_h09"
+  },
+  {
+   "id": "t500_h09-b",
+   "kind": "homonym_multi",
+   "text": "去年9月那些博主推广卖出去的东西，退货总共退了多少钱啊？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "达人种草投放"
+    ]
+   },
+   "orig": "t500_h09"
+  },
+  {
+   "id": "t500_h10-a",
+   "kind": "homonym_multi",
+   "text": "我们团队正在做2024年男装线下的经营复盘，需要拉一下2023年十二个月份里,实体店铺渠道中男装类目的顾客退回货品的总价值，麻烦帮我把这个数取出来。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "男装"
+    ]
+   },
+   "orig": "t500_h10"
+  },
+  {
+   "id": "t500_h10-b",
+   "kind": "homonym_multi",
+   "text": "23年一整年咱们的实体店男装这块，客人退货一共退了多少钱？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "男装"
+    ]
+   },
+   "orig": "t500_h10"
+  },
+  {
+   "id": "t500_h11-a",
+   "kind": "homonym_multi",
+   "text": "我们正在复盘第三季度线上渠道的表现，老板想看一下2024年7月到9月竞价推广这块整体的盈利情况，麻烦帮我查一下",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "搜索竞价SEM"
+    ]
+   },
+   "orig": "t500_h11"
+  },
+  {
+   "id": "t500_h11-b",
+   "kind": "homonym_multi",
+   "text": "What was the earnings from our search ads in the third quarter of 2024?",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "搜索竞价SEM"
+    ]
+   },
+   "orig": "t500_h11"
+  },
+  {
+   "id": "t500_h12-a",
+   "kind": "homonym_multi",
+   "text": "我们二季度复盘会快到了，想了解下2024年Q2我们自己直营的大型门店在退货这块的金额情况，麻烦帮我拉一下具体数字。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "直营旗舰店"
+    ]
+   },
+   "orig": "t500_h12"
+  },
+  {
+   "id": "t500_h12-b",
+   "kind": "homonym_multi",
+   "text": "2024年4到6月直营大店的退了多少金额？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "直营旗舰店"
+    ]
+   },
+   "orig": "t500_h12"
+  },
+  {
+   "id": "t500_f01-a",
+   "kind": "facet_single",
+   "text": "财务这边在做账务核对，麻烦帮我看一下2023年下半年华南RDC仓的退款金额与买家实际支付金额之比。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "华南区域仓"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t500_f01"
+  },
+  {
+   "id": "t500_f01-b",
+   "kind": "facet_single",
+   "text": "华南RDC仓今年上半年退回去的钱占实际付的钱，比例大概多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "华南区域仓"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t500_f01"
+  },
+  {
+   "id": "t500_f02-a",
+   "kind": "facet_single",
+   "text": "我们这边在做财务对账，需要看一下2023年全年通过阳光采购平台走政企渠道的订单，退回来的货占总销量的比例大概是多少（按数量算的那种）？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "政企采购线"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t500_f02"
+  },
+  {
+   "id": "t500_f02-b",
+   "kind": "facet_single",
+   "text": "Hey, what's the ratio of returned items to total sold units for government/enterprise purchases on the sunshine procurement channel in H1 2024?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "政企采购线"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t500_f02"
+  },
+  {
+   "id": "t500_f04-a",
+   "kind": "facet_single",
+   "text": "我们团队在做财务口径的数据校验，需要核对一下2024年1月到6月这半年里，通过微信支付通道进来的订单，在不算优惠券抵扣的情况下，账面层面的毛利数据是多少。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "微信支付渠道"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t500_f04"
+  },
+  {
+   "id": "t500_f04-b",
+   "kind": "facet_single",
+   "text": "去年上半年走财付通那个微信支付渠道收的钱，不算券的话毛利有多少啊？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "微信支付渠道"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t500_f04"
+  },
+  {
+   "id": "t500_f05-a",
+   "kind": "facet_single",
+   "text": "我在给财务做对账，需要核实一下2024年1到6月经授权的维修服务点的收入情况：扣除各类促销券抵扣后顾客实际支付的金额（去掉增值税）合计是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "线下授权网点"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t500_f05"
+  },
+  {
+   "id": "t500_f05-b",
+   "kind": "facet_single",
+   "text": "帮我看下24年前六个月那些官方授权的维修店，刨掉优惠券优惠之后实收的钱（不含税）总共多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "线下授权网点"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t500_f05"
+  },
+  {
+   "id": "t500_f06-a",
+   "kind": "facet_single",
+   "text": "我在做上半年账务复核，需要拿2024年1到6月冷链温控仓库客户退回的商品数量相对售出量的占比数据，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "冷链生鲜仓"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t500_f06"
+  },
+  {
+   "id": "t500_f06-b",
+   "kind": "facet_single",
+   "text": "What was the return percentage for the temperature-controlled cold chain warehouse in H1 2024, measured as returned units over sales volume?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "冷链生鲜仓"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t500_f06"
+  },
+  {
+   "id": "t500_f07-a",
+   "kind": "facet_single",
+   "text": "我们正在做上半年跨境电商业务的经营复盘，需要拉一下跨境备货仓这块业务在2024年1到6月期间的净收益情况，口径要求是已经扣掉各项成本以及优惠抵扣之后的净利润，麻烦帮我查一下具体数值。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "保税跨境仓"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "t500_f07"
+  },
+  {
+   "id": "t500_f07-b",
+   "kind": "facet_single",
+   "text": "跨境备货仓今年头半年刨去成本和优惠券之后还能净赚多少啊？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "保税跨境仓"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   },
+   "orig": "t500_f07"
+  },
+  {
+   "id": "t500_f08-a",
+   "kind": "facet_single",
+   "text": "我在做财报和业务系统两边数字的对账，想查一下2024年1月到6月这半年里，面向中小卖家那条业务线，在没有剔除优惠补贴的情况下，账面上的毛利额是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t500_f08"
+  },
+  {
+   "id": "t500_f08-b",
+   "kind": "facet_single",
+   "text": "hey, what's the gross profit on the books for the small & medium merchant segment for H1 2024, before coupon deductions?",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t500_f08"
+  },
+  {
+   "id": "t500_f09-a",
+   "kind": "facet_single",
+   "text": "我们财务这边要做账实核对，麻烦查一下24年1到6月通过短视频信息流这个渠道成交的、剔掉券之后买家实际支付的那部分金额（不含税）是多少。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "信息流广告"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t500_f09"
+  },
+  {
+   "id": "t500_f09-b",
+   "kind": "facet_single",
+   "text": "短视频信息流卖的钱，2024年1~6月，优惠扣完不含税的实收净额是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "信息流广告"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t500_f09"
+  },
+  {
+   "id": "t500_f10-a",
+   "kind": "facet_single",
+   "text": "我们月底要做一次内部审计复核，想查一下2024年1月到6月期间，通过付费搜索关键词广告带来的订单中，被退回的商品数量占售出数量的比例是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "搜索竞价SEM"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t500_f10"
+  },
+  {
+   "id": "t500_f10-b",
+   "kind": "facet_single",
+   "text": "last year's first half, for the keyword paid search ads channel, what was the share of returned units out of total units sold?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "搜索竞价SEM"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t500_f10"
+  },
+  {
+   "id": "t500_s01-a",
+   "kind": "domain_single",
+   "text": "我们最近在复盘线下免税渠道的表现，想了解一下2024年7月出入境免税柜台那边一共成交了多少单？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   },
+   "orig": "t500_s01"
+  },
+  {
+   "id": "t500_s01-b",
+   "kind": "domain_single",
+   "text": "去年7月份那个边境免税专柜的单量有多少呀？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   },
+   "orig": "t500_s01"
+  },
+  {
+   "id": "t500_s02-a",
+   "kind": "domain_single",
+   "text": "我在给运营团队准备一份季度复盘材料，想看一下华东区域那个中心仓库在2023年10月到12月期间一共承接了多少笔交易，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   },
+   "orig": "t500_s02"
+  },
+  {
+   "id": "t500_s02-b",
+   "kind": "domain_single",
+   "text": "how many orders did the East China central fulfillment warehouse handle in Q4 2023?",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   },
+   "orig": "t500_s02"
+  },
+  {
+   "id": "t500_s03-b",
+   "kind": "domain_single",
+   "text": "支付宝通道去年的券花了多少钱？",
+   "stated": {
+    "subject": [
+     "优惠券金额"
+    ],
+    "channel": [
+     "支付宝渠道"
+    ]
+   },
+   "orig": "t500_s03"
+  },
+  {
+   "id": "t500_s04-a",
+   "kind": "domain_single",
+   "text": "我正在复盘各销售渠道的运营表现，需要看看导购通过私域流量带来的顾客平均消费金额在2024年6月处于什么水平，麻烦查一下。",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "企微私域池"
+    ]
+   },
+   "orig": "t500_s04"
+  },
+  {
+   "id": "t500_s04-b",
+   "kind": "domain_single",
+   "text": "去年8月份靠导购私域成交的每个客户平均花了多少钱？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "企微私域池"
+    ]
+   },
+   "orig": "t500_s04"
+  },
+  {
+   "id": "t500_s05-a",
+   "kind": "domain_single",
+   "text": "为了给经营驾驶舱补数，帮我取2023年Q4华南大区仓的券金额。",
+   "stated": {
+    "subject": [
+     "优惠券金额"
+    ],
+    "channel": [
+     "华南区域仓"
+    ]
+   },
+   "orig": "t500_s05"
+  },
+  {
+   "id": "t500_s05-b",
+   "kind": "domain_single",
+   "text": "Quick one: what's the coupon value for the South China regional warehouse in Q4 2023?",
+   "stated": {
+    "subject": [
+     "优惠券金额"
+    ],
+    "channel": [
+     "华南区域仓"
+    ]
+   },
+   "orig": "t500_s05"
+  },
+  {
+   "id": "t500_s06-a",
+   "kind": "domain_single",
+   "text": "我们最近在做高等级会员运营复盘，需要拉一下2024年黑卡级别客户的成交笔数，帮我查一下这个数。",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "付费黑卡会员"
+    ]
+   },
+   "orig": "t500_s06"
+  },
+  {
+   "id": "t500_s06-b",
+   "kind": "domain_single",
+   "text": "How many orders did the black-card VIP tier place last year?",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "付费黑卡会员"
+    ]
+   },
+   "orig": "t500_s06"
+  },
+  {
+   "id": "t500_s07-b",
+   "kind": "domain_single",
+   "text": "帮我看看5月份淘客和返利联盟那边卖得怎么样，一共出了多少货？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "联盟分销CPS"
+    ]
+   },
+   "orig": "t500_s07"
+  },
+  {
+   "id": "t500_s09-b",
+   "kind": "domain_single",
+   "text": "冷链配送中心去年（2024年）总共让了多少折扣？",
+   "stated": {
+    "subject": [
+     "折扣额"
+    ],
+    "channel": [
+     "冷链生鲜仓"
+    ]
+   },
+   "orig": "t500_s09"
+  },
+  {
+   "id": "t500_s10-a",
+   "kind": "domain_single",
+   "text": "我们正在复盘7月各销售通路的经营情况，需要拉一下2024年7月经由特许经销这一通路产生的订单数量。",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "加盟经销商"
+    ]
+   },
+   "orig": "t500_s10"
+  },
+  {
+   "id": "t500_s10-b",
+   "kind": "domain_single",
+   "text": "加盟那条渠道上个月有多少单来着？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "加盟经销商"
+    ]
+   },
+   "orig": "t500_s10"
+  },
+  {
+   "id": "t1000_h01-a",
+   "kind": "homonym_multi",
+   "text": "我们在做月度经营分析，需要核对一下2024年9月鞋靴箱包目录的退换货情况，请帮忙查一下该类目的退货比例。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "鞋靴箱包"
+    ]
+   },
+   "orig": "t1000_h01"
+  },
+  {
+   "id": "t1000_h02-b",
+   "kind": "homonym_multi",
+   "text": "how much did we lose in returns for online digital accessories category over the whole of 2023?",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "数码配件"
+    ]
+   },
+   "orig": "t1000_h02"
+  },
+  {
+   "id": "t1000_h04-a",
+   "kind": "homonym_multi",
+   "text": "我在做实体渠道质量复盘，需要拉一下2024年4到6月母婴和玩具类目在实体店渠道卖出的货被退回的比例，麻烦给出具体数字。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "母婴玩具"
+    ]
+   },
+   "orig": "t1000_h04"
+  },
+  {
+   "id": "t1000_h04-b",
+   "kind": "homonym_multi",
+   "text": "How did the return rate for baby & toys products at physical stores look in Q2 2024? What's the number?",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "母婴玩具"
+    ]
+   },
+   "orig": "t1000_h04"
+  },
+  {
+   "id": "t1000_h05-a",
+   "kind": "homonym_multi",
+   "text": "我们每周要看一下店铺的经营情况，这周在复盘汽车用品这个品类，麻烦帮我拉一下2024年9月这个网店被退掉的商品涉及的钱数。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "汽车用品"
+    ]
+   },
+   "orig": "t1000_h05"
+  },
+  {
+   "id": "t1000_h06-a",
+   "kind": "homonym_multi",
+   "text": "我在做年度经营复盘，需要拉一下2023这十二个月里，宠物用品这一类商品在实体店里被顾客退回的货款一共有多少，麻烦给个汇总数",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h06"
+  },
+  {
+   "id": "t1000_h06-b",
+   "kind": "homonym_multi",
+   "text": "how much did we get refunded for pet supply category returns across our stores in 2023?",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h06"
+  },
+  {
+   "id": "t1000_h07-a",
+   "kind": "homonym_multi",
+   "text": "我在做线下渠道经营复盘，需要拉一下2024年7至9月宠物相关用品类目的盈利数据。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h07"
+  },
+  {
+   "id": "t1000_h07-b",
+   "kind": "homonym_multi",
+   "text": "对了，帮我看看2024年三季度宠物那类商品在实体店渠道赚了多少呗。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h07"
+  },
+  {
+   "id": "t1000_h08-a",
+   "kind": "homonym_multi",
+   "text": "我在做门店经营复盘，需要看2024年二季度儿童服装在实体渠道的退单金额这一块大概是个什么水平，麻烦帮我拉一下具体数字。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ]
+   },
+   "orig": "t1000_h08"
+  },
+  {
+   "id": "t1000_h08-b",
+   "kind": "homonym_multi",
+   "text": "Q2 2024 how much did we get back in refunds from kids' clothing at physical stores?",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ]
+   },
+   "orig": "t1000_h08"
+  },
+  {
+   "id": "t1000_h09-a",
+   "kind": "homonym_multi",
+   "text": "我们需要对线下渠道的运营质量做月度回顾，领导想看2023年8月猫狗用品类在实体店的退换货占比情况，麻烦帮忙查一下。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h09"
+  },
+  {
+   "id": "t1000_h09-b",
+   "kind": "homonym_multi",
+   "text": "去年10月份宠物这一个大类在咱们线下店被退回来的比例大概啥水平？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h09"
+  },
+  {
+   "id": "t1000_h10-a",
+   "kind": "homonym_multi",
+   "text": "我们运营这边在做品类复盘，需要拉一下2023整年书碟类目通过目录渠道退回的货款总规模是多少，麻烦给个数。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "图书音像"
+    ]
+   },
+   "orig": "t1000_h10"
+  },
+  {
+   "id": "t1000_h10-b",
+   "kind": "homonym_multi",
+   "text": "2023年一整年，书和音像那块儿走目录退回来的钱加起来有多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "图书音像"
+    ]
+   },
+   "orig": "t1000_h10"
+  },
+  {
+   "id": "t1000_h11-a",
+   "kind": "homonym_multi",
+   "text": "我这边在准备男装线上渠道的季度复盘，需要拉一下2024年第三季度男装网页端店铺的销售规模数据，麻烦帮我查一下。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "男装"
+    ]
+   },
+   "orig": "t1000_h11"
+  },
+  {
+   "id": "t1000_h11-b",
+   "kind": "homonym_multi",
+   "text": "What was the total sales revenue for the men's online store in the third quarter of 2024?",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "男装"
+    ]
+   },
+   "orig": "t1000_h11"
+  },
+  {
+   "id": "t1000_h12-a",
+   "kind": "homonym_multi",
+   "text": "我们团队正在复盘2024年二季度各渠道的运营情况，老板特别关注目录这一块的宠物用品退回情况，麻烦帮我拉一下这个季度宠物用品通过目录渠道产生的退款总额是多少。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h12"
+  },
+  {
+   "id": "t1000_h12-b",
+   "kind": "homonym_multi",
+   "text": "How much did returns cost us for pet products sold through the catalog channel in Q2 of 2024?",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "t1000_h12"
+  },
+  {
+   "id": "t1000_f01-a",
+   "kind": "facet_single",
+   "text": "我们财务这边要做半年数据对账，麻烦帮我查一下2024年1月到6月汽车用品类目在官方线上店铺的成交金额，要按剔除优惠后买家实际支付的那个未含税净额口径来。",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "汽车用品"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t1000_f01"
+  },
+  {
+   "id": "t1000_f01-b",
+   "kind": "facet_single",
+   "text": "Hey, what was the net sales (after coupon deduction, tax-exclusive) for the auto accessories category on the official online store in H1 2024?",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "汽车用品"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t1000_f01"
+  },
+  {
+   "id": "t1000_f03-a",
+   "kind": "facet_single",
+   "text": "我在帮财务做口径核对，需要用一下数据：2023年上半年，化妆品护肤类目在官方线上店铺里，客户退回商品涉及的钱有多少？请按退货单的入账时间来归属。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "美妆护肤"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "t1000_f03"
+  },
+  {
+   "id": "t1000_f03-b",
+   "kind": "facet_single",
+   "text": "What was the total refund amount for beauty and skincare products sold through the official online store in the first half of 2024, with returns attributed based on the return order processing date?",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "美妆护肤"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "t1000_f03"
+  },
+  {
+   "id": "t1000_f04-a",
+   "kind": "facet_single",
+   "text": "我们财务这边在做对账，想查一下2024年1到6月儿童服装这个类目在线下门店的账面利润情况，注意不要算优惠券抵扣的部分，要毛利口径。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t1000_f04"
+  },
+  {
+   "id": "t1000_f04-b",
+   "kind": "facet_single",
+   "text": "hey, what was the gross margin for kids' clothing sold in physical stores during the first half of 2024, before coupon deductions, on a book basis?",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t1000_f04"
+  },
+  {
+   "id": "t1000_f05-a",
+   "kind": "facet_single",
+   "text": "我在做财务对账工作，需要核对一个数据：2024年1月到6月期间，通过画册销售出去的体育及户外用品，被客户退回的货款总额是多少？注意这个数要按退货单处理落账的时间来统计归属。",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "运动户外"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "t1000_f05"
+  },
+  {
+   "id": "t1000_f05-b",
+   "kind": "facet_single",
+   "text": "Hi, could you pull the refund amount for sports & outdoor goods sold via the catalog channel in the first half of 2024? It should be based on the date the return order was processed.",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "运动户外"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "t1000_f05"
+  },
+  {
+   "id": "t1000_f06-a",
+   "kind": "facet_single",
+   "text": "我们正在做线下渠道的对账工作，需要核实一下2024年1月到6月期间，化妆品保养类目在实体零售门店的退回情况——具体想看退回数量占售出数量的比例是多少。",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "美妆护肤"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t1000_f06"
+  },
+  {
+   "id": "t1000_f06-b",
+   "kind": "facet_single",
+   "text": "帮我看下2024年上半年美妆护肤这个品类在实体门店卖出去的东西里被退回来多少件？退回件数占销量的占比是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "美妆护肤"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t1000_f06"
+  },
+  {
+   "id": "t1000_f07-a",
+   "kind": "facet_single",
+   "text": "我在做财务侧的数字复核，需要和业务系统的数据对一下账：官网上销售食品和生鲜类商品的店铺，2024年1月到6月期间，用退款金额除以顾客实际支付金额来衡量的退单比例大概是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "食品生鲜"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t1000_f07"
+  },
+  {
+   "id": "t1000_f07-b",
+   "kind": "facet_single",
+   "text": "What was the return rate, calculated as refunded amount over actually paid amount, for the official online store's food and fresh categories in the first half of 2024? This is for finance reconciliation.",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "食品生鲜"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   },
+   "orig": "t1000_f07"
+  },
+  {
+   "id": "t1000_f08-a",
+   "kind": "facet_single",
+   "text": "我们财务这边在做年中账务核对，想查一下2023年上半年度，儿童服装这个目录邮购渠道的账面毛利表现，口径上不做优惠券扣减。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "童装"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t1000_f08"
+  },
+  {
+   "id": "t1000_f08-b",
+   "kind": "facet_single",
+   "text": "去年上半年童装目录卖得毛利多少？就是没扣券的那个账面数。",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "童装"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   },
+   "orig": "t1000_f08"
+  },
+  {
+   "id": "t1000_f09-a",
+   "kind": "facet_single",
+   "text": "我在做上半年财务对账工作，需要核实一下2024年1月到6月期间，鞋靴箱包这个类目通过目录渠道卖出去的钱，要按顾客实际支付、把优惠券抵扣掉、并且是未含税的净额来算，这个数是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "鞋靴箱包"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t1000_f09"
+  },
+  {
+   "id": "t1000_f09-b",
+   "kind": "facet_single",
+   "text": "2024年上半年鞋包那块走目录渠道卖的，扣掉券之后实际收的净额（不含税）是多少呀？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "鞋靴箱包"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   },
+   "orig": "t1000_f09"
+  },
+  {
+   "id": "t1000_f10-a",
+   "kind": "facet_single",
+   "text": "我在给财务做上半年数据复核，需要用线下门店食品生鲜类目的退货情况跟账面核对一下：2024年1到6月，以退回商品件数除以销售件数来算，这个比例是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "食品生鲜"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t1000_f10"
+  },
+  {
+   "id": "t1000_f10-b",
+   "kind": "facet_single",
+   "text": "Hey, what was the return rate for fresh food items at physical stores in the first half of 2024? I mean returns as a share of units sold.",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "食品生鲜"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   },
+   "orig": "t1000_f10"
+  },
+  {
+   "id": "t1000_s01-a",
+   "kind": "domain_single",
+   "text": "我们团队在复盘今年上半年线上渠道各品类的表现，想先看一下2024年6月美妆护肤这个类目在电商平台上总共产生了多少笔交易？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "美妆护肤"
+    ]
+   },
+   "orig": "t1000_s01"
+  },
+  {
+   "id": "t1000_s01-b",
+   "kind": "domain_single",
+   "text": "上个月护肤品化妆品在网上卖出去多少单啊？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "美妆护肤"
+    ]
+   },
+   "orig": "t1000_s01"
+  },
+  {
+   "id": "t1000_s02-a",
+   "kind": "domain_single",
+   "text": "我们目前在梳理线下渠道的售后情况，想看看2023年10月到12月期间生鲜食品这个大类下顾客退回的商品数量是多少，帮忙查一下。",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "食品生鲜"
+    ]
+   },
+   "orig": "t1000_s02"
+  },
+  {
+   "id": "t1000_s04-b",
+   "kind": "domain_single",
+   "text": "how much was the promo discount amount for kids' clothing on the brand's official online store in July 2023?",
+   "stated": {
+    "subject": [
+     "折扣额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "童装"
+    ]
+   },
+   "orig": "t1000_s04"
+  },
+  {
+   "id": "t1000_s05-a",
+   "kind": "domain_single",
+   "text": "我们团队正在复盘去年各品类的售后情况，帮我查一下2023年10月到12月这段时间，婴幼儿及玩具这一大类下面，通过目录渠道退回来的商品数量有多少件。",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "母婴玩具"
+    ]
+   },
+   "orig": "t1000_s05"
+  },
+  {
+   "id": "t1000_s05-b",
+   "kind": "domain_single",
+   "text": "口语一点哈：2023年Q4母婴玩具那个类目，目录渠道退了多少件货来着？",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "母婴玩具"
+    ]
+   },
+   "orig": "t1000_s05"
+  },
+  {
+   "id": "t1000_s06-a",
+   "kind": "domain_single",
+   "text": "我们团队正在复盘线下配件门店去年的运营情况，需要查一下数码配件这个品类在实体渠道一整年被退回的商品数量是多少，用于评估退货率趋势。",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "数码配件"
+    ]
+   },
+   "orig": "t1000_s06"
+  },
+  {
+   "id": "t1000_s06-b",
+   "kind": "domain_single",
+   "text": "帮我看下2024年配件实体店里，数码配件类目客户退了总共多少件货？",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "数码配件"
+    ]
+   },
+   "orig": "t1000_s06"
+  },
+  {
+   "id": "t1000_s07-b",
+   "kind": "domain_single",
+   "text": "how many units of home appliances (large and small) were sold through the online mall in June 2024?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "大小家电"
+    ]
+   },
+   "orig": "t1000_s07"
+  },
+  {
+   "id": "t1000_s08-b",
+   "kind": "domain_single",
+   "text": "hey，运动户外那类货上个Q4（2023年）catalog 渠道的销量是多少来着？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "运动户外"
+    ]
+   },
+   "orig": "t1000_s08"
+  },
+  {
+   "id": "t1000_s09-a",
+   "kind": "domain_single",
+   "text": "我正在做大促复盘，需要拉一下2024年大小家电品类在Appliances目录下的平均每单消费额，帮我查一下这个数。",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "大小家电"
+    ]
+   },
+   "orig": "t1000_s09"
+  },
+  {
+   "id": "t1000_s09-b",
+   "kind": "domain_single",
+   "text": "帮我看看2024年Appliances这个目录里大小家电那块，平均一单大概花多少钱？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "大小家电"
+    ]
+   },
+   "orig": "t1000_s09"
+  },
+  {
+   "id": "t1000_s10-a",
+   "kind": "domain_single",
+   "text": "我们正在复盘去年盛夏那个月贵金属及腕表相关商品在实体渠道的销售表现，想看看每位进店成交的顾客平均花了多少钱，麻烦帮我查一下2024年7月这个数字。",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "珠宝钟表"
+    ]
+   },
+   "orig": "t1000_s10"
+  },
+  {
+   "id": "t1000_s10-b",
+   "kind": "domain_single",
+   "text": "last July (2024), what was the average spend per transaction for the jewelry & watches category in offline/brick-and-mortar stores?",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "珠宝钟表"
+    ]
+   },
+   "orig": "t1000_s10"
+  },
+  {
+   "id": "abs01-a",
+   "kind": "absent",
+   "text": "为了评估我们短视频渠道的内容质量，我需要看一下2024年观众在抖音直播场景中每次进入后平均停留了多长时间，麻烦帮我查一下这个数值。",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "观看停留时长"
+    ]
+   },
+   "orig": "abs01"
+  },
+  {
+   "id": "abs01-b",
+   "kind": "absent",
+   "text": "What was the average time viewers spent watching Douyin livestreams in 2024?",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "观看停留时长"
+    ]
+   },
+   "orig": "abs01"
+  },
+  {
+   "id": "abs02-a",
+   "kind": "absent",
+   "text": "我们目前在做小程序渠道的运营复盘，需要看一下2022年全年微信这一移动端入口每天有多少人在使用，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": [
+     "微信小程序"
+    ],
+    "subject": [
+     "日活跃用户数"
+    ]
+   },
+   "orig": "abs02"
+  },
+  {
+   "id": "abs02-b",
+   "kind": "absent",
+   "text": "What was the daily active user count on the WeChat mini-program in 2021?",
+   "stated": {
+    "channel": [
+     "微信小程序"
+    ],
+    "subject": [
+     "日活跃用户数"
+    ]
+   },
+   "orig": "abs02"
+  },
+  {
+   "id": "abs03-a",
+   "kind": "absent",
+   "text": "我们要核算一下2024年度华东区域中心仓库在叉车这类设备上的折旧开销，帮我查一下这个数，用于年度成本复盘。",
+   "stated": {
+    "channel": [
+     "华东中心仓"
+    ],
+    "subject": [
+     "设备折旧费"
+    ]
+   },
+   "orig": "abs03"
+  },
+  {
+   "id": "abs03-b",
+   "kind": "absent",
+   "text": "华东中心仓去年叉车的设备折旧摊下来总共多少钱？",
+   "stated": {
+    "channel": [
+     "华东中心仓"
+    ],
+    "subject": [
+     "设备折旧费"
+    ]
+   },
+   "orig": "abs03"
+  },
+  {
+   "id": "abs04-a",
+   "kind": "absent",
+   "text": "我们财务这边正在做年度风险复盘，需要看一下2023年面向大客户的那块对公业务，最终收不回来的账款被注销的比例大概是多少。",
+   "stated": {
+    "channel": [
+     "企业大客户B2B"
+    ],
+    "subject": [
+     "坏账核销率"
+    ]
+   },
+   "orig": "abs04"
+  },
+  {
+   "id": "abs04-b",
+   "kind": "absent",
+   "text": "hey, what was the bad debt write-off ratio for our B2B enterprise accounts in 2023?",
+   "stated": {
+    "channel": [
+     "企业大客户B2B"
+    ],
+    "subject": [
+     "坏账核销率"
+    ]
+   },
+   "orig": "abs04"
+  },
+  {
+   "id": "abs05-a",
+   "kind": "absent",
+   "text": "老板想了解税改后线上收款的整体规模，麻烦帮我查一下2023年通过支付宝这一支付方式进来、按含税口径计算的销售额总量。",
+   "stated": {
+    "channel": [
+     "支付宝渠道"
+    ],
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "含税"
+    ]
+   },
+   "orig": "abs05"
+  },
+  {
+   "id": "abs05-b",
+   "kind": "absent",
+   "text": "支付宝那个渠道2025年算上增值税的营收一共多少钱啊？",
+   "stated": {
+    "channel": [
+     "支付宝渠道"
+    ],
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "含税"
+    ]
+   },
+   "orig": "abs05"
+  },
+  {
+   "id": "abs06-a",
+   "kind": "absent",
+   "text": "我们今年在做客户续约健康度复盘，想看一下2022年SaaS线上订阅业务的收入留存表现，这个数字能帮我拉一下吗？",
+   "stated": {
+    "channel": [
+     "SaaS云订阅"
+    ],
+    "subject": [
+     "净金额留存率"
+    ]
+   },
+   "orig": "abs06"
+  },
+  {
+   "id": "abs07-a",
+   "kind": "absent",
+   "text": "我最近在做小程序渠道的获客效率复盘，需要看2024年微信小程序这个渠道拉新获客的投入产出情况，帮忙查一下当年该渠道的获客成本是多少？",
+   "stated": {
+    "channel": [
+     "微信小程序"
+    ],
+    "subject": [
+     "获客成本"
+    ]
+   },
+   "orig": "abs07"
+  },
+  {
+   "id": "abs07-b",
+   "kind": "absent",
+   "text": "Hey, how much did it cost us to acquire a new customer through the WeChat mini-program channel last year, i.e. 2024?",
+   "stated": {
+    "channel": [
+     "微信小程序"
+    ],
+    "subject": [
+     "获客成本"
+    ]
+   },
+   "orig": "abs07"
+  },
+  {
+   "id": "abs08-a",
+   "kind": "absent",
+   "text": "我们在复盘2024年海外自营商城的履约表现，想看看包裹在海关环节被卡住的比例有多高，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": [
+     "跨境独立站"
+    ],
+    "subject": [
+     "清关延误率"
+    ]
+   },
+   "orig": "abs08"
+  },
+  {
+   "id": "abs08-b",
+   "kind": "absent",
+   "text": "How often were shipments held up at customs last year for our DTC overseas site in 2024?",
+   "stated": {
+    "channel": [
+     "跨境独立站"
+    ],
+    "subject": [
+     "清关延误率"
+    ]
+   },
+   "orig": "abs08"
+  },
+  {
+   "id": "abs09-a",
+   "kind": "absent",
+   "text": "我们正在评估高等级付费会员的留存表现，以便调整明年的运营预算，请问2023年度黑卡付费用户的续约比例是多少？",
+   "stated": {
+    "channel": [
+     "付费黑卡会员"
+    ],
+    "subject": [
+     "续费率"
+    ]
+   },
+   "orig": "abs09"
+  },
+  {
+   "id": "abs09-b",
+   "kind": "absent",
+   "text": "What was the renewal rate for paid black card members in 2023?",
+   "stated": {
+    "channel": [
+     "付费黑卡会员"
+    ],
+    "subject": [
+     "续费率"
+    ]
+   },
+   "orig": "abs09"
+  },
+  {
+   "id": "abs10-a",
+   "kind": "absent",
+   "text": "我们今年在信息流这个渠道的投放效果复盘快收尾了，老板还想核对一下获客效率这块的数据，麻烦帮我查一下2024年我们投信息流广告，平均每展示一千次要花多少钱，也就是CPM是多少。",
+   "stated": {
+    "channel": [
+     "信息流广告"
+    ],
+    "subject": [
+     "千次曝光成本"
+    ]
+   },
+   "orig": "abs10"
+  },
+  {
+   "id": "abs10-b",
+   "kind": "absent",
+   "text": "帮我看下2024年我们投信息流广告，平均每展示一千次要花多少钱？",
+   "stated": {
+    "channel": [
+     "信息流广告"
+    ],
+    "subject": [
+     "千次曝光成本"
+    ]
+   },
+   "orig": "abs10"
+  },
+  {
+   "id": "abs11-a",
+   "kind": "absent",
+   "text": "我们正在做线下门店的空间利用效率评估，需要看一下2023年直营旗舰店的单位面积销售产出情况，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": [
+     "直营旗舰店"
+    ],
+    "subject": [
+     "坪效"
+    ]
+   },
+   "orig": "abs11"
+  },
+  {
+   "id": "abs11-b",
+   "kind": "absent",
+   "text": "直营旗舰店2023年平均每平米卖了多少钱？",
+   "stated": {
+    "channel": [
+     "直营旗舰店"
+    ],
+    "subject": [
+     "坪效"
+    ]
+   },
+   "orig": "abs11"
+  },
+  {
+   "id": "abs12-a",
+   "kind": "absent",
+   "text": "去年我在负责运营成本分析，需要梳理低温仓储这块的开支情况，想查一下2024年生鲜冷链仓库在制冷方面的用电开销大概是多少？",
+   "stated": {
+    "channel": [
+     "冷链生鲜仓"
+    ],
+    "subject": [
+     "电费支出"
+    ]
+   },
+   "orig": "abs12"
+  },
+  {
+   "id": "abs12-b",
+   "kind": "absent",
+   "text": "冷链那个生鲜仓2024年花在温控上的电费有多少？",
+   "stated": {
+    "channel": [
+     "冷链生鲜仓"
+    ],
+    "subject": [
+     "电费支出"
+    ]
+   },
+   "orig": "abs12"
+  },
+  {
+   "id": "abs13-a",
+   "kind": "absent",
+   "text": "我们最近在复盘23年KOL内容营销的效果，需要看一下那一年合作博主发的推广视频，观众平均看完的比例大概是多少？",
+   "stated": {
+    "channel": [
+     "达人种草投放"
+    ],
+    "subject": [
+     "视频完播率"
+    ]
+   },
+   "orig": "abs13"
+  },
+  {
+   "id": "abs13-b",
+   "kind": "absent",
+   "text": "去年找网红带货那些视频，用户看完的概率高不高啊？",
+   "stated": {
+    "channel": [
+     "达人种草投放"
+    ],
+    "subject": [
+     "视频完播率"
+    ]
+   },
+   "orig": "abs13"
+  },
+  {
+   "id": "abs14-a",
+   "kind": "absent",
+   "text": "我们团队正在复盘去年实体合作门店的售后服务效率，想看一下2024年这些线下授权服务点的修理工时平均水平大概是多少？",
+   "stated": {
+    "channel": [
+     "线下授权网点"
+    ],
+    "subject": [
+     "平均维修工时"
+    ]
+   },
+   "orig": "abs14"
+  },
+  {
+   "id": "abs14-b",
+   "kind": "absent",
+   "text": "嘿，帮我查一下：2024年那些官方授权的线下网点，平均一台要修多久（工时）？",
+   "stated": {
+    "channel": [
+     "线下授权网点"
+    ],
+    "subject": [
+     "平均维修工时"
+    ]
+   },
+   "orig": "abs14"
+  },
+  {
+   "id": "abs15-a",
+   "kind": "absent",
+   "text": "我们正在评估华北中央仓的人员稳定性，以支持明年的用工规划，请帮我查一下该仓库2023年的员工流失率是多少。",
+   "stated": {
+    "channel": [
+     "华北中心仓"
+    ],
+    "subject": [
+     "员工离职率"
+    ]
+   },
+   "orig": "abs15"
+  },
+  {
+   "id": "abs15-b",
+   "kind": "absent",
+   "text": "Hi, quick question — what percentage of staff at the North China central warehouse quit or left their jobs during 2023?",
+   "stated": {
+    "channel": [
+     "华北中心仓"
+    ],
+    "subject": [
+     "员工离职率"
+    ]
+   },
+   "orig": "abs15"
+  },
+  {
+   "id": "abs16-a",
+   "kind": "absent",
+   "text": "我们在做抖音直播渠道的售后复盘，想看一下2024年全年以退回发生时间为准统计的直播带货退款占比情况。",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "退货率"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   },
+   "orig": "abs16"
+  },
+  {
+   "id": "abs17-a",
+   "kind": "absent",
+   "text": "我们是负责政企大客户业务的团队，今年在做年度复盘，需要看一下2023年这条业务线上投标项目最终拿下的比例大概什么水平，麻烦帮我查一下。",
+   "stated": {
+    "channel": [
+     "政企采购线"
+    ],
+    "subject": [
+     "中标率"
+    ]
+   },
+   "orig": "abs17"
+  },
+  {
+   "id": "abs17-b",
+   "kind": "absent",
+   "text": "What was our win rate on tenders for the government and enterprise procurement line in 2023?",
+   "stated": {
+    "channel": [
+     "政企采购线"
+    ],
+    "subject": [
+     "中标率"
+    ]
+   },
+   "orig": "abs17"
+  },
+  {
+   "id": "abs18-a",
+   "kind": "absent",
+   "text": "我在做一个关于社区小时达业务履约质量的复盘，想看看2024年配送员把订单按时送到顾客手里的比例大概是多少，帮我查一下。",
+   "stated": {
+    "channel": [
+     "社区即时达"
+    ],
+    "subject": [
+     "准时送达率"
+    ]
+   },
+   "orig": "abs18"
+  },
+  {
+   "id": "abs18-b",
+   "kind": "absent",
+   "text": "咱们小时达这块儿，去年小哥送货准点的比率怎么样啊？",
+   "stated": {
+    "channel": [
+     "社区即时达"
+    ],
+    "subject": [
+     "准时送达率"
+    ]
+   },
+   "orig": "abs18"
+  },
+  {
+   "id": "abs19-a",
+   "kind": "absent",
+   "text": "我们这边在复盘2023年支付链路的稳定性，想看看银联云闪付这条通道全年出现故障的累计时间有多长，麻烦帮我查一下。",
+   "stated": {
+    "channel": [
+     "银联云闪付"
+    ],
+    "subject": [
+     "故障时长"
+    ]
+   },
+   "orig": "abs19"
+  },
+  {
+   "id": "abs19-b",
+   "kind": "absent",
+   "text": "云闪付那个通道2023年出了多长时间的故障？",
+   "stated": {
+    "channel": [
+     "银联云闪付"
+    ],
+    "subject": [
+     "故障时长"
+    ]
+   },
+   "orig": "abs19"
+  },
+  {
+   "id": "abs20-a",
+   "kind": "absent",
+   "text": "我是负责宠物类目运营的，下季度要做渠道复盘，需要拉一下2024年全年宠物用品通过抖音直播带货实现的商品交易规模数据。",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "abs20"
+  },
+  {
+   "id": "abs20-b",
+   "kind": "absent",
+   "text": "去年宠物那类货在抖音直播上面卖了多少钱？",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   },
+   "orig": "abs20"
+  },
+  {
+   "id": "abs21-a",
+   "kind": "absent",
+   "text": "我们最近在做门店运营复盘，想看看奥特莱斯门店在2023年顾客试穿后实际购买的比例表现如何，麻烦帮我查一下这个数据。",
+   "stated": {
+    "channel": [
+     "奥莱折扣店"
+    ],
+    "subject": [
+     "试穿转化率"
+    ]
+   },
+   "orig": "abs21"
+  },
+  {
+   "id": "abs21-b",
+   "kind": "absent",
+   "text": "去年奥莱店的试穿成交占比是多少呀？",
+   "stated": {
+    "channel": [
+     "奥莱折扣店"
+    ],
+    "subject": [
+     "试穿转化率"
+    ]
+   },
+   "orig": "abs21"
+  },
+  {
+   "id": "abs22-a",
+   "kind": "absent",
+   "text": "公司明年在保税跨境仓的业务规划要评估合规风险，需要知道2024年这个模式下报关单被海关抽查的比例有多高。",
+   "stated": {
+    "channel": [
+     "保税跨境仓"
+    ],
+    "subject": [
+     "海关查验率"
+    ]
+   },
+   "orig": "abs22"
+  },
+  {
+   "id": "abs22-b",
+   "kind": "absent",
+   "text": "Hey, what was the customs inspection rate for our bonded cross-border warehouse in 2024?",
+   "stated": {
+    "channel": [
+     "保税跨境仓"
+    ],
+    "subject": [
+     "海关查验率"
+    ]
+   },
+   "orig": "abs22"
+  },
+  {
+   "id": "abs23-a",
+   "kind": "absent",
+   "text": "我们下季度要专门优化高等级会员的体验，想先看看黑卡VIP客户2023年的净推荐值大概是多少。",
+   "stated": {
+    "channel": [
+     "付费黑卡会员"
+    ],
+    "subject": [
+     "净推荐值NPS"
+    ]
+   },
+   "orig": "abs23"
+  },
+  {
+   "id": "abs23-b",
+   "kind": "absent",
+   "text": "哎，顺便问一下，2023年咱们那些黑卡VIP客户的NPS打分怎么样？",
+   "stated": {
+    "channel": [
+     "付费黑卡会员"
+    ],
+    "subject": [
+     "净推荐值NPS"
+    ]
+   },
+   "orig": "abs23"
+  },
+  {
+   "id": "abs24-a",
+   "kind": "absent",
+   "text": "我们正在复盘今年的付费搜索投放效果，想看一下2024年搜索引擎付费推广广告被展示后用户点击的比例。",
+   "stated": {
+    "channel": [
+     "搜索竞价SEM"
+    ],
+    "subject": [
+     "点击率"
+    ]
+   },
+   "orig": "abs24"
+  },
+  {
+   "id": "abs24-b",
+   "kind": "absent",
+   "text": "去年SEM广告的点击率是多少呀？",
+   "stated": {
+    "channel": [
+     "搜索竞价SEM"
+    ],
+    "subject": [
+     "点击率"
+    ]
+   },
+   "orig": "abs24"
+  }
+ ]
+}

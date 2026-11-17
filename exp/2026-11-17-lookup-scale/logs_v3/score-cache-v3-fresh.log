@@ -1,0 +1,27 @@
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 30848.01it/s]
+recall done: raw
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 8078.88it/s]
+recall done: tuned
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 7547.02it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 7172.25it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 7191.40it/s]
+scored mavra_zero raw M=26
+scored mavra_zero tuned M=26
+scored mavra_zero raw M=100
+scored mavra_zero tuned M=100
+scored mavra_zero raw M=500
+scored mavra_zero tuned M=500
+scored mavra_zero raw M=1000
+scored mavra_zero tuned M=1000
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 6831.72it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 6485.54it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 7001.13it/s]
+scored mavra_refreshed raw M=26
+scored mavra_refreshed tuned M=26
+scored mavra_refreshed raw M=100
+scored mavra_refreshed tuned M=100
+scored mavra_refreshed raw M=500
+scored mavra_refreshed tuned M=500
+scored mavra_refreshed raw M=1000
+scored mavra_refreshed tuned M=1000
+=== SCORE CACHE COMPLETE ===

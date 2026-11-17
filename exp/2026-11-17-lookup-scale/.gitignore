@@ -1,0 +1,4 @@
+# Score caches are archived in score-caches-v2-v3.tgz (untar here to rerun policy_v2.py).
+results_*/cache.json
+# Regenerated from the caches by policy_v2.py.
+results_*/for_llm/

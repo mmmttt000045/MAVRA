@@ -21,7 +21,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--out", required=True)
 ap.add_argument("--catalog", default="catalog_1000.json")
 ap.add_argument("--train-base", default="train_26_clean.jsonl")
-ap.add_argument("--train-extra", default="train_scale_extra.jsonl")
+ap.add_argument("--train-extra", default="train_scale_extra.jsonl", help="comma-separated; v3 adds train_scale_llm.jsonl")
 ap.add_argument("--base", default="models/bge-reranker-base")
 ap.add_argument("--seed", type=int, default=13)
 ap.add_argument("--epochs", type=int, default=4)
@@ -96,7 +96,7 @@ def render(d, pool, contrast):
 DTEXT = {d["id"]: render(d, DEFS, args.def_contrast) for d in DEFS}
 
 qs = [json.loads(l) for l in open(args.train_base, encoding="utf-8") if l.strip()]
-qs += [json.loads(l) for l in open(args.train_extra, encoding="utf-8") if l.strip()]
+qs += [json.loads(l) for f in args.train_extra.split(",") for l in open(f, encoding="utf-8") if l.strip()]
 for q in qs:
     q["gold_full"] = sorted(d["id"] for d in DEFS if consistent(d["facets"], q["stated"]))
 
