@@ -23,7 +23,8 @@ import style  # noqa: E402
 from vecfig import PT, measure  # noqa: E402
 
 NAME = 'extraction'
-W, H = style.COLUMN, 84.6
+W, H = style.COLUMN, 84.6 + 6.2
+DY = 6.2                                         # (b) grew by the dependency-graph strip
 
 INK, MUTED = '#1F2328', '#596068'
 CARD_EDGE, SUB_EDGE, RULE = '#737B84', '#B6BEC7', '#CFD5DC'
@@ -202,7 +203,7 @@ def draw(s, lang):
     label(p0_cx - 1.0, 14.1, r'param $p_0$' if en else r'参数 $p_0$', 4.8, LEARN_DK, 'bold', 'right')
 
     # ------------------------------------------------------------------ (b)
-    card(15.1, 27.3, '(b) Extract core query $I$ & constraints $C$' if en
+    card(15.1, 27.3 + DY, '(b) Extract core query $I$ & constraints $C$' if en
          else '(b) 提取核心查询 $I$ 与约束 $C$')
     s_text = 'join DAG, N:1' if en else '连接 DAG, N:1'
     ws = measure(s_text, 4.9)
@@ -297,50 +298,80 @@ def draw(s, lang):
         label(rx0 + rw / 2, sy + 1.7, txt, 5.0, INK if fill == WHITE else LEARN_DK,
               'bold' if fill == WHITE else 'sans', 'center', width=rw - 2.4)
 
-    # Bottom strip of (b): Derived checks C(I) with icons & gauges
-    s.line(1.6, 35.4, W - 1.6, 35.4, RULE, .15)
-    s.line(45.2, 35.9, 45.2, 41.8, RULE, .14)
+    # Bottom strip of (b): the dependency graph G that C(I) creates for the new definition, T -> c -> x
+    # (Section 4.1: H deduplicates shared checks along T -> c -> x). Checks 1-5 are the markers above and the rows
+    # of Fig. 5; dep(c) gives the T -> c edges; the losses are the M5-L1 join statistics (1.03% = 10,305 of 10^6
+    # store_sales rows without a date match, exp/2026-10-08-optimize trace).
+    G0 = 35.4
+    s.line(1.6, G0, W - 1.6, G0, RULE, .15)
+    hy_g = G0 + 1.5
+    e_g = 1.8 + label(1.8, hy_g, 'Dependency graph $\\mathcal{G}$' if en else '依赖图 $\\mathcal{G}$', 5.1, INK, 'bold')
+    label(e_g + 1.0, hy_g, r'$T \to c \to x$', 4.9, MUTED)
+    r_txt = r'baselines on $D_{s_0}$' if en else r'在 $D_{s_0}$ 上记录基线'
+    w_rt = measure(r_txt, 4.8)
+    label(W - 1.6, hy_g, r_txt, 4.8, MUTED, align='right')
+    gate_pill(W - 1.6 - w_rt - .6, hy_g, 'DB', 'right')
 
-    # Left: KeyUnique condition nodes 1, 2, 4 -> H + G5
-    ky1, ky2 = 37.15, 40.35
-    wk = key_icon(1.8, ky1, INK, k=.95)
-    tw_ku = label(1.8 + wk + .7, ky1, 'KeyUnique nodes $\\to \\mathcal{H}$' if en else '键唯一节点 $\\to \\mathcal{H}$',
-                  5.1, INK, 'bold')
-    gate_pill(1.8 + wk + .7 + tw_ku + .8, ky1, 'DB')
-    kx = 2.0
-    for idx, tname in ((1, '`store_sales.K`'), (2, '`item`'), (4, '`date_dim`')):
-        cond_marker(kx, ky2, idx, r=.74)
-        kx += 1.05 + label(kx + 1.05, ky2, tname, 4.4, INK) + 1.05
+    ty_g, cy_g, xy_g = G0 + 3.6, G0 + 7.3, G0 + 11.4         # rows: tables, constraint nodes, definition
+    for yv, tag in ((ty_g, '$T$'), (cy_g, r'$c\in\mathcal{H}$'), (xy_g, r'$x\in\mathcal{M}$')):
+        label(1.8, yv, tag, 4.7, MUTED)
 
-    # Right: Join-loss edges 3 and 5
-    gx0 = 46.2
-    wg = gauge_icon(gx0, ky1)
-    label(gx0 + wg + .8, ky1, r'Join-loss edges ($\leq b+0.1$ pp)' if en else r'连接丢行边 ($\leq b+0.1$ pp)',
-          5.1, INK, 'bold', width=W - gx0 - wg - 2.6)
-    g1x = gx0 + .8
-    cond_marker(g1x, ky2, 3, r=.78)
-    gauge(g1x + 1.3, ky2, 8.2, 0.0, .1, 1.5, h=1.25)
-    label(g1x + 10.1, ky2, '`0.00%`', 5.0, ACC_DK)
+    # constraint nodes, ordered so that no T -> c edge crosses another
+    cxs = {2: 14.0, 3: 28.0, 1: 42.0, 5: 56.0, 4: 70.0}
+    nw, nh = 13.0, 2.4
+    for i, cxv in cxs.items():
+        s.rect(cxv - nw / 2, cy_g - nh / 2, nw, nh, WHITE, SUB_EDGE, .14, r=.4)
+        x = cxv - nw / 2 + .9
+        cond_marker(x, cy_g, i, r=.7)
+        x += 1.2
+        if i in (3, 5):
+            val = 0.0 if i == 3 else 1.0305
+            gauge(x, cy_g, 5.2, val, .1, 1.5, h=1.05)
+            label(x + 5.7, cy_g, '`0.00%`' if i == 3 else '`1.03%`', 4.6, ACC_DK)
+        else:
+            x += key_icon(x, cy_g, INK, k=.72) + .45
+            label(x, cy_g, {1: 'grain `K`', 2: '`item_sk`', 4: '`date_sk`'}[i], 4.5, INK,
+                  width=cxv + nw / 2 - x - .3)
 
-    g2x = g1x + 17.6
-    cond_marker(g2x, ky2, 5, r=.78)
-    gauge(g2x + 1.3, ky2, 8.2, 1.0305, .1, 1.5, h=1.25)
-    label(g2x + 10.1, ky2, '`1.03%`', 5.0, ACC_DK)
+    # tables, each above the checks that depend on it
+    tables = (('`item`', 21.0, (2, 3)), ('`store_sales`', 42.0, (3, 1, 5)), ('`date_dim`', 63.0, (5, 4)))
+    th = 1.9
+    for name, txv, deps in tables:
+        tw_ = measure(name, 4.6) + 2.0
+        s.rect(txv - tw_ / 2, ty_g - th / 2, tw_, th, TABLE_HEAD, CARD_EDGE, .14, r=.35)
+        label(txv, ty_g, name, 4.6, INK, align='center')
+        ports = [txv + (k - (len(deps) - 1) / 2) * min(2.4, tw_ / len(deps)) for k in range(len(deps))]
+        for px_, i in zip(ports, deps):
+            s.line(px_, ty_g + th / 2, cxs[i], cy_g - nh / 2, CARD_EDGE, .14)
+
+    # the new definition, fed by its five checks
+    x_lbl = r'$x=m^0$: Electronics revenue (ER)' if en else r'$x=m^0$：电子品类营业额 (ER)'
+    xw = measure(x_lbl, 4.8, 'bold') + 2.4
+    xcx = 42.0
+    s.rect(xcx - xw / 2, xy_g - 1.0, xw, 2.0, ACC, None, r=.45)
+    label(xcx, xy_g, x_lbl, 4.8, WHITE, 'bold', 'center')
+    for k, i in enumerate((2, 3, 1, 5, 4)):           # landing points spread over the node, so edges fan in
+        s.line(cxs[i], cy_g + nh / 2, xcx + (k - 2) * min(6.0, xw / 5), xy_g - 1.0, ACC, .16)
+    assert xy_g + 1.0 <= 15.1 + 27.3 + DY - .5, 'definition node leaves panel (b)'
+    sh_txt = r'1, 4, 5 shared in $\mathcal{H}$ (Fig. 5)' if en else r'1、4、5 在 $\mathcal{H}$ 中共享（图 5）'
+    label(xcx + xw / 2 + 1.2, xy_g, sh_txt, 4.5, MUTED)
+    assert xcx + xw / 2 + 1.2 + measure(sh_txt, 4.5) < W - 1.6, 'sharing note runs past the card'
+    assert cxs[4] + nw / 2 < W - 1.6 and cxs[2] - nw / 2 > 1.8 + measure(r'$c\in\mathcal{H}$', 4.7) + .5
 
     # ------------------------------------------------------------------ (c)
-    s.route([(W / 2, 42.4), (W / 2, 44.0)], ACC, .24, length=.75)
-    card(44.0, 18.7, '(c) Recompilation equivalence check' if en
+    s.route([(W / 2, 42.4 + DY), (W / 2, 44.0 + DY)], ACC, .24, length=.75)
+    card(44.0 + DY, 18.7, '(c) Recompilation equivalence check' if en
          else '(c) 重编译等价性验证', 2)
-    label(W - 1.6, 45.75, 'compiled from $I$' if en else '由 $I$ 编译', 5.0, MUTED, align='right')
+    label(W - 1.6, 45.75 + DY, 'compiled from $I$' if en else '由 $I$ 编译', 5.0, MUTED, align='right')
 
     x_axis, bar_max = 31.2, 20.5
     x_target = x_axis + bar_max * (2754299.60 / 13532799.00)
     replay_rows = (
-        (49.75, SOFT_BG, SUB_EDGE, 'Src', 'Source SQL ($D_{s_0}$)' if en else '源 SQL ($D_{s_0}$)',
+        (49.75 + DY, SOFT_BG, SUB_EDGE, 'Src', 'Source SQL ($D_{s_0}$)' if en else '源 SQL ($D_{s_0}$)',
          2754299.60, SLATE, None, 'target' if en else '源基准', None),
-        (53.45, ACC_PALE, NAVY_EDGE, 'Cand.', r'Keep $\varphi$ $(I,p_0,d_0)$' if en else r'保留 $\varphi$ $(I,p_0,d_0)$',
+        (53.45 + DY, ACC_PALE, NAVY_EDGE, 'Cand.', r'Keep $\varphi$ $(I,p_0,d_0)$' if en else r'保留 $\varphi$ $(I,p_0,d_0)$',
          2754299.60, ACC, True, 'Publish' if en else '发布', '1.0x'),
-        (57.15, RED_PALE, RED_EDGE, 'Cand.', r"Omit $\varphi$ (no `'Elec.'`)" if en else r"漏掉 $\varphi$",
+        (57.15 + DY, RED_PALE, RED_EDGE, 'Cand.', r"Omit $\varphi$ (no `'Elec.'`)" if en else r"漏掉 $\varphi$",
          13532799.00, RED, False, 'Reject' if en else '拒绝', r'$4.9\times$'),
     )
     for yc, row_bg, row_edge, gcode, row_lbl, val, bcol, ok, v_text, mult in replay_rows:
@@ -365,19 +396,19 @@ def draw(s, lang):
             label(px0 + 4.4, yc, v_text, 5.2, WHITE, 'bold')
 
     # Axis & target vertical dashed reference line across the 3 replay bars
-    s.line(x_axis, 48.0, x_axis, 58.9, CARD_EDGE, .15)
-    s.line(x_target, 48.0, x_target, 58.9, ACC_DK, .18, dash=(.55, .35))
+    s.line(x_axis, 48.0 + DY, x_axis, 58.9 + DY, CARD_EDGE, .15)
+    s.line(x_target, 48.0 + DY, x_target, 58.9 + DY, ACC_DK, .18, dash=(.55, .35))
 
-    label(1.7, 60.75, 'Checks equivalence on $(D_{s_0},p_0,d_0)$; cross-period validity relies on structural constraints & domain assumptions.' if en
+    label(1.7, 60.75 + DY, 'Checks equivalence on $(D_{s_0},p_0,d_0)$; cross-period validity relies on structural constraints & domain assumptions.' if en
           else '仅在 $(D_{s_0},p_0,d_0)$ 上检验等价性；跨期正确性依赖结构约束与领域假设。', 4.85, MUTED, width=W - 3.4)
 
     # ------------------------------------------------------------------ (d)
     # Offline, once per catalog: the published definitions' attributes become the lookup judge's training data
     # (moved here from Fig. 4, which now shows only the online lookup). Wordings are generated training questions
     # (exp/2026-11-10-lookup-facets/train-xl.jsonl, shortened); labels follow the consistency rule.
-    d_top = 64.7
-    s.route([(W / 2, 62.9), (W / 2, d_top)], ACC, .24, length=.75)
-    label(W / 2 + 1.0, (62.7 + d_top) / 2, r'publish $m^0 \to \mathcal{M}$' if en else r'发布 $m^0 \to \mathcal{M}$',
+    d_top = 64.7 + DY
+    s.route([(W / 2, 62.9 + DY), (W / 2, d_top)], ACC, .24, length=.75)
+    label(W / 2 + 1.0, (62.7 + DY + d_top) / 2, r'publish $m^0 \to \mathcal{M}$' if en else r'发布 $m^0 \to \mathcal{M}$',
           4.6, ACC_DK, 'bold')
     b_d = card(d_top, 19.4, '(d) Lookup training data from $\\mathcal{M}$' if en else '(d) 由 $\\mathcal{M}$ 合成查找训练数据')
     label(W - 1.6, d_top + 1.75, 'offline, once per catalog' if en else '离线，每个定义库一次', 5.0, MUTED, align='right')
