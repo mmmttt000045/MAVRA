@@ -113,7 +113,7 @@ async fn main() -> Result<()> {
                 etl::setup(&admin).await?;
             }
             let cfg = match mode {
-                Some(m) => metricbench::config(&m).0,
+                Some(m) => middle::profile(&m).0,
                 None => MiddleConfig::default(),
             };
             let mid = Arc::new(Middle::new(db, MiddleConfig { verbose: true, ..cfg }).await?);

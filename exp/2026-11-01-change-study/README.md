@@ -173,3 +173,28 @@ calls, CNY 7.03, 0 errors (smoke CNY 0.74). Aggregation:
 `study-stats.json`, `summary.md` and `overleaf/gen/change-study.tex` now hold this aggregation (MAVRA from the new
 binary); the recheck arm is kept out of the published-method ranges (`CONTROLS`). Results and discussion:
 `exp/2026-11-11-maint-hardening/README.md`.
+
+## Controlled parameterized-SQL template invalidation baselines (2026-11-17, P1-3b)
+
+Protocol addition `addition_20261117`: isolates C3 maintenance policies on MAVRA's identical verified
+definitions $m^0$ without $\mathcal H/\Gamma$, SQL fanout/grain guards (`validate_sql = false`),
+query-result caching (`result_cache = false`), or local repair (`repair = false`):
+
+- `template_schema` (`metric-template-schema`): checks column/DDL schema hashes only (`Maint::Schema`).
+- `template_revoke` (`metric-template-revoke`): revokes any definition whose base tables received writes
+  (`Maint::Revoke`), without oracle relearning so agents fall back to fresh exploration (`y_j = 0`).
+
+Execution on `noctis` (`/root/agentdb-p1-20261117`):
+- Initial batch (`results/change-study-20261117-templates`, CNY 7.31 + smoke CNY 0.26) revealed that
+  setting `guard = GuardMode::Off` with default `result_cache = true` caused cached pre-append query
+  results to be returned on `append`/`correct`; fixed in `src/middle/profiles.rs` (`result_cache = false`,
+  `guard = GuardMode::OnChange`).
+- Clean formal run (`results/change-study-20261117-templates-v2`, archived in `raw-results-templates.tgz`):
+  12 cells (`synthetic` + `tpch`, runs 1–3, both arms), 2,878 API calls, CNY 6.21, 0 errors.
+- Pooled decomposition (`Table 4`, `exp/2026-11-11-maint-hardening/served-split.py`):
+  - `Template + schema check`: serves 99.6% directly (100.0% accuracy on holdout & non-breaking appends),
+    but served accuracy drops to 51.6% overall (133 silent wrong answers; 17.5% accuracy on breaks).
+  - `Template + write invalidate`: 100.0% served accuracy (0 served-wrong), but 0.0% direct reuse on
+    routine appends and 85.9% fallback overall (34.2k tokens, 26 s; 76.3% accuracy on breaks).
+  - `MAVRA (full C3)`: 76.1% served directly (84.2% on breaks), **100.0% served accuracy (0 wrong)**,
+    93.1% overall accuracy (88.6% on breaks) at 22.1k tokens and 17 s.

@@ -20,6 +20,15 @@ const FIND_BUDGET: usize = 3;
 /// 覆盖条件的容差：事实表关联不上时间维度的行占比最多比准入基线高 0.1 个百分点。
 const COVERAGE_TOLERANCE: f64 = 0.001;
 
+/// 发布时在源快照上物化的紧凑历史摘要：所读事实列的 128 位多集指纹、逐桶序列值与源请求期间桶集合。
+#[derive(Clone, Debug)]
+pub struct HistorySummary {
+    pub cols: Vec<String>,
+    pub fp: HashMap<String, (String, String)>,
+    pub series: HashMap<String, Option<String>>,
+    pub ask_buckets: BTreeSet<String>,
+}
+
 /// 验证证据：来源任务、判题值与各门槛记录。不随 find_metric 返回。
 #[derive(Clone, Debug, Serialize)]
 pub struct MetricEvidence {
@@ -33,12 +42,17 @@ pub struct MetricEvidence {
     /// 同结构口径被其他轨迹再次得出的次数（只作佐证，不改变状态）
     pub corroborations: u32,
     pub repaired: bool,
-    /// 学习题的判题查询，供修复后的 G8 回归在当前快照上重算期望值
+    /// 学习题的判题查询，供保留学习快照时的 G8 回归重算期望值
     pub judge: Option<String>,
     /// 已发布的优化修订数（等价且更省的改写）
     #[serde(default)]
     pub optimized: u32,
-    /// 正在修复的前一修订（G9 在上次验证的快照上重算它的历史序列）；修复回归结束后清空
+    /// 源快照上已物化的历史摘要桶数（摘要内容随检查点保存，不展开到诊断 JSON）
+    #[serde(default)]
+    pub history_buckets: usize,
+    #[serde(skip)]
+    pub history: Option<HistorySummary>,
+    /// 正在修复的前一修订（G9 在上次验证的快照或物化摘要上比较它的历史序列）；修复回归结束后清空
     #[serde(skip)]
     pub prev: Option<Metric>,
 }
@@ -400,14 +414,14 @@ fn scale_ok(base: (f64, f64), o: &Outcome) -> bool {
 
 /// 条件的判定：直接看检查结论、按丢行比例与基线比较，或按度量尺度范围比较。
 #[derive(Clone, Copy, Debug)]
-enum Accept {
+pub(super) enum Accept {
     Pass,
     LossAtMost(f64),
     Scale(f64, f64),
 }
 
 impl Accept {
-    fn ok(self, o: &Outcome) -> bool {
+    pub(super) fn ok(self, o: &Outcome) -> bool {
         match self {
             Accept::Pass => o.pass,
             Accept::LossAtMost(b) => loss_of(o) <= b,
@@ -471,6 +485,96 @@ fn bound_conditions(m: &Metric) -> Vec<(Check, Accept)> {
     out.extend(value_conditions(m));
     out.push((grain_check(m), Accept::Pass));
     out
+}
+
+/// 参数相关的运行期检查：日期维度对请求期间的覆盖，以及按维度切片时动态接入关联的唯一性与覆盖。
+fn request_conditions(m: &Metric, ask: &Ask, extra: &[crate::knowledge::JoinRef]) -> Vec<(Check, Accept)> {
+    let mut out = vec![];
+    if let Some(t) = m.time.as_ref().filter(|t| !t.is_column()) {
+        for (p, min_months) in ask.period_requirements() {
+            out.push((
+                Check::PeriodCovered {
+                    dim: t.dim.clone(),
+                    key: t.dim_col.clone(),
+                    year_col: t.year_col.clone(),
+                    month_col: t.month_col.clone(),
+                    year: p.year,
+                    m1: p.m1,
+                    m2: p.m2,
+                    min_months,
+                },
+                Accept::Pass,
+            ));
+        }
+    }
+    for j in extra {
+        let mut cols: Vec<String> = j.on.iter().map(|(_, r)| r.clone()).collect();
+        cols.sort();
+        out.push((Check::KeyUnique { table: j.right.clone(), cols, filter: j.filters.get(&j.right).cloned() }, Accept::Pass));
+        if j.left == m.fact {
+            let base = j.loss_ratio.max(j.orphan_ratio);
+            out.push((
+                Check::PathCoverage { fact: m.fact.clone(), path: vec![(j.left.clone(), j.right.clone(), j.on.clone())] },
+                Accept::LossAtMost(base + COVERAGE_TOLERANCE),
+            ));
+        }
+    }
+    out
+}
+
+fn parse_fps(r: &crate::db::Rows) -> HashMap<String, (String, String)> {
+    r.rows.iter().filter_map(|x| Some((x.first()?.clone()?, (x.get(1)?.clone()?, x.get(2)?.clone().unwrap_or_default())))).collect()
+}
+
+fn parse_series(r: &crate::db::Rows) -> HashMap<String, Option<String>> {
+    r.rows.iter().filter_map(|x| Some((x.first()?.clone()?, x.get(1).cloned().flatten()))).collect()
+}
+
+fn parse_buckets(r: &crate::db::Rows) -> BTreeSet<String> {
+    r.rows.iter().filter_map(|x| x.first()?.clone()).collect()
+}
+
+fn compare_bucket_series(
+    fp_old: &HashMap<String, (String, String)>,
+    s_old: &HashMap<String, Option<String>>,
+    fp_now: &HashMap<String, (String, String)>,
+    s_now: &HashMap<String, Option<String>>,
+    empty_zero: bool,
+    decimals: u32,
+) -> (usize, usize, Option<String>) {
+    let mut keys: BTreeSet<&String> = s_old.keys().chain(s_now.keys()).collect();
+    if empty_zero {
+        keys.extend(fp_old.keys());
+    }
+    let norm = |m: &HashMap<String, Option<String>>, b: &String| -> Option<(String, Answer)> {
+        match m.get(b).cloned().flatten() {
+            Some(s) => Some((s.clone(), metric::parse_answer(&s))),
+            None if empty_zero => Some(("0".into(), metric::parse_answer("0"))),
+            None => None,
+        }
+    };
+    let (mut compared, mut moved, mut example) = (0usize, 0usize, None);
+    for b in keys {
+        if !fp_old.contains_key(b) || fp_old.get(b) != fp_now.get(b) {
+            continue;
+        }
+        let (old_v, now_v) = (norm(s_old, b), norm(s_now, b));
+        if old_v.is_none() && now_v.is_none() {
+            continue;
+        }
+        compared += 1;
+        let same = match (&old_v, &now_v) {
+            (Some((_, a)), Some((_, c))) => metric::same_value(c, a, decimals),
+            _ => false,
+        };
+        if !same {
+            moved += 1;
+            let left = old_v.map(|(s, _)| s).unwrap_or_else(|| "NULL".into());
+            let right = now_v.map(|(s, _)| s).unwrap_or_else(|| "NULL".into());
+            example.get_or_insert_with(|| format!("{b}: {left} → {right}"));
+        }
+    }
+    (compared, moved, example)
 }
 
 /// 两个修订除去重外计算相同：事实表、度量、粒度、时间归属（含日期键编码与策略）、关联（两侧、键、方式、过滤）与口径过滤。
@@ -668,6 +772,8 @@ impl Middle {
         let key = fk.split_once('|').map_or_else(|| fk.clone(), |(_, k)| k.to_string());
         let deps = self.deps_for(&m.tables()).await?;
         let guards = vec![grain_check(&m)];
+        let history = if failed.is_none() && m.entity.is_none() { self.materialize_history(&m, &traj.ask).await.ok() } else { None };
+        let history_buckets = history.as_ref().map_or(0, |h| h.fp.len());
         let mut e = self.new_entry(ctx, &key, Content::Metric(Box::new(m)), deps, guards);
         e.revision = rev;
         e.status = match &failed {
@@ -687,6 +793,8 @@ impl Middle {
             repaired: false,
             judge: if self.cfg.g8_example { Some(example_ref) } else { traj.judge.clone() },
             optimized: 0,
+            history_buckets,
+            history,
         };
         self.metric_evidence.lock().insert(fk, evidence);
         let v = json!({
@@ -746,11 +854,13 @@ impl Middle {
         let sql = metric::compile(&m, &ask)?;
         m.examples = vec![Example { question: format!("{}（学习参数）", m.name), sql }];
         let mut gates = vec![];
-        let failed = self.seed_gates(ctx, &mut m, &ask, decimals, judge, &mut gates).await?;
+        let (failed, source_value) = self.seed_gates(ctx, &mut m, &ask, decimals, judge, &mut gates).await?;
         let key = format!("metric:{}", m.name.trim());
         let fk = self.mfk(ctx, &key);
         let deps = self.deps_for(&m.tables()).await?;
         let guards = vec![grain_check(&m)];
+        let history = if failed.is_none() && m.entity.is_none() { self.materialize_history(&m, &ask).await.ok() } else { None };
+        let history_buckets = history.as_ref().map_or(0, |h| h.fp.len());
         let mut e = self.new_entry(ctx, &key, Content::Metric(Box::new(m)), deps.clone(), guards);
         // 重新提交（逐写入撤销组的重新提炼）得到新修订号
         e.revision = self.store.get(&fk).map_or(0, |x| self.next_revision(&fk, x.revision));
@@ -764,18 +874,34 @@ impl Middle {
             task: key.clone(),
             ask,
             decimals,
-            value: None,
+            value: source_value,
             versions: deps,
             gates: gates.clone(),
             corroborations: 0,
             repaired: false,
             judge: Some(judge.to_string()),
             optimized: 0,
+            history_buckets,
+            history,
         };
         self.metric_evidence.lock().insert(fk.clone(), evidence);
         let revision = self.store.get(&fk).map_or(0, |x| x.revision);
         Ok(json!({"key": key, "revision": revision, "promoted": failed.is_none(), "failed_gate": failed.as_ref().map(|f| f.0.clone()),
                   "reason": failed.as_ref().map(|f| f.1.clone()), "gates": gates}))
+    }
+
+    /// 在源快照的一个只读事务中物化逐桶序列、128 位事实多集指纹与源请求期间桶集合，供无学习快照库时的修复回归使用。
+    async fn materialize_history(&self, m: &Metric, ask: &Ask) -> Result<HistorySummary> {
+        let cols: Vec<String> = metric::columns(m, &self.cat).get(&m.fact).map(|s| s.iter().cloned().collect()).unwrap_or_default();
+        let fp_sql = metric::compile_fact_fingerprint(m, &cols)?;
+        let s_sql = metric::compile_series(m)?;
+        let ask_sql = metric::compile_ask_buckets(m, ask)?;
+        let snap = self.db.snapshot().await?;
+        let fp_rows = snap.query(QKind::Metric, &fp_sql).await?;
+        let s_rows = snap.query(QKind::Metric, &s_sql).await?;
+        let ask_rows = snap.query(QKind::Metric, &ask_sql).await?;
+        snap.commit().await?;
+        Ok(HistorySummary { cols, fp: parse_fps(&fp_rows), series: parse_series(&s_rows), ask_buckets: parse_buckets(&ask_rows) })
     }
 
     async fn seed_gates(
@@ -786,18 +912,34 @@ impl Middle {
         decimals: u32,
         judge: &str,
         gates: &mut Vec<Value>,
-    ) -> Result<Option<(String, String)>> {
-        gate!(gates, "G3", self.static_gate(ctx, m, ask).await?);
+    ) -> Result<(Option<(String, String)>, Option<Answer>)> {
+        if let Some(f) = record(gates, "G3", self.static_gate(ctx, m, ask).await?) {
+            return Ok((Some(f), None));
+        }
         // 条件级维护下准入也复用同一粒度条件在当前版本上的结论（与修复回归相同）
-        gate!(gates, "G4", self.grain_gate(ctx, m, self.cfg.cond_reuse).await);
+        if let Some(f) = record(gates, "G4", self.grain_gate(ctx, m, self.cfg.cond_reuse).await) {
+            return Ok((Some(f), None));
+        }
         let example = m.examples.first().map(|x| x.sql.clone()).unwrap_or_default();
-        gate!(gates, "G5", self.review_gate(ctx, &example).await?);
+        if let Some(f) = record(gates, "G5", self.review_gate(ctx, &example).await?) {
+            return Ok((Some(f), None));
+        }
+        let mut source_val = None;
         let g7 = match self.vquery(QKind::Metric, judge).await {
-            Ok(r) => self.value_gate(&example, &metric::parse_answer(r.cell(0, 0).unwrap_or("NULL")), decimals).await,
+            Ok(r) => {
+                let expect = metric::parse_answer(r.cell(0, 0).unwrap_or("NULL"));
+                let res = self.value_gate(&example, &expect, decimals).await;
+                if res.is_ok() {
+                    source_val = Some(expect);
+                }
+                res
+            }
             Err(e) => Err(format!("判题查询失败：{e:#}")),
         };
-        gate!(gates, "G7", g7);
-        Ok(None)
+        if let Some(f) = record(gates, "G7", g7) {
+            return Ok((Some(f), None));
+        }
+        Ok((None, source_val))
     }
 
     /// G3：表列存在；关联属于已验证路径且方向一致、包含路径要求的过滤；聚合表达式与过滤只引用口径内的表；
@@ -1529,7 +1671,7 @@ impl Middle {
     }
 
     /// 维护中执行一个条件：条件级复用同一版本上已有的结论；定义级（force）或不复用时重跑，并发的同一检查合并执行。
-    async fn cond_outcome(&self, ctx: &Ctx, c: &Check, force: bool) -> Result<(Outcome, &'static str)> {
+    pub(super) async fn cond_outcome(&self, ctx: &Ctx, c: &Check, force: bool) -> Result<(Outcome, &'static str)> {
         if self.cfg.cond_reuse && !force {
             self.cond_check(ctx, c, QKind::Metric).await
         } else {
@@ -1782,8 +1924,9 @@ impl Middle {
             None => (vec![], Value::Null),
         };
         let sql = metric::compile_with(&metric, ask, &extra)?;
+        let req_conds = request_conditions(&metric, ask, &extra);
         let refs = [(key.to_string(), revision)];
-        let mut result = Box::pin(self.run_sql_with(ctx, &sql, &refs)).await?;
+        let mut result = Box::pin(self.run_sql_with_conds(ctx, &sql, &refs, &req_conds)).await?;
         result["sql"] = json!(sql);
         result["metric"] = json!({"key":key,"revision":revision});
         if !slice.is_null() {
@@ -2107,20 +2250,29 @@ impl Middle {
     /// 已有结论就直接用，否则在该快照上执行检查），全部成立后在同一快照上执行业务 SQL。版本由写入事务内的触发器
     /// 维护，所以快照读到的版本恰好对应它能看到的数据：核对与执行之间提交的写入对本次执行不可见。
     /// 任一条件不成立即放弃快照并拒绝，同时让下一次请求重读版本，后续使用按常规维护处理。
-    pub(super) async fn run_bound(&self, ctx: &Ctx, sql: &str, refs: &[(String, u32)]) -> Result<Value> {
+    pub(super) async fn run_bound_with(
+        &self,
+        ctx: &Ctx,
+        sql: &str,
+        refs: &[(String, u32)],
+        req_conds: &[(Check, Accept)],
+    ) -> Result<Value> {
         let mut conds: Vec<(Check, Accept)> = vec![];
+        let mut push_cond = |c: (Check, Accept)| match conds.iter_mut().find(|(k, _)| same_cond(k, &c.0) || k.key() == c.0.key()) {
+            Some((_, b)) => *b = b.tighter(c.1),
+            None => conds.push(c),
+        };
         for (key, rev) in refs {
             // 声明的是被优化修订替代、仍然可用的前一修订时，核对它自己的条件
             let fk = self.mfk(ctx, key);
             let prev = self.opt_prev.lock().get(&fk).filter(|p| p.revision == *rev).cloned();
             let Some(e) = prev.or_else(|| self.store.get(&fk)) else { continue };
             for c in metric_of(&e).map(bound_conditions).unwrap_or_default() {
-                // 几个声明的修订共用一个检查时只执行一次；完整性阈值取最严的，因为每个修订的条件都要成立
-                match conds.iter_mut().find(|(k, _)| same_cond(k, &c.0) || k.key() == c.0.key()) {
-                    Some((_, b)) => *b = b.tighter(c.1),
-                    None => conds.push(c),
-                }
+                push_cond(c);
             }
+        }
+        for c in req_conds {
+            push_cond(c.clone());
         }
         let snap = self.db.snapshot().await?;
         let vers = catalog::tx_versions(&snap.query(QKind::Metric, catalog::TX_VERSIONS_SQL).await?);
@@ -2161,11 +2313,11 @@ impl Middle {
                 drop(snap);
                 inc(&self.stats.snapshot_rejections);
                 self.invalidate_versions();
-                let reason = format!("执行快照上条件不成立：{}", c.describe());
+                let reason = format!("执行快照上条件不成立：{}（{}）", c.describe(), outcome_text(c, &o));
                 self.metric_event(
                     json!({"event": "snapshot_rejected", "refs": refs, "agent": ctx.agent, "reason": reason, "versions": vers}),
                 );
-                return Ok(json!({"rejected": true, "reason": reason, "metric": refs.first().map(|r| r.0.clone())}));
+                return Ok(json!({"status": "rejected", "rejected": true, "reason": reason, "metric": refs.first().map(|r| r.0.clone())}));
             }
         }
         if self.cfg.exec_pause_ms > 0 {
@@ -2187,49 +2339,157 @@ impl Middle {
         gate!(gates, "G4", self.grain_gate(ctx, m, self.cfg.cond_reuse).await);
         let example = m.examples.first().map(|x| x.sql.clone()).unwrap_or_default();
         gate!(gates, "G5", self.review_gate(ctx, &example).await?);
-        // G8：规范 SQL 按学习题参数执行，与参照查询在同一份数据上的结果比较；数据默认是当前快照，
-        // 配置了学习时快照时两者都在学习时快照上执行
-        let g8 = match (&ev.judge, metric::compile(m, &ev.ask)) {
-            (None, _) => Err("没有学习题判题查询，需业务方确认".into()),
-            (_, Err(e)) => Err(format!("{e:#}")),
-            (Some(judge), Ok(sql)) => match (&self.learn_db, &self.cfg.g8_snapshot) {
-                (Some(ldb), _) => self.learned_snapshot_gate(ldb, None, judge, &sql, ev.decimals).await,
-                (None, Some(schema)) => self.learned_snapshot_gate(&self.db, Some(schema), judge, &sql, ev.decimals).await,
-                _ if self.cfg.g8_snapshot_db => Err("配置了学习时快照库，但没有连接".into()),
-                (None, None) => match self.vquery(QKind::Metric, judge).await {
-                    Ok(r) => {
-                        let expect = metric::parse_answer(r.cell(0, 0).unwrap_or("NULL"));
-                        self.value_gate(&sql, &expect, ev.decimals).await
-                    }
-                    Err(e) => Err(format!("判题查询失败：{e:#}")),
-                },
-            },
+        let sql = match metric::compile(m, &ev.ask) {
+            Ok(s) => s,
+            Err(e) => {
+                gate!(gates, "G8", Err(format!("{e:#}")));
+                unreachable!()
+            }
         };
-        gate!(gates, "G8", g8);
-        // G9：修复不改变事实行未变的历史答案（前一修订在上次验证的快照上、替代修订在当前快照上，按时间桶比较）
-        if let (true, Some(prev)) = (self.cfg.history_check, &ev.prev) {
-            gate!(gates, "G9", self.history_gate(ctx, m, prev, ev.decimals).await);
+        // 优先使用保留的学习时快照（独立快照库或同库模式）核验 SourceEq（G8）与 HistInv（G9）；
+        // 未保留完整快照时，必须依托发布阶段持久化的源答案与逐桶历史摘要做碰撞有界核验；证据缺失或源期间已变更时拒绝自动发布。
+        match (&self.learn_db, &self.cfg.g8_snapshot) {
+            (Some(ldb), _) => {
+                let g8 = match &ev.judge {
+                    Some(judge) => self.learned_snapshot_gate(ldb, None, judge, &sql, ev.decimals).await,
+                    None => Err("缺少学习题判题查询，需业务方确认".into()),
+                };
+                gate!(gates, "G8", g8);
+                if let (true, Some(prev)) = (self.cfg.history_check, &ev.prev) {
+                    gate!(gates, "G9", self.history_gate(ctx, m, prev, ldb, None, ev.decimals).await);
+                }
+            }
+            (None, Some(schema)) => {
+                let g8 = match &ev.judge {
+                    Some(judge) => self.learned_snapshot_gate(&self.db, Some(schema), judge, &sql, ev.decimals).await,
+                    None => Err("缺少学习题判题查询，需业务方确认".into()),
+                };
+                gate!(gates, "G8", g8);
+                if let (true, Some(prev)) = (self.cfg.history_check, &ev.prev) {
+                    gate!(gates, "G9", self.history_gate(ctx, m, prev, &self.db, Some(schema.as_str()), ev.decimals).await);
+                }
+            }
+            (None, None) if self.cfg.g8_snapshot_db => {
+                gate!(gates, "G8", Err("配置了学习时快照库，但没有连接".into()));
+            }
+            (None, None) => {
+                if let Some(failed) = self.summary_repair_gates(ctx, m, &sql, ev, gates).await? {
+                    return Ok(Some(failed));
+                }
+            }
         }
         Ok(None)
     }
 
-    /// G9：上次验证的快照（学习时快照库或模式）上前一修订的全量序列，与当前快照上替代修订的全量序列，在事实行指纹相同的
-    /// 时间桶上逐桶比较（答案精度）。任一桶不同：修复改变了写入没有触及的历史答案，说明它在做数据区分不了的业务选择，
-    /// 不自动发布。没有可比较的桶时本门槛不起作用（写入触及了全部历史），照常记录。没有学习时快照时跳过。
-    async fn history_gate(&self, ctx: &Ctx, new: &Metric, prev: &Metric, decimals: u32) -> Gate {
-        let (old_db, schema): (&crate::db::Db, Option<&str>) = match (&self.learn_db, &self.cfg.g8_snapshot) {
-            (Some(ldb), _) => (ldb, None),
-            (None, Some(s)) => (&self.db, Some(s.as_str())),
-            _ => {
-                self.metric_event(json!({"event": "history_skipped", "agent": ctx.agent, "metric": prev.name, "reason": "没有学习时快照"}));
-                return Ok(());
+    /// 无保留学习快照时的紧凑摘要修复门控：要求源答案与逐桶摘要俱全，且源问题所在期间的事实行多集摘要未发生变动，
+    /// 再在同一次只读快照内同时校验 SourceEq（G8）与 HistInv（G9）；缺任一证据即拒绝自动发布。
+    async fn summary_repair_gates(
+        &self,
+        ctx: &Ctx,
+        new: &Metric,
+        sql: &str,
+        ev: &MetricEvidence,
+        gates: &mut Vec<Value>,
+    ) -> Result<Option<(String, String)>> {
+        let (Some(expect), Some(hist)) = (&ev.value, &ev.history) else {
+            let reason = "缺少源快照验证摘要，拒绝自动发布修复；需业务方确认".to_string();
+            self.metric_event(json!({"event": "history_missing", "agent": ctx.agent, "metric": new.name, "reason": reason}));
+            return Ok(record(gates, "G8", Err(reason)));
+        };
+        let dedup_implied = ev.prev.as_ref().is_some_and(|prev| new.dedup && !prev.dedup && same_computation(new, prev));
+        let fp_sql = match metric::compile_fact_fingerprint(new, &hist.cols) {
+            Ok(s) => s,
+            Err(e) => return Ok(record(gates, "G8", Err(format!("无法编译事实指纹：{e:#}")))),
+        };
+        let ask_sql = match metric::compile_ask_buckets(new, &ev.ask) {
+            Ok(s) => s,
+            Err(e) => return Ok(record(gates, "G8", Err(format!("无法编译源期间桶集合：{e:#}")))),
+        };
+        let need_series = self.cfg.history_check && ev.prev.is_some() && !dedup_implied;
+        let new_s_sql = if need_series {
+            match metric::compile_series(new) {
+                Ok(s) => Some(s),
+                Err(e) => return Ok(record(gates, "G9", Err(format!("无法编译历史序列：{e:#}")))),
+            }
+        } else {
+            None
+        };
+        let t0 = Instant::now();
+        let snap = self.db.snapshot().await?;
+        let fp_rows = snap.query(QKind::Metric, &fp_sql).await;
+        let ask_rows = snap.query(QKind::Metric, &ask_sql).await;
+        let ans_rows = snap.query(QKind::Metric, sql).await;
+        let s_rows = match &new_s_sql {
+            Some(s) => Some(snap.query(QKind::Metric, s).await),
+            None => None,
+        };
+        snap.commit().await?;
+        let (fp_rows, ask_rows, ans_rows) = match (fp_rows, ask_rows, ans_rows) {
+            (Ok(f), Ok(a), Ok(c)) => (f, a, c),
+            (Err(e), _, _) | (_, Err(e), _) | (_, _, Err(e)) => {
+                return Ok(record(gates, "G8", Err(format!("源摘要校验查询失败：{e:#}"))));
             }
         };
-        // 只加了整行去重的修订不可能改变事实行未变的桶：前一修订在上次验证的快照上满足粒度唯一（带口径过滤的行里没有重复键，
-        // 也就没有完全相同的行），未变的桶里行完全相同，去重对它们不起作用。不必逐桶计算（去重序列要对整张事实表 DISTINCT）
+        let fp_now = parse_fps(&fp_rows);
+        let cur_ask = parse_buckets(&ask_rows);
+        let ask_untouched = hist.ask_buckets.union(&cur_ask).all(|b| hist.fp.get(b) == fp_now.get(b));
+        let g8 = if !ask_untouched {
+            Err("源问题所在期间的事实数据已变更且未保留源快照，无法核验 SourceEq；需业务方确认".into())
+        } else {
+            match ans_rows.rows.first() {
+                None => Err("修复候选在源期间上结果为空".into()),
+                Some(row) if row.iter().flatten().any(|v| metric::same_value(&metric::parse_answer(v), expect, ev.decimals)) => Ok(()),
+                Some(_) => Err(format!("修复候选结果 {} 与源确认答案 {expect:?} 不一致", ans_rows.cell(0, 0).unwrap_or("NULL"))),
+            }
+        };
+        if let Some(f) = record(gates, "G8", g8) {
+            return Ok(Some(f));
+        }
+        if let (true, Some(prev)) = (self.cfg.history_check, &ev.prev) {
+            if dedup_implied {
+                self.metric_event(json!({"event": "history_implied", "agent": ctx.agent, "metric": prev.name,
+                                         "source": "summary", "reason": "只加了整行去重：粒度唯一时未变的桶里没有完全相同的行"}));
+                let _ = record(gates, "G9", Ok(()));
+            } else {
+                let s_rows = match s_rows.expect("need_series") {
+                    Ok(r) => r,
+                    Err(e) => return Ok(record(gates, "G9", Err(format!("历史序列查询失败：{e:#}")))),
+                };
+                let s_now = parse_series(&s_rows);
+                let empty_zero = new.empty == crate::knowledge::EmptyRule::Zero;
+                let (compared, moved, example) = compare_bucket_series(&hist.fp, &hist.series, &fp_now, &s_now, empty_zero, ev.decimals);
+                self.metric_event(json!({"event": "history_checked", "agent": ctx.agent, "metric": prev.name, "source": "summary",
+                                         "buckets": hist.series.len(), "compared": compared, "moved": moved, "example": example,
+                                         "ms": t0.elapsed().as_secs_f64() * 1000.0}));
+                let g9 = match moved {
+                    0 => Ok(()),
+                    _ => Err(format!(
+                        "修复会改变 {moved} 个事实行未变的时间桶的历史答案（共比较 {compared} 个，例如 {}），口径需业务方确认",
+                        example.unwrap_or_default()
+                    )),
+                };
+                if let Some(f) = record(gates, "G9", g9) {
+                    return Ok(Some(f));
+                }
+            }
+        }
+        Ok(None)
+    }
+
+    /// G9（保留学习时快照模式）：学习时快照库或模式上前一修订的全量序列，与当前快照上替代修订的全量序列，在事实行指纹相同的
+    /// 时间桶上逐桶比较（答案精度）。任一桶不同则拒绝自动发布。
+    async fn history_gate(
+        &self,
+        ctx: &Ctx,
+        new: &Metric,
+        prev: &Metric,
+        old_db: &crate::db::Db,
+        schema: Option<&str>,
+        decimals: u32,
+    ) -> Gate {
         if new.dedup && !prev.dedup && same_computation(new, prev) {
             self.metric_event(json!({"event": "history_implied", "agent": ctx.agent, "metric": prev.name,
-                                     "reason": "只加了整行去重：粒度唯一时未变的桶里没有完全相同的行"}));
+                                     "source": "snapshot", "reason": "只加了整行去重：粒度唯一时未变的桶里没有完全相同的行"}));
             return Ok(());
         }
         let cols: Vec<String> = metric::columns(prev, &self.cat).get(&prev.fact).map(|s| s.iter().cloned().collect()).unwrap_or_default();
@@ -2240,32 +2500,14 @@ impl Middle {
             (Ok(o), Ok(n)) => (o, n),
             (Err(e), _) | (_, Err(e)) => return Err(format!("历史序列查询失败：{e:#}")),
         };
-        let fps = |r: &crate::db::Rows| -> HashMap<String, (String, String)> {
-            r.rows.iter().filter_map(|x| Some((x.first()?.clone()?, (x.get(1)?.clone()?, x.get(2)?.clone().unwrap_or_default())))).collect()
-        };
-        let series = |r: &crate::db::Rows| -> HashMap<String, Option<String>> {
-            r.rows.iter().filter_map(|x| Some((x.first()?.clone()?, x.get(1).cloned().flatten()))).collect()
-        };
-        let (fp_old, fp_now, s_old, s_now) = (fps(&old.0), fps(&now.0), series(&old.1), series(&now.1));
-        let (mut compared, mut moved, mut example) = (0usize, 0usize, None);
-        for (b, v) in &s_old {
-            let Some(v) = v else { continue };
-            if !fp_old.contains_key(b) || fp_old.get(b) != fp_now.get(b) {
-                continue;
-            }
-            compared += 1;
-            let expect = metric::parse_answer(v);
-            let same = s_now.get(b).cloned().flatten().is_some_and(|x| metric::same_value(&metric::parse_answer(&x), &expect, decimals));
-            if !same {
-                moved += 1;
-                example.get_or_insert_with(|| format!("{b}: {v} → {}", s_now.get(b).cloned().flatten().unwrap_or_else(|| "NULL".into())));
-            }
-        }
-        self.metric_event(json!({"event": "history_checked", "agent": ctx.agent, "metric": prev.name, "buckets": s_old.len(),
-                                 "compared": compared, "moved": moved, "example": example,
+        let (fp_old, fp_now, s_old, s_now) = (parse_fps(&old.0), parse_fps(&now.0), parse_series(&old.1), parse_series(&now.1));
+        let empty_zero = new.empty == crate::knowledge::EmptyRule::Zero;
+        let (compared, moved, example) = compare_bucket_series(&fp_old, &s_old, &fp_now, &s_now, empty_zero, decimals);
+        self.metric_event(json!({"event": "history_checked", "agent": ctx.agent, "metric": prev.name, "source": "snapshot",
+                                 "buckets": s_old.len(), "compared": compared, "moved": moved, "example": example,
                                  "ms": t0.elapsed().as_secs_f64() * 1000.0}));
-        match (compared, moved) {
-            (_, 0) => Ok(()),
+        match moved {
+            0 => Ok(()),
             _ => Err(format!(
                 "修复会改变 {moved} 个事实行未变的时间桶的历史答案（共比较 {compared} 个，例如 {}），口径需业务方确认",
                 example.unwrap_or_default()

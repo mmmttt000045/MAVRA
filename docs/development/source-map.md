@@ -12,14 +12,15 @@ All paths are relative to the repository root.
 | `src/flight.rs`, `src/timing.rs` | Single-flight concurrent check coalescing and task-local latency/SQL attribution |
 | `src/catalog.rs`, `src/checks.rs` | Schema/join/grain catalog, table version stamps, and structural/value check SQL generation |
 | `src/sqlscan.rs`, `src/sqlscope.rs` | `sqlparser` AST canonicalization, alias normalization, and query-scoped grain uniqueness proofs |
-| `src/metric.rs`, `src/knowledge.rs` | Executable definition representation $m^r = (B,I,C,E,r)$, deterministic SQL compilation, and persistent store $(M, \mathcal{H})$ |
+| `src/metric.rs`, `src/knowledge.rs` | Executable definitions, deterministic SQL compilation, and process-local knowledge store |
 | `src/feedback.rs` | Candidate pruning and check failure feedback |
 | `src/llm.rs`, `src/agentmem.rs` | OpenAI/DeepSeek-compatible LLM client and per-agent/shared text-memory baseline adapters |
-| `src/middle/mod.rs` | Stateless middleware coordinator and agent tool dispatch |
+| `src/middle/mod.rs` | Middleware coordinator, shared caches, and agent tool dispatch |
+| `src/middle/profiles.rs` | Runtime profiles shared by `serve --mode` and evaluation commands |
 | `src/middle/metrics.rs` | Admission gates (G1–G7), version-coalesced validation, history-preserving repair, and snapshot execution |
 | `src/middle/features.rs` | Point-in-time predictive feature admission, `LATERAL` fusion, and time-censored leakage audits |
 | `src/middle/optimize.rs` | Equivalent candidate verification and revision publication |
-| `src/integration_tests.rs` | End-to-end PostgreSQL and HTTP lifecycle, concurrency, and repair regression tests |
+| `src/integration_tests.rs` | Focused PostgreSQL regressions and a shared database runner; historical performance drivers are recorded in `repository.md` |
 
 ## Evaluation Suite (`src/bench/`)
 

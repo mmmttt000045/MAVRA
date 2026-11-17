@@ -36,6 +36,9 @@ pub enum Check {
     /// 列非空占比：过滤或度量读到的列变为空时，过滤结果为 UNKNOWN、聚合忽略空值，相应的行静默丢失。
     /// 返回非空行占比，由调用方与准入基线比较（与日期列完整性相同的容差）。
     NotNull { table: String, col: String },
+    /// 请求期间覆盖：日期维度方式下，所请求的（年, 月区间）在维度表中至少有 `min_months` 个月份存在非空日期键。
+    /// 参数相关的运行期检查，键包含规范化后的期间范围与维度表版本，防止未覆盖年份复用已覆盖年份的检查结论静默返回 0。
+    PeriodCovered { dim: String, key: String, year_col: String, month_col: String, year: i32, m1: u32, m2: u32, min_months: u32 },
     /// 度量尺度：事实表数值列 `col` 按月（`month` 为 yyyymm 表达式，`from` 为带时间连接的来源）取 |值| 的中位数
     /// （只计非空、非零值，每月至少 30 行）。返回各月中位数的最小与最大值，由调用方与准入时的范围比较：
     /// 单位或口径换算会让某些月份的中位数跳变一个数量级，这类变化没有结构痕迹，只能由业务方确认。
@@ -67,6 +70,7 @@ impl Check {
             Check::KeyAliasUnique { .. } => "KeyAliasUnique",
             Check::DistinctKeyUnique { .. } => "DistinctKeyUnique",
             Check::NotNull { .. } => "NotNull",
+            Check::PeriodCovered { .. } => "PeriodCovered",
             Check::MeasureScale { .. } => "MeasureScale",
         }
     }
@@ -78,7 +82,7 @@ impl Check {
     pub fn tables(&self) -> Vec<String> {
         match self {
             Check::KeyUnique { table, .. } | Check::DistinctKeyUnique { table, .. } => vec![table.clone()],
-            Check::DateKeysContiguous { dim, .. } => vec![dim.clone()],
+            Check::DateKeysContiguous { dim, .. } | Check::PeriodCovered { dim, .. } => vec![dim.clone()],
             Check::DateCoverage { table, .. } => vec![table.clone()],
             Check::PathCoverage { fact, path } => {
                 let mut t = vec![fact.clone()];
@@ -113,6 +117,7 @@ impl Check {
             Check::KeyAliasCoverage { fact, fact_col, dim, dim_col, alias } => format!("{fact}.{fact_col}>{dim}({dim_col}|{alias})"),
             Check::KeyAliasUnique { dim, dim_col, alias } => format!("{dim}({dim_col}|{alias})"),
             Check::NotNull { table, col } => format!("{table}({col}) not null"),
+            Check::PeriodCovered { dim, year, m1, m2, .. } => format!("{dim}({year}:{m1}-{m2})"),
             Check::MeasureScale { fact, col, .. } => format!("{fact}({col}) scale"),
         }
     }
@@ -122,7 +127,7 @@ impl Check {
         match self {
             Check::KeyUnique { table, cols, .. } => rows(table) * (1.0 + 0.5 * (cols.len() as f64 - 1.0)),
             Check::DistinctKeyUnique { table, cols, .. } => rows(table) * (1.5 + 0.5 * (cols.len() as f64 - 1.0)),
-            Check::DateKeysContiguous { dim, .. } => rows(dim),
+            Check::DateKeysContiguous { dim, .. } | Check::PeriodCovered { dim, .. } => rows(dim),
             Check::DateCoverage { table, .. } => rows(table),
             Check::PathCoverage { fact, path } => rows(fact) * (1.0 + path.len() as f64),
             Check::SampleFanout { right, .. } => rows(right),
@@ -158,6 +163,7 @@ impl Check {
             }
             Check::KeyAliasUnique { dim, dim_col, alias } => format!("{dim} 的 {dim_col} 与 {alias} 合起来是否唯一"),
             Check::NotNull { table, col } => format!("{table}.{col} 非空的行占比"),
+            Check::PeriodCovered { dim, year, m1, m2, .. } => format!("{dim} 是否覆盖请求期间 {year}-{m1:02}..{year}-{m2:02}"),
             Check::MeasureScale { fact, col, .. } => format!("{fact}.{col} 各月中位数的范围"),
         }
     }
@@ -247,6 +253,10 @@ impl Check {
                  (select {dim}.{dim_col} as k from {dim} union all select {alias} as k from {dim}) u where k is not null"
             ),
             Check::NotNull { table, col } => format!("select count(*) as n_rows, count({col}) as n_nonnull from {table}"),
+            Check::PeriodCovered { dim, key, year_col, month_col, year, m1, m2, .. } => format!(
+                "select count(distinct {month_col})::bigint as n_months, count({key})::bigint as n_keys \
+                 from {dim} where {key} is not null and {year_col} = {year} and {month_col} between {m1} and {m2}"
+            ),
             Check::MeasureScale { fact, col, from, month, .. } => format!(
                 "select count(*) as n_months, min(med) as lo, max(med) as hi from \
                  (select {month} as mo, percentile_disc(0.5) within group (order by abs({fact}.{col})) as med from {from} \
@@ -275,6 +285,15 @@ impl Check {
                 let (n_rows, n_nonnull) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
                 let ratio = if n_rows > 0 { n_nonnull as f64 / n_rows as f64 } else { 1.0 };
                 Outcome { pass: true, metrics: json!({"n_rows": n_rows, "n_nonnull": n_nonnull, "join_ratio": ratio}), ms }
+            }
+            Check::PeriodCovered { min_months, .. } => {
+                let (n_months, n_keys) = (rows.i64(0, 0).unwrap_or(0), rows.i64(0, 1).unwrap_or(0));
+                let need = i64::from(*min_months);
+                Outcome {
+                    pass: n_months >= need && n_keys >= n_months,
+                    metrics: json!({"n_months": n_months, "need_months": need, "n_keys": n_keys}),
+                    ms,
+                }
             }
             Check::MeasureScale { .. } => {
                 let n_months = rows.i64(0, 0).unwrap_or(0);
@@ -400,5 +419,24 @@ mod tests {
                     (select count(*) from d) as n_keys"
         );
         assert_eq!(d.tables(), vec!["lineitem".to_string()]);
+    }
+
+    #[test]
+    fn period_coverage_keys_separate_distinct_requested_periods() {
+        let p = |year| Check::PeriodCovered {
+            dim: "date_dim".into(),
+            key: "d_date_sk".into(),
+            year_col: "d_year".into(),
+            month_col: "d_moy".into(),
+            year,
+            m1: 1,
+            m2: 12,
+            min_months: 12,
+        };
+        let (p25, p28) = (p(2025), p(2028));
+        assert_ne!(p25.key(), p28.key());
+        assert_eq!(p25.tables(), vec!["date_dim".to_string()]);
+        assert!(p25.eval(&Rows { cols: vec![], rows: vec![vec![Some("12".into()), Some("365".into())]] }, 0.0).pass);
+        assert!(!p28.eval(&Rows { cols: vec![], rows: vec![vec![Some("0".into()), Some("0".into())]] }, 0.0).pass);
     }
 }

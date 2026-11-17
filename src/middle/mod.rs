@@ -10,6 +10,9 @@
 mod features;
 mod metrics;
 mod optimize;
+mod profiles;
+
+pub(crate) use profiles::profile;
 
 pub use features::LearnReq;
 
@@ -452,6 +455,12 @@ fn outcome_text(c: &Check, o: &Outcome) -> String {
         }
         Check::MeasureScale { .. } => {
             format!("{} 个月的 |值| 中位数在 [{}, {}]", o.metrics["n_months"], o.metrics["lo"], o.metrics["hi"])
+        }
+        Check::PeriodCovered { .. } => {
+            format!(
+                "请求期间需覆盖 {} 个月，实际存在 {} 个月（{} 个日期键）",
+                o.metrics["need_months"], o.metrics["n_months"], o.metrics["n_keys"]
+            )
         }
         Check::PathCoverage { .. } | Check::KeyAliasCoverage { .. } => {
             format!(
@@ -1484,6 +1493,16 @@ impl Middle {
 
     /// `refs`：本条 SQL 声明依据的指标经验 (key, revision)，执行前核对仍然有效。
     pub async fn run_sql_with(&self, ctx: &Ctx, sql: &str, refs: &[(String, u32)]) -> Result<Value> {
+        self.run_sql_with_conds(ctx, sql, refs, &[]).await
+    }
+
+    async fn run_sql_with_conds(
+        &self,
+        ctx: &Ctx,
+        sql: &str,
+        refs: &[(String, u32)],
+        req_conds: &[(Check, metrics::Accept)],
+    ) -> Result<Value> {
         let s = sql.trim().trim_end_matches(';').trim();
         let low = s.to_lowercase();
         if !(low.starts_with("select") || low.starts_with("with")) || s.contains(';') {
@@ -1508,7 +1527,7 @@ impl Middle {
         }
         if self.cfg.snapshot_exec && !refs.is_empty() && self.cfg.metric_maint != Maint::Off {
             let deps = self.deps_for(&tables).await?;
-            let mut out = self.run_bound(ctx, s, refs).await?;
+            let mut out = self.run_bound_with(ctx, s, refs, req_conds).await?;
             if out.get("rejected").is_some() {
                 self.log(ctx, format!("拦下 SQL：{}", out["reason"].as_str().unwrap_or("")));
                 self.note_rejection(ctx, s, refs, &out);
@@ -1516,6 +1535,19 @@ impl Middle {
                 out["ref"] = json!(r);
             }
             return Ok(out);
+        }
+        if !req_conds.is_empty() && matches!(self.cfg.metric_maint, Maint::Condition | Maint::Definition) {
+            for (c, accept) in req_conds {
+                let (o, _) = self.cond_outcome(ctx, c, false).await?;
+                if !accept.ok(&o) {
+                    let reason = format!("请求范围或接入条件不成立：{}（{}）", c.describe(), outcome_text(c, &o));
+                    let rej =
+                        json!({"status": "rejected", "rejected": true, "reason": reason, "metric": refs.first().map(|r| r.0.clone())});
+                    self.log(ctx, format!("拦下 SQL：{reason}"));
+                    self.note_rejection(ctx, s, refs, &rej);
+                    return Ok(rej);
+                }
+            }
         }
         if self.cfg.exec_pause_ms > 0 && !refs.is_empty() {
             tokio::time::sleep(Duration::from_millis(self.cfg.exec_pause_ms)).await;

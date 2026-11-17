@@ -1,5 +1,5 @@
 //! 指标经验的纯逻辑：题型、规范 SQL 编译、计算链求值、静态检查与离线提炼。
-//! 需要数据库的门槛、守护、受限修复与回归在 `middle::metrics`。协议见 docs/history/metric-experience-protocol.md。
+//! 需要数据库的门槛、守护、受限修复与回归在 `middle::metrics`。实验协议与证据见 exp/README.md。
 
 use crate::catalog::Catalog;
 use crate::db::lit;
@@ -85,6 +85,24 @@ impl Ask {
             }
             Ask::Diff { a, b } => vec![a.year, b.year],
             Ask::RankMonth { year } | Ask::PeakRise { year } | Ask::AboveMean { year } => vec![*year],
+        }
+    }
+
+    /// 请求涉及的规范化期间及其最少应覆盖的月份数（用于运行期期间覆盖检查与源时期摘要核验）。
+    pub fn period_requirements(&self) -> Vec<(Period, u32)> {
+        match self {
+            Ask::Single { period } | Ask::Slice { period, .. } | Ask::SliceDiff { period, .. } | Ask::RankBy { period, .. } => {
+                vec![(*period, period.m2.saturating_sub(period.m1) + 1)]
+            }
+            Ask::Diff { a, b } => {
+                let mut out = vec![(*a, a.m2.saturating_sub(a.m1) + 1)];
+                if b != a {
+                    out.push((*b, b.m2.saturating_sub(b.m1) + 1));
+                }
+                out
+            }
+            Ask::PeakRise { year } => vec![(Period { year: *year, m1: 1, m2: 12 }, 2)],
+            Ask::RankMonth { year } | Ask::AboveMean { year } => vec![(Period { year: *year, m1: 1, m2: 12 }, 1)],
         }
     }
 
@@ -451,8 +469,8 @@ pub fn compile_series(m: &Metric) -> Result<String> {
     compile_target(m, Target::Series, &[])
 }
 
-/// 事实行指纹（列 b, n, h）：按时间桶统计事实表的行数与所读列取值的哈希和。只读事实表本身（不去重、不带过滤），
-/// 日期列在别的表上时沿口径的关联取到它。两个快照上同一桶的指纹相同，就认为该桶的事实行没有变化。
+/// 事实行指纹（列 b, n, h）：按时间桶统计事实表的行数与所读列取值的 128 位 MD5 无序多集摘要（双 64 位精确整数和 + 异或）。
+/// 只读事实表本身（不去重、不带过滤），日期列在别的表上时沿口径的关联取到它。子查询每行只算一次 MD5。
 pub fn compile_fact_fingerprint(m: &Metric, cols: &[String]) -> Result<String> {
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义"))?;
     let mut from = m.fact.clone();
@@ -460,13 +478,51 @@ pub fn compile_fact_fingerprint(m: &Metric, cols: &[String]) -> Result<String> {
         let (tb, _) = time.column_of(&m.fact);
         from.push_str(&path_joins(m, &tb).ok_or_else(|| anyhow!("日期列所在的表 {tb} 不在口径的关联中"))?);
     }
-    let h = if cols.is_empty() {
-        "0::bigint".to_string()
-    } else {
-        let qualified: Vec<String> = cols.iter().map(|c| format!("{}.{c}", m.fact)).collect();
-        format!("coalesce(sum(hashtext(row({})::text)::bigint), 0)", qualified.join(", "))
-    };
-    Ok(format!("select {} as b, count(*) as n, {h} as h from {from} group by 1", bucket_expr(time, &m.fact)))
+    let b = bucket_expr(time, &m.fact);
+    if cols.is_empty() {
+        return Ok(format!("select {b} as b, count(*) as n, '0:0:0:0'::text as h from {from} group by 1"));
+    }
+    let qualified: Vec<String> = cols.iter().map(|c| format!("{}.{c}", m.fact)).collect();
+    let hi = "('x' || substr(d, 1, 16))::bit(64)::bigint";
+    let lo = "('x' || substr(d, 17, 16))::bit(64)::bigint";
+    Ok(format!(
+        "select b, count(*) as n, \
+         coalesce(sum({hi}), 0)::text || ':' || coalesce(sum({lo}), 0)::text || ':' || \
+         coalesce(bit_xor({hi}), 0)::text || ':' || coalesce(bit_xor({lo}), 0)::text as h \
+         from (select {b} as b, md5(row({})::text) as d from {from}) mfp group by 1",
+        qualified.join(", ")
+    ))
+}
+
+/// 请求期间对应的全部日历时间桶键集合（含事实表为空的日期与修复后的日期键别名），用于核验源问题所在期间是否未发生变动。
+pub fn compile_ask_buckets(m: &Metric, ask: &Ask) -> Result<String> {
+    let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义"))?;
+    let reqs = ask.period_requirements();
+    ensure!(!reqs.is_empty(), "请求没有有效期间");
+    if time.is_column() {
+        let branches: Vec<String> = reqs
+            .iter()
+            .map(|(p, _)| {
+                let (y2, m2) = if p.m2 >= 12 { (p.year + 1, 1) } else { (p.year, p.m2 + 1) };
+                format!(
+                    "select g::date::text as b from generate_series(date '{:04}-{:02}-01', \
+                     (date '{y2:04}-{m2:02}-01' - interval '1 day')::date, interval '1 day') g",
+                    p.year, p.m1
+                )
+            })
+            .collect();
+        return Ok(branches.join(" union "));
+    }
+    let cond: Vec<String> = reqs.iter().map(|(p, _)| format!("({})", period_pred(time, &m.fact, p))).collect();
+    let w = cond.join(" or ");
+    let base =
+        format!("select distinct {d}.{dc}::text as b from {d} where ({w}) and {d}.{dc} is not null", d = time.dim, dc = time.dim_col);
+    Ok(match &time.key_alias {
+        Some(alias) => {
+            format!("{base} union select distinct ({alias})::text as b from {d} where ({w}) and ({alias}) is not null", d = time.dim)
+        }
+        None => base,
+    })
 }
 
 /// 按月统计用的来源与月份表达式（度量尺度条件）：日期维度方式连接日期维度（含日期键修复后的扩展维度），
@@ -505,6 +561,32 @@ pub fn compile_with(m: &Metric, ask: &Ask, extra: &[JoinRef]) -> Result<String> 
     compile_target(m, Target::Ask(ask), extra)
 }
 
+// Metrics and features share join semantics: right-side LEFT JOIN filters stay in ON.
+fn definition_joins(m: &Metric, wheres: &mut Vec<String>, seen: &mut BTreeSet<String>) -> Result<String> {
+    let mut tail = String::new();
+    for j in &m.joins {
+        let other = &j.right;
+        let mut conds: Vec<String> = j.on.iter().map(|(l, r)| format!("{}.{l} = {other}.{r}", j.left)).collect();
+        let mut seen_on = BTreeSet::new();
+        for f in j.filters.get(other).into_iter().chain(m.filters.get(other)) {
+            let f = qualify_owned_filter(other, f)?;
+            match j.kind {
+                JoinKind::Left => push_unique(&mut conds, &mut seen_on, &f),
+                JoinKind::Inner => push_unique(wheres, seen, &f),
+            }
+        }
+        if let Some(f) = j.filters.get(&j.left) {
+            push_unique(wheres, seen, &qualify_owned_filter(&j.left, f)?);
+        }
+        let kw = if j.kind == JoinKind::Left { "left join" } else { "join" };
+        tail.push_str(&format!(" {kw} {other} on {}", conds.join(" and ")));
+    }
+    if let Some(f) = m.filters.get(&m.fact) {
+        push_unique(wheres, seen, &qualify_owned_filter(&m.fact, f)?);
+    }
+    Ok(tail)
+}
+
 fn compile_target(m: &Metric, target: Target, extra: &[JoinRef]) -> Result<String> {
     check_join_orientation(m)?;
     let time = m.time.as_ref().ok_or_else(|| anyhow!("口径没有时间定义，无法按期间编译"))?;
@@ -514,29 +596,9 @@ fn compile_target(m: &Metric, target: Target, extra: &[JoinRef]) -> Result<Strin
     };
     ensure!(attr.is_some() || extra.is_empty(), "只有按维度属性的问法才接入额外的关联");
     ensure!(time.is_column() || !(time.dim.is_empty() || time.dim_col.is_empty()), "日期维度方式需要维度表与键列");
-    let mut tail = String::new();
     let mut wheres = vec![];
     let mut seen = BTreeSet::new();
-    for j in &m.joins {
-        let other = &j.right;
-        let mut conds: Vec<String> = j.on.iter().map(|(l, r)| format!("{}.{l} = {other}.{r}", j.left)).collect();
-        let mut seen_on = BTreeSet::new();
-        for f in j.filters.get(other).into_iter().chain(m.filters.get(other)) {
-            let f = qualify_owned_filter(other, f)?;
-            match j.kind {
-                JoinKind::Left => push_unique(&mut conds, &mut seen_on, &f),
-                JoinKind::Inner => push_unique(&mut wheres, &mut seen, &f),
-            }
-        }
-        if let Some(f) = j.filters.get(&j.left) {
-            push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&j.left, f)?);
-        }
-        let kw = if j.kind == JoinKind::Left { "left join" } else { "join" };
-        tail.push_str(&format!(" {kw} {other} on {}", conds.join(" and ")));
-    }
-    if let Some(f) = m.filters.get(&m.fact) {
-        push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&m.fact, f)?);
-    }
+    let mut tail = definition_joins(m, &mut wheres, &mut seen)?;
     // 维度问法：接入额外的多对一关联，确认属性所在的表已关联
     let mut reached: BTreeSet<&str> = std::iter::once(m.fact.as_str()).chain(m.joins.iter().map(|j| j.right.as_str())).collect();
     for j in extra {
@@ -702,26 +764,7 @@ fn feature_read(m: &Metric, seed_key: &str) -> Result<(String, String)> {
     let mut from = fact_source(m, None);
     let mut wheres = vec![];
     let mut seen = BTreeSet::new();
-    for j in &m.joins {
-        let other = &j.right;
-        let mut conds: Vec<String> = j.on.iter().map(|(l, r)| format!("{}.{l} = {other}.{r}", j.left)).collect();
-        let mut seen_on = BTreeSet::new();
-        for f in j.filters.get(other).into_iter().chain(m.filters.get(other)) {
-            let f = qualify_owned_filter(other, f)?;
-            match j.kind {
-                JoinKind::Left => push_unique(&mut conds, &mut seen_on, &f),
-                JoinKind::Inner => push_unique(&mut wheres, &mut seen, &f),
-            }
-        }
-        if let Some(f) = j.filters.get(&j.left) {
-            push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&j.left, f)?);
-        }
-        let kw = if j.kind == JoinKind::Left { "left join" } else { "join" };
-        from.push_str(&format!(" {kw} {other} on {}", conds.join(" and ")));
-    }
-    if let Some(f) = m.filters.get(&m.fact) {
-        push_unique(&mut wheres, &mut seen, &qualify_owned_filter(&m.fact, f)?);
-    }
+    from.push_str(&definition_joins(m, &mut wheres, &mut seen)?);
     match &e.anchor {
         // 关联实体：via 等于种子所指实体行上的 anchor 列
         Some(a) => wheres.push(format!("{vt}.{vc} = (select ent.{a} from {} ent where ent.{} = s.{seed_key})", e.table, e.key)),
@@ -1760,11 +1803,12 @@ mod tests {
             .starts_with("select store_sales.ss_sold_date_sk as b, 100.0 * sum(sr_return_amt) / sum(ss_net_paid) as v from store_sales"));
         assert!(series.contains("join date_dim on store_sales.ss_sold_date_sk = date_dim.d_date_sk where true group by 1"));
         let fp = compile_fact_fingerprint(&m, &["ss_net_paid".to_string(), "ss_ticket_number".to_string()]).unwrap();
+        assert!(fp.contains("from (select store_sales.ss_sold_date_sk as b, md5(row(store_sales.ss_net_paid, store_sales.ss_ticket_number)::text) as d from store_sales) mfp group by 1"));
+        assert!(fp.contains("bit_xor(('x' || substr(d, 1, 16))::bit(64)::bigint)"));
+        let ask_b = compile_ask_buckets(&m, &Ask::Single { period: Period::month(2002, 9) }).unwrap();
         assert_eq!(
-            fp,
-            "select store_sales.ss_sold_date_sk as b, count(*) as n, \
-             coalesce(sum(hashtext(row(store_sales.ss_net_paid, store_sales.ss_ticket_number)::text)::bigint), 0) as h \
-             from store_sales group by 1"
+            ask_b,
+            "select distinct date_dim.d_date_sk::text as b from date_dim where ((date_dim.d_year = 2002 and date_dim.d_moy between 9 and 9)) and date_dim.d_date_sk is not null"
         );
         let (from, month, tables) = month_source(&m).unwrap();
         assert_eq!(from, "store_sales join date_dim on store_sales.ss_sold_date_sk = date_dim.d_date_sk");
@@ -1774,7 +1818,7 @@ mod tests {
         let mut d = m.clone();
         d.dedup = true;
         assert!(compile_series(&d).unwrap().contains("from (select distinct * from store_sales) store_sales"));
-        assert!(compile_fact_fingerprint(&d, &[]).unwrap().ends_with("0::bigint as h from store_sales group by 1"));
+        assert!(compile_fact_fingerprint(&d, &[]).unwrap().ends_with("'0:0:0:0'::text as h from store_sales group by 1"));
     }
 
     #[test]

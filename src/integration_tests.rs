@@ -4,7 +4,7 @@
 use crate::db::{Db, QKind};
 use crate::knowledge::{Basis, EmptyRule, JoinKind, JoinRef, Metric, TimeSpec, TimeStrategy};
 use crate::metric::{self, Ask, Period};
-use crate::middle::{Checkpoint, Ctx, Maint, Middle, MiddleConfig};
+use crate::middle::{Ctx, Maint, Middle, MiddleConfig};
 use crate::scenario::{self, Change};
 use crate::{catalog, etl, metricbench, server};
 use anyhow::{ensure, Context, Result};
@@ -12,6 +12,114 @@ use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+
+// Every case owns its database; timeout and assertion failures still reach cleanup.
+async fn database_case<F, Fut>(label: &str, seconds: u64, run: F) -> Result<()>
+where
+    F: FnOnce(String) -> Fut,
+    Fut: std::future::Future<Output = Result<Value>> + Send + 'static,
+{
+    let _ = dotenvy::dotenv();
+    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
+    let admin = Db::connect(&url, 1, false)?;
+    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
+    let name = format!("agentdb_{label}_{}_{stamp}", std::process::id());
+    let mut test_url = reqwest::Url::parse(&url)?;
+    test_url.set_path(&format!("/{name}"));
+    admin.query(QKind::Meta, &format!("create database {name}")).await?;
+    let mut task = tokio::spawn(run(test_url.to_string()));
+    let result = tokio::time::timeout(Duration::from_secs(seconds), &mut task).await;
+    if result.is_err() {
+        task.abort();
+        let _ = task.await;
+    }
+    admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await.context("test database cleanup failed")?;
+    let report = result.context("database test timed out")?.context("database test panicked")??;
+    println!("{label}: {report}");
+    Ok(())
+}
+
+#[tokio::test]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
+async fn postgres_snapshot_binding() -> Result<()> {
+    database_case("snapshot", 90, |url| Box::pin(async move { snapshot_binding(&url).await })).await
+}
+
+// One controlled write proves snapshot isolation; throughput studies live in Git history.
+async fn snapshot_binding(url: &str) -> Result<Value> {
+    use std::sync::atomic::{AtomicBool, Ordering};
+
+    let admin = Db::connect(url, 2, false)?;
+    admin
+        .query(
+            QKind::Meta,
+            "create table snapshot_sales (id int, amount numeric, occurred date); \
+        insert into snapshot_sales values (1,10,'2001-03-01'),(2,20,'2001-03-02'); \
+        create table etl_batch_log (table_name text, batch_id bigint)",
+        )
+        .await?;
+    catalog::install_tx_versions(&admin, &["snapshot_sales"]).await?;
+    let mid = Middle::new(
+        Arc::new(Db::connect(url, 4, true)?),
+        MiddleConfig {
+            snapshot_exec: true,
+            cond_reuse: true,
+            result_cache: false,
+            version_ttl_ms: 0,
+            exec_pause_ms: 1000,
+            repair: false,
+            ..Default::default()
+        },
+    )
+    .await?;
+    let ctx = Ctx::new("reader", "snapshot", "query");
+    let m: Metric = serde_json::from_value(json!({"name":"sales", "definition":"total sales",
+        "fact":"snapshot_sales", "measure":"sum(amount)", "grain":["id"], "empty":"zero",
+        "time":{"role":"sale","fact_col":"occurred","strategy":"column","grain":"day"}}))?;
+    let seeded =
+        mid.seed_metric(&ctx, m, Ask::Single { period: Period::month(2001, 3) }, 2, "select sum(amount) from snapshot_sales").await?;
+    ensure!(seeded["promoted"] == true, "snapshot definition must be admitted: {seeded}");
+    let refs = vec![(seeded["key"].as_str().context("missing metric key")?.to_string(), 0)];
+    let committed = AtomicBool::new(false);
+    let sql = "select sum(amount), count(*) - count(distinct id) from snapshot_sales";
+    let (read, write) = tokio::join!(
+        async {
+            let result = mid.run_sql_with(&ctx, sql, &refs).await?;
+            ensure!(committed.load(Ordering::SeqCst), "writer must commit before the reader finishes");
+            Ok::<_, anyhow::Error>(result)
+        },
+        async {
+            // Wait for an actual snapshot check, rather than guessing how long admission takes.
+            tokio::time::timeout(Duration::from_secs(10), async {
+                loop {
+                    let stats = mid.stats_json();
+                    let snap = &stats["snapshot_exec"];
+                    if snap["checks_run"].as_u64().unwrap_or(0) + snap["checks_reused"].as_u64().unwrap_or(0) > 0 {
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(5)).await;
+                }
+            })
+            .await
+            .context("reader never opened its validation snapshot")?;
+            admin.query(QKind::Meta, "insert into snapshot_sales select * from snapshot_sales").await?;
+            committed.store(true, Ordering::SeqCst);
+            Ok::<_, anyhow::Error>(())
+        }
+    );
+    write?;
+    let result = read?;
+    ensure!(
+        result["source"] == "snapshot" && result["result"]["rows"][0] == json!(["30", "0"]),
+        "validation and answer must use the pre-write snapshot: {result}"
+    );
+    let current = admin.query(QKind::Meta, sql).await?;
+    ensure!(current.cell(0, 0) == Some("60") && current.cell(0, 1) == Some("2"), "writer must change the live data");
+    mid.invalidate_versions();
+    let next = mid.run_sql_with(&ctx, sql, &refs).await?;
+    ensure!(next["rejected"] == true, "the next snapshot must reject the broken grain: {next}");
+    Ok(json!({"snapshot_total":30,"live_total":60,"next_request_rejected":true}))
+}
 
 async fn feature_scan_fusion(url: &str) -> Result<Value> {
     let db = Db::connect(url, 2, false)?;
@@ -72,22 +180,9 @@ async fn feature_scan_fusion(url: &str) -> Result<Value> {
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_feature_scan_fusion() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_featurefusion_{}_{stamp}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(90), feature_scan_fusion(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    cleanup.context("feature fusion test database cleanup failed")?;
-    let report = result.context("feature fusion test timed out")??;
-    println!("{}", serde_json::to_string(&report)?);
-    Ok(())
+    database_case("featurefusion", 90, |url| Box::pin(async move { feature_scan_fusion(&url).await })).await
 }
 
 async fn tool(http: &reqwest::Client, base: &str, name: &str, args: Value) -> Result<Value> {
@@ -288,37 +383,15 @@ async fn date_key_repair(url: &str) -> Result<Value> {
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_date_key_repair() -> Result<()> {
-    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_datekey_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(90), Box::pin(date_key_repair(test_url.as_str()))).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    cleanup.context("date-key test database cleanup failed")?;
-    println!("Date-key repair: {}", result.context("date-key repair test timeout")??);
-    Ok(())
+    database_case("datekey", 90, |url| Box::pin(async move { date_key_repair(&url).await })).await
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_scoped_sql_admission() -> Result<()> {
-    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_scope_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(90), Box::pin(scoped_admission(test_url.as_str()))).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    cleanup.context("scoped test database cleanup failed")?;
-    println!("Scoped admission: {}", result.context("scoped admission test timeout")??);
-    Ok(())
+    database_case("scope", 90, |url| Box::pin(async move { scoped_admission(&url).await })).await
 }
 
 async fn exercise(url: &str) -> Result<Value> {
@@ -399,31 +472,9 @@ async fn exercise(url: &str) -> Result<Value> {
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_http_mock_lifecycle() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_mock_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    let out = format!("results/mock-{unique}");
-    admin.query(QKind::Meta, &format!("create database {name}")).await.context("无法创建独立测试库")?;
-    let result = tokio::time::timeout(Duration::from_secs(90), async { exercise(test_url.as_str()).await }).await;
-    // The generated identifier contains only ASCII letters, digits and underscores.
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status":"failed","error":format!("{e:#}")}),
-        Err(_) => json!({"status":"failed","error":"integration test timed out"}),
-    };
-    std::fs::create_dir_all(&out)?;
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("Mock integration report: {out}/report.json; database cleanup: {}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("集成测试超时")??;
-    Ok(())
+    database_case("mock", 90, |url| Box::pin(async move { exercise(&url).await })).await
 }
 
 async fn orientation_counterexample(url: &str) -> Result<Value> {
@@ -498,30 +549,9 @@ async fn orientation_counterexample(url: &str) -> Result<Value> {
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_metric_join_orientation() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_orientation_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(90), orientation_counterexample(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status": "failed", "error": format!("{e:#}")}),
-        Err(_) => json!({"status": "failed", "error": "连接方向测试超时"}),
-    };
-    let out = format!("results/orientation-test-{unique}");
-    std::fs::create_dir_all(&out)?;
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("连接方向测试报告：{out}/report.json；测试库清理：{}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("连接方向测试超时")??;
-    Ok(())
+    database_case("orientation", 90, |url| Box::pin(async move { orientation_counterexample(&url).await })).await
 }
 
 /// 优化修订：对已发布的门店营业额尝试规则改写（期间谓词改为日期键范围），记录各门槛与配对代价证据；
@@ -582,57 +612,15 @@ async fn optimization_revision(url: &str) -> Result<Value> {
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_optimization_revision() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_optimize_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(900), optimization_revision(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status": "failed", "error": format!("{e:#}")}),
-        Err(_) => json!({"status": "failed", "error": "优化修订测试超时"}),
-    };
-    let out = format!("results/optimize-test-{unique}");
-    std::fs::create_dir_all(&out)?;
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("优化修订测试报告：{out}/report.json；测试库清理：{}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("优化修订测试超时")??;
-    Ok(())
+    database_case("optimize", 900, |url| Box::pin(async move { optimization_revision(&url).await })).await
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_premise_break() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_premise_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(3600), premise_break(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status": "failed", "error": format!("{e:#}")}),
-        Err(_) => json!({"status": "failed", "error": "优化前提测试超时"}),
-    };
-    let out = format!("results/premise-test-{unique}");
-    std::fs::create_dir_all(&out)?;
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("优化前提测试报告：{out}/report.json；测试库清理：{}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("优化前提测试超时")??;
-    Ok(())
+    database_case("premise", 3600, |url| Box::pin(async move { premise_break(&url).await })).await
 }
 
 /// 规范 SQL 在当前数据上的取值。
@@ -929,717 +917,6 @@ fn expected(c: Change) -> [&'static str; 4] {
     }
 }
 
-/// M2 / M3 换上指定的退货表过滤（M2 在事实表上，M3 在与退货的关联上），用于逐个评估修复候选。
-fn with_returns_filter(id: &str, m: &Metric, f: &str) -> Metric {
-    let mut m = m.clone();
-    if id == "M2" {
-        m.filters.insert("store_returns".into(), f.into());
-    } else if let Some(j) = m.joins.iter_mut().find(|j| j.right == "store_returns") {
-        j.filters.insert("store_returns".into(), f.into());
-    }
-    m
-}
-
-/// 受限修复的语义歧义（实验，只记录不断言答对）。备份副本场景下 sr_source = 'primary' 与 'backup' 都能恢复
-/// 退货粒度且不丢键，学习期（2001-03）不受更正影响，两者都能通过 G8；只有 2002 年的新问题能分出对错。
-/// 记录 MAVRA 两种维护方式实际选出的过滤与回答，以及两个候选在修复判定、G8 与新问题上的逐项结果。
-async fn repair_ambiguity(url: &str) -> Result<Value> {
-    let admin = Db::connect(url, 2, false)?;
-    let rows = std::env::var("AGENTDB_SCENARIO_ROWS").ok().and_then(|v| v.parse().ok()).unwrap_or(200_000);
-    admin.query(QKind::Meta, &metricbench::fixture(rows)).await?;
-    etl::setup(&admin).await?;
-    scenario::setup(&admin).await?;
-    let v1 = scenario::fingerprint(&admin).await?;
-    let ch = Change::Mirror;
-    let learn = Period::month(2001, 3);
-    let asks = [
-        Ask::Single { period: Period::month(2002, 9) },
-        Ask::Single { period: Period::month(2002, 5) },
-        Ask::RankMonth { year: 2002 },
-        Ask::Single { period: Period::month(2001, 6) },
-    ];
-    let gold = |id: &str, a: &Ask| match a {
-        Ask::Single { period } => metricbench::gold_period(id, period),
-        Ask::RankMonth { year } => metricbench::gold_rank(id, *year),
-        _ => unreachable!(),
-    };
-    let returns: Vec<(&str, Metric)> = seeded_metrics().into_iter().filter(|(id, _)| matches!(*id, "M2" | "M3")).collect();
-    let answer = |sql: String| {
-        let admin = &admin;
-        async move { Ok::<_, anyhow::Error>(admin.query(QKind::Meta, &sql).await?.cell(0, 0).unwrap_or("NULL").to_string()) }
-    };
-    let same = |a: &Ask, x: &str, y: &str| {
-        let dec = if matches!(a, Ask::RankMonth { .. }) { 0 } else { 2 };
-        metric::same_value(&metric::parse_answer(x), &metric::parse_answer(y), dec)
-    };
-    let mut runs = vec![];
-    for maint in [Maint::Condition, Maint::Definition] {
-        let db = Arc::new(Db::connect(url, 4, true)?);
-        let cfg = MiddleConfig {
-            name: maint.name().into(),
-            version_ttl_ms: 0,
-            metric_maint: maint,
-            cond_reuse: maint == Maint::Condition,
-            ..Default::default()
-        };
-        let mid = Middle::new(db, cfg).await?;
-        let seed = Ctx::new("A", "seed", "seed");
-        for (id, m) in &returns {
-            let v = mid.seed_metric(&seed, m.clone(), Ask::Single { period: learn }, 2, &metricbench::gold_period(id, &learn)).await?;
-            ensure!(v["promoted"] == true, "{id} 未晋升：{v}");
-        }
-        ch.apply_truth(&admin).await?;
-        let mut expect = BTreeMap::new();
-        for (id, _) in &returns {
-            for (i, a) in asks.iter().enumerate() {
-                expect.insert((*id, i), answer(gold(id, a)).await?);
-            }
-        }
-        ch.apply_hidden(&admin).await?;
-        mid.invalidate_versions();
-        let ctx = Ctx::new("B", ch.name(), "use");
-        let mut served = vec![];
-        for (id, m) in &returns {
-            let v = mid.use_metric(&ctx, &format!("metric:{}", m.name)).await?;
-            let mut answers = vec![];
-            if v["status"] == "valid" {
-                let got: Metric = serde_json::from_value(v["metric"].clone())?;
-                for (i, a) in asks.iter().enumerate() {
-                    let value = answer(metric::compile(&got, a)?).await?;
-                    answers.push(json!({"ask": a, "value": value, "gold": expect[&(*id, i)], "ok": same(a, &value, &expect[&(*id, i)])}));
-                }
-                served.push(json!({"metric": id, "status": "valid", "revision": v["revision"], "filters": got.filters,
-                                   "join_filters": got.joins.iter().map(|j| &j.filters).collect::<Vec<_>>(), "answers": answers}));
-            } else {
-                served.push(json!({"metric": id, "status": v["status"]}));
-            }
-        }
-        runs.push(json!({"maint": maint.name(), "served": served, "events": mid.take_metric_events()}));
-        ch.reset(&admin).await?;
-        scenario::ensure_v1(&admin, &v1, ch.name()).await?;
-    }
-    // 两个候选逐项评估：修复判定（每键恰一行、不丢键）、G8（学习期规范 SQL 与判题查询一致）、新问题是否答对
-    ch.apply_truth(&admin).await?;
-    let mut expect = BTreeMap::new();
-    for (id, _) in &returns {
-        for (i, a) in asks.iter().enumerate() {
-            expect.insert((*id, i), answer(gold(id, a)).await?);
-        }
-    }
-    ch.apply_hidden(&admin).await?;
-    let total = answer("select count(distinct (sr_ticket_number, sr_item_sk)) from store_returns".into()).await?;
-    let mut candidates = vec![];
-    for v in ["primary", "backup"] {
-        let f = format!("sr_source = '{v}'");
-        let r = admin
-            .query(QKind::Meta, &format!("select count(*), count(distinct (sr_ticket_number, sr_item_sk)) from store_returns where {f}"))
-            .await?;
-        let (n, k) = (r.cell(0, 0).unwrap_or("0").to_string(), r.cell(0, 1).unwrap_or("0").to_string());
-        let mut per_metric = vec![];
-        for (id, m) in &returns {
-            let mm = with_returns_filter(id, m, &f);
-            let g8_expect = answer(metricbench::gold_period(id, &learn)).await?;
-            let g8_got = answer(metric::compile(&mm, &Ask::Single { period: learn })?).await?;
-            let learn_ask = Ask::Single { period: learn };
-            let mut new_asks = vec![];
-            for (i, a) in asks.iter().enumerate() {
-                let value = answer(metric::compile(&mm, a)?).await?;
-                new_asks.push(json!({"ask": a, "value": value, "gold": expect[&(*id, i)], "ok": same(a, &value, &expect[&(*id, i)])}));
-            }
-            per_metric
-                .push(json!({"metric": id, "g8": {"value": g8_got, "judge": g8_expect, "pass": same(&learn_ask, &g8_got, &g8_expect)},
-                                   "asks": new_asks}));
-        }
-        candidates.push(json!({"filter": f, "rows": n, "keys": k, "total_keys": total, "repair_test_passes": n == k && k == total,
-                               "metrics": per_metric}));
-    }
-    ch.reset(&admin).await?;
-    scenario::ensure_v1(&admin, &v1, ch.name()).await?;
-    let variant = repair_ambiguity_precolumn(url, &admin, &returns, learn, &asks).await?;
-    Ok(json!({"rows": rows, "change": ch.describe(), "learn": learn, "runs": runs, "candidates": candidates,
-              "precolumn_variant": variant}))
-}
-
-/// 变体：来源列 sr_source 在学习前就存在（全为 primary），排除目录未刷新带来的偶然拦截。
-/// 比较三种 G8 参照：未预见（学习参照 SQL 不含 sr_source，在当前数据上重算）、已预见（参照含 sr_source = 'primary'，
-/// 相当于本文基准中预先写入 sr_status / ss_is_current 的判题 SQL）、存档答案（学习时的答案值）。
-/// 对前两种参照各跑一次条件级维护（修复候选唯一性要求关闭与打开各一次），记录 MAVRA 实际发布的过滤。
-async fn repair_ambiguity_precolumn(url: &str, admin: &Db, returns: &[(&str, Metric)], learn: Period, asks: &[Ask]) -> Result<Value> {
-    let answer =
-        |sql: String| async move { Ok::<_, anyhow::Error>(admin.query(QKind::Meta, &sql).await?.cell(0, 0).unwrap_or("NULL").to_string()) };
-    let same = |a: &Ask, x: &str, y: &str| {
-        let dec = if matches!(a, Ask::RankMonth { .. }) { 0 } else { 2 };
-        metric::same_value(&metric::parse_answer(x), &metric::parse_answer(y), dec)
-    };
-    let gold = |id: &str, a: &Ask| match a {
-        Ask::Single { period } => metricbench::gold_period(id, period),
-        Ask::RankMonth { year } => metricbench::gold_rank(id, *year),
-        _ => unreachable!(),
-    };
-    // 预见来源列的参照：在退货表上多一个 sr_source = 'primary'
-    let anticipated = |sql: String| sql.replace("r.sr_status = '完成'", "r.sr_status = '完成' and r.sr_source = 'primary'");
-    admin
-        .query(QKind::Meta, "alter table store_returns add column sr_source varchar(10) not null default 'primary'; analyze store_returns")
-        .await?;
-    let stored: BTreeMap<&str, String> = {
-        let mut m = BTreeMap::new();
-        for (id, _) in returns {
-            m.insert(*id, answer(metricbench::gold_period(id, &learn)).await?);
-        }
-        m
-    };
-    // 每次写入后等 DML 计数上报，保证版本变化能被维护感知
-    let before =
-        || async { Ok::<_, anyhow::Error>(crate::catalog::versions(admin).await?.get("store_returns").map(|v| v.dml).unwrap_or(0)) };
-    let settle = |b: i64| async move {
-        admin.query(QKind::Meta, "select pg_stat_force_next_flush(); analyze store_returns").await?;
-        etl::wait_table_stats(admin, "store_returns", b).await
-    };
-    let apply = || async {
-        let b = before().await?;
-        admin
-            .execute(
-                "update store_returns set sr_return_amt = sr_return_amt - 1 where sr_ticket_number % 10 = 3 and sr_returned_date_sk >= 732",
-            )
-            .await?;
-        settle(b).await
-    };
-    let hide = || async {
-        let b = before().await?;
-        admin
-            .execute(
-                "insert into store_returns (sr_returned_date_sk, sr_item_sk, sr_ticket_number, sr_return_quantity, sr_return_amt, \
-                 sr_return_tax, sr_fee, sr_net_loss, sr_status, sr_source) \
-                 select sr_returned_date_sk, sr_item_sk, sr_ticket_number, sr_return_quantity, \
-                        sr_return_amt + case when sr_ticket_number % 10 = 3 and sr_returned_date_sk >= 732 then 1 else 0 end, \
-                        sr_return_tax, sr_fee, sr_net_loss, sr_status, 'backup' from store_returns where sr_source = 'primary'",
-            )
-            .await?;
-        settle(b).await
-    };
-    let undo = || async {
-        let b = before().await?;
-        admin.execute("delete from store_returns where sr_source = 'backup'").await?;
-        admin
-            .execute(
-                "update store_returns set sr_return_amt = sr_return_amt + 1 where sr_ticket_number % 10 = 3 and sr_returned_date_sk >= 732",
-            )
-            .await?;
-        settle(b).await
-    };
-    let mut runs = vec![];
-    for ((oracle, use_anticipated), unique) in
-        [("unanticipated", false), ("anticipated", true)].into_iter().flat_map(|o| [false, true].map(move |u| (o, u)))
-    {
-        let db = Arc::new(Db::connect(url, 4, true)?);
-        let cfg = MiddleConfig {
-            version_ttl_ms: 0,
-            metric_maint: Maint::Condition,
-            cond_reuse: true,
-            repair_unique: unique,
-            ..Default::default()
-        };
-        let mid = Middle::new(db, cfg).await?;
-        let seed = Ctx::new("A", "seed", "seed");
-        for (id, m) in returns {
-            let judge = metricbench::gold_period(id, &learn);
-            let judge = if use_anticipated { anticipated(judge) } else { judge };
-            let v = mid.seed_metric(&seed, m.clone(), Ask::Single { period: learn }, 2, &judge).await?;
-            ensure!(v["promoted"] == true, "{id} 未晋升：{v}");
-        }
-        apply().await?;
-        let mut expect = BTreeMap::new();
-        for (id, _) in returns {
-            for (i, a) in asks.iter().enumerate() {
-                expect.insert((*id, i), answer(gold(id, a)).await?);
-            }
-        }
-        hide().await?;
-        mid.invalidate_versions();
-        let ctx = Ctx::new("B", "mirror-pre", "use");
-        let mut served = vec![];
-        for (id, m) in returns {
-            let v = mid.use_metric(&ctx, &format!("metric:{}", m.name)).await?;
-            if v["status"] == "valid" {
-                let got: Metric = serde_json::from_value(v["metric"].clone())?;
-                let mut oks = vec![];
-                for (i, a) in asks.iter().enumerate() {
-                    let value = answer(metric::compile(&got, a)?).await?;
-                    oks.push(same(a, &value, &expect[&(*id, i)]));
-                }
-                served.push(json!({"metric": id, "status": "valid", "revision": v["revision"], "filters": got.filters,
-                                   "join_filters": got.joins.iter().map(|j| &j.filters).collect::<Vec<_>>(), "asks_ok": oks}));
-            } else {
-                served.push(json!({"metric": id, "status": v["status"]}));
-            }
-        }
-        let events: Vec<Value> = mid.take_metric_events().into_iter().filter(|e| e["event"] != "maintenance").collect();
-        runs.push(json!({"oracle": oracle, "repair_unique": unique, "served": served, "events": events}));
-        undo().await?;
-    }
-    // 三种 G8 参照下两个候选各自是否通过
-    apply().await?;
-    hide().await?;
-    let mut candidates = vec![];
-    for v in ["primary", "backup"] {
-        let f = format!("sr_source = '{v}'");
-        let mut per = vec![];
-        for (id, m) in returns {
-            let got = answer(metric::compile(&with_returns_filter(id, m, &f), &Ask::Single { period: learn })?).await?;
-            let rerun = answer(metricbench::gold_period(id, &learn)).await?;
-            let rerun_anticipated = answer(anticipated(metricbench::gold_period(id, &learn))).await?;
-            let la = Ask::Single { period: learn };
-            per.push(json!({"metric": id, "canonical": got,
-                            "g8_unanticipated": same(&la, &got, &rerun), "g8_anticipated": same(&la, &got, &rerun_anticipated),
-                            "g8_stored_answer": same(&la, &got, &stored[id])}));
-        }
-        candidates.push(json!({"filter": f, "metrics": per}));
-    }
-    undo().await?;
-    admin.query(QKind::Meta, "alter table store_returns drop column sr_source; analyze store_returns").await?;
-    Ok(json!({"runs": runs, "candidates": candidates}))
-}
-
-#[tokio::test]
-#[ignore = "experiment; requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
-async fn postgres_repair_ambiguity() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_repair_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await.context("无法创建独立测试库")?;
-    let result = tokio::time::timeout(Duration::from_secs(3600), repair_ambiguity(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let out = format!("results/repair-ambiguity-{unique}");
-    std::fs::create_dir_all(&out)?;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status": "failed", "error": format!("{e:#}")}),
-        Err(_) => json!({"status": "failed", "error": "实验超时"}),
-    };
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("修复歧义实验报告：{out}/report.json；测试库清理：{}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("实验超时")??;
-    Ok(())
-}
-
-// ───────────────────────── 快照绑定：核对与执行之间的并发写入（不调用 LLM） ─────────────────────────
-
-/// 违反 M1 粒度条件的写入：2002-06 至 2002-09 的门店销售整批重复一次（与重复装载场景相同，但不经过 ETL 通知）。
-const DUP_INJECT: &str = "insert into store_sales select s.* from store_sales s join date_dim d on s.ss_sold_date_sk = d.d_date_sk \
-                          where d.d_date between date '2002-06-01' and date '2002-09-30'";
-const DUP_RESET: &str = "delete from store_sales a using store_sales b \
-                         where a.ss_ticket_number = b.ss_ticket_number and a.ss_item_sk = b.ss_item_sk and a.ctid > b.ctid";
-const SNAP_TABLES: [&str; 4] = ["store_sales", "store_returns", "date_dim", "item"];
-
-/// 一次带指标引用的 run_sql：served = 答案所在的数据满足所引用修订的粒度条件；violation = 不满足
-/// （探针在同一语句、同一快照里数出重复键）；rejected = 拒绝或指标不可用；error = 执行出错。
-fn classify(r: &Result<Value>) -> &'static str {
-    match r {
-        Err(_) => "error",
-        Ok(v) if v.get("rejected").is_some() => "rejected",
-        Ok(v) => match v["result"]["rows"][0][1].as_str().and_then(|d| d.parse::<i64>().ok()) {
-            Some(0) => "served",
-            Some(_) => "violation",
-            None => "error",
-        },
-    }
-}
-
-fn summary(xs: &mut [f64]) -> Value {
-    if xs.is_empty() {
-        return json!({"n": 0});
-    }
-    xs.sort_by(|a, b| a.total_cmp(b));
-    let q = |p: f64| xs[((xs.len() - 1) as f64 * p).round() as usize];
-    json!({"n": xs.len(), "mean": xs.iter().sum::<f64>() / xs.len() as f64, "p50": q(0.5), "p95": q(0.95), "max": q(1.0)})
-}
-
-struct SnapBench {
-    url: String,
-    admin: Db,
-    learn: Period,
-}
-
-struct SnapMid {
-    mid: Middle,
-    cp: Checkpoint,
-    refs: Vec<(String, u32)>,
-    /// 引用修订的规范 SQL（2002-07，落在重复区间内）
-    canon: String,
-    /// 规范 SQL 加上同一语句里、该月销售行的重复键计数（判定答案所汇总的数据是否满足粒度条件）
-    probe: String,
-    /// 同样的探针，期间为 2002-06 至 2002-09 各月（都在重复区间内）；随机并发里各读者问不同的月份，查询不会在途合并
-    probes: Vec<String>,
-}
-
-impl SnapBench {
-    async fn middle(&self, snapshot: bool, pause_ms: u64) -> Result<SnapMid> {
-        let db = Arc::new(Db::connect(&self.url, 8, true)?);
-        let cfg = MiddleConfig {
-            name: if snapshot { "snapshot" } else { "precheck" }.into(),
-            metric_maint: Maint::Condition,
-            cond_reuse: true,
-            result_cache: false,
-            snapshot_exec: snapshot,
-            exec_pause_ms: pause_ms,
-            ..Default::default()
-        };
-        let mid = Middle::new(db, cfg).await?;
-        let m1 = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").map(|x| x.1).context("缺少 M1")?;
-        let key = format!("metric:{}", m1.name);
-        let v = mid
-            .seed_metric(
-                &Ctx::new("A", "seed", "seed"),
-                m1,
-                Ask::Single { period: self.learn },
-                2,
-                &metricbench::gold_period("M1", &self.learn),
-            )
-            .await?;
-        ensure!(v["promoted"] == true, "M1 未晋升：{v}");
-        let u = mid.use_metric(&Ctx::new("B", "snapshot", "use"), &key).await?;
-        ensure!(u["status"] == "valid", "M1 不可用：{u}");
-        let m: Metric = serde_json::from_value(u["metric"].clone())?;
-        let canon = metric::compile(&m, &Ask::Single { period: Period::month(2002, 7) })?;
-        let wrap = |mo: u32| -> Result<String> {
-            let c = metric::compile(&m, &Ask::Single { period: Period::month(2002, mo) })?;
-            Ok(format!(
-                "select ({}) as v, (select count(*) - count(distinct (s.ss_ticket_number, s.ss_item_sk)) from store_sales s \
-                 join date_dim d on s.ss_sold_date_sk = d.d_date_sk where d.d_year = 2002 and d.d_moy = {mo}) as dup",
-                c.trim().trim_end_matches(';')
-            ))
-        };
-        let probe = wrap(7)?;
-        let probes = (6..=9).map(wrap).collect::<Result<Vec<_>>>()?;
-        let refs = vec![(key, u["revision"].as_u64().unwrap_or(0) as u32)];
-        Ok(SnapMid { cp: mid.checkpoint(), mid, refs, canon, probe, probes })
-    }
-
-    async fn dml(&self) -> Result<i64> {
-        Ok(catalog::versions(&self.admin).await?.get("store_sales").map(|v| v.dml).unwrap_or(0))
-    }
-
-    /// 写入提交后再通知（ETL 的正常顺序）：登记批次、使中间层重读版本。
-    async fn inject_then_notify(&self, mid: &Middle) -> Result<()> {
-        self.admin.execute(DUP_INJECT).await?;
-        metricbench::log_batch(&self.admin, "store_sales", "重复装载（快照实验）").await?;
-        mid.invalidate_versions();
-        Ok(())
-    }
-
-    /// 去掉重复行，等统计计数稳定后把经验库恢复到写入前（数据内容已回到写入前）。
-    async fn reset(&self, s: &SnapMid) -> Result<()> {
-        let before = self.dml().await?;
-        if self.admin.execute(DUP_RESET).await? > 0 {
-            etl::wait_table_stats(&self.admin, "store_sales", before).await?;
-        }
-        // 回收删掉的重复行，保持各次试验的表状态与计划一致（不改变 DML 计数与模式）
-        self.admin.query(QKind::Meta, "vacuum analyze store_sales").await?;
-        tokio::time::sleep(Duration::from_millis(1500)).await;
-        s.mid.invalidate_versions();
-        s.mid.restore(&s.cp).await?;
-        // 恢复只改写经验库，不含快照结论；预热一次，让两种模式都从稳态开始下一次试验
-        let warm = s.mid.run_sql_with(&Ctx::new("W", "snapshot", "warm"), &s.probe, &s.refs).await;
-        ensure!(classify(&warm) == "served", "恢复后预热应在干净数据上执行：{warm:?}");
-        Ok(())
-    }
-
-    /// 实验 A：确定性交错。write_during_pause = 核对通过后、执行前提交写入（未通知）；write_before_call = 写入刚提交、
-    /// 尚未通知时调用；write_notified = 写入提交并通知、统计已刷新后调用。每次先在干净数据上预热一次。
-    async fn interleave(&self, snapshot: bool, case: &str, trials: usize) -> Result<Value> {
-        let s = self.middle(snapshot, if case == "write_during_pause" { 2000 } else { 0 }).await?;
-        let ctx = Ctx::new("B", "snapshot", "use");
-        let mut counts: BTreeMap<&str, u32> = BTreeMap::new();
-        let (mut samples, mut lat) = (vec![], vec![]);
-        for i in 0..trials {
-            let warm = s.mid.run_sql_with(&ctx, &s.probe, &s.refs).await;
-            ensure!(classify(&warm) == "served", "第 {i} 次预热应在干净数据上执行：{warm:?}");
-            let t = Instant::now();
-            let r = match case {
-                "write_during_pause" => {
-                    let (r, w) = tokio::join!(s.mid.run_sql_with(&ctx, &s.probe, &s.refs), async {
-                        tokio::time::sleep(Duration::from_millis(700)).await;
-                        self.admin.execute(DUP_INJECT).await
-                    });
-                    w?;
-                    r
-                }
-                "write_before_call" => {
-                    self.admin.execute(DUP_INJECT).await?;
-                    s.mid.run_sql_with(&ctx, &s.probe, &s.refs).await
-                }
-                _ => {
-                    let before = self.dml().await?;
-                    self.inject_then_notify(&s.mid).await?;
-                    etl::wait_table_stats(&self.admin, "store_sales", before).await?;
-                    s.mid.invalidate_versions();
-                    s.mid.run_sql_with(&ctx, &s.probe, &s.refs).await
-                }
-            };
-            lat.push(t.elapsed().as_secs_f64() * 1000.0);
-            let c = classify(&r);
-            *counts.entry(c).or_default() += 1;
-            if i < 2 {
-                let resp = match &r {
-                    Ok(v) => v.clone(),
-                    Err(e) => json!(format!("{e:#}")),
-                };
-                samples.push(json!({"class": c, "response": resp}));
-            }
-            self.reset(&s).await?;
-        }
-        Ok(json!({"mode": if snapshot { "snapshot" } else { "precheck" }, "case": case, "trials": trials, "counts": counts,
-                  "latency_ms": summary(&mut lat), "stats": s.mid.stats_json(), "samples": samples}))
-    }
-
-    /// 实验 B：随机并发。readers 个读者在窗口内连续调用（每次间隔 think_ms）；写者在随机时刻提交违反粒度的写入。
-    /// notify = 提交后立即登记批次并通知（ETL 的正常顺序）；否则不通知，中间层只能从统计计数发现写入。
-    /// distinct = 各读者问不同的月份；否则都问同一个月，相同的查询会合并到在途执行。
-    #[allow(clippy::too_many_arguments)]
-    async fn stress(
-        &self,
-        snapshot: bool,
-        notify: bool,
-        distinct: bool,
-        trials: usize,
-        readers: usize,
-        window_ms: u64,
-        think_ms: u64,
-        seed: u64,
-    ) -> Result<Value> {
-        use rand::{Rng, SeedableRng};
-        let s = self.middle(snapshot, 0).await?;
-        let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
-        let mut counts: BTreeMap<&str, u32> = BTreeMap::new();
-        let (mut lat, mut after_commit, mut per_trial) = (vec![], vec![], vec![]);
-        for _ in 0..trials {
-            let at = rng.gen_range(300..window_ms - 300);
-            let start = Instant::now();
-            let reader = |k: usize| {
-                let s = &s;
-                async move {
-                    let ctx = Ctx::new(&format!("R{k}"), "snapshot", "use");
-                    let mut out = vec![];
-                    while start.elapsed() < Duration::from_millis(window_ms) {
-                        let t0 = start.elapsed().as_secs_f64() * 1000.0;
-                        let probe = if distinct { &s.probes[k % s.probes.len()] } else { &s.probe };
-                        let r = s.mid.run_sql_with(&ctx, probe, &s.refs).await;
-                        out.push((classify(&r), t0, start.elapsed().as_secs_f64() * 1000.0));
-                        tokio::time::sleep(Duration::from_millis(think_ms)).await;
-                    }
-                    out
-                }
-            };
-            let writer = async {
-                tokio::time::sleep(Duration::from_millis(at)).await;
-                self.admin.execute(DUP_INJECT).await?;
-                let committed = start.elapsed().as_secs_f64() * 1000.0;
-                if notify {
-                    metricbench::log_batch(&self.admin, "store_sales", "重复装载（快照实验）").await?;
-                    s.mid.invalidate_versions();
-                }
-                Ok::<_, anyhow::Error>((committed, start.elapsed().as_secs_f64() * 1000.0))
-            };
-            let (calls, w) = tokio::join!(futures::future::join_all((0..readers).map(reader)), writer);
-            let (committed, notified) = w?;
-            let mut trial: BTreeMap<&str, u32> = BTreeMap::new();
-            for (c, t0, t1) in calls.into_iter().flatten() {
-                *counts.entry(c).or_default() += 1;
-                *trial.entry(c).or_default() += 1;
-                lat.push(t1 - t0);
-                if c == "violation" {
-                    after_commit.push(t0 - committed);
-                }
-            }
-            per_trial.push(json!({"commit_ms": committed, "notify_ms": notified, "counts": trial}));
-            self.reset(&s).await?;
-        }
-        Ok(
-            json!({"mode": if snapshot { "snapshot" } else { "precheck" }, "notify": notify, "distinct": distinct, "trials": trials, "readers": readers,
-                  "window_ms": window_ms, "think_ms": think_ms, "counts": counts, "latency_ms": summary(&mut lat),
-                  "violation_start_minus_commit_ms": summary(&mut after_commit), "per_trial": per_trial, "stats": s.mid.stats_json()}),
-        )
-    }
-
-    /// 实验 C1：读者开销。无写入时（版本未变，结论直接用）与良性写入后（版本变了，条件在快照里重查）的调用延迟。
-    /// 只执行规范 SQL（不带重复键计数），排除判定探针本身的代价。
-    async fn reader_overhead(&self, snapshot: bool, calls: usize, writes: usize) -> Result<Value> {
-        self.admin.query(QKind::Meta, "vacuum analyze store_sales").await?;
-        let s = self.middle(snapshot, 0).await?;
-        let ctx = Ctx::new("B", "snapshot", "use");
-        let ok = |r: &Result<Value>| r.as_ref().is_ok_and(|v| v.get("rejected").is_none() && v.get("result").is_some());
-        for _ in 0..3 {
-            let r = s.mid.run_sql_with(&ctx, &s.canon, &s.refs).await;
-            ensure!(ok(&r), "预热失败：{r:?}");
-        }
-        let mut steady = vec![];
-        for _ in 0..calls {
-            let t = Instant::now();
-            let r = s.mid.run_sql_with(&ctx, &s.canon, &s.refs).await;
-            ensure!(ok(&r), "无写入时应正常执行：{r:?}");
-            steady.push(t.elapsed().as_secs_f64() * 1000.0);
-        }
-        let (mut first, mut second) = (vec![], vec![]);
-        for _ in 0..writes {
-            // 良性写入：内容不变，但版本前进（触发器与统计计数都会变）
-            let before = self.dml().await?;
-            self.admin
-                .execute(
-                    "update store_sales set ss_net_paid = ss_net_paid where (ss_ticket_number, ss_item_sk) = \
-                     (select ss_ticket_number, ss_item_sk from store_sales order by ss_ticket_number, ss_item_sk limit 1)",
-                )
-                .await?;
-            metricbench::log_batch(&self.admin, "store_sales", "良性写入（快照实验）").await?;
-            etl::wait_table_stats(&self.admin, "store_sales", before).await?;
-            s.mid.invalidate_versions();
-            for out in [&mut first, &mut second] {
-                let t = Instant::now();
-                let r = s.mid.run_sql_with(&ctx, &s.canon, &s.refs).await;
-                ensure!(ok(&r), "良性写入后应正常执行：{r:?}");
-                out.push(t.elapsed().as_secs_f64() * 1000.0);
-            }
-        }
-        Ok(json!({"mode": if snapshot { "snapshot" } else { "precheck" }, "steady_ms": summary(&mut steady),
-                  "first_after_write_ms": summary(&mut first), "second_after_write_ms": summary(&mut second), "stats": s.mid.stats_json()}))
-    }
-
-    /// 实验 C2：写者开销。单行更新的吞吐：顺序、以及 8 个连接并发（各改不同的行，但同表的版本行要排队）；
-    /// 以及批量写入（每条语句 1 万行）的耗时。
-    async fn writer_overhead(&self, per_worker: usize) -> Result<Value> {
-        let pool = Db::connect(&self.url, 32, false)?;
-        pool.query(
-            QKind::Meta,
-            "drop table if exists bench_w; create table bench_w (id int primary key, x int not null default 0); \
-                                 insert into bench_w (id) select g from generate_series(0, 31999) g",
-        )
-        .await?;
-        let run = |workers: usize| {
-            let pool = &pool;
-            async move {
-                let t = Instant::now();
-                let jobs = (0..workers).map(|w| async move {
-                    for i in 0..per_worker {
-                        pool.execute(&format!("update bench_w set x = x + 1 where id = {}", w * 1000 + i % 1000)).await?;
-                    }
-                    Ok::<_, anyhow::Error>(())
-                });
-                for r in futures::future::join_all(jobs).await {
-                    r?;
-                }
-                Ok::<_, anyhow::Error>((workers * per_worker) as f64 / t.elapsed().as_secs_f64())
-            }
-        };
-        let mut out = vec![];
-        for round in 0..3 {
-            // 0 = 无触发器；1 = 每表一行版本计数；TX_SHARDS = 分片计数（默认）
-            for shards in [0, 1, catalog::TX_SHARDS] {
-                let trig = shards > 0;
-                if trig {
-                    catalog::install_tx_versions_sharded(&pool, &["bench_w"], shards).await?;
-                } else {
-                    pool.query(QKind::Meta, "drop trigger if exists mavra_bump on bench_w").await?;
-                }
-                let seq = run(1).await?;
-                let conc = run(8).await?;
-                let conc32 = run(32).await?;
-                let t = Instant::now();
-                for b in 0..20 {
-                    pool.execute(&format!("update bench_w set x = x + 1 where id between {} and {}", (b % 8) * 1000, (b % 8) * 1000 + 999))
-                        .await?;
-                    pool.execute(&format!(
-                        "insert into bench_w (id) select g from generate_series({lo}, {hi}) g; delete from bench_w where id between {lo} and {hi}",
-                        lo = 100_000 + b * 10_000,
-                        hi = 100_000 + b * 10_000 + 9_999
-                    ))
-                    .await?;
-                }
-                let bulk = t.elapsed().as_secs_f64() * 1000.0 / 60.0;
-                out.push(json!({"round": round, "trigger": trig, "shards": shards, "sequential_stmt_per_s": seq,
-                                "concurrent8_stmt_per_s": conc, "concurrent32_stmt_per_s": conc32, "bulk_ms_per_stmt": bulk}));
-            }
-        }
-        pool.query(QKind::Meta, "drop table bench_w; delete from mavra_versions where table_name = 'bench_w'").await?;
-        Ok(json!(out))
-    }
-}
-
-async fn snapshot_binding(url: &str) -> Result<Value> {
-    let admin = Db::connect(url, 2, false)?;
-    let rows = std::env::var("AGENTDB_SCENARIO_ROWS").ok().and_then(|v| v.parse().ok()).unwrap_or(200_000);
-    admin.query(QKind::Meta, &metricbench::fixture(rows)).await?;
-    etl::setup(&admin).await?;
-    scenario::setup(&admin).await?;
-    catalog::install_tx_versions(&admin, &SNAP_TABLES).await?;
-    admin.query(QKind::Meta, "analyze").await?;
-    let b = SnapBench { url: url.to_string(), admin, learn: Period::month(2001, 3) };
-    let trials = std::env::var("AGENTDB_SNAP_TRIALS").ok().and_then(|v| v.parse().ok()).unwrap_or(10);
-    // AGENTDB_SNAP_PARTS 选择要跑的部分（默认全部）：readers,writers,interleave,stress
-    let parts = std::env::var("AGENTDB_SNAP_PARTS").unwrap_or_else(|_| "readers,writers,interleave,stress".into());
-    let on = |p: &str| parts.split(',').any(|x| x.trim() == p);
-    // 开销先测（表还没有经历重复写入与删除），两种模式交替两轮
-    let mut readers = vec![];
-    if on("readers") {
-        for _ in 0..2 {
-            for snapshot in [false, true] {
-                readers.push(b.reader_overhead(snapshot, 40, trials).await?);
-            }
-        }
-    }
-    let writers = if on("writers") { b.writer_overhead(500).await? } else { json!([]) };
-    let mut interleavings = vec![];
-    if on("interleave") {
-        for case in ["write_during_pause", "write_before_call", "write_notified"] {
-            for snapshot in [false, true] {
-                interleavings.push(b.interleave(snapshot, case, trials).await?);
-            }
-        }
-    }
-    let mut stress = vec![];
-    if on("stress") {
-        for distinct in [false, true] {
-            for notify in [true, false] {
-                for snapshot in [false, true] {
-                    stress.push(b.stress(snapshot, notify, distinct, 2 * trials, 4, 3000, 10, 20261002).await?);
-                }
-            }
-        }
-    }
-    Ok(json!({"rows": rows, "trials": trials, "interleavings": interleavings, "stress": stress,
-              "reader_overhead": readers, "writer_overhead": writers}))
-}
-
-#[tokio::test]
-#[ignore = "experiment; requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
-async fn postgres_snapshot_binding() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_snap_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await.context("无法创建独立测试库")?;
-    let result = tokio::time::timeout(Duration::from_secs(5400), snapshot_binding(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let out = format!("results/snapshot-binding-{unique}");
-    std::fs::create_dir_all(&out)?;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status": "failed", "error": format!("{e:#}")}),
-        Err(_) => json!({"status": "failed", "error": "实验超时"}),
-    };
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("快照绑定实验报告：{out}/report.json；测试库清理：{}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("实验超时")??;
-    Ok(())
-}
-
 async fn scenarios(url: &str) -> Result<Value> {
     let admin = Db::connect(url, 2, false)?;
     // 默认 2 万行；AGENTDB_SCENARIO_ROWS 可改为评测规模（如 1000000）检查阈值、回滚与耗时
@@ -1647,6 +924,10 @@ async fn scenarios(url: &str) -> Result<Value> {
     admin.query(QKind::Meta, &metricbench::fixture(rows)).await?;
     etl::setup(&admin).await?;
     scenario::setup(&admin).await?;
+    admin.query(QKind::Meta, "create schema mavra_learn").await?;
+    for t in ["date_dim", "item", "store_sales", "store_returns", "catalog_sales"] {
+        admin.query(QKind::Meta, &format!("create table mavra_learn.{t} as table public.{t}; analyze mavra_learn.{t}")).await?;
+    }
     let v1 = scenario::fingerprint(&admin).await?;
     let learn = Period::month(2001, 3);
     let asks = [Ask::Single { period: Period::month(2002, 9) }, Ask::RankMonth { year: 2002 }];
@@ -1664,6 +945,7 @@ async fn scenarios(url: &str) -> Result<Value> {
             version_ttl_ms: 0,
             metric_maint: maint,
             cond_reuse: maint == Maint::Condition,
+            g8_snapshot: Some("mavra_learn".into()),
             ..Default::default()
         };
         let mid = Middle::new(db, cfg).await?;
@@ -1673,7 +955,7 @@ async fn scenarios(url: &str) -> Result<Value> {
             ensure!(v["promoted"] == true, "{} 下 {id} 未晋升：{v}", maint.name());
         }
         let checkpoint = mid.checkpoint();
-        for ch in scenario::ALL {
+        for ch in scenario::ALL.into_iter().chain([Change::Reclass]) {
             let truth = ch.apply_truth(&admin).await?;
             // 标准答案在只改变数据表示的部分之前计算
             let mut expect = BTreeMap::new();
@@ -1729,410 +1011,146 @@ async fn scenarios(url: &str) -> Result<Value> {
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 15+ with CREATE DATABASE permission"]
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
 async fn postgres_change_scenarios() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("设置 AGENTDB_TEST_URL 为测试服务器连接串")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let unique = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_scenario_{}_{unique}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    admin.query(QKind::Meta, &format!("create database {name}")).await.context("无法创建独立测试库")?;
-    let result = tokio::time::timeout(Duration::from_secs(3600), scenarios(test_url.as_str())).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let out = format!("results/scenario-test-{unique}");
-    std::fs::create_dir_all(&out)?;
-    let report = match &result {
-        Ok(Ok(v)) => v.clone(),
-        Ok(Err(e)) => json!({"status": "failed", "error": format!("{e:#}")}),
-        Err(_) => json!({"status": "failed", "error": "场景测试超时"}),
-    };
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&report)?)?;
-    println!("场景测试报告：{out}/report.json；测试库清理：{}", cleanup.is_ok());
-    cleanup.context("测试库清理失败")?;
-    result.context("场景测试超时")??;
-    Ok(())
+    database_case("scenario", 3600, |url| Box::pin(async move { scenarios(&url).await })).await
 }
 
-// ───────────────────────── 共享验证随智能体数的扩展（图 5，不调用模型） ─────────────────────────
-
-const SV_PAIRS: usize = 4;
-const SV_DEFS: usize = 16;
-/// 追加行的小票号偏移（远大于夹具里的小票号）
-const SV_OFFSET: i64 = 1_000_000_000;
-
-/// 一个智能体按自己的随机顺序把全部定义各用一次；返回不可用的次数。
-async fn sv_uses(mid: &Middle, keys: &[String], agent: usize, seed: u64) -> Result<usize> {
-    use rand::{seq::SliceRandom, SeedableRng};
-    let mut order = keys.to_vec();
-    order.shuffle(&mut rand::rngs::StdRng::seed_from_u64(seed * 1000 + agent as u64));
-    let ctx = Ctx::new(&format!("R{agent}"), "shared-validation", "use");
-    let mut unavailable = 0;
-    for key in order {
-        if mid.use_metric(&ctx, &key).await?["status"] != "valid" {
-            unavailable += 1;
-        }
-    }
-    Ok(unavailable)
-}
-
-/// 发布 16 个定义（4 个事实表/日期表对，每对 4 个定义，度量为同一净支付额的不同单位换算）并各用一次。
-async fn sv_seed(mid: &Middle, base: &Metric) -> Result<Vec<String>> {
-    let ctx = Ctx::new("admin", "shared-validation", "seed");
-    let ask = Ask::Single { period: Period::month(2001, 3) };
-    let mut keys = vec![];
-    for i in 0..SV_DEFS {
-        let p = i % SV_PAIRS;
-        let mut m = base.clone();
-        m.name = format!("net_paid_unit_{i}");
-        m.definition = m.name.clone();
-        m.fact = format!("sv_fact{p}");
-        m.time.as_mut().expect("M1 有时间定义").dim = format!("sv_date{p}");
-        m.measure = format!("sum(ss_net_paid) * {}", i + 1);
-        let gold = format!(
-            "select ({}) * {}",
-            metricbench::gold_period("M1", &Period::month(2001, 3))
-                .replace("store_sales", &m.fact)
-                .replace("date_dim", &format!("sv_date{p}"))
-                .trim()
-                .trim_end_matches(';'),
-            i + 1
-        );
-        let r = mid.seed_metric(&ctx, m, ask.clone(), 2, &gold).await?;
-        ensure!(r["promoted"] == true, "定义未通过发布：{r}");
-        keys.push(r["key"].as_str().unwrap_or_default().to_string());
-    }
-    sv_uses(mid, &keys, 0, 0).await?;
-    Ok(keys)
-}
-
-/// 一次数据更新后，N 个智能体各把 16 个定义用一次，比较三种验证方式的数据库工作：
-/// per-agent（每个智能体各自保留经验与条件结论，机制与 MAVRA 相同，只是不共享）、full-recheck（共享定义，
-/// 依赖表有写入时重跑该定义的全部条件）、mavra（共享定义与条件结论，只重查读到变化表的条件）。
-/// 更新是向每个事实表追加新业务键的行（常见的增量装载），日期表不变；三种方式都合并同时到达的相同检查。
-async fn shared_validation(url: &str, out: &str) -> Result<Value> {
-    use rand::{seq::SliceRandom, SeedableRng};
+/// P0-1 与 P0-2 契约回归：
+/// 1. 无保留学习快照（summary-only）下：源期间未变动的合法维表拉链修复通过物化摘要准入，篡改未触及历史答案的改类被 G9 拦截，
+///    源期间自身发生重述或摘要证据缺失时拒绝自动发布（Fail-Closed，绝不跳过 HistInv 或退化到当前数据）；
+/// 2. 同一快照版本下并发执行不同请求期间：已覆盖的 2025 与 2026 年共享表级约束结论并返回精确值，未覆盖的 2028 年被期间覆盖检查拒绝，
+///    即使开启 EmptyRule::Zero 也不会误用 2025 年的缓存结论静默返回 0。
+async fn repair_and_period_contracts(url: &str) -> Result<Value> {
     let admin = Db::connect(url, 2, false)?;
-    admin.query(QKind::Meta, &metricbench::fixture(200_000)).await?;
+    admin.query(QKind::Meta, &metricbench::fixture(10_000)).await?;
     etl::setup(&admin).await?;
     scenario::setup(&admin).await?;
-    for p in 0..SV_PAIRS {
-        admin
-            .query(QKind::Meta, &format!("create table sv_fact{p} as table store_sales; create table sv_date{p} as table date_dim; analyze sv_fact{p}; analyze sv_date{p}"))
-            .await?;
-    }
-    let base = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("缺少 M1")?.1;
-    // SV_QUICK=1：只跑 1 与 4 个智能体、一轮，用来检查流程
-    let quick = std::env::var_os("SV_QUICK").is_some();
-    let agents_axis: Vec<usize> = if quick { vec![1, 4] } else { vec![1, 2, 4, 8, 16, 32] };
-    let mut order = vec![];
-    for rep in 0..(if quick { 1u64 } else { 3 }) {
-        let mut block = vec![];
-        for &n in agents_axis.iter() {
-            for policy in ["per-agent", "full-recheck", "mavra"] {
-                for arrival in ["staggered", "simultaneous"] {
-                    block.push((rep, n, policy, arrival));
-                }
-            }
-        }
-        block.shuffle(&mut rand::rngs::StdRng::seed_from_u64(20261101 + rep));
-        order.extend(block);
-    }
-    std::fs::write(format!("{out}/order.json"), serde_json::to_string_pretty(&order)?)?;
-    let sv_cols: Vec<String> = {
-        let r = admin
-            .query(
-                QKind::Meta,
-                "select column_name from information_schema.columns where table_name = 'store_sales' order by ordinal_position",
-            )
-            .await?;
-        (0..r.rows.len()).filter_map(|i| r.cell(i, 0).map(str::to_string)).collect()
+    catalog::install_tx_versions(&admin, &["date_dim", "item", "store_sales", "store_returns"]).await?;
+    let v1 = scenario::fingerprint(&admin).await?;
+    let learn = Period::month(2001, 3);
+    let db = Arc::new(Db::connect(url, 6, true)?);
+    let cfg = MiddleConfig {
+        name: "contracts".into(),
+        snapshot_exec: true,
+        cond_reuse: true,
+        result_cache: false,
+        version_ttl_ms: 0,
+        metric_maint: Maint::Condition,
+        ..Default::default()
     };
-    let mut cells = vec![];
-    for (rep, n, policy, arrival) in order {
-        // 每格从同一份数据开始：删掉上一格追加的行
-        for p in 0..SV_PAIRS {
-            // 写入与统计刷新在同一连接、同一批语句里，计数不会在测量期间才到达
-            admin
-                .query(
-                    QKind::Meta,
-                    &format!("delete from sv_fact{p} where ss_ticket_number >= {SV_OFFSET}; select pg_stat_force_next_flush()"),
-                )
-                .await?;
-            admin.query(QKind::Meta, &format!("vacuum analyze sv_fact{p}")).await?;
-        }
-        tokio::time::sleep(Duration::from_millis(1200)).await;
-        let db = Arc::new(Db::connect(url, 8, true)?);
-        let cfg = MiddleConfig {
-            name: policy.into(),
-            metric_maint: if policy == "full-recheck" { Maint::Definition } else { Maint::Condition },
-            cond_reuse: policy != "full-recheck",
-            result_cache: false,
-            version_ttl_ms: 0,
-            ..Default::default()
-        };
-        // per-agent：每个智能体一个独立的中间层实例（私有定义与条件结论）；共享方式：所有智能体一个实例
-        let copies = if policy == "per-agent" { n } else { 1 };
-        let mut mids = vec![];
-        let mut keys = vec![];
-        for _ in 0..copies {
-            let mid = Middle::new(db.clone(), cfg.clone()).await?;
-            keys = sv_seed(&mid, &base).await?;
-            mids.push(mid);
-        }
-        // 增量装载：每个事实表追加约 1% 的行，换成新的小票号（新的业务键），日期表不写
-        for p in 0..SV_PAIRS {
-            admin
-                .query(
-                    QKind::Meta,
-                    &format!(
-                        "insert into sv_fact{p} ({cols}) select {sel} from store_sales where ss_ticket_number % 100 = 7; \
-                     select pg_stat_force_next_flush()",
-                        cols = sv_cols.join(", "),
-                        sel = sv_cols
-                            .iter()
-                            .map(|c| if c == "ss_ticket_number" { format!("{c} + {SV_OFFSET}") } else { c.clone() })
-                            .collect::<Vec<_>>()
-                            .join(", ")
-                    ),
-                )
-                .await?;
-            metricbench::log_batch(&admin, &format!("sv_fact{p}"), "shared-validation append").await?;
-        }
-        admin.query(QKind::Meta, "select pg_stat_force_next_flush()").await?;
-        tokio::time::sleep(Duration::from_millis(1200)).await;
-        for m in &mids {
-            m.invalidate_versions();
-            m.take_metric_events();
-        }
-        let mid_of = |agent: usize| &mids[if copies == 1 { 0 } else { agent }];
-        let before = db.meter.snap();
-        let start = Instant::now();
-        let mut unavailable = 0;
-        if arrival == "simultaneous" {
-            for r in futures::future::join_all((0..n).map(|a| sv_uses(mid_of(a), &keys, a, rep + 1))).await {
-                unavailable += r?;
-            }
-        } else {
-            for a in 0..n {
-                unavailable += sv_uses(mid_of(a), &keys, a, rep + 1).await?;
-            }
-        }
-        let wall = start.elapsed().as_secs_f64();
-        let meter = crate::db::diff(&before, &db.meter.snap());
-        let mut actions: BTreeMap<String, u64> = BTreeMap::new();
-        for m in &mids {
-            for c in m
-                .take_metric_events()
-                .iter()
-                .filter(|e| e["event"] == "maintenance")
-                .flat_map(|e| e["conditions"].as_array().cloned().unwrap_or_default())
-            {
-                *actions.entry(c["action"].as_str().unwrap_or("unknown").into()).or_default() += 1;
-            }
-        }
-        let row = json!({"repeat": rep, "agents": n, "policy": policy, "arrival": arrival, "definitions": SV_DEFS,
-                         "table_pairs": SV_PAIRS, "rows_per_fact": 200_000, "wall_seconds": wall, "db": meter,
-                         "unavailable": unavailable, "condition_actions": actions});
-        eprintln!(
-            "shared-validation r{rep} n{n} {policy} {arrival}: {:.0} ms DB, {} queries, unavailable {unavailable}",
-            row["db"]["db_ms"].as_f64().unwrap_or(0.0),
-            row["db"]["queries"]
-        );
-        std::fs::write(format!("{out}/cell-r{rep}-n{n}-{policy}-{arrival}.json"), serde_json::to_string_pretty(&row)?)?;
-        cells.push(row);
-    }
-    Ok(json!({"cells": cells, "design": "16 definitions on 4 fact/date pairs (sharing factor 4), 200k rows per fact, \
-               append of new business keys to every fact table, date tables unchanged; 1-32 agents each use all 16 \
-               definitions once after the update; three randomized blocks"}))
-}
+    let mid = Middle::new(db, cfg).await?;
+    let seed = Ctx::new("A", "contracts", "seed");
+    let user = Ctx::new("B", "contracts", "use");
+    let (_, mut m1) = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("missing M1")?;
+    m1.empty = EmptyRule::Zero;
+    let (_, m5) = seeded_metrics().into_iter().find(|(id, _)| *id == "M5").context("missing M5")?;
+    let s1 = mid.seed_metric(&seed, m1.clone(), Ask::Single { period: learn }, 2, &metricbench::gold_period("M1", &learn)).await?;
+    let s5 = mid.seed_metric(&seed, m5.clone(), Ask::Single { period: learn }, 2, &metricbench::gold_period("M5", &learn)).await?;
+    ensure!(s1["promoted"] == true && s5["promoted"] == true, "initial seed failed: {s1} / {s5}");
+    let checkpoint = mid.checkpoint();
 
-/// 持续读写（2026-11-11，审稿第 6 点）：16 个共享定义，8 个智能体 × 8 轮共 64 次会话依次各用全部定义；会话之间按写入频率
-/// λ（每次会话之后的追加写入次数：0、1/8、1/2、2）向 4 个事实表轮流追加一小批新业务键（约 0.1% 的行）。比较 MAVRA
-/// （条件级、跨定义共享结论）与 full-recheck（定义级全部重跑）的检查次数、复用与使用阶段的数据库时间。另测版本触发器
-/// 给追加写入带来的额外耗时（同一批插入，装与不装语句级触发器交替执行）。
-async fn sustained_writes(url: &str, out: &str) -> Result<Value> {
-    let admin = Db::connect(url, 2, false)?;
-    admin.query(QKind::Meta, &metricbench::fixture(200_000)).await?;
-    etl::setup(&admin).await?;
-    scenario::setup(&admin).await?;
-    let sv_cols: Vec<String> = {
-        let r = admin
-            .query(
-                QKind::Meta,
-                "select column_name from information_schema.columns where table_name = 'store_sales' order by ordinal_position",
-            )
-            .await?;
-        (0..r.rows.len()).filter_map(|i| r.cell(i, 0).map(str::to_string)).collect()
-    };
-    let insert = |table: &str, batch: i64| {
-        format!(
-            "insert into {table} ({cols}) select {sel} from store_sales where ss_ticket_number % 1000 = {k}",
-            cols = sv_cols.join(", "),
-            sel = sv_cols
-                .iter()
-                .map(|c| if c == "ss_ticket_number" { format!("{c} + {}", SV_OFFSET + batch * 1_000_000) } else { c.clone() })
-                .collect::<Vec<_>>()
-                .join(", "),
-            k = batch % 1000
+    // (P0-2) 同快照并发不同期间：date_dim 覆盖 2000..2002，不覆盖 2028
+    let ask_2001 = json!({"key": s1["key"], "revision": 0, "ask": Ask::Single { period: Period { year: 2001, m1: 1, m2: 12 } }});
+    let ask_2002 = json!({"key": s1["key"], "revision": 0, "ask": Ask::Single { period: Period { year: 2002, m1: 1, m2: 12 } }});
+    let ask_2028 = json!({"key": s1["key"], "revision": 0, "ask": Ask::Single { period: Period { year: 2028, m1: 1, m2: 12 } }});
+    let (r2001, r2002, r2028) = tokio::join!(
+        mid.call_tool(&user, "run_metric", &ask_2001),
+        mid.call_tool(&user, "run_metric", &ask_2002),
+        mid.call_tool(&user, "run_metric", &ask_2028),
+    );
+    let (r2001, r2002, r2028) = (r2001?, r2002?, r2028?);
+    ensure!(r2001.get("rejected").is_none() && r2002.get("rejected").is_none(), "covered years must succeed: {r2001} / {r2002}");
+    ensure!(
+        r2028["rejected"] == true && r2028["reason"].as_str().unwrap_or("").contains("2028"),
+        "uncovered year 2028 must be rejected instead of returning 0: {r2028}"
+    );
+    ensure!(mid.stats_json()["snapshot_exec"]["checks_reused"].as_u64().unwrap_or(0) > 0, "table checks must still share across periods");
+
+    // (P0-1a) 无保留学习快照：维表拉链（源期间未变、历史一致）通过物化摘要自动修复
+    mid.take_metric_events();
+    Change::DimHistory.apply_truth(&admin).await?;
+    Change::DimHistory.apply_hidden(&admin).await?;
+    mid.invalidate_versions();
+    let dim_ok = mid.use_metric(&user, &format!("metric:{}", m5.name)).await?;
+    let events_dim = mid.take_metric_events();
+    ensure!(dim_ok["status"] == "valid" && dim_ok["revision"] == 1, "summary-backed DimHistory repair must promote: {dim_ok}");
+    ensure!(
+        events_dim.iter().any(|e| e["event"] == "history_checked" && e["source"] == "summary")
+            && !events_dim.iter().any(|e| e["event"] == "history_skipped"),
+        "HistInv must run from persisted summary and never skip: {events_dim:?}"
+    );
+    Change::DimHistory.reset(&admin).await?;
+    scenario::ensure_v1(&admin, &v1, "contracts_dimhist").await?;
+    mid.restore(&checkpoint).await?;
+
+    // (P0-1b) 无保留学习快照：仅对 2001-03 未售出的商品改类，使修复候选在源期间 2001-03 上完全复现源答案（G8 通过），
+    // 但篡改后续未变动事实桶的历史答案，专门验证物化摘要上的 G9（HistInv）独立拦截该错误修复
+    mid.take_metric_events();
+    let post_learn_items = "i_item_sk % 3 = 0 and i_is_current = 'Y' and i_item_sk not in \
+        (select ss_item_sk from store_sales join date_dim on ss_sold_date_sk = d_date_sk where d_year = 2001 and d_moy = 3)";
+    admin
+        .query(
+            QKind::Meta,
+            &format!(
+                "insert into item (i_item_sk, i_category, i_current_price, i_is_current) \
+                 select i_item_sk, i_category, i_current_price, 'N' from item where {post_learn_items}; \
+                 update item set i_category = (array['家居','服装','电子','食品','运动'])[1 + (i_item_sk + 1) % 5] \
+                 where {post_learn_items}; \
+                 select pg_stat_force_next_flush(); insert into etl_batch_log values ('item', 99); analyze item"
+            ),
         )
-    };
-    let base = seeded_metrics().into_iter().find(|(id, _)| *id == "M1").context("缺少 M1")?.1;
-    // SW_OVERHEAD_ONLY=1：只测触发器开销（各写入频率的格子已有结果时补测）
-    let rates: Vec<(u32, u32)> = if std::env::var_os("SW_OVERHEAD_ONLY").is_some() { vec![] } else { vec![(0, 1), (1, 8), (1, 2), (2, 1)] }; // λ = 分子 / 分母
-    let (agents, rounds) = (8usize, 8usize);
-    let mut cells = vec![];
-    for (num, den) in rates {
-        for policy in ["full-recheck", "mavra"] {
-            for p in 0..SV_PAIRS {
-                admin
-                    .query(
-                        QKind::Meta,
-                        &format!(
-                            "drop table if exists sv_fact{p}; drop table if exists sv_date{p}; \
-                                                  create table sv_fact{p} as table store_sales; create table sv_date{p} as table date_dim; \
-                                                  analyze sv_fact{p}; analyze sv_date{p}; select pg_stat_force_next_flush()"
-                        ),
-                    )
-                    .await?;
-            }
-            tokio::time::sleep(Duration::from_millis(1200)).await;
-            let db = Arc::new(Db::connect(url, 8, true)?);
-            let cfg = MiddleConfig {
-                name: policy.into(),
-                metric_maint: if policy == "full-recheck" { Maint::Definition } else { Maint::Condition },
-                cond_reuse: policy != "full-recheck",
-                result_cache: false,
-                version_ttl_ms: 0,
-                ..Default::default()
-            };
-            let mid = Middle::new(db.clone(), cfg).await?;
-            let keys = sv_seed(&mid, &base).await?;
-            mid.take_metric_events();
-            let before = db.meter.snap();
-            let (mut writes, mut write_ms, mut unavailable, mut uses) = (0i64, 0f64, 0usize, 0usize);
-            let start = Instant::now();
-            for session in 0..agents * rounds {
-                unavailable += sv_uses(&mid, &keys, session % agents, 100 + session as u64).await?;
-                uses += keys.len();
-                // 本次会话之后的写入次数：λ = num/den，按会话序号均匀摊开
-                let due = ((session as u32 + 1) * num / den) as i64 - (session as u32 * num / den) as i64;
-                for _ in 0..due {
-                    let t = format!("sv_fact{}", writes as usize % SV_PAIRS);
-                    let w0 = Instant::now();
-                    admin.query(QKind::Meta, &format!("{}; select pg_stat_force_next_flush()", insert(&t, writes + 1))).await?;
-                    write_ms += w0.elapsed().as_secs_f64() * 1000.0;
-                    metricbench::log_batch(&admin, &t, "sustained append").await?;
-                    writes += 1;
-                }
-                if due > 0 {
-                    tokio::time::sleep(Duration::from_millis(1200)).await;
-                    mid.invalidate_versions();
-                }
-            }
-            let wall = start.elapsed().as_secs_f64();
-            let meter = crate::db::diff(&before, &db.meter.snap());
-            let mut actions: BTreeMap<String, u64> = BTreeMap::new();
-            for c in mid
-                .take_metric_events()
-                .iter()
-                .filter(|e| e["event"] == "maintenance")
-                .flat_map(|e| e["conditions"].as_array().cloned().unwrap_or_default())
-            {
-                *actions.entry(c["action"].as_str().unwrap_or("unknown").into()).or_default() += 1;
-            }
-            let row = json!({"policy": policy, "rate": format!("{num}/{den}"), "rate_value": num as f64 / den as f64,
-                             "sessions": agents * rounds, "uses": uses, "writes": writes, "write_ms": write_ms,
-                             "wall_seconds": wall, "db": meter, "unavailable": unavailable, "condition_actions": actions});
-            eprintln!(
-                "sustained {policy} λ={num}/{den}: writes {writes}, {:.0} ms DB, actions {:?}",
-                meter.db_ms, row["condition_actions"]
-            );
-            std::fs::write(format!("{out}/cell-{policy}-{num}-{den}.json"), serde_json::to_string_pretty(&row)?)?;
-            cells.push(row);
-        }
-    }
-    // 版本触发器的写入开销：同一批 200 行插入，装与不装触发器各 60 次交替执行
-    admin.query(QKind::Meta, "drop table if exists sv_wt; create table sv_wt as table store_sales with no data").await?;
-    let (mut with, mut without) = (vec![], vec![]);
-    for i in 0..120i64 {
-        let trig = i % 2 == 0;
-        if trig {
-            catalog::install_tx_versions(&admin, &["sv_wt"]).await?;
-        } else {
-            admin.query(QKind::Meta, "drop trigger if exists mavra_bump on sv_wt").await?;
-        }
-        let t0 = Instant::now();
-        admin.query(QKind::Meta, &insert("sv_wt", 300 + i)).await?;
-        let ms = t0.elapsed().as_secs_f64() * 1000.0;
-        if trig {
-            with.push(ms)
-        } else {
-            without.push(ms)
-        }
-    }
-    let med = |v: &mut Vec<f64>| {
-        v.sort_by(|a, b| a.partial_cmp(b).unwrap());
-        v[v.len() / 2]
-    };
-    let overhead = json!({"inserts_each": with.len(), "rows_per_insert": 200,
-                          "median_ms_with_trigger": med(&mut with), "median_ms_without": med(&mut without)});
-    eprintln!("trigger overhead: {overhead}");
-    Ok(json!({"cells": cells, "trigger_overhead": overhead,
-              "design": "16 shared definitions on 4 fact/date pairs, 200k rows per fact; 64 sessions (8 agents x 8 rounds) each use all 16 definitions; after each session lambda appends (0, 1/8, 1/2, 2) of ~200 new-key rows to the fact tables in turn"}))
+        .await?;
+    mid.invalidate_versions();
+    let reclass_rej = mid.use_metric(&user, &format!("metric:{}", m5.name)).await?;
+    let events_reclass = mid.take_metric_events();
+    ensure!(reclass_rej["status"] == "unavailable", "summary-backed post-learn Reclass must be blocked: {reclass_rej}");
+    ensure!(
+        events_reclass.iter().any(|e| {
+            e["event"] == "repair_rejected"
+                && e["failed_gate"] == "G9"
+                && e["gates"].as_array().is_some_and(|gs| gs.iter().any(|g| g["gate"] == "G8" && g["pass"] == true))
+        }),
+        "post-learn Reclass must pass G8 yet fail at G9 (HistInv) via summary: {events_reclass:?}"
+    );
+    admin
+        .query(
+            QKind::Meta,
+            "update item cur set i_category = old.i_category from item old \
+             where cur.i_item_sk = old.i_item_sk and cur.i_is_current = 'Y' and old.i_is_current = 'N'; \
+             delete from item where i_is_current = 'N'; \
+             delete from etl_batch_log where batch_id = 99; analyze item",
+        )
+        .await?;
+    scenario::ensure_v1(&admin, &v1, "contracts_reclass").await?;
+    mid.restore(&checkpoint).await?;
+
+    // (P0-1c) 无保留学习快照：源期间 2001-03 自身被重述（Change::Revision）时拒绝自动发布（Fail-Closed）
+    mid.take_metric_events();
+    Change::Revision.apply_truth(&admin).await?;
+    Change::Revision.apply_hidden(&admin).await?;
+    mid.invalidate_versions();
+    let rev_rej = mid.use_metric(&user, &format!("metric:{}", m1.name)).await?;
+    let events_rev = mid.take_metric_events();
+    ensure!(rev_rej["status"] == "unavailable", "mutated source period without snapshot must fail closed: {rev_rej}");
+    ensure!(
+        events_rev.iter().any(|e| e["event"] == "repair_rejected" && e["failed_gate"] == "G8"),
+        "mutated source period must fail closed at G8: {events_rev:?}"
+    );
+    Change::Revision.reset(&admin).await?;
+    scenario::ensure_v1(&admin, &v1, "contracts_revision").await?;
+
+    Ok(json!({
+        "status": "passed",
+        "period_2028_rejected": r2028["reason"],
+        "summary_dimhist_revision": dim_ok["revision"],
+        "summary_reclass_blocked": true,
+        "mutated_source_fail_closed": true,
+    }))
 }
 
 #[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
-async fn postgres_sustained_writes() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_sustained_{}_{stamp}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    let out = format!("results/sustained-writes-{stamp}");
-    std::fs::create_dir_all(&out)?;
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(4 * 3600), sustained_writes(test_url.as_str(), &out)).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let report = match &result {
-        Ok(Ok(r)) => r.clone(),
-        Ok(Err(e)) => json!({"error": format!("{e:#}")}),
-        Err(_) => json!({"error": "timeout"}),
-    };
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&json!({"report": report, "cleaned_up": cleanup.is_ok()}))?)?;
-    eprintln!("saved {out}/report.json");
-    cleanup?;
-    result.context("sustained-writes timeout")??;
-    Ok(())
-}
-
-#[tokio::test]
-#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL CREATE DATABASE permission; no LLM calls"]
-async fn postgres_shared_validation_scaling() -> Result<()> {
-    let _ = dotenvy::dotenv();
-    let url = std::env::var("AGENTDB_TEST_URL").context("AGENTDB_TEST_URL required")?;
-    let admin = Db::connect(&url, 1, false)?;
-    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_micros();
-    let name = format!("agentdb_sharedval_{}_{stamp}", std::process::id());
-    let mut test_url = reqwest::Url::parse(&url)?;
-    test_url.set_path(&format!("/{name}"));
-    let out = format!("results/shared-validation-{stamp}");
-    std::fs::create_dir_all(&out)?;
-    admin.query(QKind::Meta, &format!("create database {name}")).await?;
-    let result = tokio::time::timeout(Duration::from_secs(4 * 3600), shared_validation(test_url.as_str(), &out)).await;
-    let cleanup = admin.query(QKind::Meta, &format!("drop database {name} with (force)")).await;
-    let report = match &result {
-        Ok(Ok(r)) => r.clone(),
-        Ok(Err(e)) => json!({"error": format!("{e:#}")}),
-        Err(_) => json!({"error": "timeout"}),
-    };
-    std::fs::write(format!("{out}/report.json"), serde_json::to_string_pretty(&json!({"report": report, "cleaned_up": cleanup.is_ok()}))?)?;
-    eprintln!("saved {out}/report.json");
-    cleanup?;
-    result.context("shared-validation timeout")??;
-    Ok(())
+#[ignore = "requires AGENTDB_TEST_URL and PostgreSQL 16+ with CREATE DATABASE permission"]
+async fn postgres_repair_and_period_contracts() -> Result<()> {
+    database_case("contracts", 180, |url| Box::pin(async move { repair_and_period_contracts(&url).await })).await
 }

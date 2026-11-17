@@ -64,7 +64,7 @@ def render(entries):
         lines.append(f'| {entry["id"]} | {entry["raw_data"]} | {entry["code_record"]} |')
     lines += ['', '## 维护索引', '',
               '修改 `exp/catalog.json` 后，在仓库根目录运行 `python3 tools/experiment-index.py`；`--check` 检查目录覆盖、文件引用和索引是否同步，不执行实验。', '',
-              '新增实验的记录要求见 [仓库维护约定](../docs/development/repository.md)。早期运行数值、提交号与服务器环境保留在 [历史索引](../docs/history/experiment-index-2026-10-03.md)。', '']
+              '新增实验的记录要求见 [仓库维护约定](../docs/development/repository.md)。已退役实验驱动的源码版本与独立检出方式见 [历史实验复现](../docs/development/repository.md#historical-experiments)；运行数值、提交号与环境记录见各实验 README。', '']
     return '\n'.join(lines)
 
 

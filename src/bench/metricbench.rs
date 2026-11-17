@@ -1,5 +1,5 @@
 //! 指标经验评测：学习 → 参数 / 题型留出 → 数据变化场景（每个场景从 v1 独立施加、结束后回滚，见 `scenario`）。
-//! 在独立数据库上生成合成零售数据；查询 Agent 与提炼器都调用真实模型。协议见 docs/history/metric-experience-protocol.md。
+//! 在独立数据库上生成合成零售数据；查询 Agent 与提炼器都调用真实模型。实验协议与证据见 exp/README.md。
 
 use crate::catalog;
 use crate::db::{diff, lit, Db, QKind};
@@ -9,8 +9,7 @@ use crate::knowledge::{Basis, Content, Status};
 use crate::llm::{self, AgentRun, Provider};
 use crate::metric::{self, parse_answer, same_value, Ask, Period, Trajectory};
 use crate::middle::{
-    exploration_tool_spec, tool_specs_with, trajectory_tool_spec, Ctx, GuardMode, Maint, Middle, MiddleConfig, Scope, SqlCall, TaskLog,
-    ToolSpec, TrajMemo,
+    exploration_tool_spec, tool_specs_with, trajectory_tool_spec, Ctx, Maint, Middle, SqlCall, TaskLog, ToolSpec, TrajMemo,
 };
 use crate::scenario::{self, Change};
 use crate::specchange::{Gen, Spec};
@@ -45,6 +44,7 @@ pub struct Options {
                           "reforce", "reforce-traj", "reforce-static", "reforce-mavra",
                           "mem-awm", "mem-ace", "mem-mem0", "mem-agentsm", "mem-ace-shared", "mem-agentsm-shared",
                           "mem-reasoningbank", "mem-apc", "mem-reasoningbank-shared", "mem-apc-shared",
+                          "metric-template-schema", "metric-template-revoke",
                           "paper-ace", "paper-awm", "paper-gmemory", "paper-tecod"])]
     modes: Vec<String>,
     #[arg(long, value_delimiter = ',', default_value = "defined,named", value_parser = ["defined", "named"])]
@@ -1014,114 +1014,7 @@ pub(crate) async fn reset_growth(db: &Db) -> Result<()> {
 
 /// (中间层配置, 是否提供中间层工具, 是否提供指标经验工具)。metric-local 与 metric-global 只改变指标经验的可见范围；
 /// metric-global-* 只改变维护方式，条件、受限修复与回归相同。
-pub(crate) fn config(mode: &str) -> (MiddleConfig, bool, bool) {
-    let base = MiddleConfig { name: mode.into(), record: true, ..Default::default() };
-    match mode {
-        "direct" => (
-            MiddleConfig {
-                scope: Scope::Session,
-                singleflight: false,
-                guard: GuardMode::Off,
-                feedback: false,
-                validate_sql: false,
-                result_cache: false,
-                ..base
-            },
-            false,
-            false,
-        ),
-        // 已发表的方法（ACE、AWM、G-Memory、TeCoD）：工具同 middle，记忆由外部服务按各自发布的算法维护（`paper_memory`）
-        "middle" | "reforce" | "paper-ace" | "paper-awm" | "paper-gmemory" | "paper-tecod" => (base, true, false),
-        // 无记忆：同 middle 的工具，但表结构知识（表描述、关联路径与守卫依据）只在一道题内有效，每题从零开始
-        "middle-alone" => (MiddleConfig { scope: Scope::Task, metric_scope: Scope::Task, ..base }, true, false),
-        "metric-local" => {
-            (MiddleConfig { metric_scope: Scope::Agent, metric_maint: Maint::Condition, cond_reuse: true, ..base }, true, true)
-        }
-        "metric-global" => (MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, ..base }, true, true),
-        "metric-global-schema" => (MiddleConfig { metric_maint: Maint::Schema, ..base }, true, true),
-        "metric-global-revoke" => (MiddleConfig { metric_maint: Maint::Revoke, ..base }, true, true),
-        "metric-global-def" => (MiddleConfig { metric_maint: Maint::Definition, ..base }, true, true),
-        // 条件级维护，但修复回归以提炼出的示例 SQL 为参照（部署中真正可得的参照），而不是基准的判题 SQL
-        "metric-global-exref" => (MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, g8_example: true, ..base }, true, true),
-        // 同上，但 G8 在学习时快照上比较：快照是单独建的、与 v1 内容相同的库，智能体的连接看不到它
-        // -push：同 -snap，并在会话开始时投递题面中出现的已发布指标（`Middle::deliver_metrics`，见 `run_task`）
-        "metric-global-snap" | "metric-global-push" | "reforce-mavra" => {
-            (MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, g8_example: true, g8_snapshot_db: true, ..base }, true, true)
-        }
-        // 完整配置：同 -opt，并在同一快照中核对所声明修订的条件后执行（事务性版本，见 `catalog::install_tx_versions`）
-        "metric-global-full" => (
-            MiddleConfig {
-                metric_maint: Maint::Condition,
-                cond_reuse: true,
-                g8_example: true,
-                g8_snapshot_db: true,
-                optimize: true,
-                snapshot_exec: true,
-                ..base
-            },
-            true,
-            true,
-        ),
-        // 最接近的简单对照（2026-11-11）：同 -full 的共享定义、学习、条件集合与绑定快照执行，但写入后首次使用时重跑该定义的
-        // 全部条件（定义级），条件结论不跨定义共享，条件不成立即撤下、不修复，使用者自行探查
-        "metric-global-recheck" => (
-            MiddleConfig {
-                metric_maint: Maint::Definition,
-                cond_reuse: false,
-                repair: false,
-                g8_example: true,
-                g8_snapshot_db: true,
-                optimize: true,
-                snapshot_exec: true,
-                ..base
-            },
-            true,
-            true,
-        ),
-        // 单智能体记忆：同 -snap 的学习、检查与维护，但每个智能体只看得到自己学到的定义和表结构知识
-        "metric-private" => (
-            MiddleConfig {
-                scope: Scope::Agent,
-                metric_scope: Scope::Agent,
-                metric_maint: Maint::Condition,
-                cond_reuse: true,
-                g8_example: true,
-                g8_snapshot_db: true,
-                ..base
-            },
-            true,
-            true,
-        ),
-        // 同 -snap，并在学习之后对每条已发布定义尝试优化修订（规则改写与模型提议；验证等价与代价后发布）
-        "metric-global-opt" => (
-            MiddleConfig {
-                metric_maint: Maint::Condition,
-                cond_reuse: true,
-                g8_example: true,
-                g8_snapshot_db: true,
-                optimize: true,
-                ..base
-            },
-            true,
-            true,
-        ),
-        // 匹配的轨迹检索基线：同样的中间层工具与学习题，学习成功的轨迹原样保存、按题面检索，不提炼、不维护；
-        // traj-verify 只多一句提示：复用前先在当前数据上核对 SQL 依赖的前提
-        // traj-push：同 traj-global，并在会话开始时投递检索到的解题过程（开场投递的对照）
-        "traj-global" | "traj-verify" | "traj-push" | "reforce-traj" => {
-            (MiddleConfig { traj_memory: true, metric_maint: Maint::Off, ..base }, true, false)
-        }
-        // 单智能体记忆的对照基线（`agentmem`）：工具与无记忆相同（表结构知识只在一道题内有效），跨会话的状态只有各自的记忆
-        m if m.starts_with("mem-") => {
-            (MiddleConfig { scope: Scope::Task, metric_scope: Scope::Task, metric_maint: Maint::Off, ..base }, true, false)
-        }
-        // 与 metric-global-snap 同样的学习与发布前检查，但发布后不再检查、不修复（一次写好的知识，如 BIRD 的 evidence）
-        "reforce-static" => (MiddleConfig { metric_maint: Maint::Off, g8_example: true, g8_snapshot_db: true, ..base }, true, true),
-        // RelBench 研究的 MAVRA（exp/2026-10-20-relbench）：特征定义由所有智能体共用，条件级维护，表描述、连接路径与检查结果全局共享
-        "relbench-mavra" => (MiddleConfig { metric_maint: Maint::Condition, cond_reuse: true, feature_memory: true, ..base }, true, false),
-        _ => (MiddleConfig { metric_maint: Maint::Off, ..base }, true, true),
-    }
-}
+pub(crate) use crate::middle::profile as config;
 
 const SYSTEM: &str = "你是一个数据分析 Agent，通过工具查询 PostgreSQL 上的零售数据（门店、目录两个渠道）。先弄清表结构与关联方式，再写 SQL；不要猜测列的含义。\
 得到结果后调用 final_answer：answer 只写最终值（数字或月份数字，不带单位与说明）；used 写参与计算最终答案的查询编号（run_sql 返回的 ref，如 [\"r2\", \"r3\"]）；\
@@ -1291,7 +1184,8 @@ async fn explain(probe: &Db, run: &AgentRun, log: &TaskLog) -> Value {
 /// 近期结果反馈，各方法的反馈相同；其余实验不经过它。
 fn paper_bridge(mode: &str) -> bool {
     mode.starts_with("paper-")
-        || (matches!(mode, "metric-global-full" | "metric-global-recheck") && std::env::var_os("FIG6_MEMORY_URL").is_some())
+        || (matches!(mode, "metric-global-full" | "metric-global-recheck" | "metric-template-schema" | "metric-template-revoke")
+            && std::env::var_os("FIG6_MEMORY_URL").is_some())
 }
 
 async fn paper_memory(mode: &str, mut body: Value) -> Result<Value> {
@@ -1302,6 +1196,8 @@ async fn paper_memory(mode: &str, mut body: Value) -> Result<Value> {
     body["arm"] = json!(match mode {
         "metric-global-full" => "mavra",
         "metric-global-recheck" => "recheck",
+        "metric-template-schema" => "template_schema",
+        "metric-template-revoke" => "template_revoke",
         m => m.trim_start_matches("paper-"),
     });
     let url = std::env::var("FIG6_MEMORY_URL").context("FIG6_MEMORY_URL missing")?;
@@ -1540,9 +1436,8 @@ async fn reforce_run(ph: &Phase<'_>, ctx: &Ctx, t: &Task, question: &str) -> Res
     Ok((run, info))
 }
 
-/// 学习任务的后续：判题成功且计算链通过后，离线提炼并提交晋升门槛。
-async fn learn_step(env: &Env<'_>, mid: &Middle, rec: &TaskRec, t: &Task) -> Result<Value> {
-    let traj = Trajectory {
+fn trajectory(rec: &TaskRec, t: &Task) -> Trajectory {
+    Trajectory {
         task: t.id.clone(),
         question: rec.question.clone(),
         ask: t.ask.clone(),
@@ -1553,7 +1448,12 @@ async fn learn_step(env: &Env<'_>, mid: &Middle, rec: &TaskRec, t: &Task) -> Res
         used: rec.run.used.clone(),
         derivation: rec.run.derivation.clone(),
         judge: Some(gold_sql(t)),
-    };
+    }
+}
+
+/// 学习任务的后续：判题成功且计算链通过后，离线提炼并提交晋升门槛。
+async fn learn_step(env: &Env<'_>, mid: &Middle, rec: &TaskRec, t: &Task) -> Result<Value> {
+    let traj = trajectory(rec, t);
     if !traj.judged {
         return Ok(json!({"task": t.id, "stage": "judge", "reason": "来源任务未被判定为成功"}));
     }
@@ -1574,18 +1474,7 @@ async fn learn_step(env: &Env<'_>, mid: &Middle, rec: &TaskRec, t: &Task) -> Res
 
 /// 轨迹检索基线的学习：与 MAVRA 的提炼同样的前提（判题成功、计算链可复核），满足就把参与答案的 SQL 与算式原样保存。
 fn remember_step(mid: &Middle, rec: &TaskRec, t: &Task) -> Value {
-    let traj = Trajectory {
-        task: t.id.clone(),
-        question: rec.question.clone(),
-        ask: t.ask.clone(),
-        basis: Basis::ExplicitQuestion { task: t.id.clone() },
-        judged: rec.correct,
-        decimals: decimals(&t.ask),
-        answer: rec.run.answer.clone().unwrap_or_default(),
-        used: rec.run.used.clone(),
-        derivation: rec.run.derivation.clone(),
-        judge: Some(gold_sql(t)),
-    };
+    let traj = trajectory(rec, t);
     if !traj.judged {
         return json!({"task": t.id, "stage": "judge", "reason": "来源任务未被判定为成功"});
     }
@@ -1753,7 +1642,7 @@ async fn cell(env: &Env<'_>, db: Arc<Db>, mode: &str, phrasing: &str, repeat: u3
         audits.insert(phase.into(), json!(rows));
         // 逐写入撤销组的恢复：写入通知到达即撤销依赖有写入的口径，再由 A 用带口径题面在新快照上重新学习与提炼。
         // 重新学习的任务记为 *-relearn 阶段，成本单列，不计入答案统计。
-        if ch.is_some() && mid.cfg.metric_maint == Maint::Revoke {
+        if ch.is_some() && mid.cfg.metric_maint == Maint::Revoke && mode != "metric-template-revoke" {
             let sweeper = Ctx::new("A", &format!("{}-{phase}-sweep", cell.id), "sweep");
             let swept = mid.sweep_metrics(&sweeper).await?;
             let defs: HashSet<String> = swept
@@ -2468,7 +2357,7 @@ fn markdown(report: &Value) -> String {
     let changes: Vec<(String, String, String)> = phases[1..].to_vec();
     let mut s = format!(
         "# 指标经验评测\n\n查询 Agent：`{}`；提炼器：`{}`；温度：{}。数据：`{}`。重复 {} 轮。\n\n\
-         本报告是描述性结果，不作显著性声明。协议见 docs/history/metric-experience-protocol.md。\n",
+         本报告是描述性结果，不作显著性声明。实验协议与证据见 exp/README.md。\n",
         report["providers"]["agent"].as_str().unwrap_or_default(),
         report["providers"]["extractor"].as_str().unwrap_or_default(),
         report["providers"]["temperature"].as_str().unwrap_or_default(),

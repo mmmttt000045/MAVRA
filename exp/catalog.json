@@ -158,7 +158,8 @@
         "exp/2026-11-01-change-study/probe-synthetic.json",
         "exp/2026-11-01-change-study/probe-tpch.json",
         "exp/2026-11-01-change-study/raw-results.tgz",
-        "exp/2026-11-01-change-study/raw-results-final.tgz"
+        "exp/2026-11-01-change-study/raw-results-final.tgz",
+        "exp/2026-11-01-change-study/raw-results-templates.tgz"
       ],
       "analysis": [
         "exp/2026-11-01-change-study/analyse.py",
@@ -211,7 +212,7 @@
         "overleaf/gen/shared-validation.tex"
       ],
       "raw_data": "cells-final.tgz：最终二进制 108 格（results/shared-validation-1793508134275611）；cells.tgz：旧二进制 108 格（results/shared-validation-1793471974128556）。",
-      "code_record": "src/integration_tests.rs 的 postgres_shared_validation_scaling；最终运行 HEAD fdf56be，单独占用服务器。分析与命令见 README。"
+      "code_record": "历史源码 5104ad593b0953f5f2a3e49f07d96116404cde72 的 src/integration_tests.rs / postgres_shared_validation_scaling；最终运行 HEAD fdf56be。独立检出见 docs/development/repository.md；分析与命令见 README。"
     },
     {
       "id": "2026-11-11-maint-hardening",
@@ -277,6 +278,41 @@
       "outputs": [],
       "raw_data": "`scaling-reports.tgz` 保存 SF1/SF3/SF10 完整配对回放报告、表行数与库大小；RelBench 原始会话见 `2026-10-20-relbench` 与 `2026-11-12-relbench-quality`。",
       "code_record": "`replay-bench`（`src/bench/replaybench.rs` 维表索引与统计信息快照复制修正）；PostgreSQL 18.6，`--pool 16 --sql-timeout-secs 1800/3600`。"
+    },
+    {
+      "id": "2026-11-17-lookup-scale",
+      "title": "千级定义库扩展与选择性风险—覆盖率评测",
+      "status": "current",
+      "scope": "论文第 6.3 节与 Fig. 8（P1-1）：跨八个数仓业务域构建 26 / 100 / 500 / 1,000 嵌套定义库，在 390 个多风格请求（96 人工核心题、174 跨家族 GLM 改写、120 跨域同名／多维／未收录题）上对比精确名称、向量 top-1、BF16 GPU 版 TeCoD（4B+4B）、无同伴差异交叉编码器、Top-8+LLM 与 MAVRA（零重训及多域重训），并绘出选择性误配风险—自主覆盖率前沿。",
+      "evidence": [
+        "exp/2026-11-17-lookup-scale/benchmark-manifest.json",
+        "exp/2026-11-17-lookup-scale/catalog_26.json",
+        "exp/2026-11-17-lookup-scale/catalog_100.json",
+        "exp/2026-11-17-lookup-scale/catalog_500.json",
+        "exp/2026-11-17-lookup-scale/catalog_1000.json",
+        "exp/2026-11-17-lookup-scale/requests_orig_96.json",
+        "exp/2026-11-17-lookup-scale/requests_glm_174.json",
+        "exp/2026-11-17-lookup-scale/requests_scale_120.json",
+        "exp/2026-11-17-lookup-scale/pool_26.json",
+        "exp/2026-11-17-lookup-scale/pool_1000.json",
+        "exp/2026-11-17-lookup-scale/train_scale_extra.jsonl",
+        "exp/2026-11-17-lookup-scale/scale-summary.json",
+        "exp/2026-11-17-lookup-scale/risk-coverage.json"
+      ],
+      "analysis": [
+        "exp/2026-11-17-lookup-scale/build_scale_catalog.py",
+        "exp/2026-11-17-lookup-scale/train_scale_ce.py",
+        "exp/2026-11-17-lookup-scale/run_gpu_methods.py",
+        "exp/2026-11-17-lookup-scale/run_llm_methods.py",
+        "exp/2026-11-17-lookup-scale/analyse_scale.py",
+        "tools/figures/lookup_scale.py"
+      ],
+      "outputs": [
+        "overleaf/gen/lookup-scale.tex",
+        "overleaf/figures/lookup-scale.pdf"
+      ],
+      "raw_data": "GPU 服务器 `10.77.50.200:/home/mingtai/lookup-scale-20261117/`（双卡 RTX 5880 Ada，含 `ft_scale/` 6 个训练模型与 `results_gpu/`）及 `noctis:/root/lookup-scale-20261117/results_llm/`（逐请求 JSONL 判别与确认记录）。",
+      "code_record": "`catalog_1000_sha256=14f949018618278eb5ad694ee24537404902a715c98f6b9f5ad35c0328a6651c`；BF16 训练（seeds 13/14/15）与 TeCoD 4B+4B GPU 评测参数见本目录 README。"
     }
   ]
 }

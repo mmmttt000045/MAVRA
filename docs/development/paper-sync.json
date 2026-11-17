@@ -4,28 +4,54 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "main repo -> paper: Fig. 3 panel (b) draws the dependency graph G (tables -> constraint nodes 1-5 -> new definition m^0), replacing the constraint list; Description updated",
-  "previous_head": "ba50dd31c1321cb42ce3bbf9edfcf2f8f7813fea",
-  "remote_commit": "e40c2eedd2394c1094fe5ce758f345b8e0e8148e",
+  "direction": "overleaf/ -> icde-2027-paper main: Merge remote figure refinements (e40c2ee) and complete Phases P1-P3 (P1-1 26/100/500/1,000-definition lookup scaling + selective risk-coverage + BF16 GPU TeCoD NLI; P1-2 & P1-3b controlled serving-vs.-withholding split and parameterized-SQL template invalidation baselines; P2 C3-led DB-systems narrative rebalancing preserving 01-introduction.tex lines 1-55, reordered Q1-Q5 Evaluation, and strict PVLDB 12-page body budget; P3 figure typography & layout polish)",
+  "previous_head": "e40c2eedd2394c1094fe5ce758f345b8e0e8148e",
+  "remote_commit": "eb4598b64279fcc250d8fe4cf265ce49421852d1",
   "pending_payload": null,
   "changed_paths": [
-    "figures/extraction.pdf",
-    "figures/extraction.tex"
+    "figures/architecture.pdf",
+    "figures/architecture.tex",
+    "figures/change-study.pdf",
+    "figures/extraction.tex",
+    "figures/fixed-sharing.tex",
+    "figures/lookup.tex",
+    "figures/maintenance.tex",
+    "figures/population.tex",
+    "figures/two-schemas.tex",
+    "gen/change-study.tex",
+    "gen/served-split.tex",
+    "preamble.tex",
+    "sections/01-introduction.tex",
+    "sections/02-background.tex",
+    "sections/03-overview.tex",
+    "sections/04-design.tex",
+    "sections/05-evaluation.tex",
+    "sections/06-conclusion.tex",
+    "sections/abstract.tex",
+    "sections/implementation.tex",
+    "tables/lookup.tex",
+    "tables/relbench.tex",
+    "tables/replay-policies.tex",
+    "figures/lookup-scale.pdf",
+    "figures/lookup-scale.tex",
+    "gen/lookup-scale.tex",
+    "tables/served-split.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "figure_check": "Rendered at 900 dpi; edges ordered not to cross and to end on node borders; asserts on node fit and panel bounds; only real values (M5-L1 join statistics).",
-    "tex_compile": "build.sh en with TeX Live 2026: 14 pages, 1 Overfull (5.08pt, 04-design.tex lines 30-32, pre-existing); no undefined references; conclusion p. 12, references from p. 13, last-page fill unchanged; Fig. 3 on p. 6.",
-    "remote_checked": "Paper origin/main was ba50dd3 (the recorded commit) before the non-force push; git ls-remote origin refs/heads/main = e40c2eedd2394c1094fe5ce758f345b8e0e8148e.",
-    "scope": "Paper repo only; main project not pushed; no ZIP generated."
+    "tex_compile": "Tectonic compiled overleaf/main.tex cleanly; zero LaTeX errors, zero undefined references/citations, and zero Overfull hbox warnings.",
+    "dependency_sync": "Merged e40c2eedd2394c1094fe5ce758f345b8e0e8148e (4-panel extraction.pdf, enlarged lookup.pdf, and maintenance.pdf) and synced all main.tex compilation dependencies to tmp/paper-sync while preserving remote-owned files.",
+    "pdf_layout": "Entire manuscript body through Section 7 (Conclusion) finishes cleanly inside Page 12, with References starting at line 1 of Page 13 (14 pages total including bibliography). Sequential Table 1-6 and Figure 1-9 numbering verified.",
+    "remote_checked": "git push origin HEAD:main and git ls-remote origin refs/heads/main both confirm eb4598b64279fcc250d8fe4cf265ce49421852d1.",
+    "scope": "Phases P0-P3 complete across Rust engine (65/65 unit tests, cargo fmt, cargo clippy -D warnings), experiment index (14/14 validated), and PVLDB 12-page manuscript. Main project repository not pushed; no Overleaf ZIP generated."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e40c2eedd2394c1094fe5ce758f345b8e0e8148e",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/eb4598b64279fcc250d8fe4cf265ce49421852d1",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11 & 2026-11-13).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "22b0edd2993104ad7d60f20d59bd54ec28b0e888",
-  "source_worktree": false,
+  "source_commit": "5104ad593b0953f5f2a3e49f07d96116404cde72",
+  "source_worktree": true,
   "restoration": {
     "advisor_marked_commit": "411025f1b986fce6b43d3332671be61c26443b47",
     "source_revision": "990f546ed29d35fbb3724c13e7932e78a1e79556",
@@ -38,12 +64,46 @@
       "Align the example with the electronics-revenue figure and remove the obsolete IEEE keyword environment.",
       "Surgically embed Verifiable Relational Kernel Extraction (C1), Lightweight Adaptive Semantic Resolution (C2), and Snapshot-Validated Definition Repair (C3) in Abstract and Introduction.",
       "Upgrade Innovation 1 (C1) in Abstract and Introduction (lines 117-137) to Graph-Based Verifiable Relational Kernel Extraction while leaving 01-introduction.tex lines 1-116 untouched.",
-      "Fix two minor grammar typos in 01-introduction.tex (lines 31, 59) and add '(and task programs)' parenthetical in abstract.tex and 01-introduction.tex (line 115) for two-level predictive reuse alignment."
+      "Fix two minor grammar typos in 01-introduction.tex (lines 31, 59) and add '(and task programs)' parenthetical in abstract.tex and 01-introduction.tex (line 115) for two-level predictive reuse alignment.",
+      "Rename Contribution 1 to Graph-Based Agent Knowledge Extraction and standardize academic terminology across manuscript, tables, algorithm, and four figures while keeping 01-introduction.tex lines 1-116 byte-identical.",
+      "Replace 2001 example dates with 2026 across Section 3.2 and Figures 2-4 (and align Figure 4's 'choices' -> 'attributes' segment label) without adding explanatory caveats.",
+      "Merge Overleaf branch overleaf-2026-11-16-0607 (a4fda5d) adding [leftmargin=*] to the Introduction contributions itemize environment, paired with \\usepackage{enumitem} in preamble.tex.",
+      "Merge Overleaf branch overleaf-2026-11-16-0617 (1dd59e4) reverting [leftmargin=*] back to plain \\begin{itemize} and removing \\usepackage{enumitem} from preamble.tex.",
+      "Lightly refine 01-introduction.tex lines 94-147 (preserving lines 1-92) to anchor on conditional executable definitions and programmatic join/grain bootstrapping + causal lineage slicing; replace Problem 1's uncalibrated alpha knob with conditional reuse soundness mapped across Publish/Lookup/Check-and-Run/Maintain costs; complete Section 4.2 extraction candidate generation, add explicit design trade-offs, and unpack Q5 into five question-driven micro-benchmarks.",
+      "Restructure Sections 2-5 into a four-layer decoupled architecture (2.3-2.4 Problem Formulation & Design Rationale -> 3 Overview & Concrete Workflow -> 4 Five-Step Core Design integrating Predictive Reuse and post-hoc Theoretical Analysis -> 5 Implementation) and align Q3 wording in 05-evaluation.tex.",
+      "Tighten Section 4.5.2 complexity quantities (O(k) deduplicated cores, O(K) cross-encoder judging after embedding recall, and per-key k(c,V_s) check coalescing), embed unrounded per-bucket equality into Proposition 2's union clause, scope Section 4.3 cross-encoder to analytical metrics vs. entity/lexical feature lookup, refine Section 2.4 phrasing, and align Section 5.4 history-gate behavior and 25 KB summary accounting with src/middle/metrics.rs.",
+      "Remove redundant Table 4 (tables/population-cost.tex) and integrate warmed-agent (9-16) baseline comparisons smoothly into Section 6.2 around Figure 6a-d.",
+      "Merge Overleaf branch overleaf-2026-11-17-0127 (dac189d): retain its Section 4 rewrite and generic database wording in Section 3, preserve the definition-repository terminology, keep the obsolete population-cost table deleted, and encode six English em dashes as standard LaTeX ---.",
+      "Complete Phase P0 correctness contract alignment (88657f5): align fail-closed SourceEq/HistInv repair admission (retained snapshot or Publish-time 128-bit MD5 multiset bucket summaries), separate binding-independent C(I) from parameter-keyed C_req period/slice checks in Problem 1 / Section 4 / Algorithm 1 / Section 5, clarify B(I) as retrieval projection vs. canonicalized I equivalence, tighten k_core and q_act complexity bounds, state the external confirmation trust boundary and TeCoD/AgentSM distinctions, restructure Section 4.1 intuition-first, and place Figure 2 on page 4.",
+      "Merge remote figure updates (e40c2ee) and complete Phases P1-P3 (eb4598b): add 26-to-1,000 lookup scaling and risk-coverage (Figure 8), Table 4 serving-vs.-withholding and parameterized-SQL template invalidation baselines, C3-anchored narrative rebalancing (keeping 01-introduction.tex lines 1-55 untouched), Q1-Q5 evaluation reordering, and 12-page body fit."
     ]
   },
   "source_file_sha256": {
-    "sections/01-introduction.tex": "14cfe1c895ff1b816083d3b5aa35f97e526e07652527f5a35dd6f025fe76cec0",
-    "sections/abstract.tex": "74f3fddaa42358faf8e5865913d3a04ef4385a076206f3f2cc87cd260bd22183"
+    "sections/abstract.tex": "eb877c559179a71bbf4b8dedcaa2a621825a1b72746826f08f023be1f7727a47",
+    "sections/01-introduction.tex": "6825eeb48a4d6cc649bb2af9186fc5856189eab7b6c5b2eb37c12bc82bd2598d",
+    "sections/02-background.tex": "4295a28b306fcec1b21eff267adc5b1d7124662c4f2e88d5ae6be277bdb96515",
+    "sections/03-overview.tex": "1e79eb3cc4395ec148bf299c70494bc6fb88189677895a97339eefa708c47687",
+    "sections/04-design.tex": "05ea4e0ddd765a5fa7cfb0ac75b3e608e2d9a9f630e8e5730e3a5ae84895591f",
+    "sections/implementation.tex": "f203efcfdad03baa77371c671717385995760bc33128d223ee04ce22584259cc",
+    "sections/05-evaluation.tex": "f93c6fde9415daaec3436b47c7c9710a8e56d6b7bf61ee35c577e1bc7d774043",
+    "sections/06-conclusion.tex": "5cf23eb56b68b975ae35f46587ea83f8af3f509f0f47becefd5e8076bdaf1797"
   },
-  "pending_local_paths_not_in_this_commit": []
+  "pending_local_paths_not_in_this_commit": [],
+  "overleaf_merge": {
+    "branch": "overleaf-2026-11-17-0127",
+    "branch_head": "dac189dc3502e85343bd02ce454a0c2af7b32273",
+    "merge_base": "69864ce321bff051e23bfb3d993fb6e5131153d1",
+    "parents": [
+      "3496dd04df18ff1045a48c21e41d0b421fd75fe1",
+      "dac189dc3502e85343bd02ce454a0c2af7b32273"
+    ],
+    "resolved_paths": [
+      "sections/04-design.tex",
+      "tables/population-cost.tex"
+    ],
+    "kept_deleted_paths": [
+      "tables/population-cost.tex"
+    ],
+    "latex_punctuation_fixes": 6
+  }
 }
