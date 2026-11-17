@@ -21,9 +21,12 @@ from statistics import mean, median
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 P = json.loads((HERE / 'protocol.json').read_text())
-NAMES = {'ace': 'ACE', 'awm': 'AWM', 'gmemory': 'G-Memory', 'mavra': 'MAVRA', 'tecod': 'TeCoD', 'recheck': 'Shared recheck'}
+NAMES = {
+    'ace': 'ACE', 'awm': 'AWM', 'gmemory': 'G-Memory', 'mavra': 'MAVRA', 'tecod': 'TeCoD',
+    'recheck': 'Shared recheck', 'template_schema': 'Template + schema hash', 'template_revoke': 'Template + write invalidate',
+}
 # MAVRA ablation-style controls are reported on their own, not inside the published-method baseline ranges
-CONTROLS = {'mavra', 'recheck'}
+CONTROLS = {'mavra', 'recheck', 'template_schema', 'template_revoke'}
 # the protocol's methods, plus any method that only --arm-results supplies (TeCoD, added 2026-11-06)
 ARMS = list(P['arms'])
 GROUPS = {**P['groups'], 'all': ['holdout', *P['changes']]}
@@ -158,7 +161,10 @@ def main():
         return
     g = stats['groups']
     mac = {}
-    tag = {'ace': 'Ace', 'awm': 'Awm', 'gmemory': 'Gmem', 'mavra': 'Mavra', 'tecod': 'Tecod', 'recheck': 'Recheck'}
+    tag = {
+        'ace': 'Ace', 'awm': 'Awm', 'gmemory': 'Gmem', 'mavra': 'Mavra', 'tecod': 'Tecod',
+        'recheck': 'Recheck', 'template_schema': 'Tschema', 'template_revoke': 'Trevoke',
+    }
     gt = {'holdout': 'Hold', 'non_breaking': 'Benign', 'covered_breaks': 'Break', 'outside_conditions': 'Outside', 'all': 'All'}
     st = {'synthetic': 'Syn', 'tpch': 'Tpch', 'both': ''}
     for gname, gtag in gt.items():

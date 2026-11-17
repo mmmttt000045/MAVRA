@@ -1,5 +1,7 @@
 # Fig. 5: shared validation as the number of agents grows (no model calls)
 
+Reproduction uses the historical source revision in the [reproduction guide](../../docs/development/repository.md#historical-experiments). The report-only scaling driver is retired from the current test suite; archived evidence is unchanged.
+
 Question: after one data update, how much validation work do N agents cause when each
 keeps its own validated memory, when definitions are shared but rechecked as a whole,
 and with MAVRA's shared condition evidence?

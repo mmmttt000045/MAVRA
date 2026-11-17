@@ -1,0 +1,1096 @@
+{
+ "note": "Nested enterprise metric catalog (M=100) for P1-1 lookup scaling evaluation.",
+ "facet_names": {
+  "channel": "渠道",
+  "subject": "统计对象",
+  "amount": "金额口径",
+  "profit": "利润口径",
+  "ratio": "比率口径",
+  "date": "日期归属",
+  "category": "商品范围"
+ },
+ "definitions": [
+  {
+   "id": "D01",
+   "name": "门店营业额",
+   "text": "门店营业额 = 门店销售行的净支付额（store_sales.ss_net_paid，已扣优惠券、不含税）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D02",
+   "name": "门店营业额",
+   "text": "门店营业额 = 门店销售行的销售额（store_sales.ss_ext_sales_price，未扣优惠券、不含税）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D03",
+   "name": "门店标价总额",
+   "text": "门店标价总额 = 门店销售行按原价计的标价金额（store_sales.ss_ext_list_price）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "标价总额",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D04",
+   "name": "门店销量",
+   "text": "门店销量 = 门店销售行的售出件数（store_sales.ss_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "销量",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D05",
+   "name": "门店订单数",
+   "text": "门店订单数 = 门店销售中不同小票号（store_sales.ss_ticket_number）的个数，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "订单数",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D06",
+   "name": "门店客单价",
+   "text": "门店客单价 = 门店净支付额（ss_net_paid）之和 ÷ 不同小票号（ss_ticket_number）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D07",
+   "name": "门店净利润",
+   "text": "门店净利润 = 门店销售行的净利润（store_sales.ss_net_profit，即净支付额减批发成本）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "利润",
+    "profit": "净利润（实付减成本）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D08",
+   "name": "门店毛利",
+   "text": "门店毛利 = 门店销售行的销售额减批发成本（ss_ext_sales_price - ss_ext_wholesale_cost）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "利润",
+    "profit": "毛利（扣券前销售额减成本）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D09",
+   "name": "门店优惠券金额",
+   "text": "门店优惠券金额 = 门店销售行的优惠券抵扣额（store_sales.ss_coupon_amt）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "优惠券金额",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D10",
+   "name": "门店折扣额",
+   "text": "门店折扣额 = 门店销售行的折扣额（store_sales.ss_ext_discount_amt，标价与售价之差）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "折扣额",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D11",
+   "name": "电子品类门店营业额",
+   "text": "电子品类门店营业额 = 类别（item.i_category）为 Electronics 的商品的门店净支付额（ss_net_paid）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期",
+    "category": "电子"
+   }
+  },
+  {
+   "id": "D12",
+   "name": "女装品类门店营业额",
+   "text": "女装品类门店营业额 = 类别（item.i_category）为 Women 的商品的门店净支付额（ss_net_paid）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期",
+    "category": "女装"
+   }
+  },
+  {
+   "id": "D13",
+   "name": "门店退货金额",
+   "text": "门店退货金额 = 门店退货的退货金额（store_returns.sr_return_amt）之和，按退货日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "退货金额",
+    "date": "按退货日期"
+   }
+  },
+  {
+   "id": "D14",
+   "name": "门店退货金额",
+   "text": "门店退货金额 = 期间内售出的门店销售行所对应的退货金额（sr_return_amt）之和，按销售日期归属期间；退货按小票号和商品与销售行对应",
+   "facets": {
+    "channel": "门店",
+    "subject": "退货金额",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D15",
+   "name": "门店退货件数",
+   "text": "门店退货件数 = 门店退货的退回件数（store_returns.sr_return_quantity）之和，按退货日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "退货件数",
+    "date": "按退货日期"
+   }
+  },
+  {
+   "id": "D16",
+   "name": "门店退货率",
+   "text": "门店退货率（%）= 期间内售出的门店销售行所对应的退货金额（sr_return_amt）之和 ÷ 这些销售行的净支付额（ss_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D17",
+   "name": "门店退货率",
+   "text": "门店退货率（%）= 期间内售出的门店销售行所对应的退回件数（sr_return_quantity）之和 ÷ 这些销售行的售出件数（ss_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D18",
+   "name": "门店退货净损失",
+   "text": "门店退货净损失 = 门店退货的净损失（store_returns.sr_net_loss）之和，按退货日期归属期间",
+   "facets": {
+    "channel": "门店",
+    "subject": "退货净损失",
+    "date": "按退货日期"
+   }
+  },
+  {
+   "id": "D19",
+   "name": "目录渠道营业额",
+   "text": "目录渠道营业额 = 目录销售行的净支付额（catalog_sales.cs_net_paid）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "目录",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D20",
+   "name": "目录渠道销量",
+   "text": "目录渠道销量 = 目录销售行的售出件数（catalog_sales.cs_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "目录",
+    "subject": "销量",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D21",
+   "name": "目录渠道退货金额",
+   "text": "目录渠道退货金额 = 目录退货的退货金额（catalog_returns.cr_return_amount）之和，按退货日期归属期间",
+   "facets": {
+    "channel": "目录",
+    "subject": "退货金额",
+    "date": "按退货日期"
+   }
+  },
+  {
+   "id": "D22",
+   "name": "网店营业额",
+   "text": "网店营业额 = 网店销售行的净支付额（web_sales.ws_net_paid）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "网店",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D23",
+   "name": "网店净利润",
+   "text": "网店净利润 = 网店销售行的净利润（web_sales.ws_net_profit，即净支付额减批发成本）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "网店",
+    "subject": "利润",
+    "profit": "净利润（实付减成本）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D24",
+   "name": "网店退货率",
+   "text": "网店退货率（%）= 期间内售出的网店销售行所对应的退货金额（wr_return_amt）之和 ÷ 这些销售行的净支付额（ws_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "网店",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D25",
+   "name": "全渠道营业额",
+   "text": "全渠道营业额 = 门店、目录、网店三个渠道的净支付额（ss_net_paid、cs_net_paid、ws_net_paid）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "全渠道",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   }
+  },
+  {
+   "id": "D26",
+   "name": "平均库存量",
+   "text": "平均库存量 = 库存快照的在手数量（inventory.inv_quantity_on_hand）的平均值，按快照日期归属期间",
+   "facets": {
+    "subject": "库存量"
+   }
+  },
+  {
+   "name": "移动端App营业额",
+   "text": "移动端App营业额 = 移动端App明细行的净支付额（app_orders.ao_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "移动端App",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0027"
+  },
+  {
+   "name": "移动端App营业额",
+   "text": "移动端App营业额 = 移动端App明细行的折前成交额（app_orders.ao_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "移动端App",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0028"
+  },
+  {
+   "name": "移动端App退货率",
+   "text": "移动端App退货率（%）= 期间内售出的移动端App订单所对应的退款金额（app_returns.ao_return_amt）之和 ÷ 这些订单行的净支付额（app_orders.ao_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "移动端App",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0029"
+  },
+  {
+   "name": "移动端App退货率",
+   "text": "移动端App退货率（%）= 期间内售出的移动端App订单所对应的退回件数（app_returns.ao_return_qty）之和 ÷ 这些订单行的售出件数（app_orders.ao_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "移动端App",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0030"
+  },
+  {
+   "name": "移动端App销量",
+   "text": "移动端App销量 = 移动端App明细行的售出件数（app_orders.ao_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "移动端App",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0031"
+  },
+  {
+   "name": "移动端App客单价",
+   "text": "移动端App客单价 = 移动端App净支付额（app_orders.ao_net_paid）之和 ÷ 不同订单号（app_orders.ao_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "移动端App",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0032"
+  },
+  {
+   "name": "微信小程序营业额",
+   "text": "微信小程序营业额 = 微信小程序明细行的净支付额（mp_orders.mp_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "微信小程序",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0033"
+  },
+  {
+   "name": "微信小程序营业额",
+   "text": "微信小程序营业额 = 微信小程序明细行的折前成交额（mp_orders.mp_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "微信小程序",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0034"
+  },
+  {
+   "name": "微信小程序退货率",
+   "text": "微信小程序退货率（%）= 期间内售出的微信小程序订单所对应的退款金额（mp_returns.mp_return_amt）之和 ÷ 这些订单行的净支付额（mp_orders.mp_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "微信小程序",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0035"
+  },
+  {
+   "name": "微信小程序退货率",
+   "text": "微信小程序退货率（%）= 期间内售出的微信小程序订单所对应的退回件数（mp_returns.mp_return_qty）之和 ÷ 这些订单行的售出件数（mp_orders.mp_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "微信小程序",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0036"
+  },
+  {
+   "name": "微信小程序销量",
+   "text": "微信小程序销量 = 微信小程序明细行的售出件数（mp_orders.mp_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "微信小程序",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0037"
+  },
+  {
+   "name": "微信小程序客单价",
+   "text": "微信小程序客单价 = 微信小程序净支付额（mp_orders.mp_net_paid）之和 ÷ 不同订单号（mp_orders.mp_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "微信小程序",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0038"
+  },
+  {
+   "name": "抖音直播间营业额",
+   "text": "抖音直播间营业额 = 抖音直播间明细行的净支付额（live_dy_sales.dy_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "抖音直播间",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0039"
+  },
+  {
+   "name": "抖音直播间营业额",
+   "text": "抖音直播间营业额 = 抖音直播间明细行的折前成交额（live_dy_sales.dy_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "抖音直播间",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0040"
+  },
+  {
+   "name": "抖音直播间退货率",
+   "text": "抖音直播间退货率（%）= 期间内售出的抖音直播间订单所对应的退款金额（live_dy_returns.dy_return_amt）之和 ÷ 这些订单行的净支付额（live_dy_sales.dy_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "抖音直播间",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0041"
+  },
+  {
+   "name": "抖音直播间退货率",
+   "text": "抖音直播间退货率（%）= 期间内售出的抖音直播间订单所对应的退回件数（live_dy_returns.dy_return_qty）之和 ÷ 这些订单行的售出件数（live_dy_sales.dy_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "抖音直播间",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0042"
+  },
+  {
+   "name": "抖音直播间销量",
+   "text": "抖音直播间销量 = 抖音直播间明细行的售出件数（live_dy_sales.dy_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "抖音直播间",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0043"
+  },
+  {
+   "name": "抖音直播间客单价",
+   "text": "抖音直播间客单价 = 抖音直播间净支付额（live_dy_sales.dy_net_paid）之和 ÷ 不同订单号（live_dy_sales.dy_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "抖音直播间",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0044"
+  },
+  {
+   "name": "快手直播间营业额",
+   "text": "快手直播间营业额 = 快手直播间明细行的净支付额（live_ks_sales.ks_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "快手直播间",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0045"
+  },
+  {
+   "name": "快手直播间营业额",
+   "text": "快手直播间营业额 = 快手直播间明细行的折前成交额（live_ks_sales.ks_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "快手直播间",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0046"
+  },
+  {
+   "name": "快手直播间退货率",
+   "text": "快手直播间退货率（%）= 期间内售出的快手直播间订单所对应的退款金额（live_ks_returns.ks_return_amt）之和 ÷ 这些订单行的净支付额（live_ks_sales.ks_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "快手直播间",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0047"
+  },
+  {
+   "name": "快手直播间退货率",
+   "text": "快手直播间退货率（%）= 期间内售出的快手直播间订单所对应的退回件数（live_ks_returns.ks_return_qty）之和 ÷ 这些订单行的售出件数（live_ks_sales.ks_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "快手直播间",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0048"
+  },
+  {
+   "name": "快手直播间销量",
+   "text": "快手直播间销量 = 快手直播间明细行的售出件数（live_ks_sales.ks_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "快手直播间",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0049"
+  },
+  {
+   "name": "快手直播间客单价",
+   "text": "快手直播间客单价 = 快手直播间净支付额（live_ks_sales.ks_net_paid）之和 ÷ 不同订单号（live_ks_sales.ks_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "快手直播间",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0050"
+  },
+  {
+   "name": "跨境独立站营业额",
+   "text": "跨境独立站营业额 = 跨境独立站明细行的净支付额（dtc_orders.dtc_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "跨境独立站",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0051"
+  },
+  {
+   "name": "跨境独立站营业额",
+   "text": "跨境独立站营业额 = 跨境独立站明细行的折前成交额（dtc_orders.dtc_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "跨境独立站",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0052"
+  },
+  {
+   "name": "跨境独立站退货率",
+   "text": "跨境独立站退货率（%）= 期间内售出的跨境独立站订单所对应的退款金额（dtc_refunds.dtc_return_amt）之和 ÷ 这些订单行的净支付额（dtc_orders.dtc_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "跨境独立站",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0053"
+  },
+  {
+   "name": "跨境独立站退货率",
+   "text": "跨境独立站退货率（%）= 期间内售出的跨境独立站订单所对应的退回件数（dtc_refunds.dtc_return_qty）之和 ÷ 这些订单行的售出件数（dtc_orders.dtc_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "跨境独立站",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0054"
+  },
+  {
+   "name": "跨境独立站销量",
+   "text": "跨境独立站销量 = 跨境独立站明细行的售出件数（dtc_orders.dtc_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "跨境独立站",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0055"
+  },
+  {
+   "name": "跨境独立站客单价",
+   "text": "跨境独立站客单价 = 跨境独立站净支付额（dtc_orders.dtc_net_paid）之和 ÷ 不同订单号（dtc_orders.dtc_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "跨境独立站",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0056"
+  },
+  {
+   "name": "社区即时达营业额",
+   "text": "社区即时达营业额 = 社区即时达明细行的净支付额（instant_orders.ins_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "社区即时达",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0057"
+  },
+  {
+   "name": "社区即时达营业额",
+   "text": "社区即时达营业额 = 社区即时达明细行的折前成交额（instant_orders.ins_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "社区即时达",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0058"
+  },
+  {
+   "name": "社区即时达退货率",
+   "text": "社区即时达退货率（%）= 期间内售出的社区即时达订单所对应的退款金额（instant_returns.ins_return_amt）之和 ÷ 这些订单行的净支付额（instant_orders.ins_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "社区即时达",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0059"
+  },
+  {
+   "name": "社区即时达退货率",
+   "text": "社区即时达退货率（%）= 期间内售出的社区即时达订单所对应的退回件数（instant_returns.ins_return_qty）之和 ÷ 这些订单行的售出件数（instant_orders.ins_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "社区即时达",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0060"
+  },
+  {
+   "name": "社区即时达销量",
+   "text": "社区即时达销量 = 社区即时达明细行的售出件数（instant_orders.ins_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "社区即时达",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0061"
+  },
+  {
+   "name": "社区即时达客单价",
+   "text": "社区即时达客单价 = 社区即时达净支付额（instant_orders.ins_net_paid）之和 ÷ 不同订单号（instant_orders.ins_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "社区即时达",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0062"
+  },
+  {
+   "name": "机场免税店营业额",
+   "text": "机场免税店营业额 = 机场免税店明细行的净支付额（dutyfree_sales.df_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "机场免税店",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0063"
+  },
+  {
+   "name": "机场免税店营业额",
+   "text": "机场免税店营业额 = 机场免税店明细行的折前成交额（dutyfree_sales.df_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "机场免税店",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0064"
+  },
+  {
+   "name": "机场免税店退货率",
+   "text": "机场免税店退货率（%）= 期间内售出的机场免税店订单所对应的退款金额（dutyfree_returns.df_return_amt）之和 ÷ 这些订单行的净支付额（dutyfree_sales.df_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "机场免税店",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0065"
+  },
+  {
+   "name": "机场免税店退货率",
+   "text": "机场免税店退货率（%）= 期间内售出的机场免税店订单所对应的退回件数（dutyfree_returns.df_return_qty）之和 ÷ 这些订单行的售出件数（dutyfree_sales.df_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "机场免税店",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0066"
+  },
+  {
+   "name": "机场免税店销量",
+   "text": "机场免税店销量 = 机场免税店明细行的售出件数（dutyfree_sales.df_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "机场免税店",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0067"
+  },
+  {
+   "name": "机场免税店客单价",
+   "text": "机场免税店客单价 = 机场免税店净支付额（dutyfree_sales.df_net_paid）之和 ÷ 不同订单号（dutyfree_sales.df_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "机场免税店",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0068"
+  },
+  {
+   "name": "加盟经销商营业额",
+   "text": "加盟经销商营业额 = 加盟经销商明细行的净支付额（dealer_sales.dl_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "加盟经销商",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0069"
+  },
+  {
+   "name": "加盟经销商营业额",
+   "text": "加盟经销商营业额 = 加盟经销商明细行的折前成交额（dealer_sales.dl_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "加盟经销商",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0070"
+  },
+  {
+   "name": "加盟经销商退货率",
+   "text": "加盟经销商退货率（%）= 期间内售出的加盟经销商订单所对应的退款金额（dealer_returns.dl_return_amt）之和 ÷ 这些订单行的净支付额（dealer_sales.dl_net_paid）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "加盟经销商",
+    "subject": "退货率",
+    "ratio": "按金额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0071"
+  },
+  {
+   "name": "加盟经销商退货率",
+   "text": "加盟经销商退货率（%）= 期间内售出的加盟经销商订单所对应的退回件数（dealer_returns.dl_return_qty）之和 ÷ 这些订单行的售出件数（dealer_sales.dl_quantity）之和 × 100；按销售日期归属期间",
+   "facets": {
+    "channel": "加盟经销商",
+    "subject": "退货率",
+    "ratio": "按件数",
+    "date": "按销售日期"
+   },
+   "id": "D0072"
+  },
+  {
+   "name": "加盟经销商销量",
+   "text": "加盟经销商销量 = 加盟经销商明细行的售出件数（dealer_sales.dl_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "加盟经销商",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0073"
+  },
+  {
+   "name": "加盟经销商客单价",
+   "text": "加盟经销商客单价 = 加盟经销商净支付额（dealer_sales.dl_net_paid）之和 ÷ 不同订单号（dealer_sales.dl_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "加盟经销商",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0074"
+  },
+  {
+   "name": "企业大客户B2B营业额",
+   "text": "企业大客户B2B营业额 = 企业大客户B2B明细行的净支付额（b2b_ka_invoices.ka_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "企业大客户B2B",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0075"
+  },
+  {
+   "name": "企业大客户B2B营业额",
+   "text": "企业大客户B2B营业额 = 企业大客户B2B明细行的折前成交额（b2b_ka_invoices.ka_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "企业大客户B2B",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0076"
+  },
+  {
+   "name": "企业大客户B2B销量",
+   "text": "企业大客户B2B销量 = 企业大客户B2B明细行的售出件数（b2b_ka_invoices.ka_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "企业大客户B2B",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0077"
+  },
+  {
+   "name": "企业大客户B2B客单价",
+   "text": "企业大客户B2B客单价 = 企业大客户B2B净支付额（b2b_ka_invoices.ka_net_paid）之和 ÷ 不同订单号（b2b_ka_invoices.ka_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "企业大客户B2B",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0078"
+  },
+  {
+   "name": "中小企业SMB营业额",
+   "text": "中小企业SMB营业额 = 中小企业SMB明细行的净支付额（b2b_smb_invoices.smb_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "中小企业SMB",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0079"
+  },
+  {
+   "name": "中小企业SMB营业额",
+   "text": "中小企业SMB营业额 = 中小企业SMB明细行的折前成交额（b2b_smb_invoices.smb_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "中小企业SMB",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0080"
+  },
+  {
+   "name": "中小企业SMB销量",
+   "text": "中小企业SMB销量 = 中小企业SMB明细行的售出件数（b2b_smb_invoices.smb_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "中小企业SMB",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0081"
+  },
+  {
+   "name": "中小企业SMB客单价",
+   "text": "中小企业SMB客单价 = 中小企业SMB净支付额（b2b_smb_invoices.smb_net_paid）之和 ÷ 不同订单号（b2b_smb_invoices.smb_order_id）个数，按销售日期归属期间",
+   "facets": {
+    "channel": "中小企业SMB",
+    "subject": "客单价",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0082"
+  },
+  {
+   "name": "政企采购线营业额",
+   "text": "政企采购线营业额 = 政企采购线明细行的净支付额（gov_orders.gov_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "政企采购线",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0083"
+  },
+  {
+   "name": "政企采购线营业额",
+   "text": "政企采购线营业额 = 政企采购线明细行的折前成交额（gov_orders.gov_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "政企采购线",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0084"
+  },
+  {
+   "name": "政企采购线销量",
+   "text": "政企采购线销量 = 政企采购线明细行的售出件数（gov_orders.gov_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "政企采购线",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0085"
+  },
+  {
+   "name": "SaaS云订阅营业额",
+   "text": "SaaS云订阅营业额 = SaaS云订阅明细行的净支付额（saas_billings.saas_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "SaaS云订阅",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0086"
+  },
+  {
+   "name": "SaaS云订阅营业额",
+   "text": "SaaS云订阅营业额 = SaaS云订阅明细行的折前成交额（saas_billings.saas_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "SaaS云订阅",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0087"
+  },
+  {
+   "name": "SaaS云订阅销量",
+   "text": "SaaS云订阅销量 = SaaS云订阅明细行的售出件数（saas_billings.saas_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "SaaS云订阅",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0088"
+  },
+  {
+   "name": "华东中心仓营业额",
+   "text": "华东中心仓营业额 = 华东中心仓明细行的净支付额（wms_east_shipments.we_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "华东中心仓",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0089"
+  },
+  {
+   "name": "华东中心仓营业额",
+   "text": "华东中心仓营业额 = 华东中心仓明细行的折前成交额（wms_east_shipments.we_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "华东中心仓",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0090"
+  },
+  {
+   "name": "华东中心仓销量",
+   "text": "华东中心仓销量 = 华东中心仓明细行的售出件数（wms_east_shipments.we_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "华东中心仓",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0091"
+  },
+  {
+   "name": "华南区域仓营业额",
+   "text": "华南区域仓营业额 = 华南区域仓明细行的净支付额（wms_south_shipments.ws_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "华南区域仓",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0092"
+  },
+  {
+   "name": "华南区域仓营业额",
+   "text": "华南区域仓营业额 = 华南区域仓明细行的折前成交额（wms_south_shipments.ws_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "华南区域仓",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0093"
+  },
+  {
+   "name": "华南区域仓销量",
+   "text": "华南区域仓销量 = 华南区域仓明细行的售出件数（wms_south_shipments.ws_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "华南区域仓",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0094"
+  },
+  {
+   "name": "华北中心仓营业额",
+   "text": "华北中心仓营业额 = 华北中心仓明细行的净支付额（wms_north_shipments.wn_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "华北中心仓",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0095"
+  },
+  {
+   "name": "华北中心仓营业额",
+   "text": "华北中心仓营业额 = 华北中心仓明细行的折前成交额（wms_north_shipments.wn_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "华北中心仓",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0096"
+  },
+  {
+   "name": "华北中心仓销量",
+   "text": "华北中心仓销量 = 华北中心仓明细行的售出件数（wms_north_shipments.wn_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "华北中心仓",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0097"
+  },
+  {
+   "name": "保税跨境仓营业额",
+   "text": "保税跨境仓营业额 = 保税跨境仓明细行的净支付额（wms_bonded_shipments.wb_net_paid，已扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "保税跨境仓",
+    "subject": "销售额",
+    "amount": "实付（扣券后，不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0098"
+  },
+  {
+   "name": "保税跨境仓营业额",
+   "text": "保税跨境仓营业额 = 保税跨境仓明细行的折前成交额（wms_bonded_shipments.wb_gross_amount，未扣优惠券、不含税）之和，按订单销售日期归属期间",
+   "facets": {
+    "channel": "保税跨境仓",
+    "subject": "销售额",
+    "amount": "扣券前销售额（不含税）",
+    "date": "按销售日期"
+   },
+   "id": "D0099"
+  },
+  {
+   "name": "保税跨境仓销量",
+   "text": "保税跨境仓销量 = 保税跨境仓明细行的售出件数（wms_bonded_shipments.wb_quantity）之和，按销售日期归属期间",
+   "facets": {
+    "channel": "保税跨境仓",
+    "subject": "销量",
+    "date": "按销售日期"
+   },
+   "id": "D0100"
+  }
+ ]
+}

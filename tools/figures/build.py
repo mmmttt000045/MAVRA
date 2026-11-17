@@ -17,6 +17,7 @@ FIGURES = {
     'architecture': 'architecture',
     'extraction': 'extraction',
     'lookup': 'lookup',
+    'lookup-scale': 'lookup_scale',
     'maintenance': 'maintenance',
     'relbench-cumulative': 'relbench_cumulative',
     'reuse-work': 'reuse_work',

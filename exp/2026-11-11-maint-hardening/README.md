@@ -1,5 +1,7 @@
 # Maintenance hardening, closest simple baseline, and unseen-binding accuracy (2026-11-11)
 
+The sustained-write experiment below uses the historical source revision in the [reproduction guide](../../docs/development/repository.md#historical-experiments). Its report-only driver is retired from the current test suite; archived evidence is unchanged.
+
 Motivation: a mock PVLDB review (user, 2026-11-11) asked three things the current evidence does
 not answer. (1) What does MAVRA add over the closest simple scheme (shared parameterized
 definitions, the same basic checks, invalidate on failure)? (2) Why does a repair that restores
@@ -265,3 +267,12 @@ Both schemas, three runs (same banks, prompts, model, feedback as the 11-01 stud
 - Not rerun with the new binary: the TPC-DS sharing/restatement study (Fig. 8) and RelBench (Table III); their
   mechanisms touched by A-C are the restatement repair (G9 would compare unchanged months) and feature maintenance
   (features are revoked on failure, no repair).
+
+## Controlled serving-vs.-withholding and template-invalidation split (2026-11-17, P1-2 & P1-3b)
+
+`served-split.py` now aggregates both `/root/agentdb-hardening/results/change-study-20261111/cells`
+(`mavra`, `recheck`) and `/root/agentdb-p1-20261117/results/change-study-20261117-templates-v2/cells`
+(`template_schema`, `template_revoke`) into `served-split.json` and `overleaf/gen/served-split.tex`
+(`Table 4`, `overleaf/tables/served-split.tex`), defining `is_served(r)` by executed (unrejected)
+metric declarations so stale-served errors in `template_schema` (133/275 served answers wrong) are
+counted directly alongside `mavra`, `recheck`, and `template_revoke` (all 100.0% served accuracy).

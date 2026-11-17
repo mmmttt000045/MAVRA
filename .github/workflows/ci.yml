@@ -6,11 +6,16 @@ permissions:
   contents: read
 
 jobs:
-  experiment-index:
+  python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r tools/relbench/requirements-test.txt
       - run: python3 tools/experiment-index.py --check
+      - run: python3 -m unittest discover -s tools/relbench -p 'test_*.py'
 
   test:
     strategy:
@@ -26,7 +31,7 @@ jobs:
       - run: cargo test --locked
       - run: cargo clippy --locked --all-targets -- -D warnings
 
-  postgres-mock:
+  postgres:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -42,16 +47,8 @@ jobs:
           --health-retries 10
     env:
       AGENTDB_TEST_URL: postgres://postgres:mock-ci-password@127.0.0.1:5432/postgres
+      RUST_MIN_STACK: '16777216'
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test --locked postgres_http_mock_lifecycle -- --ignored --nocapture
-      - name: Query-scoped admission and compiled metric regression
-        env:
-          RUST_MIN_STACK: "16777216"
-        run: cargo test --locked postgres_scoped_sql_admission -- --ignored --nocapture
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: postgres-mock-reports
-          path: results/mock-*/
+      - run: cargo test --locked integration_tests:: -- --ignored --test-threads=1

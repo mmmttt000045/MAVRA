@@ -295,13 +295,13 @@ def draw(s, lang):
     s.route([(lx0 + lw, my + 9.2), (rx0, my + 9.2)], ACC, .24, length=.8)
     label((lx0 + lw + rx0) / 2, my + 8.0, r'$\delta$', 5.2, ACC_DK, 'bold', 'center')
 
-    # Right card: 2. Must pass (i)-(iii)
+    # Right card: 2. Criteria (i)-(iii)
     s.rect(rx0, my, rw, mh, NAVY_SOFT, ACC, .2, r=.42)
-    label(rx0 + .9, my + 1.65, '2. Must pass (i)–(iii)' if en else '2. 候选须通过 (i)–(iii)', 5.4, ACC_DK, 'bold')
+    label(rx0 + .9, my + 1.65, '2. Criteria (i)–(iii)' if en else '2. 候选须满足 (i)–(iii)', 5.4, ACC_DK, 'bold')
     s.rect(rx0 + rw - 4.4, my + .7, 3.5, 1.9, ACC_PALE, NAVY_EDGE, .13, r=.35)
     label(rx0 + rw - 2.65, my + 1.65, "`'Y'`", 4.9, ACC_DK, 'bold', 'center')
 
-    # Gate subcard (i)
+    # Criterion subcard (i)
     s1y = my + 3.1
     s.rect(rx0 + .9, s1y, rw - 1.8, 5.5, WHITE, SUB_EDGE, .14, r=.38)
     s.rect(rx0 + 1.5, s1y + .55, 3.2, 1.9, ACC_PALE, NAVY_EDGE, .12, r=.3)
@@ -316,21 +316,21 @@ def draw(s, lang):
     wg = gauge_icon(kx2, krow_y)
     label(kx2 + wg + .6, krow_y, 'joins ok' if en else '连接正常', 4.9, MUTED)
 
-    # Gate subcard (ii)
+    # Criterion subcard (ii)
     s2y = my + 9.4
     s.rect(rx0 + .9, s2y, rw - 1.8, 5.5, WHITE, SUB_EDGE, .14, r=.38)
     s.rect(rx0 + 1.5, s2y + .55, 3.2, 1.9, ACC_PALE, NAVY_EDGE, .12, r=.3)
     label(rx0 + 3.1, s2y + 1.5, '(ii)', 4.9, ACC_DK, 'bold', 'center')
-    label(rx0 + 5.3, s2y + 1.5, r'Repro on $D_{s_0}$ ($E_x$)' if en else r'$D_{s_0}$ 答案复现',
+    label(rx0 + 5.3, s2y + 1.5, r'SourceEq on $D_{s_0}$ ($E_x$)' if en else r'$D_{s_0}$ 源答案等价',
           5.3, INK, 'bold')
     check_mark(rx0 + rw - 2.2, s2y + 1.5, True, ACC, k=.75)
     label(rx0 + 1.6, s2y + 4.0, '`2,754,299.60` = source' if en else '`2,754,299.60` = 源答案',
           5.0, ACC_DK, width=rw - 3.4)
 
-    # Gate (iii) chain strip
+    # Criterion (iii) chain strip
     s3y = my + 15.6
     s.rect(rx0 + .9, s3y, rw - 1.8, 2.8, SOFT_BG, RULE, .13, r=.35)
-    label(rx0 + 1.6, s3y + 1.4, r'(iii) Hist: untouched $D_s=D_{s_0}$' if en else r'(iii) Hist: 未变历史桶不变',
+    label(rx0 + 1.6, s3y + 1.4, r'(iii) HistInv: untouched $D_s=D_{s_0}$' if en else r'(iii) HistInv: 未变历史不变',
           4.9, ACC_DK, 'bold', width=rw - 5.2)
     check_mark(rx0 + rw - 2.2, s3y + 1.4, True, ACC, k=.7)
 
@@ -362,7 +362,7 @@ def draw(s, lang):
     c3x, c3w = 62.2, W - 63.8
     s.rect(c3x, oy, c3w, oh, AMBER_PALE, AMBER_EDGE, .15, r=.42)
     bang_badge(c3x + 1.8, oy + 1.85, AMBER, r=.8)
-    label(c3x + 3.2, oy + 1.85, 'Scale (7)' if en else '尺度 (7)', 5.1, AMBER, 'bold')
+    label(c3x + 3.2, oy + 1.85, 'Scale shift' if en else '量纲跳变', 5.1, AMBER, 'bold')
     label(c3x + 1.4, oy + 4.75, 'Pending (confirm)' if en else 'Pending（待确认）',
           5.0, AMBER, 'bold', width=c3w - 2.2)
 

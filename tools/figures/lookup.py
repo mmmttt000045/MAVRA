@@ -1,7 +1,7 @@
 """Accurate lookup (Section IV-C), single column: what goes in, the four steps, what comes out.
 
 Input: an agent's request in its own words (here "in-store takings in March
-2001", one of many wordings for store revenue) and the catalog, which holds two
+2026", one of many wordings for store revenue) and the catalog, which holds two
 definitions both named store revenue: D01 sums the net amount paid after
 coupons, D02 the sales amount before coupons.
 
@@ -45,7 +45,7 @@ from smallparts import (BAND, BLUE, BLUE_PALE, BLUE_TXT, HEAD_T, KEYC, LEARN, LE
 
 NAME = 'lookup'
 W, H = style.COLUMN, 76.0
-TINY = 4.6
+TINY = 4.72
 GREY_TOK = '#C9C6C0'
 SPACE_BG = '#FAFAF8'
 C_REQ, C_DEF, C_CHO, C_DIF = BLUE, EDGE, KEYC, LEARN          # token segments of the judge's input
@@ -58,9 +58,9 @@ SCORES = ((('`D01`', 1.00), ('`D02`', 1.00), (None, 0.00)),
 LABELS = {
     'en': {
         'input': 'Input', 'output': 'Output',
-        'req': ('in-store takings', 'in Mar. 2001?'),
+        'req': ('in-store takings', 'in Mar. 2026?'),
         'syn': ('also: store turnover,', 'offline shops’ sales, …'),
-        'catalog': 'catalog, 26 definitions',
+        'catalog': 'catalog M (26–1k defs)',
         'cards': (('`D01`', 'store revenue', 'after coupons'), ('`D02`', 'store revenue', 'before coupons')),
         's1': 'alias table', 's1_note': 'wordings agents confirmed',
         'key': 'key: request without year, month',
@@ -70,7 +70,7 @@ LABELS = {
         's3': 'judge', 's3_note': 'cross-encoder (XLM-R, 12 layers) ×3, mean $\\hat{y}$',
         'pair': 'one pass per candidate',
         'seg': (('request', 'in-store takings…'), ('definition', '`sum(ss_net_paid)`'),
-                ('choices', 'after coupons'), ('differences', '`D02`: before')),
+                ('attributes', 'after coupons'), ('differences', '`D02`: before')),
         'layer': 'Transformer layers ×12: request and definition tokens attend to each other',
         's4': 'decide', 's4_note': 'thresholds .1, .9',
         'cols': ('in-store takings', 'store profit'),
@@ -91,7 +91,7 @@ LABELS = {
     },
     'zh': {
         'input': '输入', 'output': '输出',
-        'req': ('2001 年 3 月实体店', '的收入是多少？'),
+        'req': ('2026 年 3 月实体店', '的收入是多少？'),
         'syn': ('其他说法：门店流水、', '线下卖了多少钱等'),
         'catalog': '目录，26 条定义',
         'cards': (('`D01`', '门店营业额', '扣券后实付'), ('`D02`', '门店营业额', '扣券前')),
@@ -103,7 +103,7 @@ LABELS = {
         's3': '判别', 's3_note': '交叉编码器（XLM-R，12 层）×3，$\\hat{y}$ 取平均',
         'pair': '每个候选算一次',
         'seg': (('请求', '实体店的收入…'), ('定义', '`sum(ss_net_paid)`'),
-                ('口径', '扣券后实付'), ('区别', '`D02`：扣券前')),
+                ('属性', '扣券后实付'), ('区别', '`D02`：扣券前')),
         'layer': '12 层 Transformer：请求与定义的 token 互相注意',
         's4': '判定', 's4_note': '阈值 .1、.9',
         'cols': ('实体店的收入', '门店利润'),

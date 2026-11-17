@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 PYTHON ?= python3
 
-.PHONY: help check index index-check py-test paper paper-en paper-pack figures
+.PHONY: help check index index-check py-test db-test paper paper-pack figures
 
 help:
 	@printf '%s\n' \
@@ -9,6 +9,7 @@ help:
 	  'index         Regenerate exp/README.md from exp/catalog.json' \
 	  'index-check   Validate exp/catalog.json coverage and file references' \
 	  'py-test       Run offline Python unit tests in tools/relbench/' \
+	  'db-test       Run PostgreSQL regressions (requires AGENTDB_TEST_URL)' \
 	  'paper         Compile overleaf/main.tex -> overleaf/build/main.pdf' \
 	  'paper-pack    Package Overleaf source closure into overleaf/build/mavra-pvldb.zip' \
 	  'figures       Regenerate all paper vector figures in overleaf/figures/'
@@ -25,9 +26,12 @@ index-check:
 	$(PYTHON) tools/experiment-index.py --check
 
 py-test:
-	PYTHONPATH=tools/relbench $(PYTHON) -m unittest discover -s tools/relbench -p "test_*.py"
+	$(PYTHON) -m unittest discover -s tools/relbench -p "test_*.py"
 
-paper paper-en:
+db-test:
+	RUST_MIN_STACK=16777216 cargo test --locked integration_tests:: -- --ignored --test-threads=1
+
+paper:
 	bash overleaf/build.sh en
 
 paper-pack:

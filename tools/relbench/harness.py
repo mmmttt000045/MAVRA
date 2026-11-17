@@ -98,75 +98,39 @@ FIRST_LIST_DEFS = 40  # mavra-select2: definitions listed (keys and meanings, no
 LGB_PARAMS = dict(n_estimators=300, learning_rate=0.05, num_leaves=63, min_child_samples=20, colsample_bytree=0.8,
                   subsample=0.8, subsample_freq=1, random_state=42, deterministic=True, force_row_wise=True,
                   n_jobs=8, verbose=-1)
+# Profiles inherit only from their immediate predecessor; every arm owns a separate dict.
+# Historical names stay available for reproducing archived runs (exp/2026-10-20-relbench/).
 ARMS = {
     "none": {"middle_mode": "middle-alone", "parallel_ok": True},
-    # README §1.6: feature definitions shared by all agents; sessions of one cutoff run one after another
-    "mavra": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True},
-    # 11-07: MAVRA hands each session its task's verified program and the entity's verified definitions at the start
-    # (as the other memories put theirs into the prompt) instead of the agent looking them up with two tool calls
-    "mavra-push": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                   "push_memory": True},
-    # 11-08: from the second cutoff the memory validates, without model calls, the task's program and the program
-    # extended with verified definitions other agents published for the same entity, and the better one starts the
-    # session as its best features (Run.select_start); the program keeps the columns its sessions tried without
-    # keeping them, and a session below the single-table reference still records its audited SQL as the task's program
-    "mavra-select": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                     "push_memory": True, "select_start": True},
-    # 11-09 (README 4.z): the selection within a time budget (a program over it falls back to its definitions; the
-    # extension may cost at most what the program cost); a task's first session gets the entity's definitions as keys
-    # and meanings without their SQL, and explores twice, the better validation becoming the session
-    "mavra-select2": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                      "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
-                      "first_attempts": FIRST_ATTEMPTS},
-    # 11-12: validation-only feature pruning reuses computed matrices; an audited
-    # entity-table model is a cold-start fallback. Reuse gets a small, explicit
-    # model/tool budget instead of repeatedly reading a large memory payload.
-    "mavra-budgeted": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
-                       "first_attempts": FIRST_ATTEMPTS, "subset_selection": True,
-                       "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45},
-    "mavra-portfolio": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
-                       "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
-                       "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45},
-    "mavra-directed": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                       "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
-                       "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
-                       "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
-                       "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True},
-    "mavra-cached": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                     "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
-                     "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
-                     "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
-                     "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True, "reuse_goal_frames": True},
-    "mavra-signal": {"middle_mode": "relbench-mavra", "parallel_ok": False, "feature_memory": True, "extractor": True,
-                     "push_memory": True, "select_start": True, "select_budget": True, "first_keys_only": True,
-                     "first_attempts": FIRST_ATTEMPTS, "subset_selection": True, "cold_union": True, "sanitize_candidates": True,
-                     "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45,
-                     "budget_guidance": True, "reuse_validation_timeout": 45, "audit_diagnostics": True,
-                     "reuse_goal_frames": True, "require_start_signal": True},
-    # Same base metadata/query caches as MAVRA; only task-local, audited SQL is retained.
-    # No feature tools, extraction, definition publication or composition are used.
-    "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
-    # ACE (ICLR 2026) as published: one playbook per agent, online, no ground-truth labels (README §1.3)
-    "ace": {"middle_mode": "middle-alone", "parallel_ok": True, "ace": True},
-    # G-Memory (NeurIPS 2025) as published: one store shared by all agents, tasks one at a time (README §1.3)
-    "gmemory": {"middle_mode": "middle-alone", "parallel_ok": False, "gmemory": True},
-    # AWM (ICML 2025) as published (online WebArena pipeline): one workflow memory per agent, re-induced after every task
-    "awm": {"middle_mode": "middle-alone", "parallel_ok": True, "awm": True},
-    # TeCoD (SIGMOD 2026) as released, API mode: one template pool per database from verified (question, SQL) pairs;
-    # a matched template and three examples, or the examples alone, go into the prompt (tools/relbench/tecod_service.py)
-    "tecod": {"middle_mode": "middle-alone", "parallel_ok": False, "tecod": True},
+    "mavra": {"middle_mode": "relbench-mavra", "parallel_ok": False,
+              "feature_memory": True, "extractor": True},
 }
-# Spend one additional response on refinement within the original reuse-call ceilings.
+ARMS["mavra-push"] = {**ARMS["mavra"], "push_memory": True}
+ARMS["mavra-select"] = {**ARMS["mavra-push"], "select_start": True}
+ARMS["mavra-select2"] = {**ARMS["mavra-select"], "select_budget": True,
+                         "first_keys_only": True, "first_attempts": FIRST_ATTEMPTS}
+ARMS["mavra-budgeted"] = {**ARMS["mavra-select2"], "subset_selection": True,
+                          "reuse_llm_limit": 3, "reuse_tool_limit": 6, "program_timeout": 45}
+ARMS["mavra-portfolio"] = {**ARMS["mavra-budgeted"], "cold_union": True, "sanitize_candidates": True}
+ARMS["mavra-directed"] = {**ARMS["mavra-portfolio"], "budget_guidance": True,
+                          "reuse_validation_timeout": 45, "audit_diagnostics": True}
+ARMS["mavra-cached"] = {**ARMS["mavra-directed"], "reuse_goal_frames": True}
+ARMS["mavra-signal"] = {**ARMS["mavra-cached"], "require_start_signal": True}
+ARMS.update({
+    # Task-local audited SQL; no feature extraction, publication, or composition.
+    "sql-only": {"middle_mode": "relbench-mavra", "parallel_ok": False, "sql_memory": True},
+    "ace": {"middle_mode": "middle-alone", "parallel_ok": True, "ace": True},
+    "gmemory": {"middle_mode": "middle-alone", "parallel_ok": False, "gmemory": True},
+    "awm": {"middle_mode": "middle-alone", "parallel_ok": True, "awm": True},
+    "tecod": {"middle_mode": "middle-alone", "parallel_ok": False, "tecod": True},
+})
 ARMS["mavra-refine"] = {**ARMS["mavra-signal"], "reuse_llm_limit": 4}
 ARMS["mavra-early"] = {**ARMS["mavra-refine"], "cold_first_validation_by": 8}
 ARMS["mavra-delta"] = {**ARMS["mavra-refine"], "typed_reference": True, "delta_refinement": True,
-                       "cold_validation_timeout":45,"current_refit_timeout":45,
-                       "current_refit_attempts":1,"skip_failed_refit":True}
+                       "cold_validation_timeout": 45, "current_refit_timeout": 45,
+                       "current_refit_attempts": 1, "skip_failed_refit": True}
 ARMS["mavra-delta-headers"] = {**ARMS["mavra-delta"], "reuse_header_metadata": True}
-# v10 (11-12): v9 dropped the stored program when its refit at a new cutoff hit the 45 s limit (5 of 36 rel-trial and
-# 2 of 36 rel-stack reuse sessions in three runs); one retry under the standard 600 s statement limit keeps it
+# Retry a timed-out refit once under the standard statement limit.
 ARMS["mavra-retry"] = {**ARMS["mavra-delta-headers"], "current_refit_attempts": 2,
                        "current_refit_retry_timeout": FEATURE_SQL_TIMEOUT_S}
 GMEMORY_REPO = "results/ext/GMemory"

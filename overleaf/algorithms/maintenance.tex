@@ -5,27 +5,31 @@
 \label{alg:maintenance}
 \small
 \begin{algorithmic}[1]
-\Require Revision $x$; snapshot $D_s$; version vector $V_s$; outcome cache $\Gamma$
-\Ensure Validated revision $x'$, $\text{Pending}(x, c, \text{vals})$, or $\bot$ (retired)
-\Function{Validate}{$x, D_s, V_s, \Gamma$}
-  \Statex \hspace{\algorithmicindent}\textit{// Stage 1: Version-Coalesced Validation}
-  \IfThen{$V_s(\operatorname{dep}(x)) = V_x(\operatorname{dep}(x))$}{\Return $x$}
+\Require Revision $x$; bindings $\beta$; snapshot $D_s$; versions $V_s$; cache $\Gamma$
+\Ensure Validated revision $x'$, $\text{Pending}(x, c, \text{vals})$, or $\bot$ (withheld/retired)
+\Function{Validate}{$x, \beta, D_s, V_s, \Gamma$}
+  \Statex \hspace{\algorithmicindent}\textit{// Stage 1: Version-Aware Incremental Validation}
   \State $\Delta C(x) \gets \{c \in C(x) \mid V_s(\operatorname{dep}(c)) \neq V_x(\operatorname{dep}(c))\}$
   \For{each $c \in \Delta C(x)$}
     \If{$\neg\Call{EvalCond}{c, D_s, V_s, \Gamma}$}
-      \Statex \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textit{// History-Preserving Repair or Retire}
+      \Statex \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textit{// Fail-Closed Repair or Retire}
       \IfThen{$c\text{ checks scale}$}{\Return $\text{Pending}(x, c, \text{vals})$}
-      \State $\mathcal E_{\mathrm{ok}} \gets \{\delta \in \mathcal E(x, c) \mid C(x \oplus \delta) \land \operatorname{Repro} \land \operatorname{Hist}\}$
+      \IfThen{source/history evidence in $E_x$ unavailable}{\Return $\bot$}
+      \State $\mathcal E_{\mathrm{ok}} \gets \{\delta \in \mathcal E(x, c) \mid C(x \oplus \delta) \land \operatorname{SourceEq} \land \operatorname{HistInv}\}$
       \IfThen{$\lvert\mathcal E_{\mathrm{ok}}\rvert = 1$}{\Return published revision $x' \gets x \oplus \delta^*$}
       \State \Return $\bot$
     \EndIf
   \EndFor
-  \State $V_x(\operatorname{dep}(x)) \gets V_s(\operatorname{dep}(x))$; \Return $x$
+  \State $V_x(\operatorname{dep}(x)) \gets V_s(\operatorname{dep}(x))$
+  \For{each $c_{\mathrm{req}} \in C_{\mathrm{req}}(x, \beta)$}
+    \IfThen{$\neg\Call{EvalCond}{c_{\mathrm{req}}, D_s, V_s, \Gamma}$}{\Return $\bot$}
+  \EndFor
+  \State \Return $x$
 \EndFunction
 \Function{EvalCond}{$c, D_s, V_s, \Gamma$}
-  \Statex \hspace{\algorithmicindent}\textit{// Stage 2: Single-Flight Node Check}
+  \Statex \hspace{\algorithmicindent}\textit{// Stage 2: Coalesced Node Evaluation ($c_{\mathrm{req}}$ embeds $\beta$ in $\operatorname{id}(c_{\mathrm{req}})$)}
   \If{key $k(c, V_s)$ is not in $\Gamma$}
-    \State $\Gamma[k(c, V_s)] \gets \operatorname{SingleFlight}(k(c, V_s),\, Q_c(D_s))$
+    \State $\Gamma[k(c, V_s)] \gets \operatorname{EvalOnce}(k(c, V_s),\, Q_c(D_s))$
   \EndIf
   \State \Return $\operatorname{Accept}(c, \Gamma[k(c, V_s)])$
 \EndFunction

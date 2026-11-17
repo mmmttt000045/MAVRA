@@ -18,4 +18,6 @@
 ## Subdirectories
 
 - `figures/` — deterministic vector figure generators for Figures 1–10 (`build.py`).
-- `relbench/` — multi-cutoff RelBench feature-reuse harness (`harness.py`), baselines (`featpilot.py`, `gmemory_service.py`, `tecod_service.py`), data preparation (`prepare.py`), paper macro/table generator (`paper-stats.py`), and unit tests (`test_*.py`).
+- `relbench/` — multi-cutoff RelBench feature-reuse harness (`harness.py`), baselines (`featpilot.py`, `gmemory_service.py`, `tecod_service.py`), data preparation (`prepare.py`), paper macro/table generator (`paper-stats.py`), and offline behavior tests (`test_*.py`, dependencies in `requirements-test.txt`). Arm dictionaries inherit common settings while preserving all historical names.
+
+Report-only Rust experiment drivers have been retired from the development test suite. See [historical reproduction](../docs/development/repository.md#historical-experiments) for their source revision; archived outputs and analysis scripts stay in `exp/`.

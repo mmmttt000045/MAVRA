@@ -31,12 +31,12 @@ TAG = {"ace": "Ace", "awm": "Awm", "gmemory": "Gmem", "tecod": "Tecod", "recheck
 GTAG = {"holdout": "Hold", "non_breaking": "Benign", "covered_breaks": "Break", "outside_conditions": "Outside"}
 STAG = {"synthetic": "Syn", "tpch": "Tpch"}
 TEXT = {
-    "en": {"groups": ["Held-\nout", "Non-\nbreaking", "Covered\nbreaks", "Premise\nchanges"],
+    "en": {"groups": ["Held-\nout", "Non-\nbreaking", "Integrity\nbreaks", "Semantic\ndrift"],
            "panels": ["(a) Answers, synthetic retail", "(b) Answers, TPC-H SF1", "(c) Tokens, both schemas",
                       "(d) Time, both schemas"],
            "up": "Correct", "down": "Wrong", "y": ["Answers (%)", "Tokens per question (k)", "Seconds per question"],
            "flag": "Asked for clarification"},
-    "zh": {"groups": ["留出", "正常\n更新", "覆盖\n破坏", "前提\n变化"],
+    "zh": {"groups": ["留出", "常规\n更新", "约束\n违例", "语义\n漂移"],
            "panels": ["(a) 作答，合成零售", "(b) 作答，TPC-H SF1", "(c) token，两种模式", "(d) 耗时，两种模式"],
            "up": "正确", "down": "错误", "y": ["作答（%）", "每题 token（千）", "每题耗时（秒）"], "flag": "请求澄清"},
 }
@@ -125,18 +125,18 @@ def figure(lang):
             cost(ax, data, "tokens" if k == 2 else "seconds")
         ax.set_xlim(-.55, len(GROUPS) - .45)
         ax.set_xticks(range(len(GROUPS)), t["groups"])
-        ax.tick_params(axis="x", length=0, labelsize=6.3)
-        ax.tick_params(axis="y", labelsize=6.3)
+        ax.tick_params(axis="x", length=0, labelsize=6.7)
+        ax.tick_params(axis="y", labelsize=6.7)
         ax.yaxis.grid(True)
         if k == 0:
             # split label: correct answers above the zero line, wrong answers below it
             zero = 88 / (88 + 106)
             for y, label in [((1 + zero) / 2, t["up"]), (zero / 2, t["down"])]:
-                ax.text(-.2, y, label, transform=ax.transAxes, rotation=90, ha="center", va="center", fontsize=7)
+                ax.text(-.2, y, label, transform=ax.transAxes, rotation=90, ha="center", va="center", fontsize=7.2)
         elif k > 1:
-            ax.set_ylabel(t["y"][k - 1], fontsize=7)
+            ax.set_ylabel(t["y"][k - 1], fontsize=7.2)
         box = ax.get_position()
-        fig.text((box.x0 + box.x1) / 2, .005, t["panels"][k], ha="center", va="bottom", fontsize=7.2)
+        fig.text((box.x0 + box.x1) / 2, .005, t["panels"][k], ha="center", va="bottom", fontsize=7.5)
     return fig
 
 

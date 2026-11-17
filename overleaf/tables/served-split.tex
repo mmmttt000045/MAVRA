@@ -1,0 +1,19 @@
+\begin{table}[tb]
+\caption{\bt{Controlled serving-vs.-withholding split over 276 update-study answers (both schemas, 3 runs; identical extracted definitions $m^0$).}{276 次更新评测作答（双模式三轮，共享相同提取定义 $m^0$）上的受控直接服务与回退分解。}}
+\label{tab:served-split}
+\footnotesize
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabularx}{\columnwidth}{@{}L r r r r r@{}}
+\toprule
+\textbf{\bt{Definition maintenance}{定义维护机制}} & \textbf{\bt{Srv.}{直服}} & \textbf{\bt{Srv.\ Acc.}{直服准}} & \textbf{\bt{Fb.}{回退}} & \textbf{\bt{E2E (Brk.)}{端到端（违例）}} & \textbf{\bt{Cost}{开销}}\\
+\midrule
+\bt{Template + write inv.}{参数化模板 + 逢写失效} & \SsTrevokeCov\% & \SsTrevokeServedAcc\% & \SsTrevokeFallback\% & \SsTrevokeEteAcc\% (\SsTrevokeBrkEteAcc\%) & \SsTrevokeTokK k/\SsTrevokeSec s\\
+\bt{Template + schema chk.}{参数化模板 + 模式校验} & \SsTschemaCov\% & \SsTschemaServedAcc\% & \SsTschemaFallback\% & \SsTschemaEteAcc\% (\SsTschemaBrkEteAcc\%) & \SsTschemaTokK k/\SsTschemaSec s\\
+\bt{Shared recheck}{共享全量重检（无修复）} & \SsRecheckCov\% & \SsRecheckServedAcc\% & \SsRecheckFallback\% & \SsRecheckEteAcc\% (\SsRecheckBrkEteAcc\%) & \SsRecheckTokK k/\SsRecheckSec s\\
+\textbf{\system{}} \bt{(full C3)}{（完整 C3）} & \textbf{\SsMavraCov\%} & \textbf{\SsMavraServedAcc\%} & \SsMavraFallback\% & \textbf{\SsMavraEteAcc\%} (\textbf{\SsMavraBrkEteAcc\%}) & \textbf{\SsMavraTokK k/\SsMavraSec s}\\
+\bottomrule
+\end{tabularx}
+\par\vspace{1.5pt}
+{\scriptsize\raggedright
+\bt{Srv.: share answered directly from a valid definition ($y_j{=}1$); Srv.\ Acc.: exact rate among $y_j{=}1$ answers (\SsMavraServedWrong{} wrong for \system{} vs.\ \SsTschemaServedWrong{} silent errors for schema check); Fb.: withheld/unlearned fallback ($y_j{=}0$); E2E (Brk.): overall (and 114-answer integrity-break) accuracy; Cost: mean tokens and latency per question.}{直服：由有效定义直接作答占比（$y_j{=}1$）；直服准：$y_j{=}1$ 中的准确率（\system{} 错 \SsMavraServedWrong{} 次，模式校验静默错 \SsTschemaServedWrong{} 次）；回退：停用或未收录回退占比（$y_j{=}0$）；端到端（违例）：总准确率（及 114 次完整性违例准确率）；开销：单题均 token 与耗时。}\par}
+\end{table}

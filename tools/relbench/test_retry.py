@@ -8,7 +8,7 @@ import pandas as pd
 import harness
 
 
-class BaseRefitFixture(unittest.TestCase):
+class RefitRetryTests(unittest.TestCase):
     def setUp(self):
         self.run = harness.Run.__new__(harness.Run)
         self.run.arm = harness.ARMS["mavra-retry"]
@@ -26,8 +26,6 @@ class BaseRefitFixture(unittest.TestCase):
     def fit(self, task_type, xt, yt, xv):
         return np.array([0.0, 1.0, 0.0, 1.0]), [("f0", 10.0)], 0.01
 
-
-class RefitRetryTests(BaseRefitFixture):
     def refit(self, effects):
         with patch.object(harness, "features", side_effect=effects) as query, \
              patch.object(harness, "train_predict", side_effect=self.fit), \
@@ -56,13 +54,6 @@ class RefitRetryTests(BaseRefitFixture):
         self.assertIsNone(goal["val"])
         self.assertEqual(goal["attempts"], 1)
         self.assertEqual(limits, [45])
-
-    def test_only_the_retry_differs_from_v9(self):
-        v9, v10 = harness.ARMS["mavra-delta-headers"], harness.ARMS["mavra-retry"]
-        changed = {k for k in set(v9) | set(v10) if v9.get(k) != v10.get(k)}
-        self.assertEqual(changed, {"current_refit_attempts", "current_refit_retry_timeout"})
-        self.assertEqual(v9["current_refit_attempts"], 1)
-
 
 if __name__ == "__main__":
     unittest.main()

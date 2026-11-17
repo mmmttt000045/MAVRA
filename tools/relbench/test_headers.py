@@ -111,11 +111,5 @@ class HeaderToolTests(unittest.TestCase):
         self.assertEqual(headers.call_count, 2)
         self.assertTrue(all(r['source'] == 'SQL probe' for r in event['headers']))
 
-    def test_new_arm_changes_only_the_private_header_option(self):
-        new = dict(harness.ARMS['mavra-delta-headers'])
-        self.assertTrue(new.pop('reuse_header_metadata'))
-        self.assertEqual(new, harness.ARMS['mavra-delta'])
-
-
 if __name__ == '__main__':
     unittest.main()

@@ -39,7 +39,7 @@ from style import WHITE  # noqa: E402
 NAME = 'architecture'
 W, H = style.TEXTWIDTH, 90.0
 
-TITLE, BODY, SMALL, TINY, STEP = 7.4, 6.4, 5.8, 5.3, 6.7
+TITLE, BODY, SMALL, TINY, STEP = 7.5, 6.5, 5.95, 5.55, 6.8
 INK, MUTED = '#1F2328', '#596068'
 CARD_EDGE, SUB_EDGE, RULE = '#737B84', '#B6BEC7', '#CFD5DC'
 EDGE = CARD_EDGE
@@ -216,9 +216,9 @@ def draw(s, lang):
 
     p1_rows = (
         ('Q', LEARN_PALE, LEARN_DK,
-         '"Jan. 2001 electronics rev.?"' if en else '"2001年1月电子品类营业额？"'),
+         '"Jan. 2026 electronics rev.?"' if en else '"2026年1月电子品类营业额？"'),
         ('SQL', TOP, INK,
-         "`SUM(net_paid)..'Elec.' & 2001-01`" if en else "`SUM(net_paid)..'Elec.' & 01-01`"),
+         "`SUM(net_paid)..'Elec.' & 2026-01`" if en else "`SUM(net_paid)..'Elec.' & 26-01`"),
         ('Log', ACC_PALE, ACC_DK,
          'probes + Ans `2,754,299.60`' if en else '探查 + 核验答案 `2,754,299.60`'),
     )
@@ -232,28 +232,28 @@ def draw(s, lang):
 
     route([(mid_px, ly + lh), (mid_px, ly + lh + 1.05)], LEARN, .2, length=.65)
 
-    # Card P2: Graph-Grounded Kernel Extraction + Condition Derivation
+    # Card P2: Query Extraction + Condition Derivation
     ex_y, ex_h = ly + lh + 1.05, 9.65
     rect(lx, ex_y, lw, ex_h, WHITE, SUB_EDGE, .16, r=.48)
     label(lx + .95, ex_y + 1.65,
-          '1. Graph Extract & $C$' if en else '1. 图式核提取与 $C$', 5.0, INK, 'bold')
+          '1. Extract Query & $C$' if en else '1. 提取查询与 $C$', 5.0, INK, 'bold')
     label(lx + lw - .9, ex_y + 1.65,
           'AST + probes + $\\mathcal{M}$' if en else '语法树 + 探针 + $\\mathcal{M}$',
           4.4, MUTED, 'sans', 'right')
 
-    # Row A: Fixed Core (B, I) chip vs Lifted Slot p_0 chip
+    # Row A: Fixed Core (B, I) chip vs Parameterized Args p_0, d_0
     r2a_y = ex_y + 4.55
     c_core_w = 25.8
     rect(lx + .85, r2a_y - 1.15, c_core_w, 2.3, LEARN_PALE, LEARN, .15, r=.35)
     label(lx + .85 + c_core_w / 2, r2a_y,
-          'Kernel $(B,I)$: $F,\\mathrm{AGG}_e,K,\\mathcal{J},\\varphi,\\tau$' if en
-          else '关系核 $(B,I)$: $F,\\mathrm{AGG}_e,K,\\mathcal{J},\\varphi,\\tau$',
+          'Query $(B,I)$: $F,\\mathrm{AGG}_e,K,\\mathcal{J},\\varphi,\\tau$' if en
+          else '核心查询 $(B,I)$: $F,\\mathrm{AGG}_e,K,\\mathcal{J},\\varphi,\\tau$',
           4.45, LEARN_DK, 'bold', 'center')
     rx_slot = lx + 1.35 + c_core_w
     sw_slot = lw - (rx_slot - lx) - .85
     rect(rx_slot, r2a_y - 1.15, sw_slot, 2.3, WHITE, LEARN, .15, r=.35, dash=(.55, .32))
     label(rx_slot + sw_slot / 2, r2a_y,
-          'slot $p_0, d_0$' if en else '参数槽 $p_0,d_0$', 4.45, LEARN_DK, 'bold', 'center')
+          'args $p_0, d_0$' if en else '参数 $p_0,d_0$', 4.45, LEARN_DK, 'bold', 'center')
 
     # Row B: Derived executable conditions C(m^0) without LLM
     r2b_y = ex_y + 7.75
@@ -267,23 +267,23 @@ def draw(s, lang):
 
     route([(mid_px, ex_y + ex_h), (mid_px, ex_y + ex_h + 1.05)], LEARN, .2, length=.65)
 
-    # Card P3: Admission Gates G1-G7 & Answer-Reproduction Replay
+    # Card P3: Candidate Validation & Source Equivalence
     vy, vh = ex_y + ex_h + 1.05, 9.0
     rect(lx, vy, lw, vh, WHITE, SUB_EDGE, .16, r=.48)
     label(lx + .95, vy + 1.65,
-          '2. Admission Gates G1–G7' if en else '2. 准入门禁 G1–G7 与重放', 5.0, INK, 'bold')
+          '2. Candidate Validation' if en else '2. 候选验证与等价检验', 5.0, INK, 'bold')
     label(lx + lw - .9, vy + 1.65,
-          'replay oracle' if en else '源答案核验', 4.45, ACC_DK, 'bold', 'right')
+          'source check' if en else '源答案核验', 4.45, ACC_DK, 'bold', 'right')
 
     g1_y = vy + 4.45
-    w_g15 = pill(lx + .85, g1_y, 'G1–G5', TOP, INK, edge_c=SUB_EDGE, size=4.2, pad=.52, h=1.58)
+    w_g15 = pill(lx + .85, g1_y, 'Static' if en else '静态校验', TOP, INK, edge_c=SUB_EDGE, size=4.2, pad=.52, h=1.58)
     label(lx + 1.35 + w_g15, g1_y,
-          'trace DAG, $K$, $N{:}1$, RO' if en else '算术 DAG、$K$、N:1、只读',
+          'lineage, $K$, $N{:}1$, RO' if en else '血缘、$K$、N:1、只读',
           4.5, INK, width=lw - w_g15 - 4.0)
     check_mark(lx + lw - 1.35, g1_y, True, ACC, k=.74)
 
     g2_y = vy + 7.15
-    w_g67 = pill(lx + .85, g2_y, 'G6–G7', ACC_PALE, ACC_DK, edge_c=ACC, size=4.2, pad=.52, h=1.58)
+    w_g67 = pill(lx + .85, g2_y, 'Equiv.' if en else '重编译', ACC_PALE, ACC_DK, edge_c=ACC, size=4.2, pad=.52, h=1.58)
     label(lx + 1.35 + w_g67, g2_y, '`Compile(I,p0)=Ans`', 4.4, ACC_DK, 'bold')
     check_mark(lx + 24.0, g2_y, True, ACC, k=.68)
     drop_txt = 'no $\\varphi$: $4.9\\times$' if en else '漏掉 $\\varphi$: $4.9\\times$'
@@ -301,7 +301,7 @@ def draw(s, lang):
     pill(lx + .8, oy + oh / 2, 'out' if en else '输出', LEARN_DK, WHITE, size=4.35, pad=.62, h=1.7)
     label(lx + 6.4, oy + oh / 2, '$m^0$:' if en else '定义 $m^0$:', 5.0, LEARN_DK, 'bold')
     bx_cur = lx + (11.2 if en else 14.2)
-    for f_txt, f_col in (('B: choices' if en else 'B 口径', LEARN_DK),
+    for f_txt, f_col in (('B: attrs' if en else 'B 属性', LEARN_DK),
                          ('I(p)' if en else 'I 模板', ACC_DK),
                          ('C: 6' if en else 'C 条件', MAINT_DK),
                          ('E, $V_{s_0}$' if en else 'E 证据', SLATE)):
@@ -392,7 +392,7 @@ def draw(s, lang):
           else '引用 `join:item|sales` + `date`',
           4.55, ACC_DK, width=mw_card - 4.5)
     label(mx + 3.8, i_y3,
-          "$\\varphi$: `category='Electronics'`  |  slots $(p, d)$" if en
+          "$\\varphi$: `category='Electronics'`  |  params $(p, d)$" if en
           else "$\\varphi$: `category='Electronics'`  |  参数 $(p, d)$",
           4.55, INK, width=mw_card - 4.5)
     s.line(mx + .7, my_card + 12.6, mx + mw_card - .7, my_card + 12.6, RULE, .13)
@@ -415,8 +415,8 @@ def draw(s, lang):
     e_yc = my_card + 16.8
     pill(mx + .8, e_yc, 'E', TOP, SLATE, edge_c=SLATE, size=4.35, pad=.6, h=1.65)
     label(mx + 3.8, e_yc,
-          'trace, Ans `2.75M`, G1–G7, $V_{m^r}$: $\\langle 0,0,0\\rangle{\\rightarrow}\\langle 1,0,0\\rangle$' if en
-          else '轨迹、核验答案、门禁与版本向量 $V_{m^r}$: $\\langle 0,0,0\\rangle{\\rightarrow}\\langle 1,0,0\\rangle$',
+          'lineage, Ans `2.75M`, verified, $V_{m^r}$: $\\langle 0,0,0\\rangle{\\rightarrow}\\langle 1,0,0\\rangle$' if en
+          else '血缘、核验答案、已校验与版本向量 $V_{m^r}$: $\\langle 0,0,0\\rangle{\\rightarrow}\\langle 1,0,0\\rangle$',
           4.5, SLATE, width=mw_card - 4.5)
 
     # --- Sub-panel 2 (Right inside KB): Shared Condition Nodes H & Outcome Cache Gamma ---
@@ -473,12 +473,12 @@ def draw(s, lang):
             check_mark(hx + hw - 1.65, ry, True, ACC, k=.68)
         h_ys.append(ry)
 
-    # Single-flight summary footer inside H
+    # Coalesced check summary footer inside H
     sf_y = hc_y + hc_h - 1.55
     s.line(hx + .8, sf_y - 1.35, hx + hw - .8, sf_y - 1.35, RULE, .13)
     label(hx + hw / 2, sf_y,
-          'single-flight graph eval · shared across defs' if en
-          else '单航班图校验 · 一次重算跨定义复用',
+          'coalesced graph eval · shared across defs' if en
+          else '合并图校验 · 一次重算跨定义复用',
           4.35, ACC_DK, 'bold', 'center')
 
     # Orthogonal compositional & condition reference wires inside Knowledge base
@@ -642,9 +642,9 @@ def draw(s, lang):
     # Module 2: Catalog-Trained Cross-Encoder x3 (Token Pair + Attention Stack)
     rect(t2_x, t_y, t2_w, t_h, WHITE, SUB_EDGE, .16, r=.45)
     label(t2_x + t2_w / 2, t_y + 1.28, '2. Matcher $\\times 3$' if en else '2. 目录判别器 $\\times 3$', 5.1, ACC_DK, 'bold', 'center')
-    # Token strip: [rho] [choices] [diffs] centered cleanly inside Module 2
+    # Token strip: [rho] [attrs] [diffs] centered cleanly inside Module 2
     tok_y = t_y + 3.38
-    tok_raw = (('$\\rho$', ACC, WHITE), ('choices', LEARN_PALE, LEARN_DK), ('diffs', AMBER_PALE, EXEC_DK))
+    tok_raw = (('$\\rho$', ACC, WHITE), ('attrs', LEARN_PALE, LEARN_DK), ('diffs', AMBER_PALE, EXEC_DK))
     tok_specs = [(lbl, bg, fg, max(3.6, measure(lbl, 4.5, 'bold') + .86)) for lbl, bg, fg in tok_raw]
     tot_tok_w = sum(tw_i for _, _, _, tw_i in tok_specs) + .4 * (len(tok_specs) - 1)
     tx_cur = t2_x + (t2_w - tot_tok_w) / 2
@@ -738,14 +738,14 @@ def draw(s, lang):
     sx_in, sy_in, sw_in, sh_in = ex + 1.05, ey + 4.0, ew - 2.1, 20.65
     rect(sx_in, sy_in, sw_in, sh_in, '#FAF9F7', EXEC_C, .18, r=.48, dash=(.72, .4))
     label(sx_in + sw_in / 2, sy_in + 1.38,
-          'One Read-Only Snapshot $D_s$ (stamps $V_s$)' if en else '同一只读事务快照 $D_s$（读取版本 $V_s$）',
+          'One Read-Only Snapshot $D_s$ (versions $V_s$)' if en else '同一只读事务快照 $D_s$（读取版本 $V_s$）',
           5.0, EXEC_DK, 'bold', 'center')
 
-    # Sub-card 1: Snapshot Condition Gate via H(c, V_s)
+    # Sub-card 1: Snapshot Condition Check via H(c, V_s)
     st1_y, st1_h = sy_in + 2.55, 6.15
     rect(sx_in + .85, st1_y, sw_in - 1.7, st1_h, WHITE, SUB_EDGE, .15, r=.38)
     label(sx_in + 1.55, st1_y + 1.78,
-          '1. Validate $C(m^r)$ at $V_s$' if en else '1. 快照条件门禁 $C(m^r)$', 5.05, INK, 'bold')
+          '1. Validate $C(m^r)$ at $V_s$' if en else '1. 快照条件校验 $C(m^r)$', 5.05, INK, 'bold')
     check_mark(sx_in + sw_in - 2.0, st1_y + 1.78, True, ACC, k=.72)
     pill(sx_in + 1.45, st1_y + 4.45,
          '$\\Gamma(c, V_s)$ hit $\\rightarrow O(1)$' if en else '命中 $\\Gamma(c,V_s) \\rightarrow O(1)$',
@@ -874,7 +874,7 @@ def draw(s, lang):
     rect(sn_x + .12, ctop + .12, sn_w - .24, 2.25, EXEC_PALE, None, r=.32)
     rect(sn_x, ctop, sn_w, ch_in, None, EXEC_C, .2, r=.42, dash=(.78, .42))
     label(sn_x + .9, ctop + 1.22, 'snapshot $D_s$' if en else '一致性快照 $D_s$', 5.05, EXEC_DK, 'bold')
-    label(sn_x + sn_w - .85, ctop + 1.22, 'stamps $V_s$ · RO' if en else '版本 $V_s$ · 只读', 4.5, EXEC_DK, 'sans', 'right')
+    label(sn_x + sn_w - .85, ctop + 1.22, 'versions $V_s$ · RO' if en else '版本 $V_s$ · 只读', 4.5, EXEC_DK, 'sans', 'right')
     slice_names = ('`item`@$V_s$', '`sales`@$V_s$', '`date`@$V_s$')
     mini_w = (sn_w - 2.0 - 1.4) / 3
     for k_m, sl_lbl in enumerate(slice_names):
@@ -892,7 +892,7 @@ def draw(s, lang):
     route([(maint_db_x, qy + qh), (maint_db_x, ctop)],
           MAINT_C, .32, heads='both', dash=(.72, .4), length=1.0)
     label(maint_db_x + 1.4, 73.85,
-          'stamps $V(T) \\leftrightarrow$ checks $Q_c$' if en else '读版本戳 $V(T) \\leftrightarrow$ 条件检查 $Q_c$',
+          'versions $V(T) \\leftrightarrow$ checks $Q_c$' if en else '读版本号 $V(T) \\leftrightarrow$ 条件检查 $Q_c$',
           4.8, MAINT_DK, 'bold')
 
     snap_cx = sn_x + sn_w / 2
