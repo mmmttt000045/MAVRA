@@ -63,85 +63,50 @@ For example, in Figure~\ref{fig:metric-record}, the revenue calculation joins \c
 Appending new sales records changes the query result without invalidating the calculation.
 In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and produce incorrect revenue results.
 Thus, effective knowledge sharing among data agents requires both extracting reusable calculations from database queries and maintaining their validity under database updates.
-% In contrast, adding historical item versions may create multiple matches for the same \code{item\_id}, causing the join to duplicate sales records and inflate revenue without execution errors. 
-% Existing knowledge-sharing approaches do not explicitly track and validate such data-dependent assumptions. 
-% Simple invalidation strategies are also insufficient: schema-based invalidation misses changes in join cardinality, while invalidating knowledge on every data update unnecessarily discards valid calculations. 
-
-% These limitations motivate a mechanism that automatically extracts reusable calculations across agents and maintains their validity as underlying data evolve.
-% Research on agent memories has become popular in recent years. 
-% First, most agent memories are designed for a single agent~\cite{zhao2024expel,wang2025awm,zhang2026ace}.
-% They store past trajectories or insights in private memory for one agent and do not share knowledge across agents; thus, $N$ agents computing $k$ metrics still learn them $Nk$ times.
-% Second, existing multi-agent and data-layer methods rely on simple reuse, which performs poorly and is hard to maintain. Multi-agent systems like G-Memory and AgentSM~\cite{zhang2025gmemory,biswal2026agentsm} directly share raw trajectories, text insights, or tools.
-% However, raw SQL embeds query-specific filters and generalizes poorly, while text insights still require database probing; moreover, neither checks data conditions after updates, so broken calculations stay in memory and return wrong answers.
-% Enterprise semantic layers~\cite{dbt2026metricflow,databricks2026metricviews} require manual metric definitions and only recompute results on updates without checking join or grain conditions.
-% Simple invalidation also fails: schema-only invalidation misses the item-history load, while invalidating on every write discards valid knowledge after routine appends.
-% This motivates a method that automatically extracts reusable calculations for multiple agents and maintains their validity as data evolve.
-
-% However, simply sharing a calculation across agents can cause silent errors when data change. 
-% In Figure~\ref{fig:metric-record}, the revenue query joins \code{sales} and \code{item} on \code{item\_id}, assuming each \code{item\_id} matches one \code{item} row. Appending new rows to \code{sales} changes the result, but the calculation stays valid. 
-% In contrast, loading historical item versions into \code{item} makes one \code{item\_id} match multiple rows. The shared SQL still runs without error, but the join duplicates sales and inflates revenue. 
-% Thus, a shared memory must check whether a calculation's data conditions still hold after updates; otherwise, every reusing agent gets the same wrong answer.
-
 }
 {现有方法难以同时解决上述问题。首先，大多数智能体记忆仅针对单智能体设计~\cite{zhao2024expel,wang2025awm,zhang2026ace}，将历史轨迹或经验保存在私有记忆中，没有考虑多智能体共享，导致计算 $k$ 个指标的 $N$ 个智能体仍需重复学习 $Nk$ 次。其次，现有的多智能体与数据层方法大多采用简单复用，不仅效果不佳，而且难以维护。例如，G-Memory 与 AgentSM~\cite{zhang2025gmemory,biswal2026agentsm} 直接共享原始轨迹、文本经验或工具：原始 SQL 绑定了特定过滤条件而难以泛化，文本经验仍需重新探查数据库；更重要的是，它们在数据更新后不检查底层数据条件，失效计算留在记忆中会持续返回错误答案。企业语义层~\cite{dbt2026metricflow,databricks2026metricviews} 依赖人工编写指标且更新时仅重算结果，不检查连接与粒度条件；简单失效策略同样难以维护——仅按表结构变更失效会漏掉商品历史装载，而每次写入都失效又会在日常追加后丢弃有效知识。这自然引出了本文的方法：自动提取面向多智能体的可复用计算，并在数据演进时维护其有效性。}
 
-% \bi{Our key insight is to capture rediscovered knowledge as executable calculations with verifiable data conditions, such as key uniqueness at the business grain.
-% A verified session establishes correctness on its observed state; the conditions formalize invariants needed for continued reuse.
-% Each calculation can thus be learned once, selectively revalidated when its tables change, and reused while its conditions hold. }
-% {我们的核心洞见是将反复发现的知识表示为带可验证数据条件的可执行计算，例如业务粒度上的键唯一性。核验会话确立计算在所观测状态上的正确性，数据条件则形式化其持续有效所需的不变量。因此，每项计算只需学习一次，在依赖表变化时按需重验，并在条件成立期间复用。由于智能体查询与数据写入均经过 DBMS，本文提出位于异构智能体与数据库之间的共享层 \system{}（\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents），保存带条件的结构化指标与特征定义，跨智能体维护定义及验证结果，并在一致快照上执行复用。}
-
 \bi{
-We therefore aim to avoid redundant database exploration by capturing reusable calculations and maintaining their correctness as the underlying database evolves.
-However, achieving this requires addressing three key challenges.
-% capture rediscovered knowledge as executable calculations with verifiable data conditions, such as key uniqueness at the business grain.
-% A verified session establishes correctness on its observed state; the conditions formalize invariants needed for continued reuse.
-% Each calculation can thus be learned once, selectively revalidated when its tables change, and reused while its conditions hold. 
-% Realizing this poses three key challenges.
-% \emph{C1: Extracting generalizable calculations.} Raw session SQL embeds query-specific literals and implicit data assumptions. Saving it verbatim prevents generalization to new periods; LLM summaries risk losing filters or joins.
-\emph{C1:} Different agents may issue queries with different filters, aggregations, or analytical goals, even when relying on the same underlying calculations. However, knowledge discovered during one session is often embedded in query-specific SQL or execution trajectories, making it difficult to reuse across requests. Extracting generalizable calculations while preserving their semantics is non-trivial.
-\emph{C2:} Similar requests may denote different calculations, while different phrasings may refer to the same one. Looking up the right definition must resolve explicit business choices and surface ambiguity without first generating SQL or scanning the catalog with an LLM.
-\emph{C3:} Database updates may invalidate cached knowledge by violating underlying assumptions, such as key uniqueness or join cardinality, while other updates only change query results. Invalidating all knowledge after every update causes unnecessary rediscovery, whereas retaining it without validation risks incorrect results.
-As a result, efficiently identifying, repairing, or invalidating affected knowledge is not straightforward.
-Concurrent updates may compromise the correctness of shared knowledge reuse. Even if cached knowledge is validated, the database may change before query execution, making the validation result outdated.
-Ensuring that validation and query execution use a consistent database snapshot without excessive overhead is challenging.
-% \emph{C2: Maintaining definitions under data updates.} Most updates preserve conditions, and each violation affects only dependent definitions. Maintenance must locate and automatically repair or invalidate those definitions once for all agents, while leaving others available.
-% \emph{C3: Reusing validation results consistently.} A concurrent write can commit between a check and the query relying on it. Reused validation results must provably hold on that query's exact snapshot.
+Our key insight is to elevate the unit of sharing from raw SQL or text to a \emph{conditional executable definition}---pairing a parameterized relational core with derived data conditions and projected semantic attributes---and maintain its correctness as data evolve.
+Achieving this across an online lifecycle poses three key challenges.
+\emph{C1:} Different agents issue queries with varying slices, aggregations, or goals over the same underlying calculations, yet discovered knowledge is entangled in noisy exploration traces and query-specific SQL without pre-existing join primitives, making it non-trivial to separate request parameters from domain conditions while preserving exact semantics.
+\emph{C2:} Similar requests may denote different calculations while diverse phrasings refer to the same one; lookup must resolve semantic attributes and surface ambiguity without SQL synthesis or $O(\lvert\mathcal M\rvert)$ LLM catalog scans.
+\emph{C3:} Database updates may invalidate cached knowledge by violating underlying assumptions, such as key uniqueness or join cardinality, while routine appends only change query results. Invalidating all knowledge after every update causes unnecessary rediscovery, whereas retaining it without validation risks incorrect results, making it non-trivial to efficiently identify, repair, or retire affected definitions.
+Moreover, concurrent updates between validation and query execution can render checked assumptions outdated, making consistent snapshot reuse without excessive overhead challenging.
 }
-{实现 \system{} 面临共享定义生命周期中的三项挑战。\emph{C1：提取可泛化的计算。}原始会话 SQL 嵌入查询特定的字面量与隐式数据假设，原样保存无法泛化至新期间，而 LLM 摘要可能丢失过滤或连接。\emph{C2：查得准。}相似请求可能对应不同计算，同一计算也可能有多种问法。查找需要解析显式业务口径并呈现歧义，且不先生成 SQL 或在线调大模型扫描目录。\emph{C3：在数据更新下维护定义与一致性复用。}大多数更新保留条件，每次违例只影响依赖它的定义。维护必须定位并自动修复或停用这些定义，为所有智能体仅执行一次，同时保持其他定义可用。并发写入可能在检查与依赖它的查询之间提交。复用的验证结果必须可证明地在该查询实际读取的快照上成立。}
+{本文的核心洞见是将共享单元从原始 SQL 或文本提升为\emph{条件化可执行定义}——将参数化关系查询核与派生数据条件及投影语义属性绑定为同一对象——并在数据演进时维护其正确性。实现其在线生命周期面临三项挑战。\emph{C1：提取可泛化的计算。}不同智能体围绕同一底层计算发出不同切片或排序查询，而所得知识混杂在试错轨迹与特定 SQL 中且无预置连接原语，准确剥离请求参数并保持语义无损并非易事。\emph{C2：歧义感知解析。}相似问法可指不同计算、不同问法又可指同一计算；查找须在不合成 SQL、不由大模型遍历定义库的前提下解析语义属性并呈现歧义。\emph{C3：增量维护与一致复用。}更新可能破坏键唯一性或连接基数而日常追加仅改结果，且检查与执行间的并发提交会使校验过期；跨智能体按需修复或停用定义并保证单快照一致性极具挑战。}
 
+\bi{We present \system\ (\textbf{M}etric-\allowbreak\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents), a shared layer between heterogeneous agents and PostgreSQL centered on versioned \emph{conditional executable definitions} for metrics and point-in-time features (plus task programs), maintaining conditions in one dependency graph and executing reuse on consistent snapshots.}
+{本文提出位于异构智能体与 PostgreSQL 之间的共享层 \system{}（\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents），围绕面向分析指标与点时间特征的版本化\emph{条件化可执行定义}（及任务程序），在统一依赖图上跨智能体维护条件并在一致快照上执行复用。}
 
-% Since agent queries and data writes pass through the DBMS, 
-In this paper, we present \system\ (\textbf{M}etric-\textbf{A}ware \textbf{V}alidation and \textbf{R}euse for \textbf{A}gents), a shared layer between heterogeneous agents and the database.
-It stores structured metric and feature definitions (and task programs) with their conditions, maintains definitions and check outcomes across agents, and executes reuse on consistent snapshots.
+\bi{For C1, \emph{graph-\allowbreak based agent knowledge extraction} programmatically bootstraps verified join paths and grain specifications during exploration, slices row-free causal query lineage from confirmed sessions, and enforces AST gates that strip temporal and ranking parameters from the relational core. It links derived conditions, including grain-key uniqueness and join cardinalities, into a shared dependency graph and admits a definition only if SQL recompiled solely from its core reproduces the confirmed answer on the source snapshot.}
+{针对 C1，\emph{基于图的智能体知识提取}在探索期程序化自举连接路径与粒度规范，从确认会话切片零行因果血缘，并以语法树门控剥离时间与排名参数；系统将派生条件接入共享依赖图，仅当完全由查询核重编译的 SQL 在源快照复现确认答案时准入发布。}
 
-\bi{To address C1 via \emph{graph-based verifiable relational kernel extraction}, \system\ composes verified definitions over shared \code{join:} and \code{grain:} primitives from externally accepted sessions, preserving measures, grains, join graphs, scope filters, and date roles while replacing query-specific inputs with runtime bindings. It wires derived data conditions, including grain-key uniqueness and join cardinalities, into a shared dependency graph and gates publication on reproducing the source answer on that snapshot.}
-{针对 C1，\system{} 提出\emph{基于图的可验证关系核提取技术}，依托共享 \code{join:} 与 \code{grain:} 原语从核验会话组合出参数化定义，保留度量、业务粒度、连接图、过滤与时间绑定，并将查询特定输入替换为运行期参数；系统据此将派生的数据条件（如粒度键唯一性与连接基数）接入共享依赖图，并以编译 SQL 在源快照复现源答案作为发布准入。}
+\bi{For C2, \emph{lightweight adaptive semantic resolution} projects structured semantic attributes from each relational core and trains a cross-encoder offline on rule-labeled synthetic paraphrases. Online lookup scores candidates with peer attribute differences without LLM calls, returns competing definitions under ambiguity, and rejects out-of-catalog queries.}
+{针对 C2，\emph{轻量级自适应语义解析技术}从查询核投影结构化语义属性，以规则打标的合成改写离线训练交叉编码器。在线查找结合同伴差异免调大模型打分，歧义时返回竞争定义并拒识未收录请求。}
 
-\bi{To address C2, \system's \emph{lightweight adaptive semantic resolution} projects explicit choices from each definition and trains a cross-encoder offline on rule-labeled phrasings. Online lookup scores candidates without LLM calls, returns competing definitions when choices stay open, and rejects absent metrics.}
-{针对 C2，\system{} 提出\emph{轻量级自适应语义解析技术}，从每条定义投影显式业务口径，以合成问法与规则标签离线训练交叉编码器。在线查找免调大模型对召回候选打分，在口径未明确时返回竞争定义，并拒识目录外指标。}
+\bi{For C3, \emph{snapshot-\allowbreak validated definition repair} caches check outcomes along the dependency graph keyed by condition signatures and transactional table versions, rechecking only write-affected conditions across definitions and agents. When a structural check fails, it searches localized single-edit repairs and publishes a revision only if a unique candidate restores all conditions, reproduces the source answer on the source snapshot, and preserves untouched historical periods; otherwise, it retires the definition.}
+{针对 C3，\emph{基于快照验证的定义修复技术}按条件签名与事务表版本号索引校验结果，跨定义与智能体仅重验受写波及的条件。结构检查失效时搜索局部单编辑修复，仅当唯一候选恢复全部条件、在源快照复现源答案并保持未变历史期间不变时发布新修订，否则停用定义。}
 
-\bi{To address C3 via \emph{snapshot-\allowbreak validated definition repair}, \system\ caches check outcomes along this dependency graph keyed by condition signatures and table-version stamps, sharing each outcome across definitions and agents. Updates recheck only conditions whose tables changed. When a definition condition fails, \system\ searches for a history-preserving single-edit repair and publishes a revision only if a unique candidate restores all conditions, reproduces the source answer on the source snapshot, and preserves answers on untouched historical periods. Otherwise, it retires the definition from reuse. Each decision serves all consumers; unaffected definitions remain available.}
-{针对 C3，\system{} 提出\emph{基于快照验证的定义修复技术}，沿该依赖图按条件与依赖表版本索引检查结果，跨定义与智能体共享每个结果。更新后仅重验依赖表发生变化的条件。定义条件失效时，系统搜索保持历史答案的单编辑修复，且仅当唯一候选恢复全部条件、在源快照上复现源答案，并保持未变历史期间的答案不变时发布新修订，否则停用该定义。每次决策服务全部调用方，未受影响的定义保持可用。}
-
-\bi{For consistent reuse, \system\ checks a reused definition's conditions and executes its compiled query in one read-only transaction on the same snapshot. Later commits are invisible to both, eliminating time-of-check to time-of-use (TOCTOU) inconsistencies. Transactional table-version stamps advance atomically with writes, identifying earlier check outcomes still valid on the current snapshot and preserving shared validation's savings.}
-{为保证一致性复用，\system{} 在同一只读事务与快照上检查被复用定义的条件并执行其编译查询。后续提交对两者均不可见，从而消除检查到使用（TOCTOU）之间的不一致。事务性表版本随写入原子递增，可据此识别在当前快照上仍然有效的早先检查结果，保留共享验证的收益。}
+\bi{For consistent reuse, \emph{snapshot-\allowbreak bound execution} checks a reused definition's conditions and runs its compiled query in one read-only transaction on the same snapshot, eliminating time-of-check to time-of-use (TOCTOU) races while reusing valid check outcomes across snapshots via atomic transactional table versions.}
+{为保证一致性复用，\emph{快照绑定执行}在同一只读事务与快照内校验条件并执行编译查询，消除检查到使用（TOCTOU）竞态，并借原子递增的事务表版本号跨快照复用有效结果。}
 
 \bi{In summary, we make the following contributions:}
 {综上所述，本文的主要贡献如下：}
 
 \begin{itemize}
-\item \bi{We present \system, a shared memory layer between data agents and DBMSs storing rediscovered calculations as executable definitions with explicit data conditions and choices for \emph{lightweight adaptive semantic resolution}.}
-{提出位于数据智能体与数据库系统之间的共享记忆层 \system{}，将智能体探索所得计算表示为带显式数据条件的可执行指标与特征定义，并以显式业务口径支持\emph{轻量级自适应语义解析技术}。}
+\item \bi{We present \system, a shared memory layer between data agents and DBMSs centered on \emph{conditional executable definitions}, unifying parameterized relational cores, derived data conditions, and projected semantic attributes in one dependency graph.}
+{提出位于数据智能体与数据库系统之间的共享记忆层 \system{}，围绕\emph{条件化可执行定义}在单一依赖图中统一参数化查询核、派生数据条件与投影语义属性。}
 
-\item \bi{We develop \emph{graph-based verifiable relational kernel extraction} that composes externally accepted sessions over verified join primitives into executable definitions, wires derived data conditions into a shared dependency graph, and gates publication on reproducing the source answer.}
-{设计\emph{基于图的可验证关系核提取技术}，依托已验证连接原语将核验会话组合为可执行定义，将派生数据条件接入共享依赖图，并以编译 SQL 复现核验输出作为发布准入。}
+\item \bi{We develop \emph{graph-\allowbreak based agent knowledge extraction}, combining programmatic join/\allowbreak grain bootstrapping, row-free causal lineage slicing, parameter-\allowbreak separation AST gates, and SQL-discarding recompilation equivalence on the source snapshot.}
+{设计\emph{基于图的智能体知识提取}，结合连接／粒度程序化自举、零行因果血缘切片、参数分离门控与丢弃原 SQL 的源快照重编译等价性验证。}
 
-\item \bi{We design \emph{snapshot-\allowbreak validated definition repair} that caches check outcomes by condition signatures and table-version stamps, rechecks only write-affected conditions, and shares check outcomes and repairs across definitions and agents.}
-{设计\emph{基于快照验证的定义修复技术}，按表版本索引验证结果，仅重验受写入影响的条件，并跨定义与智能体共享验证和修复结果。}
+\item \bi{We develop \emph{lightweight adaptive semantic resolution} over projected attributes and peer differences, handling paraphrases, homonymous ambiguity, and out-of-catalog rejection without online LLM scans.}
+{提出基于投影属性与同伴差异的\emph{轻量级自适应语义解析技术}，无需在线大模型遍历定义库即可处理同义改写、同名歧义并拒识未收录请求。}
 
-\item \bi{We introduce \emph{snapshot-bound execution}, coupling validation checks and query execution within one MVCC snapshot while reusing check outcomes across snapshots via transactional table-version stamps.}
-{提出快照绑定执行机制，在同一 MVCC 快照内耦合条件验证与查询执行，并借助事务性表版本跨快照复用验证结果。}
+\item \bi{For evolving data, we design \emph{snapshot-\allowbreak validated definition repair} and \emph{snapshot-\allowbreak bound execution}, sharing version-indexed check outcomes across agents to admit unique, history-\allowbreak preserving single-edit repairs and guarantee single-snapshot MVCC reuse.}
+{提出\emph{基于快照验证的定义修复技术}与\emph{快照绑定执行}，实现表版本索引共享验证、唯一保历史单编辑修复与单快照无竞态复用。}
 
 \item \bi{We evaluate \system\ on five analytical schemas and RelBench against eight baselines, showing \ReuseTokMinX--\ReuseTokMaxX$\times$ lower reuse-phase token usage and \ReuseLatMinX--\ReuseLatMaxX$\times$ speedups over memoryless agents, and zero wrong definition-served answers under data updates.}
-{在五种分析模式与 RelBench 上与八种基线开展对比实验，\system{} 将复用阶段的 token 消耗与延迟较无记忆智能体分别降低 \ReuseTokMinX--\ReuseTokMaxX{} 倍与 \ReuseLatMinX--\ReuseLatMaxX{} 倍，且在数据更新下由定义直接服务的答案中实现零错答。}
+{在五种分析模式与 RelBench 上对比八种基线，将复用阶段 token 消耗与延迟较无记忆智能体降低 \ReuseTokMinX--\ReuseTokMaxX{} 倍与 \ReuseLatMinX--\ReuseLatMaxX{} 倍，且在数据更新下由定义直接服务的答案实现零错答。}
 \end{itemize}

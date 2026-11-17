@@ -17,9 +17,9 @@
 \midrule
 \bt{Exact name match}{精确名称匹配} & 42\% & 42\% & 14/17 & 0 & --\\
 \bt{Embedding top-1 (oracle thr.)}{向量 top-1（最优阈值）} & 62\% & 62\% & 6/17 & 0 & 17\,ms\\
-\bt{Full-catalog LLM judge}{全目录 LLM 判别} & 99\% & 99\% & 17/17 & 1{,}534 & 2.2\,s\\
+\bt{Full-catalog LLM judge}{全量定义 LLM 判别} & 99\% & 99\% & 17/17 & 1{,}534 & 2.2\,s\\
 \bt{Top-8 recall + LLM judge}{Top-8 召回 + LLM 判别} & 98\% & 98\% & 16/17 & 760 & 2.0\,s\\
-\bt{LLM choice parser + Def.~\ref{def:consistency}}{LLM 口径解析 + 定义~\ref{def:consistency}} & 90\% & 90\% & 16/17 & 971 & 5.2\,s\\
+\bt{LLM attribute parser + Def.~\ref{def:consistency}}{LLM 属性解析 + 定义~\ref{def:consistency}} & 90\% & 90\% & 16/17 & 971 & 5.2\,s\\
 \bt{TeCoD template matcher (NLI)}{TeCoD 模板匹配（NLI）} & 26\% & 26\% & 17/17 & 0 & 60\,s$^{*}$\\
 \midrule
 \bt{Single cross-encoder judge}{单交叉编码器判别器} & 85--89\% & -- & -- & 0 & 33\,ms\\
@@ -29,5 +29,5 @@
 \end{tabularx}
 \par\vspace{2pt}
 {\scriptsize\raggedright
-\bt{Exact: first response (\code{Hit}, \code{Diffs}, or \code{Refer} candidates) equals $A(\rho)$. Final: after \llmmodel{} confirms among candidate references on the 23\% uncertain-retrieval requests. Absent: absent-metric requests rejected (per run); \emph{repeated phrasing} re-queries 92 period-swapped variants (79 alias hits + 13 uncached absent requests). Tokens/time are means per request including confirmation (judges on shared GPU; LLMs via API). $^{*}$Released 4B float32 models on shared CPU; 6 synthetic phrasings/definition.}{一致：首次响应（\code{Hit}、\code{Diffs} 或 \code{Refer} 参考集合）等于 $A(\rho)$。确认后：对收到 \code{Refer} 参考的 23\% 请求，由使用方智能体（\llmmodel{}）在参考中选择之后的结果。拒识：目录外请求最终被拒识的数量（每轮）；\emph{同表述再查}复测 92 个换期重复请求（含 79 条别名命中与 13 条未缓存缺失指标）。token 与耗时为每请求均值，含确认（判别器运行于共享 GPU，LLM 经 API 调用）。$^{*}$TeCoD 发布的 4B 嵌入与 NLI 模型以 float32 运行于共享 CPU；模板池为每个定义 6 条取自同一份目录生成数据的问法。}\par}
+\bt{Exact: first response (\code{Hit}, \code{Diffs}, or \code{Refer} candidates) equals $A(\rho)$. Final: after \llmmodel{} confirms among candidate references on the 23\% uncertain-retrieval requests. Absent: out-of-catalog metric requests rejected (per run); \emph{repeated phrasing} re-queries 92 period-swapped variants (79 alias hits + 13 uncached out-of-catalog requests). Tokens/time are means per request including confirmation (judges on shared GPU; LLMs via API). $^{*}$Released 4B float32 models on shared CPU; 6 synthetic phrasings/definition.}{一致：首次响应（\code{Hit}、\code{Diffs} 或 \code{Refer} 参考集合）等于 $A(\rho)$。确认后：对收到 \code{Refer} 参考的 23\% 请求，由使用方智能体（\llmmodel{}）在参考中选择之后的结果。拒识：未收录请求最终被拒识的数量（每轮）；\emph{同表述再查}复测 92 个换期重复请求（含 79 条别名命中与 13 条未缓存的未收录指标）。token 与耗时为每请求均值，含确认（判别器运行于共享 GPU，LLM 经 API 调用）。$^{*}$TeCoD 发布的 4B 嵌入与 NLI 模型以 float32 运行于共享 CPU；模板池为每个定义 6 条取自同一份定义库合成数据的问法。}\par}
 \end{table}

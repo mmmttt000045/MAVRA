@@ -1,11 +1,11 @@
 \begin{table}[b]
-\caption{\bt{Policy replay over \RpTotal\ updates, four schemas, and 12 classes (correct/wrong/withheld; premise: unit, backup, reclassification).}{维护策略在四种模式、十二类更新共 \RpTotal\ 个实例上的回放结果（正确 / 错误 / 拒答）。前提变更：单位、备份副本、维度改类。}}
+\caption{\bt{Policy replay over \RpTotal\ updates, four schemas, and 12 classes (correct/wrong/withheld; semantic drift: unit, backup, reclassification).}{维护策略在四种模式、十二类更新共 \RpTotal\ 个实例上的回放结果（正确 / 错误 / 拒答）。语义漂移：单位、备份副本、维度改类。}}
 \label{tab:replay-policies}
 \footnotesize
 \setlength{\tabcolsep}{2.5pt}
 \begin{tabularx}{\linewidth}{@{}Lccc@{}}
 \toprule
-& \bt{Non-breaking}{常规更新} & \bt{Covered breaks}{条件破坏} & \bt{Premise changes}{前提变更}\\
+& \bt{Non-breaking}{常规更新} & \bt{Integrity breaks}{完整性违例} & \bt{Semantic drift}{语义漂移}\\
 \bt{Maintenance policy}{维护方式} & (\RpBenignN) & (\RpBreakN) & (\RpOutsideN)\\
 \midrule
 \bt{Invalidate on every write}{每次写入即失效} & \RpRevokeBenignC\,/\,\RpRevokeBenignW\,/\,\RpRevokeBenignR & \RpRevokeBreakC\,/\,\RpRevokeBreakW\,/\,\RpRevokeBreakR & \RpRevokeOutsideC\,/\,\RpRevokeOutsideW\,/\,\RpRevokeOutsideR\\

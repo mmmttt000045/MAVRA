@@ -1,7 +1,7 @@
 """Accurate lookup (Section IV-C), single column: what goes in, the four steps, what comes out.
 
 Input: an agent's request in its own words (here "in-store takings in March
-2001", one of many wordings for store revenue) and the catalog, which holds two
+2026", one of many wordings for store revenue) and the catalog, which holds two
 definitions both named store revenue: D01 sums the net amount paid after
 coupons, D02 the sales amount before coupons.
 
@@ -10,7 +10,7 @@ coupons, D02 the sales amount before coupons.
 2. Recall: bge-m3 embeds the request; the 8 definitions with the highest cosine
    similarity are the candidates (definitions are embedded once).
 3. Judge: a cross-encoder (XLM-RoBERTa, 12 layers) reads the request together
-   with each candidate, rendered as its text, its choices (amount basis, ...),
+   with each candidate, rendered as its text, its attributes (amount basis, ...),
    and its differences from same-name and same-group definitions; the [CLS]
    vector gives p, the probability that the two are consistent. Three seeds
    are averaged.
@@ -22,7 +22,7 @@ reference for the agent to confirm, and a confirmed wording is stored as an
 alias; nothing left means the catalog lacks it.
 
 Offline, once per catalog: intents are enumerated from the definitions'
-choices, an LLM writes each in many wordings, and the consistency rule labels
+attributes, an LLM writes each in many wordings, and the consistency rule labels
 every (wording, definition) pair, which trains the judge.
 
 Data: the candidates and scores are the ensemble's in the end-to-end run
@@ -44,7 +44,7 @@ from smallparts import (BAND, BLUE, BLUE_PALE, BLUE_TXT, HEAD_T, KEYC, LEARN, LE
                         arrow, baseline, card, key_icon, mark, person, sparkle)
 
 NAME = 'lookup'
-W, H = style.COLUMN, 76.0
+W, H = style.COLUMN, 76.6
 TINY = 4.6
 GREY_TOK = '#C9C6C0'
 SPACE_BG = '#FAFAF8'
@@ -58,7 +58,7 @@ SCORES = ((('`D01`', 1.00), ('`D02`', 1.00), (None, 0.00)),
 LABELS = {
     'en': {
         'input': 'Input', 'output': 'Output',
-        'req': ('in-store takings', 'in Mar. 2001?'),
+        'req': ('in-store takings', 'in Mar. 2026?'),
         'syn': ('also: store turnover,', 'offline shops’ sales, …'),
         'catalog': 'catalog, 26 definitions',
         'cards': (('`D01`', 'store revenue', 'after coupons'), ('`D02`', 'store revenue', 'before coupons')),
@@ -70,7 +70,7 @@ LABELS = {
         's3': 'judge', 's3_note': 'cross-encoder (XLM-R, 12 layers) ×3, mean $\\hat{y}$',
         'pair': 'one pass per candidate',
         'seg': (('request', 'in-store takings…'), ('definition', '`sum(ss_net_paid)`'),
-                ('choices', 'after coupons'), ('differences', '`D02`: before')),
+                ('attributes', 'after coupons'), ('differences', '`D02`: before')),
         'layer': 'Transformer layers ×12: request and definition tokens attend to each other',
         's4': 'decide', 's4_note': 'thresholds .1, .9',
         'cols': ('in-store takings', 'store profit'),
@@ -91,7 +91,7 @@ LABELS = {
     },
     'zh': {
         'input': '输入', 'output': '输出',
-        'req': ('2001 年 3 月实体店', '的收入是多少？'),
+        'req': ('2026 年 3 月实体店', '的收入是多少？'),
         'syn': ('其他说法：门店流水、', '线下卖了多少钱等'),
         'catalog': '目录，26 条定义',
         'cards': (('`D01`', '门店营业额', '扣券后实付'), ('`D02`', '门店营业额', '扣券前')),
@@ -103,7 +103,7 @@ LABELS = {
         's3': '判别', 's3_note': '交叉编码器（XLM-R，12 层）×3，$\\hat{y}$ 取平均',
         'pair': '每个候选算一次',
         'seg': (('请求', '实体店的收入…'), ('定义', '`sum(ss_net_paid)`'),
-                ('口径', '扣券后实付'), ('区别', '`D02`：扣券前')),
+                ('属性', '扣券后实付'), ('区别', '`D02`：扣券前')),
         'layer': '12 层 Transformer：请求与定义的 token 互相注意',
         's4': '判定', 's4_note': '阈值 .1、.9',
         'cols': ('实体店的收入', '门店利润'),
@@ -148,8 +148,8 @@ def step_box(s, x, y, w, h, n, title, note, band_h=2.6):
     return y + band_h
 
 
-def pill(s, x, yc, label, color, w, size=TAG):
-    s.rect(x, yc - 1.1, w, 2.2, WHITE, color, .16, r=1.1)
+def pill(s, x, yc, label, color, w, size=TAG, h=2.2):
+    s.rect(x, yc - h / 2, w, h, WHITE, color, .16, r=h / 2)
     s.text(x + w / 2, baseline(yc, size), label, size, color, align='center', width=w - .4)
 
 
@@ -212,10 +212,12 @@ def draw(s, lang):
         key_icon(s, x0 + 1.0, yc, BLUE_TXT, k=.6)
         text(x0 + 3.2, baseline(yc, TINY), wd, TINY, INK)
         text(x0 + w1 - .8, baseline(yc, TINY), ids, TINY, BLUE_TXT, align='right')
+    # Bottom line: a hit is answered here (left); a miss leaves right, into recall, so the arrow starts at "miss".
     my = b1 + 3.4 + trow * 2 - .2
-    mark(s, x0 + 1.6, my, False, k=.55)
-    text(x0 + 2.8, baseline(my, TINY), L['miss'], TINY, RED, 'bold')
-    text(x0 + w1 - .8, baseline(my, TINY), L['hit_note'], TINY, BLUE_TXT, align='right')
+    text(x0 + 1.0, baseline(my, TINY), L['hit_note'], TINY, BLUE_TXT)
+    miss_w = measure(L['miss'], TINY, 'bold')
+    text(x0 + w1 - .8, baseline(my, TINY), L['miss'], TINY, RED, 'bold', align='right')
+    mark(s, x0 + w1 - .8 - miss_w - .9, my, False, k=.55)
     # request -> alias table
     arrow(s, [(bx + bw / 2, by0 + bh + .2), (bx + bw / 2, r1 - .4)], BLUE)
     # Recall: the embedding space, and the 8 candidates.
@@ -231,11 +233,14 @@ def draw(s, lang):
            (5.0, 2.9, ''), (8.6, 2.7, ''), (-4.9, 2.7, '')]
     rad = 3.2
     s.circle(qx, qy, rad, None, BLUE, .16)
+    lab_x = qx - rad - 1.0                           # labels clear of the circle, tied to their points by leaders
     for dx, dy, lab in pts:
         inside = math.hypot(dx, dy) < rad
-        s.circle(qx + dx, qy + dy, .4, BLUE if lab else ('#9DB9E0' if inside else GREY_TOK), None)
         if lab:
-            text(qx - rad - .35, baseline(qy + dy, TINY - .5), f'`{lab}`', TINY - .5, BLUE_TXT, align='right')
+            s.line(lab_x + .25, qy + dy, qx + dx - .45, qy + dy, BLUE, .1)
+            text(lab_x, baseline(qy + dy, TINY - .5), f'`{lab}`', TINY - .5, BLUE_TXT, align='right')
+        s.circle(qx + dx, qy + dy, .4, BLUE if lab else ('#9DB9E0' if inside else GREY_TOK), None)
+    assert lab_x - measure('`D01`', TINY - .5) > ex + .3, 'recall labels leave the embedding panel'
     star(s, qx, qy, .95, AMBER)
     # catalog -> recall (definitions embedded once)
     arrow(s, [(cx + cw / 2, cat_bottom + .2), (cx + cw / 2, r1 - .4)], EDGE)
@@ -251,18 +256,20 @@ def draw(s, lang):
         text(xx + cwid / 2, baseline(yy + 1.1, TINY), f'`{d}`', TINY, BLUE_TXT if hot else INK, align='center')
 
     # ===== Row 2: judge (3, right) -> decide (4, left) =====
-    r2 = r1 + h1 + 1.8
+    seed_d = 1.0                                     # offset of the stacked seed frames behind the judge
+    r2 = r1 + h1 + seed_d + 1.8                      # room for the x8 arrow above the stacked frames
     h2 = 20.4
     w4 = 22.0
     x3 = x0 + w4 + 3.0
     w3 = x1 - x3
-    for d in (1.0, .5):                              # three seeds
+    for d in (seed_d, seed_d / 2):                   # three seeds
         s.rect(x3 + d, r2 - d, w3, h2, WHITE, RULE, .12, r=.5)
     b3 = step_box(s, x3, r2, w3, h2, 3, L['s3'], L['s3_note'])
-    # recall -> judge
-    arrow(s, [(gx + 2 * cwid, b1 + 1.4 + 2.9 + 2.2 + .2), (gx + 2 * cwid, r2 - 1.3)], BLUE)
-    text(gx + 2 * cwid + .7, baseline(r2 - .95, TINY), '×8', TINY, BLUE_TXT, 'bold')
-    # Tokens: [CLS] request [SEP][SEP] definition | choices | differences [SEP]
+    # recall -> judge: one pass per candidate; the arrow stops on the back seed frame
+    ax_ = gx + 2 * cwid + .75                        # centre of the 4 x 2 chip grid
+    arrow(s, [(ax_, b1 + 1.4 + 2.9 + 2.2 + .2), (ax_, r2 - seed_d - .15)], BLUE)
+    text(ax_ + .6, baseline((r1 + h1 + r2 - seed_d) / 2, TINY), '×8', TINY, BLUE_TXT, 'bold')
+    # Tokens: [CLS] request [SEP][SEP] definition | attributes | differences [SEP]
     segs = [(1, INK), (6, C_REQ), (2, GREY_TOK), (8, C_DEF), (5, C_CHO), (5, C_DIF), (1, GREY_TOK)]
     tok, gap = 1.42, .3
     n = sum(k for k, _ in segs)
@@ -300,13 +307,20 @@ def draw(s, lang):
         s.rect(lay_x0, yy, lay_x1 - lay_x0, lay_h, '#F3F2EE', EDGE, .12, r=.35)
     text(cls_x0 + 1.4, baseline(ys_l[-1] + lay_h / 2, TINY - .6), L['layer'], TINY - .6, MUTED)
     for x in xs[1:]:                                  # each token enters the first layer
-        s.line(x + tok / 2, ty - .15, x + tok / 2, ys_l[0] + lay_h + .05, '#DAD7D1', .1)
-    # Attention: a request token reads the definition, choice and difference tokens.
-    q_i = 3
-    for j, c in ((n - 3, C_DIF), (n - 8, C_CHO), (12, C_DEF)):
+        s.line(x + tok / 2, ty - .15, x + tok / 2, ys_l[0] + lay_h + .05, '#E2DFD9', .1)
+    # Attention: request tokens read the definition, attribute and difference tokens. The three arcs start at
+    # different request tokens and nest (outer arc = farther segment), so none overlap; a white halo keeps
+    # them legible where they cross the token connectors.
+    room = ty - lay_bot                               # free height between tokens and the first layer
+    arcs = ((2, n - 3, C_DIF, .80), (4, n - 8, C_CHO, .58), (6, 12, C_DEF, .36))
+    for q_i, j, c, frac in arcs:
         p0, p3 = (xs[q_i] + tok / 2, ty - .15), (xs[j] + tok / 2, ty - .15)
-        hgt = 1.0 + (p3[0] - p0[0]) * .045
-        s.curve(p0, (p0[0], ty - hgt - .4), (p3[0], ty - hgt - .4), p3, c, .2)
+        ctrl = ty - .15 - frac * room / .75           # a cubic with level controls peaks at 3/4 of their height
+        for colour, width in ((WHITE, .55), (c, .2)):
+            s.curve(p0, (p0[0], ctrl), (p3[0], ctrl), p3, colour, width)
+    assert arcs[0][1] > arcs[1][1] > arcs[2][1] and arcs[0][0] < arcs[1][0] < arcs[2][0], 'arcs must nest'
+    for x, c in zip(xs, cols):                       # tokens back on top of the arcs' halos
+        s.rect(x, ty, tok, tok, c, None, r=.25)
     # [CLS] rises through the layers to the head; \hat{y} leaves to the left, into step 4.
     cls_x = xs[0] + tok / 2
     top_l = ys_l[-1]
@@ -317,8 +331,8 @@ def draw(s, lang):
     s.line(cls_x, top_l, cls_x, hy + .85, INK, .18)
     s.rect(cls_x - .85, hy - .85, 1.7, 1.7, INK, None, r=.3)
     text(cls_x, baseline(hy, TINY - .4), 'σ', TINY - .4, WHITE, align='center')
-    arrow(s, [(cls_x - .95, hy), (x3 - .4, hy)], INK)
-    text(x3 - 1.2, baseline(hy - 1.35, TAG), r'$\hat{y}$', TAG, INK, align='right')
+    arrow(s, [(cls_x - .95, hy), (x0 + w4 + .25, hy)], INK)       # into step 4's frame
+    text((x0 + w4 + x3) / 2, baseline(hy - 1.35, TAG), r'$\hat{y}$', TAG, INK, align='center')
     # MLP note right of the head
     text(cls_x + 1.4, baseline(hy, TINY - .6), '[CLS] → MLP → σ', TINY - .6, MUTED)
 
@@ -343,9 +357,12 @@ def draw(s, lang):
             w = max(sc(p) - gx0, .3)
             s.rect(gx0, yc - .42, w, .84, BLUE if p >= HI else (AMBER if p >= LO else EDGE), None, r=.15)
     zy = yy0 + (3 * rowh + 3.0) + 1.6 + 3 * rowh + 1.1
-    for (a, b), zl, zc in zip(((0, LO), (LO, HI), (HI, 1)), L['zones'], (MUTED, AMBER, BLUE_TXT)):
-        xc = (sc(a) + sc(b)) / 2
-        text(xc + (1.1 if a == 0 else (-.9 if b == 1 else 0)), baseline(zy, TINY - .6), zl, TINY - .6, zc, align='center')
+    # Zone names under the axis: the narrow outer zones are labelled flush with the axis ends, so no label runs
+    # past the chart.
+    for (a, b), zl, zc, al in zip(((0, LO), (LO, HI), (HI, 1)), L['zones'], (MUTED, AMBER, BLUE_TXT),
+                                  ('left', 'center', 'right')):
+        xz = {'left': gx0, 'center': (sc(a) + sc(b)) / 2, 'right': gx1}[al]
+        text(xz, baseline(zy, TINY - .6), zl, TINY - .6, zc, align=al)
     assert zy + .8 < r2 + h2, (zy, r2 + h2)
 
     # ===== Output: the four replies =====
@@ -355,9 +372,10 @@ def draw(s, lang):
     bwid = 10.2
     reqx = x0 + bwid + 1.2
     outx = x0 + 36.0
+    first_o = 3.7                                    # first reply row: its pill clears the Output tag by .4
     rows_o = []
     for k, (lab, bc, req, out) in enumerate(L['replies']):
-        yc = ro + 3.3 + pitch * k
+        yc = ro + first_o + pitch * k
         rows_o.append(yc)
         s.rect(x0, yc - 1.0, bwid, 2.0, bc, None, r=1.0)
         text(x0 + bwid / 2, baseline(yc, TAG), lab, TAG, WHITE, 'bold', align='center', width=bwid - .3)
@@ -379,10 +397,10 @@ def draw(s, lang):
     yr = rows_o[2]
     s.route([(x0 - .2, yr), (lane_l, yr), (lane_l, r1 + 7.0), (x0 - .4, r1 + 7.0)], BLUE_TXT, .18, dash=(.7, .45),
             length=.8, radius=.5)
-    out_end = ro + 3.3 + pitch * 3 + 1.2
+    out_end = ro + first_o + pitch * 3 + 1.2
 
     # ===== Offline: how the judge's training data is made =====
-    yo = out_end + 1.2
+    yo = out_end + .9
     ho = H - yo - .5
     s.rect(x0, yo, x1 - x0, ho, '#FBFAFD', LEARN, .16, r=.5, dash=(.9, .5))
     text(x0 + 1.0, baseline(yo + 1.4, TAG), L['off'], TAG, LEARN, 'bold')
@@ -403,18 +421,26 @@ def draw(s, lang):
         text(mx + 1.1, baseline(yc, TINY), L['rows'][k], TINY, INK, width=colx[0] - mx - 3.2)
         for c, ok in zip(colx, labels[k]):
             mark(s, c, yc, ok, k=.55)
-    iw = 15.6
+    iw, ih = 15.6, 1.8                               # intent pills: 1.8 tall so neighbours 2.2 apart do not touch
     inty = [(rows_y[0] + rows_y[1]) / 2, rows_y[2], rows_y[3]]
-    sx, sy = x0 + iw + 4.4, (inty[0] + inty[2]) / 2
+    assert min(b - a for a, b in zip(inty, inty[1:])) >= ih + .3, 'intent pills touch'
+    sx, sy = x0 + iw + 4.4, inty[1]                  # the middle intent runs straight into the LLM mark
+    jx = sx - 2.4                                    # the three intents merge here, then one line enters the LLM
     for k, (label, yc) in enumerate(zip(L['intents'], inty)):
-        pill(s, x0 + .8, yc, label, C_INT[k], iw, size=TINY)
-        s.route([(x0 + .8 + iw + .15, yc), (sx - 1.5, yc), (sx - 1.5, sy), (sx - 1.2, sy)], C_INT[k], .15, heads=None, radius=.4)
+        pill(s, x0 + .8, yc, label, C_INT[k], iw, size=TINY, h=ih)
+        pts_i = [(x0 + .8 + iw + .15, yc), (jx, yc)] + ([(jx, sy)] if abs(yc - sy) > 1e-6 else [])
+        s.route(pts_i, C_INT[k], .15, heads=None, radius=.4)
+    s.line(jx, sy, sx - 1.2, sy, LEARN, .15)
     sparkle(s, sx, sy, 1.15, LEARN)
+    llm_w = measure('LLM', TINY - .6, 'bold')
     text(sx, baseline(sy + 2.0, TINY - .6), 'LLM', TINY - .6, LEARN, 'bold', align='center')
+    assert jx < sx - llm_w / 2 - .4 and sx + llm_w / 2 + .4 < sx + 2.0, 'LLM label touches the routes'
     for yc in rows_y:
-        s.route([(sx + 1.3, sy), (sx + 2.0, sy), (sx + 2.0, yc), (mx - .25, yc)], LEARN, .13, radius=.4, length=.6)
-    assert rows_y[-1] + 1.1 < yo + ho, (rows_y[-1], yo + ho)
+        mid = [(sx + 2.0, sy), (sx + 2.0, yc)] if abs(yc - sy) > 1e-6 else []
+        s.route([(sx + 1.3, sy)] + mid + [(mx - .25, yc)], LEARN, .13, radius=.4, length=.6)
+    assert rows_y[-1] + ih / 2 + .7 <= yo + ho, (rows_y[-1], yo + ho)   # last pill and row clear the frame
     # training lane: offline -> judge (right lane)
     s.route([(x1 + .2, yo + ho / 2), (lane_r, yo + ho / 2), (lane_r, r2 + h2 / 2), (x1 + 1.3, r2 + h2 / 2)], LEARN, .2,
             dash=(.8, .5), length=.85, radius=.5)
-    text(lane_r - .5, baseline(yo - .9, TINY), L['train'], TINY, LEARN, 'bold', align='right')
+    # label in the free strip under the judge, beside the lane (clear of the offline frame and the replies)
+    text(lane_r - .6, baseline(ro + 1.15, TINY), L['train'], TINY, LEARN, 'bold', align='right')

@@ -75,6 +75,7 @@
 \input{gen/workload-example}
 % Reuse-phase cost reduction ranges across warmed TPC-DS (agents 9-16) and RelBench (cutoffs 2-5),
 % computed automatically from gen/population.tex and gen/relbench.tex so reruns propagate everywhere.
+\ExplSyntaxOn\providecommand{\fpeval}[1]{\fp_eval:n{#1}}\ExplSyntaxOff
 \newcommand{\ReuseFmtOne}[1]{\fpeval{trunc(round(#1,1),0)}.\fpeval{round((round(#1,1)-trunc(round(#1,1),0))*10,0)}}
 \newcommand{\RbStackMavraTokRedX}{\ReuseFmtOne{\RbStackNoneTok/\RbStackMavraTok}}
 \newcommand{\RbTrialMavraTokRedX}{\ReuseFmtOne{\RbTrialNoneTok/\RbTrialMavraTok}}
