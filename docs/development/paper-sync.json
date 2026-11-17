@@ -4,32 +4,30 @@
   "repository_url": "https://github.com/mmmttt000045/icde-2027-paper",
   "branch": "main",
   "status": "pushed",
-  "direction": "overleaf/ -> icde-2027-paper main: lookup scaling on revision v3 (exp/2026-11-17-lookup-scale README 4-6). Section IV-C adds catalog-tuned recall, the widened absence check and peer-group coherence; Section V-C and Fig. 8 report v3 (95.1% vs 95.9% for Top-8 + LLM over the same candidates, p=0.68, 9.3x fewer tokens; fresh check 87.8% vs 95.6%); intro C2 sentence reworded. The no-peer-difference and density ablations (README 7) are still running and are left out of this version.",
-  "previous_head": "eb4598b64279fcc250d8fe4cf265ce49421852d1",
-  "remote_commit": "3343f984bf23f7c0e60f9ad4f7aa528663360985",
+  "direction": "overleaf/ -> icde-2027-paper main: lookup ablations on revision v3 (exp/2026-11-17-lookup-scale README 7.1-7.4) merged onto the author edits e762939 and da3384d. Section 6.3 adds a 'Peer differences and phrasing density' paragraph. With the same data, cross-encoders without peer differences reach 89.5% with a test-tuned threshold (MAVRA's judges 88.5%) and a 5.0% wrong-set rate at 82.0% direct coverage under MAVRA's thresholds (MAVRA 3.8% at 80.5%). Without the widened check and the peer-group rule, MAVRA's rate is 5.9%. Cutting core phrasings to 6 per intent leaves glm_174 first responses at 75.3% (v3 74.1%), below the registered thresholds, so the cause of the 204-rewrite gap is stated as open. The 26-definition sentence no longer attributes the single-CE gap to peer differences (one model vs. three). Fig. 8 adds the CE w/o diffs line and its caption.",
+  "previous_head": "da3384daca1e0783fab037f790f0dee22b236d03",
+  "remote_commit": "e107ca27990b8b4b9d846fef7fb15ad6bac55968",
   "pending_payload": null,
   "changed_paths": [
     "figures/lookup-scale.pdf",
     "figures/lookup-scale.tex",
     "gen/lookup-scale.tex",
-    "sections/01-introduction.tex",
-    "sections/04-design.tex",
     "sections/05-evaluation.tex"
   ],
   "preserve_remote_only": true,
   "deletions": [],
   "validation": {
-    "tex_compile": "build.sh en with TeX Live 2026: 13 pages (body ends on page 12), 0 undefined references, 5 overfull boxes identical to the committed HEAD build (none introduced).",
-    "dependency_sync": "tools/sync-paper-repo.py dry run then --apply --push: 6 changed files, 0 added, 0 deleted, 4 remote-only files preserved.",
-    "pdf_layout": "Pages 9-10 rendered and checked: new Fig. 8 (v3) and the Section 6.3 paragraph; no '??' placeholders in the PDF text. The left column of page 10 is about 5 lines short until the ablation sentences return.",
-    "remote_checked": "Paper repo head eb4598b equalled the last recorded remote_commit before syncing (no Overleaf edits to merge); gh api confirms main = 3343f98.",
-    "scope": "Lookup scaling text, macros and Fig. 8 only; Table V unchanged (the v3 rule gives identical decisions on the 26-definition core)."
+    "tex_compile": "build.sh en with TeX Live 2026: 13 pages, body ends on page 11 (references on 11-13). The pure remote da3384d build has 12 pages with the conclusion also on page 11, so the new paragraph only pushes the references. 0 undefined references; the same 3 overfull boxes as the remote build.",
+    "dependency_sync": "tools/sync-paper-repo.py --force: tested with --apply on a cp -a copy first, then --apply --push. 4 changed files (figures/lookup-scale.pdf, figures/lookup-scale.tex, gen/lookup-scale.tex, sections/05-evaluation.tex), 0 added, 0 deleted, 4 remote-only files preserved. A word diff against da3384d shows only the intended edits.",
+    "pdf_layout": "Pages 9-10 rendered and checked: Fig. 8 with the CE w/o diffs line (MAVRA drawn on top in panel b) and the new paragraph closing Section 6.3; no '??' in the PDF text.",
+    "remote_checked": "The paper repo had moved from 3343f98 to da3384d (two author commits on 10 files). The local copies of those files equalled 3343f98. The remote versions were taken unchanged (main repo 8b8259f) and the lookup edits were reapplied on the new text. gh api confirms main = e107ca2.",
+    "scope": "Section 6.3 lookup text (26-definition sentence and a new ablation paragraph, EN + ZH), Fig. 8 PDF/caption/description, gen/lookup-scale.tex. The Chinese reading text of the author edits is as the authors left it."
   },
-  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/3343f984bf23f7c0e60f9ad4f7aa528663360985",
+  "commit_url": "https://github.com/mmmttt000045/icde-2027-paper/commit/e107ca27990b8b4b9d846fef7fb15ad6bac55968",
   "sync_authorization": "AGENTS.md: push verified paper changes to the paper repository (user 2026-11-11 & 2026-11-13).",
   "delivery_mode": "github_only",
   "source_package": null,
-  "source_commit": "bc17e28b564d119cd299b92c12f4bd03bb116a50",
+  "source_commit": "8b8259f5c10a401a3a6113868e066edc546fdca5",
   "source_worktree": true,
   "restoration": null,
   "source_file_sha256": {
@@ -43,5 +41,25 @@
     "sections/06-conclusion.tex": "5cf23eb56b68b975ae35f46587ea83f8af3f509f0f47becefd5e8076bdaf1797"
   },
   "pending_local_paths_not_in_this_commit": [],
-  "overleaf_merge": null
+  "overleaf_merge": {
+    "remote_commits": [
+      "e762939",
+      "da3384d"
+    ],
+    "base": "3343f98",
+    "merged_in": "8b8259f",
+    "files": [
+      "figures/lookup-scale.tex",
+      "figures/two-schemas.tex",
+      "sections/01-introduction.tex",
+      "sections/02-background.tex",
+      "sections/03-overview.tex",
+      "sections/04-design.tex",
+      "sections/05-evaluation.tex",
+      "sections/06-conclusion.tex",
+      "sections/abstract.tex",
+      "tables/served-split.tex"
+    ],
+    "method": "Local copies equalled the base, so the remote versions were taken unchanged; the lookup edits from 9c86f6e were reapplied on the remote 05-evaluation.tex and figures/lookup-scale.tex."
+  }
 }
