@@ -1,0 +1,66 @@
+{
+  "rows": {
+    "full-recheck@0/1": {
+      "writes": 0,
+      "executed": 0,
+      "reused": 0,
+      "db_ms_per_use": 2.6467822265624985,
+      "uses": 1024
+    },
+    "full-recheck@1/2": {
+      "writes": 32,
+      "executed": 496,
+      "reused": 0,
+      "db_ms_per_use": 76.12009667968749,
+      "uses": 1024
+    },
+    "full-recheck@1/8": {
+      "writes": 8,
+      "executed": 112,
+      "reused": 0,
+      "db_ms_per_use": 19.333062499999997,
+      "uses": 1024
+    },
+    "full-recheck@2/1": {
+      "writes": 128,
+      "executed": 2016,
+      "reused": 0,
+      "db_ms_per_use": 295.98159374999994,
+      "uses": 1024
+    },
+    "mavra@0/1": {
+      "writes": 0,
+      "executed": 0,
+      "reused": 0,
+      "db_ms_per_use": 2.3594873046875,
+      "uses": 1024
+    },
+    "mavra@1/2": {
+      "writes": 32,
+      "executed": 124,
+      "reused": 372,
+      "db_ms_per_use": 22.2768056640625,
+      "uses": 1024
+    },
+    "mavra@1/8": {
+      "writes": 8,
+      "executed": 28,
+      "reused": 84,
+      "db_ms_per_use": 6.869333984375001,
+      "uses": 1024
+    },
+    "mavra@2/1": {
+      "writes": 128,
+      "executed": 504,
+      "reused": 1512,
+      "db_ms_per_use": 83.52046484375,
+      "uses": 1024
+    }
+  },
+  "trigger_overhead": {
+    "inserts_each": 60,
+    "median_ms_with_trigger": 25.762278,
+    "median_ms_without": 24.614299,
+    "rows_per_insert": 200
+  }
+}

@@ -1,0 +1,6 @@
+# Shell scripts must keep LF line endings across platforms.
+*.sh text eol=lf
+
+# Vector figures are binary files.
+*.pdf -text
+*.pdf binary

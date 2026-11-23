@@ -1,0 +1,101 @@
+{
+  "experiment": "relbench-4call-truncation",
+  "purpose": "Evaluate fairness of MAVRA's <=4 planner call / <=6 tool call reuse cap at cutoffs 2-5 by measuring No memory under the identical cap across all 3 paired runs per database.",
+  "runs": {
+    "rel-stack": [
+      "runs/none-rel-stack-r1",
+      "runs/none-rel-stack-r2",
+      "runs/none-rel-stack-r3"
+    ],
+    "rel-trial": [
+      "runs/none-rel-trial-r1",
+      "runs/none-rel-trial-r2",
+      "runs/none-rel-trial-r3"
+    ]
+  },
+  "mavra_reuse_calls_mean": {
+    "rel-stack": 2.7,
+    "rel-trial": 3.7,
+    "refit_only_served_sessions_per_db": "42/45",
+    "refit_only_max_gap": {
+      "auc": 0.003,
+      "mae_pct": 1.1
+    }
+  },
+  "no_memory_truncated_to_4_calls": {
+    "rel-stack": {
+      "reuse_sessions": 36,
+      "all_sessions": 45,
+      "valid_reuse_submissions_le4_calls": 0,
+      "valid_reuse_submissions_le4_calls_le6_tools": 0,
+      "valid_all_submissions_le4_calls": 1,
+      "first_clean_validation_planner_calls_reuse": {
+        "min": 6,
+        "median": 10.0,
+        "max": 19
+      },
+      "first_clean_validation_tool_calls_reuse": {
+        "min": 14,
+        "median": 20.0,
+        "max": 28
+      },
+      "five_cutoff_mean_metrics": {
+        "user-badge_auc": {
+          "full_40_call": 0.85,
+          "reuse_capped_le4_call": 0.608,
+          "all_capped_le4_call": 0.548,
+          "mavra": 0.858
+        },
+        "user-engagement_auc": {
+          "full_40_call": 0.862,
+          "reuse_capped_le4_call": 0.634,
+          "all_capped_le4_call": 0.654,
+          "mavra": 0.885
+        },
+        "post-votes_mae": {
+          "full_40_call": 0.0645,
+          "reuse_capped_le4_call": 0.0666,
+          "all_capped_le4_call": 0.0672,
+          "mavra": 0.0635
+        }
+      }
+    },
+    "rel-trial": {
+      "reuse_sessions": 36,
+      "all_sessions": 45,
+      "valid_reuse_submissions_le4_calls": 0,
+      "valid_reuse_submissions_le4_calls_le6_tools": 0,
+      "valid_all_submissions_le4_calls": 0,
+      "first_clean_validation_planner_calls_reuse": {
+        "min": 13,
+        "median": 18.0,
+        "max": 40
+      },
+      "first_clean_validation_tool_calls_reuse": {
+        "min": 19,
+        "median": 32.0,
+        "max": 64
+      },
+      "five_cutoff_mean_metrics": {
+        "study-adverse_mae": {
+          "full_40_call": 40.27,
+          "reuse_capped_le4_call": 48.8,
+          "all_capped_le4_call": 51.02,
+          "mavra": 41.27
+        },
+        "study-outcome_auc": {
+          "full_40_call": 0.671,
+          "reuse_capped_le4_call": 0.602,
+          "all_capped_le4_call": 0.584,
+          "mavra": 0.666
+        },
+        "site-success_mae": {
+          "full_40_call": 0.419,
+          "reuse_capped_le4_call": 0.436,
+          "all_capped_le4_call": 0.44,
+          "mavra": 0.418
+        }
+      }
+    }
+  }
+}

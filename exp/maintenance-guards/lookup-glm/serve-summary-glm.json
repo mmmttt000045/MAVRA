@@ -1,0 +1,35 @@
+{
+ "first": {
+  "direct_rate": 0.644,
+  "direct_precision": 0.911,
+  "refer": 62,
+  "refer_usable": 58,
+  "alias_hits": 0,
+  "usable_rate": 0.92,
+  "seconds_mean": 0.0984,
+  "seconds_p95": 0.1132
+ },
+ "repeat": {
+  "direct_rate": 0.908,
+  "direct_precision": 0.937,
+  "refer": 16,
+  "refer_usable": 12,
+  "alias_hits": 127,
+  "usable_rate": 0.92,
+  "seconds_mean": 0.0261,
+  "seconds_p95": 0.107
+ },
+ "runs": [
+  "ft/base-dc-xl-s13",
+  "ft/base-dc-xl-s14",
+  "ft/base-dc-xl-s15"
+ ],
+ "band": [
+  0.1,
+  0.9
+ ],
+ "sigma": 0.6,
+ "k": 8,
+ "aliases": 127,
+ "device": "cuda"
+}

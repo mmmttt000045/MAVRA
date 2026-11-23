@@ -1,0 +1,737 @@
+{
+  "table": {
+    "revoke": {
+      "Benign": {
+        "R": 534,
+        "n": 534
+      },
+      "Break": {
+        "R": 840,
+        "n": 840
+      },
+      "Outside": {
+        "R": 267,
+        "n": 267
+      }
+    },
+    "schema": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "W": 636,
+        "n": 840,
+        "C": 204
+      },
+      "Outside": {
+        "W": 157,
+        "n": 267,
+        "C": 110
+      }
+    },
+    "tabletest": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "R": 840,
+        "n": 840
+      },
+      "Outside": {
+        "W": 115,
+        "n": 267,
+        "C": 89,
+        "R": 63
+      }
+    },
+    "condition": {
+      "Benign": {
+        "C": 534,
+        "n": 534
+      },
+      "Break": {
+        "C": 804,
+        "n": 840,
+        "R": 33,
+        "W": 3
+      },
+      "Outside": {
+        "W": 115,
+        "n": 267,
+        "C": 89,
+        "R": 63
+      }
+    }
+  },
+  "per_change": {
+    "tpcds/append": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "C": 135
+      },
+      "tabletest": {
+        "C": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/latekey": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 122,
+        "C": 13
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/unit": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 72,
+        "C": 63
+      },
+      "tabletest": {
+        "W": 72,
+        "C": 63
+      },
+      "condition": {
+        "W": 72,
+        "C": 63
+      }
+    },
+    "tpcds/revision": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 90,
+        "C": 45
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/dupload": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 122,
+        "C": 13
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/correct": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "C": 135
+      },
+      "tabletest": {
+        "C": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/dimhist": {
+      "revoke": {
+        "R": 135
+      },
+      "schema": {
+        "W": 91,
+        "C": 44
+      },
+      "tabletest": {
+        "R": 135
+      },
+      "condition": {
+        "C": 135
+      }
+    },
+    "tpcds/status": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 3,
+        "W": 6
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/addcol": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/backfill": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "tpcds/mirror": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    },
+    "tpch/status": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 5,
+        "W": 10
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/mirror": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 5,
+        "W": 10
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "R": 15
+      }
+    },
+    "tpch/backfill": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 15
+      },
+      "tabletest": {
+        "C": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/append": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 27
+      },
+      "tabletest": {
+        "C": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/dupload": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 18,
+        "C": 9
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/revision": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 18,
+        "C": 9
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/latekey": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "W": 24,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 27
+      },
+      "condition": {
+        "R": 24,
+        "W": 3
+      }
+    },
+    "tpch/addcol": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 15
+      },
+      "tabletest": {
+        "C": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "tpch/correct": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 27
+      },
+      "tabletest": {
+        "C": 27
+      },
+      "condition": {
+        "C": 27
+      }
+    },
+    "tpch/unit": {
+      "revoke": {
+        "R": 27
+      },
+      "schema": {
+        "C": 16,
+        "W": 11
+      },
+      "tabletest": {
+        "C": 16,
+        "W": 11
+      },
+      "condition": {
+        "C": 16,
+        "W": 11
+      }
+    },
+    "tpch/dimhist": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 4,
+        "W": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "ssb/dupload": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 30,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/append": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/backfill": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/correct": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/status": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 22,
+        "C": 11
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/addcol": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "C": 33
+      },
+      "tabletest": {
+        "C": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/revision": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 21,
+        "C": 12
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "ssb/unit": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 29,
+        "C": 4
+      },
+      "tabletest": {
+        "W": 29,
+        "C": 4
+      },
+      "condition": {
+        "W": 29,
+        "C": 4
+      }
+    },
+    "ssb/mirror": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 22,
+        "C": 11
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "R": 33
+      }
+    },
+    "ssb/dimhist": {
+      "revoke": {
+        "R": 15
+      },
+      "schema": {
+        "C": 9,
+        "W": 6
+      },
+      "tabletest": {
+        "R": 15
+      },
+      "condition": {
+        "C": 15
+      }
+    },
+    "ssb/latekey": {
+      "revoke": {
+        "R": 33
+      },
+      "schema": {
+        "W": 31,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 33
+      },
+      "condition": {
+        "C": 33
+      }
+    },
+    "financial/correct": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/dimhist": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 6,
+        "W": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/latekey": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 4,
+        "W": 5
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "R": 9
+      }
+    },
+    "financial/backfill": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 6
+      },
+      "tabletest": {
+        "C": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/revision": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "W": 6,
+        "C": 3
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/unit": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 6,
+        "W": 3
+      },
+      "tabletest": {
+        "C": 6,
+        "W": 3
+      },
+      "condition": {
+        "C": 6,
+        "W": 3
+      }
+    },
+    "financial/append": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 9
+      },
+      "tabletest": {
+        "C": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/dupload": {
+      "revoke": {
+        "R": 9
+      },
+      "schema": {
+        "C": 4,
+        "W": 5
+      },
+      "tabletest": {
+        "R": 9
+      },
+      "condition": {
+        "C": 9
+      }
+    },
+    "financial/status": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 4,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/addcol": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "C": 6
+      },
+      "tabletest": {
+        "C": 6
+      },
+      "condition": {
+        "C": 6
+      }
+    },
+    "financial/mirror": {
+      "revoke": {
+        "R": 6
+      },
+      "schema": {
+        "W": 4,
+        "C": 2
+      },
+      "tabletest": {
+        "R": 6
+      },
+      "condition": {
+        "R": 6
+      }
+    }
+  },
+  "schemas": {
+    "tpcds": {
+      "common": 981
+    },
+    "tpch": {
+      "common": 228
+    },
+    "ssb": {
+      "common": 345
+    },
+    "financial": {
+      "common": 87
+    }
+  }
+}

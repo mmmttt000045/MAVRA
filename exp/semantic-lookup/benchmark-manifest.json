@@ -1,0 +1,22 @@
+{
+  "catalog_sizes": [
+    26,
+    100,
+    500,
+    1000
+  ],
+  "pool_examples": {
+    "26": 156,
+    "100": 600,
+    "500": 3000,
+    "1000": 6000
+  },
+  "query_sets": {
+    "orig_96": 96,
+    "glm_174": 174,
+    "scale_120": 120,
+    "total": 390
+  },
+  "synth_extra_rows": 6738,
+  "catalog_1000_sha256": "f85bc3e9bc1da3c8c1e31593d6adc94c667bf5aa2ad15df3267adfffb5cd0ec2"
+}

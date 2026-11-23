@@ -1,0 +1,5 @@
+# Drawing dependencies; data-figure fonts and schematic TeX fonts are documented in README.md.
+reportlab
+matplotlib
+fonttools
+numpy

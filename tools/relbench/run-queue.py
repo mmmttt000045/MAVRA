@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Run harness cells in parallel (exp/relbench-predictive): at most --parallel at a time, a new cell only when
+the disk has --min-free-gb free (each cell copies its template database), every cell inside a memory-capped scope.
+A cell counts as finished when its run.json says so (the harness writes "finished" after the last test score), so a
+restarted queue skips it even if the queue that started it died; a cell whose harness is still running (harness.pid)
+is left alone; any other earlier attempt is moved aside and the cell starts from its first cutoff. After a failed cell
+the queue drops its database and stops its middle layer. Cells are lines of a plain file:
+
+    <arm> <dataset> <run> [extra harness arguments...]
+
+e.g. `mavra-retry rel-stack 2` or `ace rel-trial 1`.
+The dataset name maps to results/relbench-data/<dataset>, <dataset>-prep and the template relbench_<short>_t1.
+
+  python3 tools/relbench/run-queue.py cells.txt --out results/relbench-main --parallel 8 --limit rel-amazon=2
+"""
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import time
+
+ENV_DROP = ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "all_proxy")
+
+
+def log(msg, fh):
+    line = f"[{time.strftime('%m-%d %H:%M:%S')}] {msg}"
+    print(line, flush=True)
+    fh.write(line + "\n")
+    fh.flush()
+
+
+def done(out):
+    """The harness finished every cutoff and every test score without an error."""
+    try:
+        r = json.load(open(os.path.join(out, "run.json")))
+    except (OSError, ValueError):
+        return False
+    return bool(r.get("finished")) and not r.get("error")
+
+
+def harness_pid(out):
+    try:
+        return int(open(os.path.join(out, "harness.pid")).read().strip())
+    except (OSError, ValueError):
+        return None
+
+
+def running(out):
+    """The cell's harness process is alive (its command line names this cell's folder)."""
+    pid = harness_pid(out)
+    if not pid:
+        return False
+    try:
+        cmd = open(f"/proc/{pid}/cmdline", "rb").read().replace(b"\0", b" ").decode(errors="replace")
+    except OSError:
+        return False
+    return "harness.py" in cmd and f"--out {out}" in cmd
+
+
+def admin_url():
+    for key in ("MAVRA_DB_URL", "AGENTDB_URL"):
+        if os.environ.get(key):
+            return os.environ[key].strip().rsplit("/", 1)[0] + "/postgres"
+    if os.path.exists(".env"):
+        cfg = {}
+        for line in open(".env", encoding="utf-8"):
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                cfg[k.strip()] = v.strip().strip('"').strip("'")
+        val = cfg.get("MAVRA_DB_URL") or cfg.get("AGENTDB_URL")
+        if val:
+            return val.rsplit("/", 1)[0] + "/postgres"
+    return None
+
+
+def clean_up(out, fh):
+    """A failed or killed cell can leave its database (a full template copy) and its middle layer behind."""
+    pid = harness_pid(out)
+    if not pid:
+        return
+    url = admin_url()
+    if url:
+        q = f"select datname from pg_database where datname like 'relbench\\_%\\_{pid}'"
+        names = subprocess.run(["psql", url, "-Atc", q], capture_output=True, text=True).stdout.split()
+        for name in names:
+            subprocess.run(["psql", url, "-qc", f"drop database if exists {name} with (force)"], capture_output=True)
+            log(f"dropped leftover database {name}", fh)
+    left = subprocess.run(["pgrep", "-f", f"mavra --db .*_{pid} "], capture_output=True, text=True).stdout.split()
+    for p in left:
+        subprocess.run(["kill", p])
+        log(f"stopped leftover middle layer {p}", fh)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("cells")
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--parallel", type=int, default=8)
+    ap.add_argument("--min-free-gb", type=float, default=15, help="headroom for running cells' growth (appends, seed tables, temp files)")
+    ap.add_argument("--memory-max", default="24G")
+    ap.add_argument("--limit", action="append", default=[], metavar="DATASET=N",
+                    help="at most N cells of a dataset at a time (rel-amazon cells grow to about 15 GB each)")
+    a = ap.parse_args()
+    limits = {k: int(v) for k, v in (x.split("=", 1) for x in a.limit)}
+    os.makedirs(a.out, exist_ok=True)
+    fh = open(os.path.join(a.out, "queue.log"), "a")
+    cells = [line.split() for line in open(a.cells) if line.strip() and not line.startswith("#")]
+    pending = []
+    for c in cells:
+        arm, ds, run, extra = c[0], c[1], c[2], c[3:]
+        name = f"{arm}-{ds}-r{run}"
+        out = os.path.join(a.out, name)
+        short = ds.replace("rel-", "")
+        cmd = ["systemd-run", "--scope", "--quiet", "-p", f"MemoryMax={a.memory_max}", "-p", "MemorySwapMax=0",
+               "env", *[f"-u{v}" for v in ENV_DROP], "PYTHONPATH=.pydeps-relbench", "HF_HUB_OFFLINE=1",
+               "python3", "tools/relbench/harness.py", "--arm", arm, "--run", run,
+               "--data", f"results/relbench-data/{ds}", "--prep", f"results/relbench-data/{ds}-prep",
+               "--template", f"relbench_{short}_t1", "--out", out, *extra]
+        pending.append((name, out, cmd, ds))
+    running_cells = {}
+    waiting_disk = False
+    while pending or running_cells:
+        for name, (proc, out, _) in list(running_cells.items()):
+            if proc.poll() is not None:
+                ok = proc.returncode == 0 and done(out)
+                log(f"{'done' if ok else 'FAILED'} {name} (exit {proc.returncode})", fh)
+                if not ok:
+                    clean_up(out, fh)
+                del running_cells[name]
+        free = shutil.disk_usage("/").free / 2 ** 30
+        while pending and len(running_cells) < a.parallel:
+            per_ds = {}
+            for _, (_, _, ds_) in running_cells.items():
+                per_ds[ds_] = per_ds.get(ds_, 0) + 1
+            nxt = next((i for i, c in enumerate(pending) if per_ds.get(c[3], 0) < limits.get(c[3], a.parallel)), None)
+            if nxt is None:
+                break
+            if free < a.min_free_gb:
+                if not waiting_disk:
+                    log(f"waiting for disk: {free:.0f} GB free, {a.min_free_gb:.0f} GB needed ({len(pending)} cells pending)", fh)
+                waiting_disk = True
+                break
+            waiting_disk = False
+            name, out, cmd, ds = pending.pop(nxt)
+            if done(out):
+                log(f"skip {name} (finished)", fh)
+                continue
+            if running(out):
+                log(f"skip {name} (its harness is still running; not touched)", fh)
+                continue
+            if os.path.exists(out):  # an unfinished earlier attempt: kept aside, the cell starts from its first cutoff
+                stamp = time.strftime("%m%d-%H%M")
+                clean_up(out, fh)
+                os.rename(out, f"{out}.aborted-{stamp}")
+                if os.path.exists(f"{out}.log"):
+                    os.rename(f"{out}.log", f"{out}.aborted-{stamp}.log")
+                log(f"moved unfinished {name} to {name}.aborted-{stamp}", fh)
+            os.makedirs(out, exist_ok=True)
+            proc = subprocess.Popen(cmd, stdout=open(f"{out}.log", "a"), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
+            running_cells[name] = (proc, out, ds)
+            log(f"start {name} (running {len(running_cells)}, free {free:.0f} GB)", fh)
+            time.sleep(30)  # let the database copy finish before the next disk check
+            free = shutil.disk_usage("/").free / 2 ** 30
+        time.sleep(60)
+    log("queue finished", fh)
+
+
+if __name__ == "__main__":
+    main()

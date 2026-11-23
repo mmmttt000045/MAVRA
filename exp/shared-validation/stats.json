@@ -1,0 +1,626 @@
+{
+  "cells": 108,
+  "agents": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "groups": [
+    {
+      "policy": "per-agent",
+      "arrival": "staggered",
+      "agents": 1,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 0.9508150000000001,
+        "min": 0.9323060000000001,
+        "max": 0.979241
+      },
+      "uses": 16
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "staggered",
+      "agents": 2,
+      "blocks": 3,
+      "checks": {
+        "median": 16,
+        "min": 16,
+        "max": 16
+      },
+      "db_s": {
+        "median": 1.819143,
+        "min": 1.7768810000000004,
+        "max": 1.8474080000000004
+      },
+      "uses": 32
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "staggered",
+      "agents": 4,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.676823,
+        "min": 3.5320210000000007,
+        "max": 3.763666000000001
+      },
+      "uses": 64
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "staggered",
+      "agents": 8,
+      "blocks": 3,
+      "checks": {
+        "median": 64,
+        "min": 64,
+        "max": 64
+      },
+      "db_s": {
+        "median": 7.534452000000001,
+        "min": 7.216394999999997,
+        "max": 7.799913999999997
+      },
+      "uses": 128
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "staggered",
+      "agents": 16,
+      "blocks": 3,
+      "checks": {
+        "median": 128,
+        "min": 128,
+        "max": 128
+      },
+      "db_s": {
+        "median": 14.975360999999998,
+        "min": 14.590168000000006,
+        "max": 15.045735
+      },
+      "uses": 256
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "staggered",
+      "agents": 32,
+      "blocks": 3,
+      "checks": {
+        "median": 256,
+        "min": 256,
+        "max": 256
+      },
+      "db_s": {
+        "median": 29.985687999999996,
+        "min": 29.744183000000003,
+        "max": 30.18658600000001
+      },
+      "uses": 512
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "simultaneous",
+      "agents": 1,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.0937759999999994,
+        "min": 0.9285330000000004,
+        "max": 1.170719
+      },
+      "uses": 16
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "simultaneous",
+      "agents": 2,
+      "blocks": 3,
+      "checks": {
+        "median": 16,
+        "min": 16,
+        "max": 16
+      },
+      "db_s": {
+        "median": 1.999196,
+        "min": 1.915683,
+        "max": 2.1992640000000003
+      },
+      "uses": 32
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "simultaneous",
+      "agents": 4,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 4.1690059999999995,
+        "min": 4.138146999999997,
+        "max": 4.279277
+      },
+      "uses": 64
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "simultaneous",
+      "agents": 8,
+      "blocks": 3,
+      "checks": {
+        "median": 64,
+        "min": 64,
+        "max": 64
+      },
+      "db_s": {
+        "median": 9.841739999999998,
+        "min": 9.034727999999996,
+        "max": 9.852039000000005
+      },
+      "uses": 128
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "simultaneous",
+      "agents": 16,
+      "blocks": 3,
+      "checks": {
+        "median": 128,
+        "min": 128,
+        "max": 128
+      },
+      "db_s": {
+        "median": 18.27379,
+        "min": 17.76134199999999,
+        "max": 19.054062
+      },
+      "uses": 256
+    },
+    {
+      "policy": "per-agent",
+      "arrival": "simultaneous",
+      "agents": 32,
+      "blocks": 3,
+      "checks": {
+        "median": 256,
+        "min": 256,
+        "max": 256
+      },
+      "db_s": {
+        "median": 36.63457700000001,
+        "min": 34.553424,
+        "max": 37.819005000000004
+      },
+      "uses": 512
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "staggered",
+      "agents": 1,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.3985240000000005,
+        "min": 3.3915870000000004,
+        "max": 3.8823680000000005
+      },
+      "uses": 16
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "staggered",
+      "agents": 2,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.414103999999999,
+        "min": 3.389778,
+        "max": 3.4865649999999997
+      },
+      "uses": 32
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "staggered",
+      "agents": 4,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.7807300000000006,
+        "min": 3.363508,
+        "max": 3.9195550000000003
+      },
+      "uses": 64
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "staggered",
+      "agents": 8,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.6088329999999997,
+        "min": 3.5828670000000002,
+        "max": 3.658144000000001
+      },
+      "uses": 128
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "staggered",
+      "agents": 16,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.9036189999999995,
+        "min": 3.866205,
+        "max": 4.367119000000001
+      },
+      "uses": 256
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "staggered",
+      "agents": 32,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 4.7042850000000005,
+        "min": 4.21752,
+        "max": 4.8254090000000005
+      },
+      "uses": 512
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "simultaneous",
+      "agents": 1,
+      "blocks": 3,
+      "checks": {
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "db_s": {
+        "median": 3.4243959999999998,
+        "min": 3.3597920000000006,
+        "max": 3.527140000000001
+      },
+      "uses": 16
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "simultaneous",
+      "agents": 2,
+      "blocks": 3,
+      "checks": {
+        "median": 28,
+        "min": 24,
+        "max": 31
+      },
+      "db_s": {
+        "median": 3.136978,
+        "min": 2.6780239999999993,
+        "max": 3.3967799999999997
+      },
+      "uses": 32
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "simultaneous",
+      "agents": 4,
+      "blocks": 3,
+      "checks": {
+        "median": 26,
+        "min": 24,
+        "max": 30
+      },
+      "db_s": {
+        "median": 2.979285,
+        "min": 2.858741,
+        "max": 3.4496840000000004
+      },
+      "uses": 64
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "simultaneous",
+      "agents": 8,
+      "blocks": 3,
+      "checks": {
+        "median": 20,
+        "min": 20,
+        "max": 24
+      },
+      "db_s": {
+        "median": 2.5117629999999997,
+        "min": 2.4655959999999997,
+        "max": 3.615952000000001
+      },
+      "uses": 128
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "simultaneous",
+      "agents": 16,
+      "blocks": 3,
+      "checks": {
+        "median": 16,
+        "min": 16,
+        "max": 16
+      },
+      "db_s": {
+        "median": 2.2311990000000006,
+        "min": 2.1852650000000002,
+        "max": 2.2550250000000007
+      },
+      "uses": 256
+    },
+    {
+      "policy": "full-recheck",
+      "arrival": "simultaneous",
+      "agents": 32,
+      "blocks": 3,
+      "checks": {
+        "median": 14,
+        "min": 14,
+        "max": 14
+      },
+      "db_s": {
+        "median": 1.82825,
+        "min": 1.785487,
+        "max": 1.9503379999999988
+      },
+      "uses": 512
+    },
+    {
+      "policy": "mavra",
+      "arrival": "staggered",
+      "agents": 1,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 0.9390160000000001,
+        "min": 0.925797,
+        "max": 1.061083
+      },
+      "uses": 16
+    },
+    {
+      "policy": "mavra",
+      "arrival": "staggered",
+      "agents": 2,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 0.9816800000000003,
+        "min": 0.9558830000000003,
+        "max": 1.0437019999999997
+      },
+      "uses": 32
+    },
+    {
+      "policy": "mavra",
+      "arrival": "staggered",
+      "agents": 4,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.077955,
+        "min": 1.0758090000000002,
+        "max": 1.1456069999999996
+      },
+      "uses": 64
+    },
+    {
+      "policy": "mavra",
+      "arrival": "staggered",
+      "agents": 8,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.1124050000000003,
+        "min": 1.096334,
+        "max": 1.1644279999999998
+      },
+      "uses": 128
+    },
+    {
+      "policy": "mavra",
+      "arrival": "staggered",
+      "agents": 16,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.3567500000000003,
+        "min": 1.326694,
+        "max": 1.5612650000000003
+      },
+      "uses": 256
+    },
+    {
+      "policy": "mavra",
+      "arrival": "staggered",
+      "agents": 32,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.9551549999999993,
+        "min": 1.837656,
+        "max": 2.0377610000000006
+      },
+      "uses": 512
+    },
+    {
+      "policy": "mavra",
+      "arrival": "simultaneous",
+      "agents": 1,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 0.9764810000000003,
+        "min": 0.9016199999999999,
+        "max": 0.9890719999999996
+      },
+      "uses": 16
+    },
+    {
+      "policy": "mavra",
+      "arrival": "simultaneous",
+      "agents": 2,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 0.9997089999999998,
+        "min": 0.9979170000000004,
+        "max": 1.0558899999999998
+      },
+      "uses": 32
+    },
+    {
+      "policy": "mavra",
+      "arrival": "simultaneous",
+      "agents": 4,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.1236929999999998,
+        "min": 1.1109800000000005,
+        "max": 1.13623
+      },
+      "uses": 64
+    },
+    {
+      "policy": "mavra",
+      "arrival": "simultaneous",
+      "agents": 8,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.0766189999999998,
+        "min": 1.0456290000000004,
+        "max": 1.2656900000000004
+      },
+      "uses": 128
+    },
+    {
+      "policy": "mavra",
+      "arrival": "simultaneous",
+      "agents": 16,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.0375569999999998,
+        "min": 1.031645,
+        "max": 1.0772219999999997
+      },
+      "uses": 256
+    },
+    {
+      "policy": "mavra",
+      "arrival": "simultaneous",
+      "agents": 32,
+      "blocks": 3,
+      "checks": {
+        "median": 8,
+        "min": 8,
+        "max": 8
+      },
+      "db_s": {
+        "median": 1.0741290000000003,
+        "min": 1.0232920000000003,
+        "max": 1.0760950000000002
+      },
+      "uses": 512
+    }
+  ],
+  "unavailable": 0
+}

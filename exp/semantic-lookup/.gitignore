@@ -1,0 +1,7 @@
+__pycache__/
+ft_base/
+ft_scale/
+ft_retriever/
+logs/
+results/
+train_26_thin6.jsonl

@@ -1,0 +1,1886 @@
+{
+ "note": "120 multi-domain & scale lookup requests spanning M=100, 500, 1000 (48 single-target, 48 homonymous 2-def, 24 absent at M=1000).",
+ "requests": [
+  {
+   "id": "t100_h01",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "经营周报复盘：2024年9月社区即时达的销售额是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "社区即时达"
+    ]
+   }
+  },
+  {
+   "id": "t100_h02",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "帮我查一下2023年全年华南区域仓销售额总计多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华南区域仓"
+    ]
+   }
+  },
+  {
+   "id": "t100_h03",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "Please check the 退货率 for airport duty-free (all categories) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   }
+  },
+  {
+   "id": "t100_h04",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "2024年第二季度客户端App销售额表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   }
+  },
+  {
+   "id": "t100_h05",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "经营周报复盘：2024年9月跨境独立站的退货率是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   }
+  },
+  {
+   "id": "t100_h06",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "帮我查一下2023年全年跨境独立站销售额总计多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   }
+  },
+  {
+   "id": "t100_h07",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "Please check the 销售额 for WeChat mini-program (all categories) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "微信小程序"
+    ]
+   }
+  },
+  {
+   "id": "t100_h08",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "2024年第二季度跨境备货仓销售额表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "保税跨境仓"
+    ]
+   }
+  },
+  {
+   "id": "t100_h09",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "经营周报复盘：2024年9月机场免税店的销售额是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   }
+  },
+  {
+   "id": "t100_h10",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "帮我查一下2023年全年抖音直播间退货率总计多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "抖音直播间"
+    ]
+   }
+  },
+  {
+   "id": "t100_h11",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "Please check the 退货率 for WeChat mini-program (all categories) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "微信小程序"
+    ]
+   }
+  },
+  {
+   "id": "t100_h12",
+   "kind": "homonym_multi",
+   "tier": "t100",
+   "text": "2024年第二季度华东RDC仓销售额表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   }
+  },
+  {
+   "id": "t100_f01",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年特许经销渠道的退货率（限定按退款金额占实付额比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "加盟经销商"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   }
+  },
+  {
+   "id": "t100_f02",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年抖音带货的销售额（限定未扣优惠券的折前金额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "抖音直播间"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t100_f03",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年软件订阅线的销售额（限定扣除优惠券后的实付净额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t100_f04",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年快手电商店铺的退货率（限定按退回件数占销量比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "快手直播间"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   }
+  },
+  {
+   "id": "t100_f05",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年华北RDC仓的销售额（限定扣除优惠券后的实付净额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "华北中心仓"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t100_f06",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年KA大客户线的销售额（限定未扣优惠券的折前金额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t100_f07",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年客户端App的退货率（限定按退款金额占实付额比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "移动端App"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   }
+  },
+  {
+   "id": "t100_f08",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年加盟门店体系的销售额（限定未扣优惠券的折前金额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "加盟经销商"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t100_f09",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年前置仓即时零售的退货率（限定按退款金额占实付额比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "社区即时达"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   }
+  },
+  {
+   "id": "t100_f10",
+   "kind": "facet_single",
+   "tier": "t100",
+   "text": "财务口径核对：2024年上半年中小商户线的销售额（限定未扣优惠券的折前金额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t100_s01",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "2024年7月KA大客户线的客单价是多少？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ]
+   }
+  },
+  {
+   "id": "t100_s02",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "业务看板需要2023年第四季度跨境独立站销量，请给出结果。",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "跨境独立站"
+    ]
+   }
+  },
+  {
+   "id": "t100_s03",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "What was the 销量 on mobile app  in 2024?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   }
+  },
+  {
+   "id": "t100_s04",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "2024年7月前置仓即时零售的客单价是多少？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "社区即时达"
+    ]
+   }
+  },
+  {
+   "id": "t100_s05",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "业务看板需要2023年第四季度SaaS云订阅销量，请给出结果。",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ]
+   }
+  },
+  {
+   "id": "t100_s06",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "What was the 销量 on enterprise B2B  in 2024?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "企业大客户B2B"
+    ]
+   }
+  },
+  {
+   "id": "t100_s07",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "2024年7月昆山总仓的销量是多少？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   }
+  },
+  {
+   "id": "t100_s08",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "业务看板需要2023年第四季度中小企业SMB销量，请给出结果。",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ]
+   }
+  },
+  {
+   "id": "t100_s09",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "What was the 销量 on North China central warehouse  in 2024?",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "华北中心仓"
+    ]
+   }
+  },
+  {
+   "id": "t100_s10",
+   "kind": "domain_single",
+   "tier": "t100",
+   "text": "2024年7月直播电商抖音端的客单价是多少？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "抖音直播间"
+    ]
+   }
+  },
+  {
+   "id": "t500_h01",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "经营周报复盘：2024年9月男装品类目录的利润是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "男装"
+    ]
+   }
+  },
+  {
+   "id": "t500_h02",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "帮我查一下2023年全年移动端App退货金额总计多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "移动端App"
+    ]
+   }
+  },
+  {
+   "id": "t500_h03",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "Please check the 利润 for franchise dealer (all categories) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "加盟经销商"
+    ]
+   }
+  },
+  {
+   "id": "t500_h04",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "2024年第二季度快手带货利润表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "快手直播间"
+    ]
+   }
+  },
+  {
+   "id": "t500_h05",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "经营周报复盘：2024年9月信用卡分期的销售额是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "信用卡分期"
+    ]
+   }
+  },
+  {
+   "id": "t500_h06",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "帮我查一下2023年全年SaaS云订阅利润总计多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "SaaS云订阅"
+    ]
+   }
+  },
+  {
+   "id": "t500_h07",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "Please check the 销售额 for campus student membership (all categories) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "校园联名会员"
+    ]
+   }
+  },
+  {
+   "id": "t500_h08",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "2024年第二季度授权售后网点利润表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "线下授权网点"
+    ]
+   }
+  },
+  {
+   "id": "t500_h09",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "经营周报复盘：2024年9月达人种草投放的退货金额是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "达人种草投放"
+    ]
+   }
+  },
+  {
+   "id": "t500_h10",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "帮我查一下2023年全年男装品类门店退货金额总计多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "男装"
+    ]
+   }
+  },
+  {
+   "id": "t500_h11",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "Please check the 利润 for paid search SEM (all categories) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "搜索竞价SEM"
+    ]
+   }
+  },
+  {
+   "id": "t500_h12",
+   "kind": "homonym_multi",
+   "tier": "t500",
+   "text": "2024年第二季度自营大店退货金额表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "直营旗舰店"
+    ]
+   }
+  },
+  {
+   "id": "t500_f01",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年华南RDC仓的退货率（限定按退款金额占实付额比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "华南区域仓"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   }
+  },
+  {
+   "id": "t500_f02",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年政企阳光采购的退货率（限定按退回件数占销量比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "政企采购线"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   }
+  },
+  {
+   "id": "t500_f03",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年自营大店的退货率（限定按退款金额占实付额比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "直营旗舰店"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   }
+  },
+  {
+   "id": "t500_f04",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年财付通微信收单的利润（限定不扣优惠券的账面毛利）是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "微信支付渠道"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   }
+  },
+  {
+   "id": "t500_f05",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年授权售后网点的销售额（限定扣除优惠券后的实付净额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "线下授权网点"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t500_f06",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年温控冷链仓的退货率（限定按退回件数占销量比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "冷链生鲜仓"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   }
+  },
+  {
+   "id": "t500_f07",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年跨境备货仓的利润（限定扣除成本及优惠券后的净利）是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "保税跨境仓"
+    ],
+    "profit": [
+     "净利润（实付减成本）"
+    ]
+   }
+  },
+  {
+   "id": "t500_f08",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年中小商户线的利润（限定不扣优惠券的账面毛利）是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "中小企业SMB"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   }
+  },
+  {
+   "id": "t500_f09",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年短视频信息流的销售额（限定扣除优惠券后的实付净额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "信息流广告"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t500_f10",
+   "kind": "facet_single",
+   "tier": "t500",
+   "text": "财务口径核对：2024年上半年关键词竞价投放的退货率（限定按退回件数占销量比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "搜索竞价SEM"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   }
+  },
+  {
+   "id": "t500_s01",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "2024年7月口岸免税专柜的订单数是多少？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "机场免税店"
+    ]
+   }
+  },
+  {
+   "id": "t500_s02",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "业务看板需要2023年第四季度华东中心仓订单数，请给出结果。",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "华东中心仓"
+    ]
+   }
+  },
+  {
+   "id": "t500_s03",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "What was the 优惠券金额 on Alipay gateway  in 2024?",
+   "stated": {
+    "subject": [
+     "优惠券金额"
+    ],
+    "channel": [
+     "支付宝渠道"
+    ]
+   }
+  },
+  {
+   "id": "t500_s04",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "2024年7月导购私域渠道的客单价是多少？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "企微私域池"
+    ]
+   }
+  },
+  {
+   "id": "t500_s05",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "业务看板需要2023年第四季度华南区域仓优惠券金额，请给出结果。",
+   "stated": {
+    "subject": [
+     "优惠券金额"
+    ],
+    "channel": [
+     "华南区域仓"
+    ]
+   }
+  },
+  {
+   "id": "t500_s06",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "What was the 订单数 on VIP Black-Card members  in 2024?",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "付费黑卡会员"
+    ]
+   }
+  },
+  {
+   "id": "t500_s07",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "2024年7月淘宝客与返利联盟的销量是多少？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "联盟分销CPS"
+    ]
+   }
+  },
+  {
+   "id": "t500_s08",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "业务看板需要2023年第四季度政企采购线优惠券金额，请给出结果。",
+   "stated": {
+    "subject": [
+     "优惠券金额"
+    ],
+    "channel": [
+     "政企采购线"
+    ]
+   }
+  },
+  {
+   "id": "t500_s09",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "What was the 折扣额 on cold-chain fulfillment hub  in 2024?",
+   "stated": {
+    "subject": [
+     "折扣额"
+    ],
+    "channel": [
+     "冷链生鲜仓"
+    ]
+   }
+  },
+  {
+   "id": "t500_s10",
+   "kind": "domain_single",
+   "tier": "t500",
+   "text": "2024年7月特许经销渠道的订单数是多少？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "加盟经销商"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h01",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "经营周报复盘：2024年9月鞋靴箱包品类目录的退货率是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "鞋靴箱包"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h02",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "帮我查一下2023年全年数码配件品类网店退货金额总计多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "数码配件"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h03",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "Please check the 销售额 for Appliances catalog (大小家电品类) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "大小家电"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h04",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "2024年第二季度母婴玩具品类线下门店退货率表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "母婴玩具"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h05",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "经营周报复盘：2024年9月汽车用品品类网店的退货金额是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "汽车用品"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h06",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "帮我查一下2023年全年宠物用品品类门店退货金额总计多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h07",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "Please check the 利润 for Pets in-store (宠物用品品类) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h08",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "2024年第二季度童装品类线下门店退货金额表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h09",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "经营周报复盘：2024年9月宠物用品品类门店的退货率是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h10",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "帮我查一下2023年全年图书音像品类目录退货金额总计多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "图书音像"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h11",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "Please check the 销售额 for Men web store (男装品类) in Q3 2024.",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "男装"
+    ]
+   }
+  },
+  {
+   "id": "t1000_h12",
+   "kind": "homonym_multi",
+   "tier": "t1000",
+   "text": "2024年第二季度宠物用品品类目录渠道退货金额表现如何，具体数值是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f01",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年汽车用品品类官方网店的销售额（限定扣除优惠券后的实付净额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "汽车用品"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f02",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年宠物用品品类实体店的销售额（限定未扣优惠券的折前金额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "宠物用品"
+    ],
+    "amount": [
+     "扣券前销售额（不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f03",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年美妆护肤品类官方网店的退货金额（限定按退货单处理日期归属）是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "美妆护肤"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f04",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年童装品类实体店的利润（限定不扣优惠券的账面毛利）是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f05",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年运动户外品类目录渠道的退货金额（限定按退货单处理日期归属）是多少？",
+   "stated": {
+    "subject": [
+     "退货金额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "运动户外"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f06",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年美妆护肤品类实体店的退货率（限定按退回件数占销量比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "美妆护肤"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f07",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年食品生鲜品类官方网店的退货率（限定按退款金额占实付额比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "食品生鲜"
+    ],
+    "ratio": [
+     "按金额"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f08",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年童装品类邮购目录的利润（限定不扣优惠券的账面毛利）是多少？",
+   "stated": {
+    "subject": [
+     "利润"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "童装"
+    ],
+    "profit": [
+     "毛利（扣券前销售额减成本）"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f09",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年鞋靴箱包品类目录渠道的销售额（限定扣除优惠券后的实付净额（不含税））是多少？",
+   "stated": {
+    "subject": [
+     "销售额"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "鞋靴箱包"
+    ],
+    "amount": [
+     "实付（扣券后，不含税）"
+    ]
+   }
+  },
+  {
+   "id": "t1000_f10",
+   "kind": "facet_single",
+   "tier": "t1000",
+   "text": "财务口径核对：2024年上半年食品生鲜品类实体店的退货率（限定按退回件数占销量比例计算）是多少？",
+   "stated": {
+    "subject": [
+     "退货率"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "食品生鲜"
+    ],
+    "ratio": [
+     "按件数"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s01",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "2024年7月美妆护肤品类线上商城的订单数是多少？",
+   "stated": {
+    "subject": [
+     "订单数"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "美妆护肤"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s02",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "业务看板需要2023年第四季度食品生鲜品类门店退货件数，请给出结果。",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "食品生鲜"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s03",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "What was the 折扣额 on Children in-store for 童装品类 in 2024?",
+   "stated": {
+    "subject": [
+     "折扣额"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "童装"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s04",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "2024年7月童装品类官方网店的折扣额是多少？",
+   "stated": {
+    "subject": [
+     "折扣额"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "童装"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s05",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "业务看板需要2023年第四季度母婴玩具品类目录退货件数，请给出结果。",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "母婴玩具"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s06",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "What was the 退货件数 on Accessories in-store for 数码配件品类 in 2024?",
+   "stated": {
+    "subject": [
+     "退货件数"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "数码配件"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s07",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "2024年7月大小家电品类线上商城的销量是多少？",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "网店"
+    ],
+    "category": [
+     "大小家电"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s08",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "业务看板需要2023年第四季度运动户外品类目录销量，请给出结果。",
+   "stated": {
+    "subject": [
+     "销量"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "运动户外"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s09",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "What was the 客单价 on Appliances catalog for 大小家电品类 in 2024?",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "目录"
+    ],
+    "category": [
+     "大小家电"
+    ]
+   }
+  },
+  {
+   "id": "t1000_s10",
+   "kind": "domain_single",
+   "tier": "t1000",
+   "text": "2024年7月珠宝钟表品类线下门店的客单价是多少？",
+   "stated": {
+    "subject": [
+     "客单价"
+    ],
+    "channel": [
+     "门店"
+    ],
+    "category": [
+     "珠宝钟表"
+    ]
+   }
+  },
+  {
+   "id": "abs01",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年抖音直播间的平均观看停留时长是多少？",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "观看停留时长"
+    ]
+   }
+  },
+  {
+   "id": "abs02",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年微信小程序的日活跃用户数DAU是多少？",
+   "stated": {
+    "channel": [
+     "微信小程序"
+    ],
+    "subject": [
+     "日活跃用户数"
+    ]
+   }
+  },
+  {
+   "id": "abs03",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年华东中心仓的叉车设备折旧费是多少？",
+   "stated": {
+    "channel": [
+     "华东中心仓"
+    ],
+    "subject": [
+     "设备折旧费"
+    ]
+   }
+  },
+  {
+   "id": "abs04",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年企业大客户B2B的坏账核销率是多少？",
+   "stated": {
+    "channel": [
+     "企业大客户B2B"
+    ],
+    "subject": [
+     "坏账核销率"
+    ]
+   }
+  },
+  {
+   "id": "abs05",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年支付宝渠道的含增值税营业额是多少？",
+   "stated": {
+    "channel": [
+     "支付宝渠道"
+    ],
+    "subject": [
+     "销售额"
+    ],
+    "amount": [
+     "含税"
+    ]
+   }
+  },
+  {
+   "id": "abs06",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年SaaS云订阅的净金额留存率NDR是多少？",
+   "stated": {
+    "channel": [
+     "SaaS云订阅"
+    ],
+    "subject": [
+     "净金额留存率"
+    ]
+   }
+  },
+  {
+   "id": "abs07",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "What was the customer acquisition cost CAC for WeChat mini-program in 2024?",
+   "stated": {
+    "channel": [
+     "微信小程序"
+    ],
+    "subject": [
+     "获客成本"
+    ]
+   }
+  },
+  {
+   "id": "abs08",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年跨境独立站的物流清关延误率是多少？",
+   "stated": {
+    "channel": [
+     "跨境独立站"
+    ],
+    "subject": [
+     "清关延误率"
+    ]
+   }
+  },
+  {
+   "id": "abs09",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年付费黑卡会员的续费率是多少？",
+   "stated": {
+    "channel": [
+     "付费黑卡会员"
+    ],
+    "subject": [
+     "续费率"
+    ]
+   }
+  },
+  {
+   "id": "abs10",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年信息流广告的千次曝光成本CPM是多少？",
+   "stated": {
+    "channel": [
+     "信息流广告"
+    ],
+    "subject": [
+     "千次曝光成本"
+    ]
+   }
+  },
+  {
+   "id": "abs11",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年直营旗舰店的每平米坪效是多少？",
+   "stated": {
+    "channel": [
+     "直营旗舰店"
+    ],
+    "subject": [
+     "坪效"
+    ]
+   }
+  },
+  {
+   "id": "abs12",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年冷链生鲜仓的温控电费支出是多少？",
+   "stated": {
+    "channel": [
+     "冷链生鲜仓"
+    ],
+    "subject": [
+     "电费支出"
+    ]
+   }
+  },
+  {
+   "id": "abs13",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年达人种草投放的视频完播率是多少？",
+   "stated": {
+    "channel": [
+     "达人种草投放"
+    ],
+    "subject": [
+     "视频完播率"
+    ]
+   }
+  },
+  {
+   "id": "abs14",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年线下授权网点的平均维修工时是多少？",
+   "stated": {
+    "channel": [
+     "线下授权网点"
+    ],
+    "subject": [
+     "平均维修工时"
+    ]
+   }
+  },
+  {
+   "id": "abs15",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "What was the employee turnover rate at North China central warehouse in 2023?",
+   "stated": {
+    "channel": [
+     "华北中心仓"
+    ],
+    "subject": [
+     "员工离职率"
+    ]
+   }
+  },
+  {
+   "id": "abs16",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年按退货日期计算的抖音直播间退货率是多少？",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "退货率"
+    ],
+    "date": [
+     "按退货日期"
+    ]
+   }
+  },
+  {
+   "id": "abs17",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年政企采购线的投标中标率是多少？",
+   "stated": {
+    "channel": [
+     "政企采购线"
+    ],
+    "subject": [
+     "中标率"
+    ]
+   }
+  },
+  {
+   "id": "abs18",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年社区即时达的骑手准时送达率是多少？",
+   "stated": {
+    "channel": [
+     "社区即时达"
+    ],
+    "subject": [
+     "准时送达率"
+    ]
+   }
+  },
+  {
+   "id": "abs19",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年银联云闪付的通道故障时长是多少？",
+   "stated": {
+    "channel": [
+     "银联云闪付"
+    ],
+    "subject": [
+     "故障时长"
+    ]
+   }
+  },
+  {
+   "id": "abs20",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年宠物用品在抖音直播间的营业额是多少？",
+   "stated": {
+    "channel": [
+     "抖音直播间"
+    ],
+    "subject": [
+     "销售额"
+    ],
+    "category": [
+     "宠物用品"
+    ]
+   }
+  },
+  {
+   "id": "abs21",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2023年奥莱折扣店的试穿转化率是多少？",
+   "stated": {
+    "channel": [
+     "奥莱折扣店"
+    ],
+    "subject": [
+     "试穿转化率"
+    ]
+   }
+  },
+  {
+   "id": "abs22",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年保税跨境仓的海关查验率是多少？",
+   "stated": {
+    "channel": [
+     "保税跨境仓"
+    ],
+    "subject": [
+     "海关查验率"
+    ]
+   }
+  },
+  {
+   "id": "abs23",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "What was the NPS satisfaction score for VIP Black-Card members in 2024?",
+   "stated": {
+    "channel": [
+     "付费黑卡会员"
+    ],
+    "subject": [
+     "净推荐值NPS"
+    ]
+   }
+  },
+  {
+   "id": "abs24",
+   "kind": "absent",
+   "tier": "absent",
+   "text": "2024年搜索竞价SEM的曝光点击率CTR是多少？",
+   "stated": {
+    "channel": [
+     "搜索竞价SEM"
+    ],
+    "subject": [
+     "点击率"
+    ]
+   }
+  }
+ ]
+}

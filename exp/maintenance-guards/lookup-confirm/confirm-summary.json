@@ -1,0 +1,12 @@
+{
+  "requests": 96,
+  "first_exact": 88,
+  "final_exact": 95,
+  "confirmations": 22,
+  "confirm_ok": 22,
+  "confirm_mean_s": 1.513447111303156,
+  "confirm_mean_tokens": 389.77272727272725,
+  "ooc": 17,
+  "ooc_final_rejected": 17,
+  "mean_lookup_s": 0.1843546728293101
+}

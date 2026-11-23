@@ -1,0 +1,496 @@
+{
+  "complete": true,
+  "source": {
+    "historical_exploration_tokens": 241015,
+    "new_extraction_tokens": 10965,
+    "drafts": 12,
+    "published": 7
+  },
+  "rows": [
+    {
+      "name": "cross-task-none",
+      "arm": "none",
+      "target": {
+        "name": "cross-task",
+        "task": "user-engagement",
+        "cutoff": 1
+      },
+      "status": "complete",
+      "valid": false,
+      "validation_auc": null,
+      "audit": null,
+      "stop": "llm_budget",
+      "agent_tokens": 93755,
+      "historical_source_allocated_tokens": 0,
+      "new_extraction_allocated_tokens": 0,
+      "amortized_tokens": 93755,
+      "agent_seconds": 355.1278598308563,
+      "tools": {
+        "schema": 7,
+        "probe": 13,
+        "validate": 0,
+        "memory": 0,
+        "submit": 0
+      },
+      "memory_calls": [],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [],
+      "test_score": null,
+      "paired_validation_threshold": null,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": null
+    },
+    {
+      "name": "cross-task-program",
+      "arm": "program",
+      "target": {
+        "name": "cross-task",
+        "task": "user-engagement",
+        "cutoff": 1
+      },
+      "status": "complete",
+      "valid": true,
+      "validation_auc": 0.8468620331950207,
+      "audit": {
+        "result": "clean",
+        "from_validation": 13
+      },
+      "stop": "validation_budget",
+      "agent_tokens": 119610,
+      "historical_source_allocated_tokens": 120507.5,
+      "new_extraction_allocated_tokens": 0,
+      "amortized_tokens": 240117.5,
+      "agent_seconds": 121.82033085823059,
+      "tools": {
+        "schema": 6,
+        "probe": 6,
+        "validate": 3,
+        "memory": 1,
+        "submit": 0
+      },
+      "memory_calls": [
+        "retrieve_programs"
+      ],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [
+        {
+          "tool_i": 13,
+          "memory_match": [],
+          "val": 0.8468620331950207,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 14,
+          "memory_match": [],
+          "val": 0.8419562586445366,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 15,
+          "memory_match": [],
+          "val": 0.8424605232826187,
+          "leak": false,
+          "error": null
+        }
+      ],
+      "test_score": null,
+      "paired_validation_threshold": null,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": null
+    },
+    {
+      "name": "cross-task-definition",
+      "arm": "definition",
+      "target": {
+        "name": "cross-task",
+        "task": "user-engagement",
+        "cutoff": 1
+      },
+      "status": "complete",
+      "valid": true,
+      "validation_auc": 0.8365966459197787,
+      "audit": {
+        "result": "clean",
+        "from_validation": 23
+      },
+      "stop": "validation_budget",
+      "agent_tokens": 153875,
+      "historical_source_allocated_tokens": 120507.5,
+      "new_extraction_allocated_tokens": 5482.5,
+      "amortized_tokens": 279865.0,
+      "agent_seconds": 111.29389667510986,
+      "tools": {
+        "schema": 7,
+        "probe": 13,
+        "validate": 3,
+        "memory": 1,
+        "submit": 0
+      },
+      "memory_calls": [
+        "find_features"
+      ],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [
+        {
+          "tool_i": 21,
+          "memory_match": [],
+          "val": 0.8283050945136008,
+          "leak": true,
+          "error": null
+        },
+        {
+          "tool_i": 22,
+          "memory_match": [],
+          "val": null,
+          "leak": null,
+          "error": "SQL error: division by zero"
+        },
+        {
+          "tool_i": 23,
+          "memory_match": [],
+          "val": 0.8365966459197787,
+          "leak": false,
+          "error": null
+        }
+      ],
+      "test_score": null,
+      "paired_validation_threshold": null,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": null
+    },
+    {
+      "name": "cross-task-full",
+      "arm": "full",
+      "target": {
+        "name": "cross-task",
+        "task": "user-engagement",
+        "cutoff": 1
+      },
+      "status": "complete",
+      "valid": false,
+      "validation_auc": null,
+      "audit": null,
+      "stop": "llm_budget",
+      "agent_tokens": 136731,
+      "historical_source_allocated_tokens": 120507.5,
+      "new_extraction_allocated_tokens": 5482.5,
+      "amortized_tokens": 262721.0,
+      "agent_seconds": 49.4807767868042,
+      "tools": {
+        "schema": 7,
+        "probe": 9,
+        "validate": 0,
+        "memory": 2,
+        "submit": 0
+      },
+      "memory_calls": [
+        "find_features",
+        "retrieve_programs"
+      ],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [],
+      "test_score": null,
+      "paired_validation_threshold": null,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": null
+    },
+    {
+      "name": "same-task-later-none",
+      "arm": "none",
+      "target": {
+        "name": "same-task-later",
+        "task": "user-badge",
+        "cutoff": 2
+      },
+      "status": "complete",
+      "valid": true,
+      "validation_auc": 0.7851588044145313,
+      "audit": {
+        "result": "clean",
+        "from_validation": 14
+      },
+      "stop": "validation_budget",
+      "agent_tokens": 103255,
+      "historical_source_allocated_tokens": 0,
+      "new_extraction_allocated_tokens": 0,
+      "amortized_tokens": 103255,
+      "agent_seconds": 91.39635920524597,
+      "tools": {
+        "schema": 8,
+        "probe": 8,
+        "validate": 3,
+        "memory": 0,
+        "submit": 0
+      },
+      "memory_calls": [],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [
+        {
+          "tool_i": 14,
+          "memory_match": [],
+          "val": 0.7851588044145313,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 17,
+          "memory_match": [],
+          "val": 0.7507369289429471,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 18,
+          "memory_match": [],
+          "val": 0.7593889274539986,
+          "leak": false,
+          "error": null
+        }
+      ],
+      "test_score": null,
+      "paired_validation_threshold": 0.7751588044145313,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": true
+    },
+    {
+      "name": "same-task-later-program",
+      "arm": "program",
+      "target": {
+        "name": "same-task-later",
+        "task": "user-badge",
+        "cutoff": 2
+      },
+      "status": "complete",
+      "valid": true,
+      "validation_auc": 0.8176088290626666,
+      "audit": {
+        "result": "clean",
+        "from_validation": 18
+      },
+      "stop": "llm_budget",
+      "agent_tokens": 198430,
+      "historical_source_allocated_tokens": 120507.5,
+      "new_extraction_allocated_tokens": 0,
+      "amortized_tokens": 318937.5,
+      "agent_seconds": 445.7746036052704,
+      "tools": {
+        "schema": 7,
+        "probe": 10,
+        "validate": 1,
+        "memory": 1,
+        "submit": 0
+      },
+      "memory_calls": [
+        "retrieve_programs"
+      ],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [
+        {
+          "tool_i": 18,
+          "memory_match": [],
+          "val": 0.8176088290626666,
+          "leak": false,
+          "error": null
+        }
+      ],
+      "test_score": null,
+      "paired_validation_threshold": 0.7751588044145313,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": true
+    },
+    {
+      "name": "same-task-later-definition",
+      "arm": "definition",
+      "target": {
+        "name": "same-task-later",
+        "task": "user-badge",
+        "cutoff": 2
+      },
+      "status": "complete",
+      "valid": true,
+      "validation_auc": 0.7961951327478144,
+      "audit": {
+        "result": "clean",
+        "from_validation": 13
+      },
+      "stop": "validation_budget",
+      "agent_tokens": 143096,
+      "historical_source_allocated_tokens": 120507.5,
+      "new_extraction_allocated_tokens": 5482.5,
+      "amortized_tokens": 269086.0,
+      "agent_seconds": 110.5151469707489,
+      "tools": {
+        "schema": 7,
+        "probe": 8,
+        "validate": 3,
+        "memory": 1,
+        "submit": 0
+      },
+      "memory_calls": [
+        "find_features"
+      ],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [
+        {
+          "tool_i": 13,
+          "memory_match": [],
+          "val": 0.7961951327478144,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 14,
+          "memory_match": [],
+          "val": null,
+          "leak": null,
+          "error": "SQL error: syntax error at or near \"FILTER\"\nLINE 62:     (10*sum(up) - 2*sum(dn) + 15*sum(acc)) FILTER (WHERE pda...\n                                                    ^"
+        },
+        {
+          "tool_i": 18,
+          "memory_match": [],
+          "val": 0.7884133643195606,
+          "leak": false,
+          "error": null
+        }
+      ],
+      "test_score": null,
+      "paired_validation_threshold": 0.7751588044145313,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": true
+    },
+    {
+      "name": "same-task-later-full",
+      "arm": "full",
+      "target": {
+        "name": "same-task-later",
+        "task": "user-badge",
+        "cutoff": 2
+      },
+      "status": "complete",
+      "valid": true,
+      "validation_auc": 0.7943440074849848,
+      "audit": {
+        "result": "clean",
+        "from_validation": 12
+      },
+      "stop": "validation_budget",
+      "agent_tokens": 75890,
+      "historical_source_allocated_tokens": 120507.5,
+      "new_extraction_allocated_tokens": 5482.5,
+      "amortized_tokens": 201880.0,
+      "agent_seconds": 95.83938431739807,
+      "tools": {
+        "schema": 7,
+        "probe": 4,
+        "validate": 3,
+        "memory": 1,
+        "submit": 0
+      },
+      "memory_calls": [
+        "find_features"
+      ],
+      "exact_final_memory_matches": [],
+      "validation_memory_matches": [
+        {
+          "tool_i": 12,
+          "memory_match": [],
+          "val": 0.7943440074849848,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 13,
+          "memory_match": [],
+          "val": 0.7914667149568909,
+          "leak": false,
+          "error": null
+        },
+        {
+          "tool_i": 14,
+          "memory_match": [],
+          "val": 0.783790581394179,
+          "leak": false,
+          "error": null
+        }
+      ],
+      "test_score": null,
+      "paired_validation_threshold": 0.7751588044145313,
+      "evaluation_flags": {
+        "test_labels_read": false,
+        "test_scored": false,
+        "target_writeback": false
+      },
+      "qualified_on_validation": true
+    }
+  ],
+  "source_target_audits": {
+    "cross-task": {
+      "program": {
+        "result": "error",
+        "why": "SQL error: column \"userid\" does not exist\nLINE 2:   SELECT userid, seed_time FROM audit_user_engagement_k1.see...\n                 ^"
+      },
+      "compiled": {
+        "result": "error",
+        "why": "SQL error: column s.userid does not exist\nLINE 1: ... precision as v from badges where badges.userid = s.userid a...\n                                                             ^"
+      }
+    },
+    "same-task-later": {
+      "program": {
+        "result": "clean",
+        "seed_time": "2019-10-03 00:00:00",
+        "seeds": 751,
+        "cells_differing": 0,
+        "columns_differing": [],
+        "all_columns_differing": []
+      },
+      "compiled": {
+        "result": "clean",
+        "seed_time": "2019-10-03 00:00:00",
+        "seeds": 751,
+        "cells_differing": 0,
+        "columns_differing": [],
+        "all_columns_differing": []
+      }
+    }
+  },
+  "limits": [
+    "one source and two target settings, one repetition",
+    "source program contains more features than the seven admitted definitions",
+    "validation scores are development data, never test non-inferiority",
+    "no paired quality claim where no-memory has no valid SQL",
+    "exact SQL matching identifies unchanged adoption only; edited derivations are not automatically assigned",
+    "source setup cost is allocated over only two targets; historical source tokens are not new spending",
+    "HTTP probe timeout 180s differs from frozen Rust server query timeout 300s"
+  ],
+  "study": "controlled 2x2 feature representation ablation (validation only; one run per cell)"
+}

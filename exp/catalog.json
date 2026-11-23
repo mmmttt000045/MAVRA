@@ -1,0 +1,292 @@
+{
+  "schema_version": 2,
+  "experiments": [
+    {
+      "id": "workload-characterization",
+      "title": "Workload Characterization vs. Production BI Queries",
+      "section": "motivation",
+      "scope": "Paper §2.1, Table 1, and Figure 1: contrasts Amazon Redset production warehouse queries against 100 memoryless LLM data-agent sessions across 5 metrics on a 1M-row retail star schema (80.5% exploration/validation SQL).",
+      "evidence": [
+        "exp/workload-characterization/workload-stats.json",
+        "exp/workload-characterization/workload-stats.md",
+        "exp/workload-characterization/redset/redset_stats.json"
+      ],
+      "analysis": [
+        "tools/workload-stats.py",
+        "tools/figures/build.py"
+      ],
+      "outputs": [],
+      "raw_data": "Aggregated SQL AST fingerprint statistics (`workload-stats.json`, `workload-stats.md`) and Amazon Redset warehouse statistics (`redset/redset_stats.json`).",
+      "code_record": "`./target/release/mavra workload-bench --rows 1000000 --agent openai`; SQL AST fingerprinting via `pglast`."
+    },
+    {
+      "id": "population-sharing",
+      "title": "Multi-Agent Population Sharing on TPC-DS SF1",
+      "section": "q1",
+      "scope": "Paper §6.2 (Q1, Figure 6): 16 sequential data agents across 5 independent runs on TPC-DS SF1 plus append-only sales restatement, comparing `No memory`, `Single-agent memory`, `Example retrieval`, and `MAVRA`.",
+      "evidence": [
+        "exp/population-sharing/population-stats.json",
+        "exp/population-sharing/tpcds-defs.json"
+      ],
+      "analysis": [
+        "tools/population-stats.py",
+        "tools/figures/population.py"
+      ],
+      "outputs": [],
+      "raw_data": "Per-step cumulative token, SQL-call, database-time, and accuracy trajectories in `population-stats.json` and metric definitions in `tpcds-defs.json`.",
+      "code_record": "`./target/release/mavra metric-bench --population --defs exp/population-sharing/tpcds-defs.json --modes direct,metric-private,metric-global-exref,metric-global-full --repeats 5`."
+    },
+    {
+      "id": "multi-schema-generality",
+      "title": "Multi-Schema Generality: TPC-H, SSB, and BIRD Financial",
+      "section": "q1",
+      "scope": "Paper §6.1 and §6.6 (Table 6): declarative schema manifests, verified metric libraries, SQL reference queries, and multi-schema sharing and maintenance summaries across TPC-H SF1, Star Schema Benchmark (SSB) SF1, and BIRD `financial`.",
+      "evidence": [
+        "exp/multi-schema-generality/generality-stats.json",
+        "exp/multi-schema-generality/replay-safety-summary.json",
+        "exp/multi-schema-generality/e2e/scen-stats.json",
+        "exp/multi-schema-generality/schemas/tpch.json",
+        "exp/multi-schema-generality/schemas/ssb.json",
+        "exp/multi-schema-generality/schemas/financial.json",
+        "exp/multi-schema-generality/schemas/tpcds.json"
+      ],
+      "analysis": [
+        "tools/bench-library.py",
+        "exp/multi-schema-generality/libcheck.py"
+      ],
+      "outputs": [],
+      "raw_data": "Declarative schema manifests in `schemas/`, verified definition libraries in `libs/`, reference SQL in `queries/`, and aggregated summaries (`generality-stats.json`, `replay-safety-summary.json`, `e2e/scen-stats.json`).",
+      "code_record": "`cargo test --release --locked specchange` and `./target/release/mavra replay-bench --spec exp/multi-schema-generality/schemas/<schema>.json --libs exp/multi-schema-generality/libs/<schema>.json`."
+    },
+    {
+      "id": "semantic-lookup",
+      "title": "Semantic Lookup Scaling (26 to 1,000 Definitions) and Selective Risk-Coverage",
+      "section": "q2",
+      "scope": "Paper §4.3 and §6.3 (Q2, Table 3, Figure 8): nested enterprise metric catalogs ($M \\in \\{26, 100, 500, 1000\\}$) across 8 domains on 390 main requests + 204 held-out paraphrases, comparing `Name match`, `Embedding top-1`, `TeCoD`, `Single CE (no diff)`, `Top-8 + LLM`, `MAVRA (0-retrain)`, and `MAVRA (refreshed)`.",
+      "evidence": [
+        "exp/semantic-lookup/benchmark-manifest.json",
+        "exp/semantic-lookup/catalog_26.json",
+        "exp/semantic-lookup/catalog_100.json",
+        "exp/semantic-lookup/catalog_500.json",
+        "exp/semantic-lookup/catalog_1000.json",
+        "exp/semantic-lookup/requests_orig_96.json",
+        "exp/semantic-lookup/requests_glm_174.json",
+        "exp/semantic-lookup/requests_scale_120.json",
+        "exp/semantic-lookup/requests_glm_scale.json",
+        "exp/semantic-lookup/pool_26.json",
+        "exp/semantic-lookup/pool_1000.json",
+        "exp/semantic-lookup/train_26_clean.jsonl",
+        "exp/semantic-lookup/train_scale_extra.jsonl",
+        "exp/semantic-lookup/train_scale_llm.jsonl"
+      ],
+      "analysis": [
+        "exp/semantic-lookup/build_seed_pairs.py",
+        "exp/semantic-lookup/build_scale_catalog.py",
+        "exp/semantic-lookup/train_retriever.py",
+        "exp/semantic-lookup/train_scale_ce.py",
+        "exp/semantic-lookup/score_cache.py",
+        "exp/semantic-lookup/policy.py",
+        "exp/semantic-lookup/run_llm_methods.py",
+        "exp/semantic-lookup/analyse.py",
+        "tools/figures/lookup_scale.py"
+      ],
+      "outputs": [
+        "exp/semantic-lookup/scale-summary.json",
+        "exp/semantic-lookup/risk-coverage.json"
+      ],
+      "raw_data": "Nested catalogs (`catalog_26..1000.json`), request sets (`requests_*.json`), example pools (`pool_*.json`), disjoint synthetic training phrasings (`train_*.jsonl`), and aggregated scaling/risk-coverage summaries (`scale-summary.json`, `risk-coverage.json`).",
+      "code_record": "`catalog_1000_sha256=f85bc3e9bc1da3c8c1e31593d6adc94c667bf5aa2ad15df3267adfffb5cd0ec2`; `BAAI/bge-m3` + 3-seed `BAAI/bge-reranker-base` (`XLM-RoBERTa`) in BF16 (`run_gpu.sh`, `analyse.py`)."
+    },
+    {
+      "id": "schema-evolution",
+      "title": "End-to-End Maintenance Under 11 Database Updates",
+      "section": "q3",
+      "scope": "Paper §6.4 (Q3, Figure 7, Table 4): 11 database updates across Synthetic Retail (1M rows) and TPC-H SF1 over 3 runs comparing `MAVRA` against `ACE`, `AWM`, `G-Memory`, `TeCoD`, `Shared recheck`, `Template + schema check`, and `Template + write invalidate`.",
+      "evidence": [
+        "exp/schema-evolution/bank-synthetic.json",
+        "exp/schema-evolution/bank-tpch.json"
+      ],
+      "analysis": [
+        "exp/schema-evolution/analyse.py",
+        "exp/schema-evolution/run-study.py",
+        "exp/schema-evolution/budget-proxy.py",
+        "exp/schema-evolution/memory-service.py",
+        "exp/schema-evolution/select-bank.py",
+        "tools/figures/change_study.py"
+      ],
+      "outputs": [
+        "exp/schema-evolution/study-stats.json"
+      ],
+      "raw_data": "Frozen question banks (`bank-synthetic.json`, `bank-tpch.json`) and aggregated per-cell, per-group, and per-change outcomes (`study-stats.json`).",
+      "code_record": "`python3 exp/schema-evolution/run-study.py` and `python3 exp/schema-evolution/analyse.py --tex results/gen/change-study.tex`."
+    },
+    {
+      "id": "maintenance-guards",
+      "title": "Value Guards, Historical Repair Gate G9, Unseen Bindings, and Sustained Writes",
+      "section": "q3",
+      "scope": "Paper §4.1, §4.4, §6.3, §6.4, and §6.6 (Tables 3, 4, 6): `NotNull` and `MeasureScale` value conditions, `G9` untouched-bucket historical check on 12-change replay (`reclass`), serving-vs-withholding split, 39-period unseen-binding generalization, 26-definition lookup confirmation, and 64-session sustained concurrent writes.",
+      "evidence": [
+        "exp/maintenance-guards/binding-report.json",
+        "exp/maintenance-guards/replay-guards.json",
+        "exp/maintenance-guards/served-split.json",
+        "exp/maintenance-guards/sustained/summary.json"
+      ],
+      "analysis": [
+        "exp/maintenance-guards/analyse-replay.py",
+        "exp/maintenance-guards/served-split.py",
+        "exp/maintenance-guards/binding-macros.py",
+        "exp/maintenance-guards/sustained/macros.py"
+      ],
+      "outputs": [],
+      "raw_data": "12-change guard replay outcomes (`replay-guards.json`), unseen-binding report (`binding-report.json`), serving split (`served-split.json`), lookup confirmation summaries (`lookup-confirm/`, `lookup-glm/`, `lookup-tecod/`), and sustained-write summary (`sustained/summary.json`).",
+      "code_record": "`./target/release/mavra binding-bench --defs exp/population-sharing/tpcds-defs.json` and `cargo test --release --locked q5_bench_tests::postgres_sustained_writes -- --ignored --nocapture --test-threads=1`."
+    },
+    {
+      "id": "relbench-predictive",
+      "title": "Cross-Cutoff Predictive Feature Reuse on RelBench",
+      "section": "q4",
+      "scope": "Paper §6.5 (Q4, Table 5): entity-level feature engineering across 5 temporal cutoffs on `rel-stack` and `rel-trial` with fixed LightGBM 4.6.0 protocol and mandatory leakage audit against `No memory`, `Single-agent memory`, `Example retrieval`, `ACE`, `AWM`, `G-Memory`, `TeCoD`, and `FeatPilot*`.",
+      "evidence": [
+        "exp/relbench-predictive/paper-sessions.json",
+        "exp/relbench-predictive/reuse-work-data.json"
+      ],
+      "analysis": [
+        "tools/relbench/paper-stats.py",
+        "tools/relbench/compare-stats.py",
+        "tools/figures/relbench_cumulative.py",
+        "tools/figures/reuse_work.py"
+      ],
+      "outputs": [],
+      "raw_data": "Aggregated per-session validation/test scores, token/runtime breakdowns (`paper-sessions.json`), and cold-start vs. reuse work breakdown (`reuse-work-data.json`).",
+      "code_record": "`python3 tools/relbench/prepare.py` and `python3 tools/relbench/harness.py --arm mavra-retry`; LightGBM 4.6.0 and row-level temporal audit."
+    },
+    {
+      "id": "relbench-attribution",
+      "title": "Three-Run RelBench Evaluation and Cutoff-1 Refitting Attribution",
+      "section": "q4",
+      "scope": "Paper §6.5 (Q4, Table 5): three-run repeated evaluation of `MAVRA` and `No memory` on `rel-stack` and `rel-trial`, pure cutoff-1 frozen-SQL refitting control across cutoffs 2–5, and per-task temporal shift attribution.",
+      "evidence": [
+        "exp/relbench-attribution/gate-r1.json",
+        "exp/relbench-attribution/gate-r2.json",
+        "exp/relbench-attribution/gate-r3.json",
+        "exp/relbench-attribution/frozen-rel-stack.json",
+        "exp/relbench-attribution/frozen-rel-trial.json",
+        "exp/relbench-attribution/frozen-summary.json",
+        "exp/relbench-attribution/shift-attribution.json"
+      ],
+      "analysis": [
+        "tools/relbench/paper-stats.py",
+        "tools/relbench/frozen-program.py",
+        "tools/relbench/frozen-summary.py",
+        "tools/relbench/explain-quality.py"
+      ],
+      "outputs": [],
+      "raw_data": "Per-run audit summaries (`gate-r1.json`..`gate-r3.json`), frozen cutoff-1 refit evaluations (`frozen-rel-stack.json`, `frozen-rel-trial.json`, `frozen-summary.json`), and task-shift attribution (`shift-attribution.json`).",
+      "code_record": "`python3 tools/relbench/paper-stats.py --out results/gen` and `python3 tools/relbench/frozen-summary.py`."
+    },
+    {
+      "id": "cache-baseline-tpcds",
+      "title": "Condition Sharing, Snapshot Binding, and TPC-DS Replay",
+      "section": "q5",
+      "scope": "Paper §6.2 and §6.6 (Table 6): evaluates condition sharing vs. generic SQL-text check caching, `REPEATABLE READ` snapshot-bound validation (`0 / 11,297` vs. `261` TOCTOU anomalies), 16-shard `mavra_versions` trigger throughput, `repair_unique` ambiguity safety, and 4-policy TPC-DS replay.",
+      "evidence": [
+        "exp/cache-baseline-tpcds/cb-1m-share-stats.json",
+        "exp/cache-baseline-tpcds/snapshot-binding-stats.json",
+        "exp/cache-baseline-tpcds/tpcds-replay-stats.json",
+        "exp/cache-baseline-tpcds/tpcds-library.json",
+        "exp/cache-baseline-tpcds/tpcds-sharing.json"
+      ],
+      "analysis": [
+        "tools/review-results.py",
+        "tools/replay-stats.py"
+      ],
+      "outputs": [],
+      "raw_data": "Aggregated statistics for 1M/4M condition-sharing sweeps, snapshot-binding isolation, 16-shard trigger throughput, ambiguity safety, and TPC-DS replay (`*-stats.json`).",
+      "code_record": "`cargo test --release --locked q5_bench_tests:: -- --ignored --nocapture --test-threads=1` and `./target/release/mavra replay-bench --libs exp/population-sharing/tpcds-defs.json --schema tpcds`."
+    },
+    {
+      "id": "premise-optimization",
+      "title": "Publication Gates, Equivalence Optimization, and Premise Rollback",
+      "section": "q5",
+      "scope": "Paper §4.2 and §6.6: evaluates publication admission gates `G1`–`G7`, equivalence-preserving revision optimization (`KeyRange` and `DateKeysContiguous`), and automatic rollback from `r1` to `r0` when out-of-order date keys invalidate optimization premises.",
+      "evidence": [
+        "exp/premise-optimization/opt-stats.md",
+        "exp/premise-optimization/premise-report.json"
+      ],
+      "analysis": [
+        "tools/sharing-stats.py"
+      ],
+      "outputs": [],
+      "raw_data": "Premise-invalidation rollback report (`premise-report.json`) and revision-optimization speedup summary (`opt-stats.md`).",
+      "code_record": "`./target/release/mavra metric-bench --rows 500000 --modes metric-global-full --changes append,latekey --trace`."
+    },
+    {
+      "id": "policy-replay",
+      "title": "Paired Fixed-Catalog Maintenance Policy Replay",
+      "section": "q5",
+      "scope": "Paper §6.6 (Q5, Table 6): fixed-catalog paired replay across TPC-DS, TPC-H, SSB, and BIRD `financial` comparing `Write invalidate`, `Schema check only`, `Table-level data tests`, and `MAVRA` (`condition`) with exact-duplicate and date-key local repairs.",
+      "evidence": [],
+      "analysis": [
+        "exp/policy-replay/analyse.py"
+      ],
+      "outputs": [
+        "exp/policy-replay/replay-policies.json"
+      ],
+      "raw_data": "Aggregated four-schema policy-replay contingency tables and per-change breakdowns (`replay-policies.json`).",
+      "code_record": "`./target/release/mavra replay-bench --libs exp/multi-schema-generality/libs/<schema>.json --policies condition --oracles snapshot` and `python3 exp/policy-replay/analyse.py --tex results/gen/replay-policies.tex`."
+    },
+    {
+      "id": "shared-validation",
+      "title": "Shared Validation Scaling Across 1 to 32 Concurrent Agents",
+      "section": "q5",
+      "scope": "Paper §6.6 (Q5, Figure 9): post-update validation query counts and database time across 16 shared definitions and 1–32 staggered or simultaneous agents (3 randomized blocks = 108 cells), comparing `per-agent`, `full-recheck`, and `mavra`.",
+      "evidence": [],
+      "analysis": [
+        "exp/shared-validation/analyse.py",
+        "tools/figures/shared_validation.py"
+      ],
+      "outputs": [
+        "exp/shared-validation/stats.json"
+      ],
+      "raw_data": "Aggregated 108-cell validation query count and database runtime distributions across 1–32 agents (`stats.json`).",
+      "code_record": "`cargo test --release --locked q5_bench_tests::postgres_shared_validation_scaling -- --ignored --nocapture --test-threads=1` and `python3 exp/shared-validation/analyse.py --tex results/gen/shared-validation.tex`."
+    },
+    {
+      "id": "mechanism-studies",
+      "title": "Controlled Mechanism Studies: Representation, Overlap, and TOCTOU Barrier",
+      "section": "q5",
+      "scope": "Paper §6.6 (Q5): Part A $2 \\times 2$ feature-definition vs. full-program reuse on `rel-stack`; Part B 72-cell fixed-catalog condition-overlap sweep ($k=1..8$) vs. SQL-text check cache; Part C 30-trial controlled-barrier TOCTOU snapshot isolation.",
+      "evidence": [
+        "exp/mechanism-studies/source-input.json",
+        "exp/mechanism-studies/representation-summary.json",
+        "exp/mechanism-studies/system-summary.json"
+      ],
+      "analysis": [
+        "exp/mechanism-studies/representation.py",
+        "exp/mechanism-studies/analyze_representation.py",
+        "exp/mechanism-studies/plot_mechanisms.py",
+        "exp/mechanism-studies/analyze_systems.py",
+        "exp/mechanism-studies/run_systems.py",
+        "tools/figures/mechanism.py"
+      ],
+      "outputs": [],
+      "raw_data": "Frozen source feature input (`source-input.json`), 8-cell factorial representation summary (`representation-summary.json`), and 72-cell overlap + 30-trial barrier summary (`system-summary.json`).",
+      "code_record": "`python3 -m unittest discover -s exp/mechanism-studies` and `python3 exp/mechanism-studies/run_systems.py`."
+    },
+    {
+      "id": "tpcds-scaling",
+      "title": "Warehouse Scale-Up (TPC-DS SF1/SF3/SF10) and Core Coverage",
+      "section": "q5",
+      "scope": "Paper §6.5 and §6.6 (Q5): TPC-DS SF1/SF3/SF10 validation and repair scalability from 2.88M to 28.80M `store_sales` rows, 4-call budget-matched RelBench `No memory` truncation control, and static single-fact $N{:}1$ `G3` template coverage across four schemas.",
+      "evidence": [
+        "exp/tpcds-scaling/scaling-summary.json",
+        "exp/tpcds-scaling/relbench-4call-truncation.json",
+        "exp/tpcds-scaling/g3-coverage.json"
+      ],
+      "analysis": [],
+      "outputs": [],
+      "raw_data": "Aggregated SF1/SF3/SF10 validation/repair timings and row counts (`scaling-summary.json`), 4-call RelBench truncation summary (`relbench-4call-truncation.json`), and `G3` coverage summary (`g3-coverage.json`).",
+      "code_record": "`./target/release/mavra --pool 16 replay-bench --libs exp/population-sharing/tpcds-defs.json --schema tpcds --tpcds-db tpcds_sf10 --policies revoke,schema,tabletest,condition --oracles snapshot`."
+    }
+  ]
+}

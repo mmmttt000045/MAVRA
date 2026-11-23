@@ -1,0 +1,580 @@
+#!/usr/bin/env python3
+"""Workload characterization statistics: comparing memoryless agent traces against application SQL.
+
+Usage: python3 tools/workload-stats.py [DIR ...] [--out OUT] [--audit N]
+  When DIR is omitted, reads the archived summary exp/workload-characterization/workload-stats.json.
+  Live trace analysis (when DIR is provided) requires `pglast` (`pip install -r tools/requirements.txt`)
+  for libpg_query SQL AST fingerprinting.
+
+Each database tool call is classified into one mutually exclusive category:
+  error     Failed call (SQL syntax/semantic error, timeout, or invalid argument)
+  schema    list_tables, describe_table, or SQL reading information_schema / pg_catalog
+  answer    Query referenced by final_answer (`used` or `rN` in `derivation`)
+  validate  Integrity/assumption checks (`count(distinct ...)`, `having count`, `is [not] null`, `row_number() over (partition ...)`,
+            or a post-answer verification aggregate)
+  attempt   Pre-answer aggregate over measure columns that was later abandoned
+  compute   Table-free calculator SQL (e.g., `SELECT ROUND(2893408.04 / 12179532.00 * 100, 2)`)
+  explore   All other successful SQL probes (sampling, distinct values, date ranges, row counts)
+"""
+
+import argparse
+import collections
+import json
+import os
+import random
+import re
+import statistics
+import sys
+
+_pg_fingerprint = None
+
+
+def _load_pglast():
+    global _pg_fingerprint
+    if _pg_fingerprint is None:
+        try:
+            from pglast.parser import fingerprint as fp
+        except ImportError:  # pragma: no cover
+            sys.exit("Missing dependency pglast: pip install -r tools/requirements.txt")
+        _pg_fingerprint = fp
+    return _pg_fingerprint
+
+TABLES = ["store_sales", "store_returns", "catalog_sales", "date_dim", "item", "etl_batch_log"]
+TABLE_RE = re.compile(r"\b(" + "|".join(TABLES) + r")\b")
+COL_RE = re.compile(r"\b((?:ss|sr|cs|d|i)_[a-z_]+)\b")
+CATALOG_RE = re.compile(r"\b(information_schema|pg_catalog|pg_[a-z_]+)\b")
+MEASURE_RE = re.compile(r"\b(sum|avg)\s*\(")
+VALIDATE_RE = re.compile(
+    r"count\s*\(\s*distinct|having\s+count|\bis\s+(?:not\s+)?null\b|row_number\s*\(\s*\)\s*over\s*\(\s*partition"
+)
+AGG_RE = re.compile(r"\b(count|sum|avg|min|max)\s*\(")
+REF_RE = re.compile(r"\br(\d+)\b")
+KNOWLEDGE = ("schema", "explore", "validate")
+
+
+def norm(sql):
+    return re.sub(r"\s+", " ", sql.strip().rstrip(";").strip().lower())
+
+
+_fp_cache = {}
+
+
+def fingerprint(sql):
+    if sql not in _fp_cache:
+        fp = _load_pglast()
+        try:
+            _fp_cache[sql] = fp(sql)
+        except Exception:
+            _fp_cache[sql] = "unparsed:" + norm(sql)
+    return _fp_cache[sql]
+
+
+def load_jsonl(path):
+    out = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    out.append(json.loads(line))
+    return out
+
+
+def model_of(d):
+    rp = os.path.join(d, "report.json")
+    if os.path.exists(rp):
+        with open(rp, encoding="utf-8") as f:
+            return json.load(f).get("agent", "?")
+    return os.path.basename(os.path.dirname(os.path.normpath(d)))
+
+
+def used_refs(sess):
+    run = sess.get("run") or {}
+    refs = set()
+    for r in run.get("used") or []:
+        m = REF_RE.search(str(r))
+        if m:
+            refs.add(int(m.group(1)))
+    refs.update(int(x) for x in REF_RE.findall(run.get("derivation") or ""))
+    return refs
+
+
+def sql_of(call):
+    return (call.get("args") or {}).get("sql") or ""
+
+
+def classify(call, used, t_answer):
+    """返回互斥类别；t_answer 为该会话第一条被采用的查询的开始时间（没有时为 None）。"""
+    tool, status = call["tool"], call["status"]
+    if tool in ("final_answer", "ask_clarification"):
+        return None
+    if status == "error":
+        return "error"
+    if tool in ("list_tables", "describe_table"):
+        return "schema"
+    if tool != "run_sql":
+        return "other"
+    s = norm(sql_of(call))
+    if CATALOG_RE.search(s) and not TABLE_RE.search(re.sub(r"'[^']*'", "", s)):
+        return "schema"
+    ref = call.get("ref")
+    if ref and int(ref.lstrip("r")) in used:
+        return "answer"
+    if not TABLE_RE.search(s):
+        return "compute"
+    if VALIDATE_RE.search(s):
+        return "validate"
+    if MEASURE_RE.search(s) and COL_RE.search(s):
+        if t_answer is not None and call["t0_ms"] > t_answer:
+            return "validate"
+        return "attempt"
+    return "explore"
+
+
+def fact_key(call, cat):
+    """调用获得的数据库知识：同一张表的结构、同一组列上的同类探查或检查算同一事实，与写法无关。"""
+    tool = call["tool"]
+    if tool == "list_tables":
+        return ("schema", "*")
+    if tool == "describe_table":
+        return ("schema", (call.get("args") or {}).get("table", "?"))
+    s = norm(sql_of(call))
+    tables = tuple(sorted(set(TABLE_RE.findall(s))))
+    if cat == "schema":
+        return ("schema",) + (tables or ("*",))
+    cols = tuple(sorted(set(COL_RE.findall(s))))
+    return (cat, tables, cols, bool(AGG_RE.search(s)))
+
+
+def text_key(call):
+    if call["tool"] == "run_sql":
+        return ("sql", norm(sql_of(call)))
+    return (call["tool"], json.dumps(call.get("args") or {}, sort_keys=True, ensure_ascii=False))
+
+
+def template_key(call):
+    if call["tool"] == "run_sql":
+        return ("sql", fingerprint(sql_of(call)))
+    return text_key(call)
+
+
+def pct(a, b):
+    return round(100.0 * a / b, 1) if b else None
+
+
+def med(xs):
+    return round(statistics.median(xs), 1) if xs else None
+
+
+def analyze_run(d):
+    model = model_of(d)
+    sessions = {s["agent"]: s for s in load_jsonl(os.path.join(d, "sessions.jsonl"))}
+    calls = [c for c in load_jsonl(os.path.join(d, "trace.jsonl")) if c["agent"] in sessions]
+    calls.sort(key=lambda c: (c["t0_ms"], c["agent"], c["step"], c["seq"]))
+    by_sess = collections.defaultdict(list)
+    for c in calls:
+        by_sess[c["agent"]].append(c)
+    # 类别
+    for a, cs in by_sess.items():
+        used = used_refs(sessions[a])
+        ans = [c["t0_ms"] for c in cs if c["tool"] == "run_sql" and c.get("ref") and int(c["ref"].lstrip("r")) in used]
+        t_answer = min(ans) if ans else None
+        for c in cs:
+            c["cat"] = classify(c, used, t_answer)
+            c["model"] = model
+    data = [c for c in calls if c["cat"] is not None]  # 访问数据库的调用（不含 final_answer / 澄清）
+    return model, sessions, by_sess, data
+
+
+def redundancy(data):
+    """跨会话重复：按开始时间顺序，某调用获得的知识是否已被另一个会话更早获得过（事实 / 模板 / 原文三个层次），
+    以及另一个会话是否在 ±60 秒内获得了同一事实（并发重复）。只统计成功的知识性调用。"""
+    earlier = {level: collections.defaultdict(set) for level in ("fact", "template", "text")}
+    out = collections.Counter()
+    ms = collections.Counter()
+    know = sorted((c for c in data if c["cat"] in KNOWLEDGE), key=lambda c: c["t0_ms"])
+    times = collections.defaultdict(list)  # fact -> [(t, agent)]
+    for c in know:
+        times[fact_key(c, c["cat"])].append((c["t0_ms"], c["agent"]))
+    for c in know:
+        keys = {"fact": fact_key(c, c["cat"]), "template": template_key(c), "text": text_key(c)}
+        kind = "sql" if c["tool"] == "run_sql" else "tool"
+        out["n"] += 1
+        out[f"n_{kind}"] += 1
+        ms["all"] += c["ms"]
+        for level, k in keys.items():
+            agents = earlier[level][k]
+            if agents - {c["agent"]}:
+                out[level] += 1
+                out[f"{level}_{kind}"] += 1
+                if level == "fact":
+                    ms["fact"] += c["ms"]
+            agents.add(c["agent"])
+        if any(a != c["agent"] and abs(t - c["t0_ms"]) <= 60_000 for t, a in times[keys["fact"]]):
+            out["concurrent60"] += 1
+    n, n_sql = out["n"], out["n_sql"]
+    return {
+        "knowledge_calls": n,
+        "knowledge_sql_calls": n_sql,
+        "fact_repeat_pct": pct(out["fact"], n),
+        "template_repeat_pct": pct(out["template"], n),
+        "text_repeat_pct": pct(out["text"], n),
+        "sql_fact_repeat_pct": pct(out["fact_sql"], n_sql),
+        "sql_template_repeat_pct": pct(out["template_sql"], n_sql),
+        "sql_text_repeat_pct": pct(out["text_sql"], n_sql),
+        "fact_repeat_db_ms_pct": pct(ms["fact"], ms["all"]),
+        "concurrent60_pct": pct(out["concurrent60"], n),
+    }
+
+
+def overlap_pairs(sessions):
+    """同时活跃的会话对占比（会话时间窗相交）。"""
+    ss = sorted(sessions.values(), key=lambda s: s["t0_ms"])
+    n = len(ss)
+    k = sum(1 for i in range(n) for j in range(i + 1, n) if ss[j]["t0_ms"] < ss[i]["t1_ms"])
+    return k
+
+
+def llm_calls(sessions, by_sess):
+    """大模型调用（会话的 step）按其发出的工具调用归类：发出最终答案查询或 final_answer 的为作答，其余只做查找、探查或检查。
+    另计会话开始到第一条被采用的查询开始所占的时间比例。"""
+    total = lookup = 0
+    pre_time, pre_calls = [], []
+    for a, s in sessions.items():
+        total += s["run"]["steps"]
+        cats = collections.defaultdict(set)
+        for c in by_sess.get(a, []):
+            cats[c["step"]].add("final" if c["tool"] in ("final_answer", "ask_clarification") else c["cat"])
+        lookup += sum(1 for cs in cats.values() if not cs & {"answer", "final"})
+        ans = [c for c in by_sess.get(a, []) if c["cat"] == "answer"]
+        if ans:
+            pre_time.append((min(c["t0_ms"] for c in ans) - s["t0_ms"]) / (s["t1_ms"] - s["t0_ms"]))
+            first = min(c["step"] for c in ans)
+            pre_calls.append(sum(1 for st in cats if st < first))
+    return {
+        "llm_calls": total,
+        "lookup_only_calls": lookup,
+        "lookup_only_pct": pct(lookup, total),
+        "mean_calls_per_session": round(total / len(sessions), 2) if sessions else None,
+        "mean_calls_before_answer_sql": round(statistics.mean(pre_calls), 2) if pre_calls else None,
+        "mean_time_before_answer_sql_pct": round(100.0 * statistics.mean(pre_time), 1) if pre_time else None,
+    }
+
+
+def stats_for(model, sessions, by_sess, data):
+    cats = collections.Counter(c["cat"] for c in data)
+    n = len(data)
+    sqls = [c for c in data if c["tool"] == "run_sql"]
+    # SQL 模板稳定性：一条 SQL 的模板是否已在本负载中出现过（任何会话）
+    seen, rep = set(), 0
+    for c in sqls:
+        k = fingerprint(sql_of(c))
+        rep += k in seen
+        seen.add(k)
+    sess = list(sessions.values())
+    per = []
+    for a, s in sessions.items():
+        cs = [c for c in by_sess.get(a, []) if c["cat"] is not None]
+        per.append({
+            "calls": len(cs),
+            "sql": sum(c["tool"] == "run_sql" for c in cs),
+            "seconds": (s["t1_ms"] - s["t0_ms"]) / 1000.0,
+            "schema": sum(c["cat"] == "schema" for c in cs),
+            "errors": sum(c["cat"] == "error" for c in cs),
+            "validate": sum(c["cat"] == "validate" for c in cs),
+            "explore": sum(c["cat"] in ("schema", "explore") for c in cs),
+            "first_schema": bool(cs) and cs[0]["cat"] == "schema",
+        })
+    outcomes = collections.Counter(s["outcome"] for s in sess)
+    return {
+        "model": model,
+        "sessions": len(sess),
+        "outcomes": dict(outcomes),
+        "calls": n,
+        "categories": {k: cats[k] for k in ("schema", "explore", "validate", "attempt", "compute", "answer", "error", "other")},
+        "category_pct": {k: pct(cats[k], n) for k in ("schema", "explore", "validate", "attempt", "compute", "answer", "error", "other")},
+        "exploration_pct": pct(cats["schema"] + cats["explore"], n),
+        "sql_calls": len(sqls),
+        "sql_error_pct": pct(sum(c["status"] == "error" for c in sqls), len(sqls)),
+        "sql_templates": len(seen),
+        "sql_templates_per_100": round(100.0 * len(seen) / len(sqls), 1) if sqls else None,
+        "sql_template_repeat_pct": pct(rep, len(sqls)),
+        "sql_templates_per_100_block": round(statistics.mean(len({fingerprint(sql_of(c)) for c in sqls[i:i + 100]})
+                                                         for i in range(0, len(sqls) - 99, 100)), 1) if len(sqls) >= 100 else None,
+        "wrong_sessions_without_error_pct": pct(sum(1 for a, s in sessions.items() if s["outcome"] == "wrong"
+                                                    and not any(c["status"] == "error" for c in by_sess.get(a, []))),
+                                                sum(1 for s in sessions.values() if s["outcome"] == "wrong")),
+        "session": {
+            "median_calls": med([p["calls"] for p in per]),
+            "median_sql": med([p["sql"] for p in per]),
+            "median_seconds": med([p["seconds"] for p in per]),
+            "median_schema_calls": med([p["schema"] for p in per]),
+            "pct_start_with_schema": pct(sum(p["first_schema"] for p in per), len(per)),
+            "pct_with_schema": pct(sum(p["schema"] > 0 for p in per), len(per)),
+            "pct_with_error": pct(sum(p["errors"] > 0 for p in per), len(per)),
+            "pct_with_validate": pct(sum(p["validate"] > 0 for p in per), len(per)),
+            "mean_explore_share_pct": round(100.0 * statistics.mean(xs), 1) if (xs := [p["explore"] / p["calls"] for p in per if p["calls"]]) else None,
+        },
+        "llm": llm_calls(sessions, by_sess),
+        "overlapping_session_pairs": overlap_pairs(sessions),
+        "redundancy": redundancy(data),
+    }
+
+
+def ask_kind(s):
+    return (s.get("ask") or {}).get("kind", "?")
+
+
+def equivalence(all_sessions, app):
+    """同义不同写法：同一道题（或同一类题：指标 × 题型）答对的会话里，最终 SQL 有多少种模板；应用每类题一种。"""
+    per_task = collections.defaultdict(list)
+    per_class = collections.defaultdict(list)
+    for model, s in all_sessions:
+        if s["outcome"] != "correct" or not s.get("final_sql"):
+            continue
+        form = tuple(sorted(fingerprint(q) for q in s["final_sql"]))
+        text = tuple(sorted(norm(q) for q in s["final_sql"]))
+        per_task[s["task"]].append((form, text, model))
+        per_class[(s["metric"], ask_kind(s))].append((form, text, model))
+    app_class = collections.defaultdict(set)
+    for a in app:
+        app_class[(a["metric"], a["ask"]["kind"])].add(fingerprint(a["sql"]))
+    tasks = {t: {"correct": len(v), "templates": len({f for f, _, _ in v}), "texts": len({x for _, x, _ in v})} for t, v in per_task.items()}
+    classes = {
+        f"{m}/{k}": {"correct": len(v), "templates": len({f for f, _, _ in v}), "app_templates": len(app_class[(m, k)])}
+        for (m, k), v in per_class.items()
+    }
+    multi = [v for v in tasks.values() if v["correct"] >= 2]
+    return {
+        "tasks_with_2plus_correct": len(multi),
+        "mean_templates_per_task": round(statistics.mean(v["templates"] for v in multi), 2) if multi else None,
+        "mean_correct_per_task": round(statistics.mean(v["correct"] for v in multi), 2) if multi else None,
+        "pct_tasks_with_2plus_templates": pct(sum(v["templates"] >= 2 for v in multi), len(multi)),
+        "distinct_template_share_pct": pct(sum(v["templates"] for v in multi), sum(v["correct"] for v in multi)),
+        "classes": classes,
+        "total_class_templates": sum(v["templates"] for v in classes.values()),
+        "total_app_templates": sum(v["app_templates"] for v in classes.values()),
+        "per_task": tasks,
+    }
+
+
+def app_stats(app):
+    fps = [fingerprint(a["sql"]) for a in app]
+    seen, rep = set(), 0
+    for f in fps:
+        rep += f in seen
+        seen.add(f)
+    return {
+        "queries": len(app),
+        "templates": len(seen),
+        "template_repeat_pct": pct(rep, len(app)),
+        "queries_per_question": 1,
+        "exploration_pct": 0.0,
+        "validation_pct": 0.0,
+        "error_pct": 0.0,
+        "note": "Parameterized application SQL: one template per (metric, question class), executed directly without exploration",
+    }
+
+
+# Example 1 and Figure 1 of the paper: one metric's sessions, three of them drawn.
+# Agent 1, Agent 2 and Agent N are named-metric sessions (the question names the
+# metric without its formula) asking for one month, the best month, and a
+# year-over-year change.
+EXAMPLE_AGENTS = (("Jan", "s094", "M5-L1"), ("Best", "s073", "M5-T2"), ("Yoy", "s091", "M5-T1"))
+EXAMPLE_SCHEMAS = ("*", "store_sales", "item", "date_dim")   # list tables, then three schemas
+
+
+def example_stats(sessions, by_sess, data, metric):
+    """Sessions of one metric: the lookups every session repeats, their cost, and named-metric answers.
+
+    A lookup repeats when an earlier session (of any question) obtained the same fact,
+    the rule redundancy() applies to the whole workload."""
+    earlier, repeated = collections.defaultdict(set), set()
+    for c in sorted((c for c in data if c["cat"] in KNOWLEDGE), key=lambda c: c["t0_ms"]):
+        k = fact_key(c, c["cat"])
+        if earlier[k] - {c["agent"]}:
+            repeated.add(id(c))
+        earlier[k].add(c["agent"])
+    mine = {a: s for a, s in sessions.items() if s["metric"] == metric}
+    lookups = [c for a in mine for c in by_sess.get(a, []) if c.get("cat") in KNOWLEDGE]
+    facts = {a: {fact_key(c, c["cat"]) for c in by_sess.get(a, []) if c.get("cat") == "schema"} for a in mine}
+    named = [s for s in mine.values() if s["phrasing"] == "named"]
+    defined = [s for s in mine.values() if s["phrasing"] == "defined"]
+    gross = [s for s in named if any("ss_ext_sales_price" in q for q in s.get("final_sql") or [])]
+    out = {
+        "Sessions": len(mine),
+        "FourLookups": sum(all(("schema", t) in facts[a] for t in EXAMPLE_SCHEMAS) for a in mine),
+        "Lookups": len(lookups),
+        "Repeated": sum(id(c) in repeated for c in lookups),
+        "TokensK": f"{statistics.mean(s['run']['input_tokens'] + s['run']['output_tokens'] for s in mine.values()) / 1000:.1f}",
+        "Seconds": f"{statistics.mean(s['run']['seconds'] for s in mine.values()):.0f}",
+        "LlmCalls": f"{statistics.mean(s['run']['steps'] for s in mine.values()):.1f}",
+        "Named": len(named),
+        "NamedWrong": sum(s["outcome"] == "wrong" for s in named),
+        "NamedGross": len(gross),
+        "Defined": len(defined),
+        "DefinedCorrect": sum(s["outcome"] == "correct" for s in defined),
+    }
+    # Example 1 says that every named-metric session summed gross sales and answered wrongly.
+    assert len(gross) == out["NamedWrong"] == len(named), (len(gross), out["NamedWrong"], len(named))
+    for key, agent, task in EXAMPLE_AGENTS:
+        s = sessions[agent]
+        assert (s["task"], s["phrasing"]) == (task, "named"), (agent, s["task"], s["phrasing"])
+        assert s in gross and s["outcome"] == "wrong", agent
+        for field in ("answer", "gold"):
+            v = float(s[field])
+            out[key + field.capitalize()] = f"{v:,.0f}" if abs(v) >= 100 else f"{v:g}"
+    return out
+
+
+def write_example_tex(path, metric, values):
+    lines = [f"% Generated by tools/workload-stats.py --example {metric}; do not edit.",
+             "% Example 1 and Figure 1: the sessions of one metric in the workload characterization study."]
+    lines += [f"\\newcommand{{\\Wx{k}}}{{{v}}}" for k, v in values.items()]
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+def table(res):
+    models = res["runs"]
+    cols = [m["model"].split("/")[-1] for m in models] + ["pooled"]
+    allm = models + [res["pooled"]]
+
+    def row(name, f):
+        return "| " + name + " | " + " | ".join(str(f(m)) for m in allm) + " |"
+
+    lines = ["| metric | " + " | ".join(cols) + " |", "|---|" + "---|" * len(cols)]
+    lines += [
+        row("sessions (correct)", lambda m: f"{m['sessions']} ({m['outcomes'].get('correct', 0)})"),
+        row("DB calls / session (median)", lambda m: m["session"]["median_calls"]),
+        row("SQL templates per 100 SQL", lambda m: m["sql_templates_per_100"]),
+        row("SQL whose template seen before %", lambda m: m["sql_template_repeat_pct"]),
+        row("distinct templates per 100-SQL block", lambda m: m["sql_templates_per_100_block"]),
+        row("LLM calls / session (mean)", lambda m: m["llm"]["mean_calls_per_session"]),
+        row("LLM calls issuing only lookups, probes, or checks %", lambda m: m["llm"]["lookup_only_pct"]),
+        row("LLM calls before the answer SQL (mean)", lambda m: m["llm"]["mean_calls_before_answer_sql"]),
+        row("session time before the answer SQL % (mean)", lambda m: m["llm"]["mean_time_before_answer_sql_pct"]),
+        row("exploration calls % (schema+data)", lambda m: m["exploration_pct"]),
+        row("  schema %", lambda m: m["category_pct"]["schema"]),
+        row("  data explore %", lambda m: m["category_pct"]["explore"]),
+        row("validation calls %", lambda m: m["category_pct"]["validate"]),
+        row("abandoned attempts %", lambda m: m["category_pct"]["attempt"]),
+        row("final-answer SQL %", lambda m: m["category_pct"]["answer"]),
+        row("failed calls %", lambda m: m["category_pct"]["error"]),
+        row("failed SQL % (of SQL)", lambda m: m["sql_error_pct"]),
+        row("  compute-only SQL %", lambda m: m["category_pct"]["compute"]),
+        row("wrong answers with no failed call %", lambda m: m["wrong_sessions_without_error_pct"]),
+        row("sessions with >=1 failure %", lambda m: m["session"]["pct_with_error"]),
+        row("sessions with >=1 validation %", lambda m: m["session"]["pct_with_validate"]),
+        row("sessions starting with schema lookup %", lambda m: m["session"]["pct_start_with_schema"]),
+        row("session length s (median)", lambda m: m["session"]["median_seconds"]),
+        row("knowledge calls: fact seen in earlier session %", lambda m: m["redundancy"]["fact_repeat_pct"]),
+        row("  same template %", lambda m: m["redundancy"]["template_repeat_pct"]),
+        row("  same text %", lambda m: m["redundancy"]["text_repeat_pct"]),
+        row("knowledge SQL: fact / template / text %", lambda m: "{} / {} / {}".format(
+            m["redundancy"]["sql_fact_repeat_pct"], m["redundancy"]["sql_template_repeat_pct"], m["redundancy"]["sql_text_repeat_pct"])),
+        row("DB time of repeated facts %", lambda m: m["redundancy"]["fact_repeat_db_ms_pct"]),
+        row("same fact by another session within 60 s %", lambda m: m["redundancy"]["concurrent60_pct"]),
+    ]
+    return "\n".join(lines)
+
+
+def format_markdown(res):
+    md = table(res)
+    eq = res["equivalence"]
+    md += "\n\nSame semantics, different SQL (correct sessions only): "
+    md += f"{eq['tasks_with_2plus_correct']} questions with >=2 correct sessions; mean {eq['mean_templates_per_task']} templates "
+    md += f"over {eq['mean_correct_per_task']} correct sessions per question; {eq['pct_tasks_with_2plus_templates']}% of questions answered with >=2 templates; "
+    md += f"{eq['total_class_templates']} templates over {len(eq['classes'])} question classes vs {eq['total_app_templates']} for the application.\n"
+    if res.get("application"):
+        a = res["application"]
+        md += f"Application: {a['queries']} queries, {a['templates']} templates, template repeat {a['template_repeat_pct']}%.\n"
+    return md
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("dirs", nargs="*")
+    ap.add_argument("--out", default=None)
+    ap.add_argument("--audit", type=int, default=80, help="random sample size of classified calls for manual audit")
+    ap.add_argument("--example", metavar="METRIC", help="emit Example 1 / Figure 1 macros for a single metric in one trace directory")
+    ap.add_argument("--tex-out", help="output macro file for --example (e.g., results/gen/workload-example.tex)")
+    o = ap.parse_args()
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if not o.dirs:
+        if o.example:
+            if not o.tex_out:
+                sys.exit("--example requires --tex-out")
+            ref_path = os.path.join(root, "tools", "figures", "reference_macros.json")
+            raw_vals = json.load(open(ref_path, encoding="utf-8"))["workload-example"]
+            values = {k[2:] if k.startswith("Wx") else k: v for k, v in raw_vals.items()}
+            os.makedirs(os.path.dirname(os.path.abspath(o.tex_out)), exist_ok=True)
+            write_example_tex(o.tex_out, o.example, values)
+            print("\n".join(f"\\Wx{k} = {v}" for k, v in values.items()))
+            return
+        archived = os.path.join(root, "exp", "workload-characterization", "workload-stats.json")
+        res = json.load(open(archived, encoding="utf-8"))
+        md = format_markdown(res)
+        print(md, end="")
+        if o.out:
+            os.makedirs(o.out, exist_ok=True)
+            with open(os.path.join(o.out, "workload-stats.json"), "w", encoding="utf-8") as f:
+                json.dump(res, f, ensure_ascii=False, indent=2)
+            with open(os.path.join(o.out, "workload-stats.md"), "w", encoding="utf-8") as f:
+                f.write(md)
+            print(f"wrote {o.out}/workload-stats.json, workload-stats.md")
+        return
+    if o.example:
+        if len(o.dirs) != 1 or not o.tex_out:
+            sys.exit("--example requires a single run directory and --tex-out")
+        os.makedirs(os.path.dirname(os.path.abspath(o.tex_out)), exist_ok=True)
+        _, sessions, by_sess, data = analyze_run(o.dirs[0])
+        values = example_stats(sessions, by_sess, data, o.example)
+        write_example_tex(o.tex_out, o.example, values)
+        print("\n".join(f"\\Wx{k} = {v}" for k, v in values.items()))
+        return
+    runs, all_sessions, all_data, app = [], [], [], []
+    pooled_sessions, pooled_by_sess = {}, {}
+    for d in o.dirs:
+        model, sessions, by_sess, data = analyze_run(d)
+        if not sessions:
+            continue
+        runs.append(stats_for(model, sessions, by_sess, data))
+        all_sessions += [(model, s) for s in sessions.values()]
+        all_data += data
+        for a, s in sessions.items():
+            pooled_sessions[f"{model}|{a}"] = s
+            pooled_by_sess[f"{model}|{a}"] = by_sess.get(a, [])
+        if not app and os.path.exists(os.path.join(d, "app.json")):
+            with open(os.path.join(d, "app.json"), encoding="utf-8") as f:
+                app = json.load(f)
+    if not runs:
+        sys.exit("No completed sessions found in input directories")
+    pooled = stats_for("pooled", pooled_sessions, pooled_by_sess, [dict(c, agent=f"{c['model']}|{c['agent']}") for c in all_data])
+    w = [r["redundancy"]["knowledge_calls"] for r in runs]
+    for k in pooled["redundancy"]:
+        if k.endswith("_pct"):
+            vals = [r["redundancy"][k] for r in runs]
+            pooled["redundancy"][k] = round(sum((v or 0) * x for v, x in zip(vals, w)) / sum(w), 1) if sum(w) else None
+    res = {"runs": runs, "pooled": pooled, "equivalence": equivalence(all_sessions, app), "application": app_stats(app) if app else None}
+    out = o.out or os.path.join(os.path.dirname(os.path.normpath(o.dirs[0])), "stats")
+    os.makedirs(out, exist_ok=True)
+    with open(os.path.join(out, "workload-stats.json"), "w", encoding="utf-8") as f:
+        json.dump(res, f, ensure_ascii=False, indent=2)
+    md = format_markdown(res)
+    with open(os.path.join(out, "workload-stats.md"), "w", encoding="utf-8") as f:
+        f.write(md)
+    rnd = random.Random(7)
+    sample = rnd.sample(all_data, min(o.audit, len(all_data)))
+    with open(os.path.join(out, "audit-sample.jsonl"), "w", encoding="utf-8") as f:
+        for c in sample:
+            th = c.get("thought") or {}
+            f.write(json.dumps({"model": c["model"], "agent": c["agent"], "task": c["task"], "tool": c["tool"], "cat": c["cat"],
+                                "status": c["status"], "sql": sql_of(c) or c.get("args"), "result": (c.get("result") or "")[:200],
+                                "reasoning": (th.get("reasoning") or "")[-300:]}, ensure_ascii=False) + "\n")
+    print(md)
+    print(f"wrote {out}/workload-stats.json, workload-stats.md, audit-sample.jsonl")
+
+
+if __name__ == "__main__":
+    main()
